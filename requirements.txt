@@ -1,0 +1,24 @@
+# Project Amphoreus — Python Dependencies
+
+# Core
+openai>=1.0.0
+
+# UI
+streamlit>=1.28.0
+
+# Vector Database (Phase 2 — RAG)
+chromadb>=0.4.0
+
+# Embeddings (Phase 2 — RAG)
+# sentence-transformers>=2.2.0  # Uncomment for local embeddings
+
+# Senses — hearing (speech-to-text) + video frame extraction (Sanctuary build)
+faster-whisper>=1.2.0
+av>=13.0.0          # PyAV — video frame extraction (bundled with faster-whisper)
+Pillow>=10.0.0      # image handling for eyesight
+
+# Optional: local LLM support
+# ollama>=0.1.0
+
+# Development
+pytest>=7.0.0

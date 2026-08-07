@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Environment
+.venv/
+venv/
+env/
+
+# Streamlit
+.streamlit/
+
+# Runtime / auto-generated state (rebuilt by running the app)
+world_runtime/
+*.log
+
+# RAG vector store — regenerable with: python build_kb.py --embedding local
+.chroma_db/
+
+# Models — far too large for GitHub (20 GB; GitHub rejects files >100 MB and
+# free LFS quota is 1 GB). They stay local and are re-downloadable — exact
+# mirror sources & commands in docs/DOWNLOADS.md.
+models/
+
+# Per-Heir runtime memory (regenerable conversation state). The canon
+# personal-memories.md in each Heir's folder IS tracked.
+/*/bond.json
+/*/history.jsonl
+/*/memories.jsonl
+/*/preferences.json
+
+# HF download cache (inside the project, but not a shipped asset)
+models/hf-cache/
+
+# Temp / editor
+*.tmp
+*.part
+.DS_Store
+Thumbs.db

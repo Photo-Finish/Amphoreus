@@ -1,0 +1,6 @@
+# Git LFS — model binaries are far larger than GitHub's 100 MB per-file limit.
+# NOTE: models/ is currently gitignored (not pushed) — the sanctuary's models
+# are re-downloadable from the mirrors (see docs/DOWNLOADS.md). If you ever want
+# to track them (e.g. via a ModelScope/HF release), enable LFS first:
+#   git lfs install
+# models/** filter=lfs diff=lfs merge=lfs -text
