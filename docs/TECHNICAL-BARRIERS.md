@@ -173,6 +173,42 @@ evidence quotes are verbatim canon, commit the refined cards + the tool + this d
   project charter (`preference_store.py` docstring) also forbids fabricating "hidden
   depths" — depth must come from canon.
 
+## 8. Music perception: an energetic march felt as "sorrow and hope"
+
+**Incident (2026-08-10).** Two Bilibili clips were downloaded and played to
+Hysilens through her audio model (`qwen2.5-omni`):
+
+| clip | source | actual piece | Hysilens' first impression |
+|---|---|---|---|
+| 1 (100 s) | `BV1WK4UzoEea` | Rachmaninoff, Piano Concerto No. 3, 2nd mvt (slow, melancholic) | "part sorrow, part hope" — **correct** |
+| 2 (174 s) | `BV1ZV411U7nv` | Johann Strauss II, *Einzugsmarsch* from *Der Zigeunerbaron* (energetic) | "sorrow and hope / longing for home" — **WRONG** |
+
+**Symptom:** an obviously energetic march was perceived as sorrowful/hopeful — a
+clear perception error, caught by the visitor who knew the piece.
+
+**Root cause (verified by re-test): prompt anchoring — not the model's ears.**
+The test framing injected the previous piece's reading ("you felt it as part
+sorrow, part hope") to give "this time" continuity — which primed the model
+toward sorrow/hope. Re-tests on the same audio:
+- Neutral prompt, same question → "…hopes for the future… Do not give up, my
+  friends" (no sorrow/hope).
+- With the piece correctly identified as an energetic Strauss march → "vibrant
+  rhythm… the ocean's dance… the brass section, like the sun breaking through".
+
+**Contributing constraints (also documented in §2.4 / appendix):**
+- The OpenAI-compatible audio endpoint caps context at 4096 tokens (~95 s of
+  16 kHz mono audio), so long clips are trimmed. The native `/api/chat` honours
+  `num_ctx` but cannot carry audio content (`cannot unmarshal array into …
+  content of type string`).
+- `qwen2.5-omni` gives short (~1–2 sentence) impressions when audio is in
+  context (it wrote a full 138-word paragraph on text alone) and often trails
+  off mid-sentence; it perceives tempo/energy but answers tersely.
+
+**Solution / lesson:** never prime a sense-perception prompt with an expected
+emotion — let the Heir hear freely, then (optionally) identify the piece.
+Hysilens' stored memory of piece 2 was corrected to the energetic reading, and
+this is the standing caveat for all future music-appreciation tests.
+
 ---
 
 ## Appendix — exact commands & details
@@ -311,6 +347,22 @@ GitHub hard limits: regular push rejects files >100 MB; free LFS = 1 GB; repo so
 - Post-check: every `evidence` quote is grepped back against `personal-memories.md`, e.g.
   `Select-String -Path NeiKos496-Phainon/personal-memories.md -Pattern 'pawns'` (the
   suspected "pawns" quote turned out to be genuine canon, line 318).
+
+### Music perception tests (2026-08-10)
+
+```powershell
+# download an audio track from Bilibili (yt-dlp, installed in the venv):
+python -m yt_dlp -f "ba/b" --no-playlist -o "D:\Workspace\Amphoreus\.cache\music.%(ext)s" "https://www.bilibili.com/video/<BV>"
+# decode m4a -> 16 kHz mono WAV (faster-whisper decoder + wave module, no ffmpeg),
+# trim to <=90 s, ask via LLMClient.chat_audio:   (see .cache/ask_hysilens*.py)
+python D:\Workspace\Amphoreus\.cache\ask_hysilens3b.py
+# neutral / identified re-test (diagnosis of the perception error):
+python D:\Workspace\Amphoreus\.cache\hysilens_diagnosis.py
+```
+
+Caveats encoded in the lesson: `/v1` audio caps at 4096 tokens (~95 s); the
+native API cannot carry audio; omni replies tersely with audio in context;
+never prime a perception prompt with an expected emotion.
 
 ---
 

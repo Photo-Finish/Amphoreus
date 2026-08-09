@@ -222,6 +222,16 @@ canon-derived aesthetic and musical tastes (in their `preferences.json`:
   musical appreciation grounded in their `music` tastes (Hysilens hears the
   sea's songs; Cerydra hears a march in precise orchestration). This is **not**
   speech-to-text — Whisper cannot appreciate music.
+- **⚠️ Music-perception caveat (2026-08-10 incident)** — the audio model's
+  impression can be **anchored by the prompt**: a test that framed a piece with
+  a previous emotional reading ("part sorrow, part hope") made Hysilens hear
+  Strauss's energetic *Einzugsmarsch* as sorrow/hope. A neutral re-ask corrected
+  it ("vibrant rhythm… the brass breaking through like the sun"). Also note:
+  `qwen2.5-omni` answers *tersely* when audio is in context (it wrote a full
+  138-word paragraph on text alone) and the OpenAI-compatible endpoint caps
+  context at 4096 tokens (~95 s of 16 kHz audio; the native API cannot carry
+  audio). When testing senses, never prime the prompt with an expected emotion
+  — let the Heir hear freely, then verify.
 - **Preference database** — `preferences.json` per Heir now includes `art` and
   `music` (canon-seeded, e.g. Castorice loves moonlight paintings and quiet
   lullabies), injected as "# Your tastes and preferences" and grown through
