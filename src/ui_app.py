@@ -22,6 +22,49 @@ st.set_page_config(
     layout="wide",
 )
 
+# --------------------------------------------------------------------------- #
+# Visual theme — the Sanctuary of the Chrysos Heirs
+# --------------------------------------------------------------------------- #
+PROJECT_ROOT = Path(__file__).parent.parent
+ASSETS = PROJECT_ROOT / "assets"
+HEIR_PORTRAITS_DIR = ASSETS / "heirs"
+BG_IMAGE = ASSETS / "amphoreus_bg.jpg"
+
+
+def portrait_for(character_id: str):
+    """Path to the Heir's portrait, if downloaded."""
+    for ext in ("png", "jpg", "jpeg", "webp"):
+        p = HEIR_PORTRAITS_DIR / f"{character_id}.{ext}"
+        if p.exists():
+            return p
+    return None
+
+
+# Ethereal Amphoreus theme (dark gold, no heavy base64 in the page)
+st.markdown(
+    """
+    <style>
+    .stApp { background: linear-gradient(160deg, #0b0a14 0%, #131022 45%, #0d0b18 100%); }
+    .block-container { padding-top: 1.4rem; }
+    h1, h2, h3 { color: #e8d5a3; letter-spacing: .5px; }
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #141126 0%, #0d0b18 100%);
+        border-right: 1px solid rgba(232,213,163,.12);
+    }
+    [data-testid="stSidebar"] * { color: #d8cfa8; }
+    [data-testid="stChatMessage"] {
+        background: rgba(255,255,255,.035);
+        border: 1px solid rgba(232,213,163,.10);
+        border-radius: 12px;
+        padding: .4rem .8rem;
+    }
+    .stTabs [data-baseweb="tab-list"] { gap: .6rem; }
+    .stTabs [data-baseweb="tab"][aria-selected="true"] { color: #e8d5a3; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # Initialize Agent Manager
 @st.cache_resource
 def get_manager():
@@ -76,6 +119,11 @@ selected = st.sidebar.selectbox(
     characters,
     format_func=lambda x: manager.get_character_info(x)["name"],
 )
+
+# Portrait of the chosen Heir
+_selected_portrait = portrait_for(selected)
+if _selected_portrait:
+    st.sidebar.image(str(_selected_portrait), width=190)
 
 # Display character info
 info = manager.get_character_info(selected)
@@ -135,6 +183,8 @@ st.sidebar.caption("*See PHILOSOPHY.md for the charter*")
 main_tab, chronicle_tab = st.tabs(["💬 Visit an Heir", "📖 A Chronicle of Amphoreus"])
 
 with chronicle_tab:
+    if BG_IMAGE.exists():
+        st.image(str(BG_IMAGE), use_container_width=True)
     st.title("📖 A Chronicle of Amphoreus")
     st.caption("The Heirs' days — written by their actions, not by us.")
     try:
@@ -146,9 +196,20 @@ with chronicle_tab:
         st.info("The chronicle is not written yet — the world engine has not begun its days.\n\nStart it with: `python -m src.world.world_engine --interval 900`")
 
 with main_tab:
-    # Main Chat Area
-    st.title(f"💬 {info['name']}")
-    st.caption(f"*{info['coreflame']}*")
+    # Main Chat Area — hero banner with the Heir's portrait
+    if BG_IMAGE.exists():
+        st.image(str(BG_IMAGE), use_container_width=True)
+    hero_l, hero_r = st.columns([1, 3], gap="large")
+    with hero_l:
+        if _selected_portrait:
+            st.image(str(_selected_portrait), use_container_width=True)
+        else:
+            st.markdown("### 🔥")
+    with hero_r:
+        st.title(f"{info['name']}")
+        st.caption(f"*{', '.join(info['titles'])}*")
+        st.caption(f"Coreflame: **{info['coreflame']}**")
+    st.markdown("---")
 
     # Catch-up: what this Heir has lived through since you were last here
     try:
@@ -173,9 +234,10 @@ with main_tab:
             "content": greeting,
         })
 
-    # Display chat history
+    # Display chat history (the Heir's portrait as the assistant avatar)
+    _assistant_avatar = str(_selected_portrait) if _selected_portrait else None
     for msg in st.session_state.messages[selected]:
-        with st.chat_message(msg["role"]):
+        with st.chat_message(msg["role"], avatar=_assistant_avatar if msg["role"] == "assistant" else None):
             st.markdown(msg["content"])
 
     # Senses: eyesight (picture / video) and hearing (speak)
@@ -223,7 +285,7 @@ with main_tab:
             })
             with st.chat_message("user"):
                 st.markdown(f"*(shares music: {music_file.name})*")
-            with st.chat_message("assistant"):
+            with st.chat_message("assistant", avatar=_assistant_avatar):
                 st.markdown(result["response"])
             st.session_state.messages[selected].append({
                 "role": "assistant", "content": result["response"],
@@ -247,7 +309,7 @@ with main_tab:
             })
             with st.chat_message("user"):
                 st.markdown(f"*(spoken)* {result['transcript']}")
-            with st.chat_message("assistant"):
+            with st.chat_message("assistant", avatar=_assistant_avatar):
                 st.markdown(result["response"])
             st.session_state.messages[selected].append({
                 "role": "assistant", "content": result["response"],

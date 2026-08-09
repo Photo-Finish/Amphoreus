@@ -12,32 +12,25 @@ in progress.
 
 ## Live status — current task
 
-### 🔄 LLM refinement of Heir personality traits (in progress, 2026-08-10)
+### ✅ Trait refinement — COMPLETE (2026-08-10)
 
-**Goal:** let the LLM read each Heir's canon dialogue (`personal-memories.md`) and
-refine their personality traits to a deeper, evidence-grounded level — for all 13 Heirs.
+**Round 1** (LLM, `qwen2.5:14b`): all 13 cards refined from `personal-memories.md` —
+73/73 evidence quotes verbatim (`tools/refine_personal_traits.py`, `--verify`).
 
-**Tool:** `tools/refine_personal_traits.py`
+**Round 2 (fallacy hunt, same day):**
+- Attempted an LLM re-audit, but the 14B would not load that day (see §9) and the
+  7B fallback's output was unreliable → **reverted**.
+- A **deterministic audit** (`tools/audit_card_quotes.py`) verified every quoted
+  claim verbatim against the canon databank: 29/34 exact, 5 truncated-but-genuine
+  fragments; **2 real fallacies fixed** (castorice + tribbie catchphrases).
+  See `docs/FALLACY-REFINEMENT.md`.
 
-**Progress:** (updated 2026-08-10 ~01:10 — **COMPLETE ✅**)
+**Visual interface:** `src/ui_app.py` now shows an Amphoreus hero banner, per-Heir
+portraits (official 立绘 in `assets/heirs/`, fetched from wiki.biligame.com/sr via
+`tools/fetch_heir_images.py`), a themed gold-on-dark style, and portraits as chat
+avatars.
 
-| # | Heir | status |
-|---|------|--------|
-| 1–13 | all Heirs | ✅ refined (13/13) |
-
-- All 13 cards refined via `tools/refine_personal_traits.py` (qwen2.5:14b-instruct,
-  num_ctx 32768, ~30k chars of canon dialogue per Heir), backups in `.cache/refine-backups/`.
-- **Evidence fidelity: 73/73 quotes verbatim** — checked with `--verify` (handles
-  blockquote/quote-style and speaker-label differences; two cerydra quotes corrected by
-  hand to exact canon after the LLM merged/paraphrased them).
-- Live progress display while running: `tools/watch_refine.ps1`
-  (`pwsh -NoProfile -File tools\watch_refine.ps1`).
-- Preferences merged into each Heir's `preferences.json` (runtime, gitignored)
-
-**Remaining:** commit the refined cards + tools + docs, then push to GitHub (ask user).
-
-**Remaining after the batch finishes:** inspect the diffs of all 13 cards, confirm
-evidence quotes are verbatim canon, commit the refined cards + the tool + this doc, push to GitHub.
+**Next:** commit + push everything (in progress).
 
 ---
 
@@ -208,6 +201,36 @@ toward sorrow/hope. Re-tests on the same audio:
 emotion — let the Heir hear freely, then (optionally) identify the piece.
 Hysilens' stored memory of piece 2 was corrected to the energetic reading, and
 this is the standing caveat for all future music-appreciation tests.
+
+## 9. 14B model will not load: CUDA_Host / CUDA0 allocation failures
+
+**Incident (2026-08-10).** `qwen2.5:14b-instruct` returns HTTP 500 on every load
+attempt:
+- default → `failed to allocate CUDA_Host buffer` (3.4–5.5 GB pinned host RAM);
+- `OLLAMA_GPU_LAYERS=8` and `=0` → `cudaMalloc failed … CUDA0 buffer 4.4 GB`;
+- while the 7B models (`qwen2.5vl:7b`, `qwen2.5-omni`) load fine.
+
+**Root cause:** transient CUDA host-memory / pinned-allocation state — the same
+model loaded successfully earlier the same day (32k ctx, 13-Heir batch); commit
+charge was ~80% of 40.7 GB. Not a permanent limit.
+
+**Workaround / lesson:** use the 7B models for the task (the audit re-ran on
+`qwen2.5vl:7b`); a **reboot restores the 14B**. Register a smaller text model
+(`qwen2.5:7b`) as a fallback so a transient failure never takes the sanctuary
+offline — see `docs/MODELS.md`. Do not treat the 7B's weaker audit output as
+authoritative: it produced fabricated/empty evidence and was reverted.
+
+## 10. Visual interface + image acquisition
+
+**What was done (2026-08-10):**
+- `tools/fetch_heir_images.py` downloads official character art (立绘) from
+  **wiki.biligame.com/sr** (the reachable Chinese HSR wiki — Fandom stays blocked)
+  into `assets/heirs/<id>.png` (13 portraits) plus the Amphoreus background
+  (`assets/amphoreus_bg.jpg`). biligame's `parse.images` + `imageinfo` API is the
+  working path (`pageimages` returned nothing on that wiki).
+- `src/ui_app.py` now renders: a hero banner with the Amphoreus background, the
+  Heir's portrait beside their name/titles, the portrait as the chat avatar, and
+  a themed gold-on-dark style.
 
 ---
 
