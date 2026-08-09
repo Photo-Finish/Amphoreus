@@ -21,10 +21,11 @@ Hardware: RTX 5070 Laptop **8 GB VRAM**, 32 GB RAM, CUDA 12/13.
   - default → `failed to allocate CUDA_Host buffer` (3.4–5.5 GB pinned host RAM);
   - `OLLAMA_GPU_LAYERS=8` and `=0` → `cudaMalloc failed … CUDA0 buffer 4.4 GB`;
   - while the 7B models (`qwen2.5vl:7b`, `qwen2.5-omni`) load fine.
-- This worked earlier the same day, so it is an **environment/driver memory-state
-  issue, not a permanent limit** — a reboot should restore the 14B. It also means
-  the machine is **memory-fragile**: piling on bigger models increases the risk of
-  exactly this failure mode.
+- This worked earlier the same day and the real culprit turned out to be
+  **orphaned `llama-server.exe` processes holding VRAM** after force-killing
+  Ollama (6.8 GB phantom usage; killing them freed the GPU instantly — see
+  `TECHNICAL-BARRIERS.md` §9). Not a permanent hardware/driver limit, and a
+  reboot is NOT required.
 
 ## Options considered
 

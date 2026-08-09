@@ -258,6 +258,32 @@ canon-derived aesthetic and musical tastes (in their `preferences.json`:
   JSON parser with "invalid character '´'"). Verified working for both the
   vision projector (qwen2.5vl) and the audio projector (qwen2.5-omni).
 
+### 3.6 The dialogue-resemblance standard (`tools/test_dialogue_resemblance.py`)
+
+A reproducible workflow that measures how closely an Heir model resembles the
+character, using the **known story dialogues** as the ground truth:
+
+1. **Context** — take real scenes from `personal-memories.md`; the model is
+   given the in-story context and the lines spoken just before the Heir's line
+   (exactly what "the dialogue suggested" the Heir respond to).
+2. **Expected** — the Heir's ORIGINAL canon line.
+3. **Actual** — the Heir model's in-character reply (base `prompts.system_prompt`
+   only, so the expected line is never leaked).
+4. **Judge** — a strict LLM judge scores **meaning / emotion / character voice**
+   (0–100 each) and an overall; **pass = overall ≥ 85** (an excellent paraphrase
+   keeping meaning and voice is 85–95). A secondary objective signal (embedding
+   cosine, all-MiniLM) is reported alongside.
+
+```powershell
+python tools/test_dialogue_resemblance.py                # all 13 Heirs, 8 cases each
+python tools/test_dialogue_resemblance.py --limit 5 --threshold 85
+python tools/test_dialogue_resemblance.py --model qwen2.5:14b-instruct
+```
+
+Reports go to `docs/RESEMBLANCE-REPORT.md`. The ≥85 bar is the standing quality
+gate for the Heir models: a model whose replies reproduce the canon's meaning,
+emotion and voice at ≥85 is considered in-character.
+
 ---
 
 ## 4. Data flow (one chat turn vs. one world day)

@@ -13,9 +13,12 @@ $env:OLLAMA_MODELS = 'D:\Workspace\Amphoreus\models\ollama'
 $env:OLLAMA_HOST = '127.0.0.1:11434'
 
 # 1. Stop any stale ollama processes (tray app may serve the wrong models dir).
-Get-Process -Name '*ollama*' -ErrorAction SilentlyContinue |
+#    Also kill orphaned llama-server children: when the server is force-killed,
+#    its model-loading child keeps the loaded model's VRAM forever, which makes
+#    bigger models fail with "cudaMalloc failed / CUDA_Host buffer" (2026-08-10).
+Get-Process -Name '*ollama*','llama-server' -ErrorAction SilentlyContinue |
     Stop-Process -Force -ErrorAction SilentlyContinue
-Start-Sleep -Seconds 2
+Start-Sleep -Seconds 3
 
 # 2. Start a detached server (survives terminal close).
 Start-Process -FilePath $ollamaExe -ArgumentList 'serve' -WindowStyle Hidden

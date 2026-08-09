@@ -202,23 +202,44 @@ emotion — let the Heir hear freely, then (optionally) identify the piece.
 Hysilens' stored memory of piece 2 was corrected to the energetic reading, and
 this is the standing caveat for all future music-appreciation tests.
 
-## 9. 14B model will not load: CUDA_Host / CUDA0 allocation failures
+## 9. 14B model would not load: orphaned llama-server holding VRAM
 
-**Incident (2026-08-10).** `qwen2.5:14b-instruct` returns HTTP 500 on every load
-attempt:
-- default → `failed to allocate CUDA_Host buffer` (3.4–5.5 GB pinned host RAM);
-- `OLLAMA_GPU_LAYERS=8` and `=0` → `cudaMalloc failed … CUDA0 buffer 4.4 GB`;
-- while the 7B models (`qwen2.5vl:7b`, `qwen2.5-omni`) load fine.
+**Incident (2026-08-10).** `qwen2.5:14b-instruct` returned HTTP 500 on every load
+attempt: `failed to allocate CUDA_Host buffer` (3.4–5.5 GB pinned host RAM), and
+after restarts `cudaMalloc failed … CUDA0 buffer` (4.4–5.1 GB), while the 7B
+models loaded fine. `nvidia-smi` showed **6.8 GB of VRAM "used"** with no
+obvious owner.
 
-**Root cause:** transient CUDA host-memory / pinned-allocation state — the same
-model loaded successfully earlier the same day (32k ctx, 13-Heir batch); commit
-charge was ~80% of 40.7 GB. Not a permanent limit.
+**Root cause:** **orphaned `llama-server.exe` children.** When the Ollama server
+is force-killed (`Stop-Process -Force`), its model-loading child keeps the loaded
+model's VRAM forever. Every restart spawned another orphan until the GPU had
+~1 GB free — so the 14B's multi-GB allocation failed. Not a driver/reboot issue.
 
-**Workaround / lesson:** use the 7B models for the task (the audit re-ran on
-`qwen2.5vl:7b`); a **reboot restores the 14B**. Register a smaller text model
-(`qwen2.5:7b`) as a fallback so a transient failure never takes the sanctuary
-offline — see `docs/MODELS.md`. Do not treat the 7B's weaker audit output as
-authoritative: it produced fabricated/empty evidence and was reverted.
+**Fix:** kill the orphans → VRAM dropped 6835→258 MiB → the 14B loaded in ~7 s:
+```powershell
+Get-Process -Name 'llama-server' -ErrorAction SilentlyContinue | Stop-Process -Force
+```
+`tools/start_ollama.ps1` now kills `llama-server` alongside `ollama`.
+
+**Lesson:** after any force-kill of Ollama, also kill `llama-server`; check
+`nvidia-smi` for phantom VRAM before blaming the model or the driver.
+
+**Deeper follow-up (same day).** The orphans also exhaust **system commit**:
+each resident `llama-server` held ~8 GB of commit (charge reached 39.7/40.7 GB,
+i.e. 0.7 GB free → even PowerShell threw `OutOfMemoryException`, and pinned
+`CUDA_Host` allocations of 3–4 GB failed despite 11 GB free RAM). Killing all
+`ollama` + `llama-server` freed commit to ~8.4 GB and VRAM to ~250 MiB.
+
+**Definitive recovery recipe** (works when the 14B refuses to load):
+1. `Get-Process -Name '*ollama*','llama-server' | Stop-Process -Force`; wait ~5 s.
+2. Verify `nvidia-smi` shows ≤ ~250 MiB and commit free ≥ ~8 GB
+   (`(Get-CimInstance Win32_OperatingSystem).FreeVirtualMemory`).
+3. Start the server and load the **14B first**, before any other model.
+4. If `CUDA_Host buffer` still fails with GPU+commit free → the **CUDA pinned
+   (page-locked) pool** is exhausted by today's many load/unload cycles — a
+   driver-state issue that only a **reboot** resets (the same model loaded fine
+   that morning). Note the 14B's weights (8.4 GB) exceed the 8.15 GB VRAM, so it
+   always needs partial host offload → a few GB of free commit are mandatory.
 
 ## 10. Visual interface + image acquisition
 

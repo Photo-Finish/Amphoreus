@@ -184,7 +184,7 @@ main_tab, chronicle_tab = st.tabs(["💬 Visit an Heir", "📖 A Chronicle of Am
 
 with chronicle_tab:
     if BG_IMAGE.exists():
-        st.image(str(BG_IMAGE), use_container_width=True)
+        st.image(str(BG_IMAGE), width="stretch")
     st.title("📖 A Chronicle of Amphoreus")
     st.caption("The Heirs' days — written by their actions, not by us.")
     try:
@@ -198,11 +198,11 @@ with chronicle_tab:
 with main_tab:
     # Main Chat Area — hero banner with the Heir's portrait
     if BG_IMAGE.exists():
-        st.image(str(BG_IMAGE), use_container_width=True)
+        st.image(str(BG_IMAGE), width="stretch")
     hero_l, hero_r = st.columns([1, 3], gap="large")
     with hero_l:
         if _selected_portrait:
-            st.image(str(_selected_portrait), use_container_width=True)
+            st.image(str(_selected_portrait), width="stretch")
         else:
             st.markdown("### 🔥")
     with hero_r:
