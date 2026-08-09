@@ -158,5 +158,17 @@
       "k_documents": 5,
       "similarity_threshold": 0.7
     }
+  },
+  "refinement": {
+    "evidence": [
+      "> **Cerydra:** Cease the pageantry. I pray not to the vanquished.",
+      "> **Cerydra:** Deliverer, please wait...",
+      "> **Cerydra:** I still have important matters to discuss with the two of you.",
+      "> **Cerydra:** Hah, after I glimpsed the secrets of this world... no, the secrets beyond the sky, the divine authority of Amphoreus no longer held any significance.",
+      "> **Cerydra:** The guests' patience is running thin. I plan to remove the fantasia and head into the banquet."
+    ],
+    "date": "2026-08-09",
+    "model": "qwen2.5:14b-instruct",
+    "method": "LLM refined from personal-memories.md (canon dialogue); evidence quotes verbatim"
   }
 }
