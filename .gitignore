@@ -19,6 +19,9 @@ world_runtime/
 # RAG vector store — regenerable with: python build_kb.py --embedding local
 .chroma_db/
 
+# Fandom verification cache (regenerable: tools/verify_dialogues_against_fandom.py)
+.cache/
+
 # Models — far too large for GitHub (20 GB; GitHub rejects files >100 MB and
 # free LFS quota is 1 GB). They stay local and are re-downloadable — exact
 # mirror sources & commands in docs/DOWNLOADS.md.
