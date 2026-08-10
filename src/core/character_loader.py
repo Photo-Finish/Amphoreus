@@ -80,6 +80,11 @@ class CharacterLoader:
             system_prompt += f"- Tone: {speech.get('tone', 'neutral')}\n"
             if speech.get("catchphrases"):
                 system_prompt += f"- Occasional phrases: {', '.join(speech['catchphrases'])}\n"
+            # The measured voice guide (tools/measure_speech.py) — plain, factual,
+            # anti-theatrical guidance derived from the Heir's own canon lines.
+            voice_guide = (speech.get("style_measured") or {}).get("voice_guide")
+            if voice_guide:
+                system_prompt += f"- {voice_guide}\n"
 
         # Append how the Heir perceives the world (hearing / eyesight)
         senses = card.get("senses", {})
