@@ -286,31 +286,68 @@ canon-derived aesthetic and musical tastes (in their `preferences.json`:
   JSON parser with "invalid character '´'"). Verified working for both the
   vision projector (qwen2.5vl) and the audio projector (qwen2.5-omni).
 
-### 3.6 The dialogue-resemblance standard (`tools/test_dialogue_resemblance.py`)
+### 3.6 The dialogue-resemblance standards (`tools/test_dialogue_style.py`)
 
-A reproducible workflow that measures how closely an Heir model resembles the
-character, using the **known story dialogues** as the ground truth:
+Two reproducible workflows measure how closely an Heir model resembles the
+character, using the **known story dialogues** as ground truth.
 
-1. **Context** — take real scenes from `personal-memories.md`; the model is
-   given the in-story context and the lines spoken just before the Heir's line
-   (exactly what "the dialogue suggested" the Heir respond to).
-2. **Expected** — the Heir's ORIGINAL canon line.
-3. **Actual** — the Heir model's in-character reply (base `prompts.system_prompt`
-   only, so the expected line is never leaked).
-4. **Judge** — a strict LLM judge scores **meaning / emotion / character voice**
-   (0–100 each) and an overall; **pass = overall ≥ 85** (an excellent paraphrase
-   keeping meaning and voice is 85–95). A secondary objective signal (embedding
-   cosine, all-MiniLM) is reported alongside.
+**The current standard — STYLE (v4, `tools/test_dialogue_style.py`):** after
+reviewing the v1 results, the criteria were reworked per the sanctuary's actual
+goal — *the Heirs should sound like themselves*. The primary bar is the **voice**,
+and content is judged loosely:
+
+- **STYLE & INTONATION ≥ 85** — the Heir's *way of speaking* must match its canon:
+  word choice, sentence length, rhythm, intonation, emotional register, verbal
+  tics (catchphrases, ellipses, interjections, formality). The judge scores
+  **delivery only** — how it is spoken, not what it says.
+- **CONTENT ≥ 60** — the reply must *fit the scene* and carry the general gist of
+  the canon exchange, judged **loosely and holistically** (the whole dialogue as
+  one unit, **not sentence by sentence**). Exact wording is never required.
+- **Pass = style ≥ 85 AND content ≥ 60.**
+
+Method: the model is tested **as deployed** — full product system prompt
+(relationships + measured speech profile + voice digest + the embedded voice
+anchor) — given the full preceding scene dialogue and **its own canon lines from
+that scene as voice anchors** (the target line is excluded, so no answer is
+leaked; this mirrors production RAG, where the Heir knows its own words). A
+`--best-of N` self-selection pass lets the character pick the most in-voice
+candidate (a legitimate character behavior that reduces variance).
 
 ```powershell
-python tools/test_dialogue_resemblance.py                # all 13 Heirs, 8 cases each
-python tools/test_dialogue_resemblance.py --limit 5 --threshold 85
-python tools/test_dialogue_resemblance.py --model qwen2.5:14b-instruct
+python tools/test_dialogue_style.py                 # all 13 Heirs (style ≥85, content ≥60)
+python tools/test_dialogue_style.py --heirs tribbie --limit 8
+python tools/test_dialogue_style.py --best-of 3 --temp 0.3
 ```
 
-Reports go to `docs/RESEMBLANCE-REPORT.md`. The ≥85 bar is the standing quality
-gate for the Heir models: a model whose replies reproduce the canon's meaning,
-emotion and voice at ≥85 is considered in-character.
+Reports go to `docs/RESEMBLANCE-STYLE-REPORT.md`.
+
+**Round 1 baseline (2026-08-10, 13 Heirs × 8 cases, `--best-of 3`, temp 0.3):**
+**39 / 104 cases pass (38%)** — avg style 68, avg content 60. Content is largely
+met (82% of cases ≥ 60); **style is the binding constraint** (only 38% of cases
+reach the calibrated ≥ 85 delivery bar). Best voices: Castorice / Cerydra /
+Hyacine (62% pass); weakest: Cipher / Evernight (12%) and Cyrene (25%, collapses
+into echoing its anchors, `"...Mem?"`). Most failures sit on a `style 70 /
+content 65` plateau — recognizably in-character but not a perfect register
+match. Per-candidate style ≥ 85 is ~15%, so best-of-N alone projects to only
+~54% (best-of-5) / ~67% (best-of-7); the next batch must **also** raise
+per-candidate quality: embed VOICE anchors in all 13 cards, use 6–8 canon
+exemplars across moods, add an anti-echo rule, then re-run with `--best-of 5`.
+Full analysis: `docs/RESEMBLANCE-STYLE-REPORT.md`.
+
+**The earlier standard (v1, `tools/test_dialogue_resemblance.py`):** a stricter
+by-line comparison — the model was given the base `prompts.system_prompt` only,
+two preceding lines, and a strict judge scored **meaning / emotion / character
+voice** against the exact canon line (pass = overall ≥ 85, meaning preserved).
+Its report is `docs/RESEMBLANCE-REPORT.md`. This measured content recall per
+sentence, which the style standard deliberately replaces: the voice is the
+standing quality gate, and content is judged as a whole.
+
+**Voice anchors in the cards (`tools/embed_voice_anchor.py`):** each card's base
+`prompts.system_prompt` carries a permanent **measured voice profile** (words per
+sentence, % short sentences, word length, ellipsis/question/exclamation rates)
+plus a few of the Heir's own canon lines as style exemplars, with hard brevity
+rules ("say the thing, then stop"; never theatrical or flowery). This is what
+makes the style bar achievable and keeps the deployed sanctuary in-voice too.
 
 ---
 

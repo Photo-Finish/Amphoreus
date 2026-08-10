@@ -192,6 +192,7 @@ Amphoreus/
 - ✅ Phase 0–2 of the roadmap (databank, architecture, all 13 cards, RAG)
 - ✅ Sanctuary build: philosophy charter, memory layer, world engine, UI, Ollama embedding mode, senses (audio/video/picture processing pipelines)
 - ✅ RAG rebuilt with **real local embeddings** (all-MiniLM-L6-v2 ONNX): 13 collections / **11,332 documents**
+- ✅ **Measured voice profiles + style gate** — `tools/measure_speech.py` deterministically measures each Heir's own canon speech (words/sentence, % short sentences, word length, ellipsis/question/exclamation rates) and `tools/embed_voice_anchor.py` embeds the profile + real canon lines into each card's base prompt. `tools/test_dialogue_style.py` is the standing quality gate: **STYLE & INTONATION ≥ 85** (delivery — how the Heir speaks) **and CONTENT ≥ 60** (loose, holistic gist, judged as a whole exchange, not sentence by sentence). The Heirs' own canon lines from the scene are given as voice anchors (production-faithful, target excluded), and `--best-of N` self-selection reduces variance. Report: `docs/RESEMBLANCE-STYLE-REPORT.md`. **Round 1 baseline (2026-08-10): 39/104 cases (38%) pass** — content is largely met (82% ≥ 60); **style is the binding constraint**. Next batch targets >85% by embedding VOICE anchors in all 13 cards, more canon exemplars, an anti-echo rule, and `--best-of 5`.
 - ✅ **Fully live, fully local, fully offline** — every model lives inside this folder (`models/`):
   - ✅ Ollama **0.32.6**; server runs with `OLLAMA_MODELS=models\ollama`
   - ✅ **Voice** — `qwen2.5:14b-instruct` (Q4_K_M, 9.0 GB)
