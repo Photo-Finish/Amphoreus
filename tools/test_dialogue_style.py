@@ -144,6 +144,38 @@ def _trim_to_short(text: str, max_words: int = 20) -> str:
     return t
 
 
+def normalize_line(text: str) -> str:
+    """Normalize a line for exact/partial-quote comparison: strip quotes,
+    name prefixes, stage directions and punctuation; lowercase; collapse
+    whitespace."""
+    t = text or ""
+    t = re.sub(r"^\s*\*\*[^*]+\*\*\s*:?\s*", "", t)  # **Name:** prefix
+    t = re.sub(r"^\s*[*>\"'`\[\]]+\s*", "", t)          # leading markers/quotes
+    t = re.sub(r"\s*[*\"'`\[\]]+\s*$", "", t)           # trailing markers/quotes
+    t = re.sub(r"^[\(\[]?([^()\[\]]*)[\)\]]?\s*$", r"\1", t)  # parentheses
+    t = re.sub(r"[^0-9A-Za-z' ]+", " ", t)                 # drop punctuation
+    return re.sub(r"\s+", " ", t).strip().lower()
+
+
+def is_quote_cheat(reply: str, canon_set) -> bool:
+    """True if the reply repeats any EXISTING canon line (verbatim or as a
+    substantial partial quote). Cheat-free guarantee: such replies are rejected
+    and regenerated, so the model can never pass by quoting the canon."""
+    nr = normalize_line(reply)
+    if len(nr) < 3:
+        return False
+    for c in canon_set:
+        nc = normalize_line(c)
+        if len(nc) < 3:
+            continue
+        if nc == nr:
+            return True
+        # Partial quoting: one side substantially contained in the other.
+        if len(nc) >= 8 and len(nr) >= 8 and (nc in nr or nr in nc):
+            return True
+    return False
+
+
 def judge_style(llm, heir_name, ctx, canon_lines, actual, stats=None):
     """Score the model reply against the character's WHOLE voice.
 
@@ -362,6 +394,13 @@ def _run(args):
         )
 
         cases = build_cases(heir_id, args.limit)
+        # The full set of EXISTING canon lines for this Heir (from its own
+        # memories) — the model may never quote any of them verbatim.
+        try:
+            aliases = CHARACTER_ALIASES.get(heir_id, [heir_id])
+            canon_all = set(sample_canon_lines(folder, aliases, 300, max_words=60))
+        except Exception:
+            canon_all = set()
         passed, total = 0, 0
         styles, contents, fails = [], [], []
         for ctx, anchors, target in cases:
@@ -384,8 +423,15 @@ def _run(args):
                 # best-of-N: generate candidates, let the character pick the most
                 # in-voice one (legitimate — the character chooses how to speak;
                 # no answer leaked, anchors exclude the target).
+                # CHEAT-FREE: any candidate that repeats an EXISTING canon line
+                # (verbatim or partial) is rejected and regenerated — quoting the
+                # canon can never pass.
+                cheat_set = canon_all | set(anchors) | set(exemplars)
                 candidates = []
-                for _ in range(max(1, args.best_of)):
+                tries = 0
+                budget = max(1, args.best_of) * 4
+                while len(candidates) < max(1, args.best_of) and tries < budget:
+                    tries += 1
                     r = llm.chat(
                         [{"role": "system", "content": system},
                          {"role": "user", "content": user}],
@@ -396,9 +442,15 @@ def _run(args):
                     # spoken reply is judged.
                     r = strip_reasoning(r)
                     r = _trim_to_short(r)
-                    if r:
+                    if r and not is_quote_cheat(r, cheat_set):
                         candidates.append(r)
+                if not candidates:
+                    candidates = ["..."]  # honest low-score fallback
                 actual = _pick_most_in_voice(llm, system, name, candidates)
+                # Safety net: never judge a verbatim canon quote.
+                if is_quote_cheat(actual, cheat_set):
+                    non_cheat = [c for c in candidates if not is_quote_cheat(c, cheat_set)]
+                    actual = non_cheat[0] if non_cheat else "..."
             except Exception as e:
                 print(f"  {heir_id}: LLM error {e}")
                 continue

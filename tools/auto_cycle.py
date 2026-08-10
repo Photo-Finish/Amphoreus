@@ -243,6 +243,8 @@ def main():
 
     cycle = 0
     best_of_start = args.best_of
+    final_outcome = None
+    final_reason = ""
     while cycle < args.max_cycles:
         cycle += 1
         print(f"\n{'='*70}\nCYCLE {cycle} — targets: {len(targets)} Heirs  "
@@ -286,10 +288,11 @@ def main():
                 and args.content_bar >= args.escalate_content2
             ):
                 print("\n🎉 ALL TARGETS PASSED the gate.")
-                log.append(f"**RESULT: SUCCESS — all targets above the gate "
-                           f"(style ≥ {args.style_bar}, content ≥ {args.content_bar}).**")
-                LOG.write_text("\n".join(log), encoding="utf-8")
-                return 0
+                final_outcome = "SUCCESS"
+                final_reason = (f"all targets above the gate "
+                                f"(style ≥ {args.style_bar}, content ≥ {args.content_bar})")
+                log.append(f"**RESULT: SUCCESS — {final_reason}.**")
+                break
 
             # Overfitting guard: validate on a DIFFERENT (larger) sample.
             vlimit = args.validate_limit or (args.limit * 2)
@@ -316,10 +319,11 @@ def main():
                                else args.escalate_content2)
                 if new_content == args.content_bar and new_style == args.style_bar:
                     print("\n🎉 ALL TARGETS PASSED the gate (no higher bars configured).")
-                    log.append(f"**RESULT: SUCCESS — all targets above the gate "
-                               f"(style ≥ {args.style_bar}, content ≥ {args.content_bar}).**")
-                    LOG.write_text("\n".join(log), encoding="utf-8")
-                    return 0
+                    final_outcome = "SUCCESS"
+                    final_reason = (f"all targets above the gate "
+                                    f"(style ≥ {args.style_bar}, content ≥ {args.content_bar})")
+                    log.append(f"**RESULT: SUCCESS — {final_reason}.**")
+                    break
                 print(f"  ✅ Not overfit — escalating bars to style ≥ {new_style}, "
                       f"content ≥ {new_content}.")
                 args.style_bar, args.content_bar = new_style, new_content
@@ -331,10 +335,13 @@ def main():
                 continue
             print(f"\n  ⚠️ Overfitting risk: validation dropped to {vavg:.0f}% — keeping bars "
                   f"at style ≥ {args.style_bar}, content ≥ {args.content_bar} (no escalation).")
+            final_outcome = "SUCCESS"
+            final_reason = (f"all targets above the gate at style ≥ {args.style_bar}, "
+                            f"content ≥ {args.content_bar} — escalation refused "
+                            f"(overfit guard: validation {vavg:.0f}%)")
             log.append(f"**RESULT: SUCCESS at style ≥ {args.style_bar}, content ≥ {args.content_bar} "
                        f"— escalation skipped (overfit guard: validation {vavg:.0f}%).**")
-            LOG.write_text("\n".join(log), encoding="utf-8")
-            return 0
+            break
 
         if args.once:
             print("\n(--once: assessment only, no refinement.)")
@@ -376,10 +383,46 @@ def main():
             print(f"  best-of -> {args.best_of}")
         targets = failing
 
-    print(f"\n❌ Max cycles ({args.max_cycles}) reached; still failing: {targets}")
-    log.append(f"**RESULT: FAILED after {args.max_cycles} cycles; still failing: {targets}**")
+    if final_outcome is None:
+        final_outcome = "FAILED"
+        final_reason = f"max cycles ({args.max_cycles}) reached"
+        print(f"\n❌ Max cycles ({args.max_cycles}) reached; still failing: {targets}")
+        log.append(f"**RESULT: FAILED after {args.max_cycles} cycles; still failing: {targets}**")
+
+    # ---- FINAL CHEAT-FREE FULL RE-TEST: ALL Heirs, no matter the outcome ----
+    if not args.once:
+        print(f"\n{'='*70}\nFINAL CHEAT-FREE FULL RE-TEST — all {len(all_heirs)} Heirs "
+              f"(bars: style ≥ {args.style_bar}, content ≥ {args.content_bar})")
+        rc = run_test(all_heirs, args)
+        if rc == 0:
+            fres = parse_report()
+            if fres:
+                ftable = "| Heir | pass | rate | avg style | avg content | status |"
+                ftable += "\n|---|---:|---:|---:|---:|---|"
+                fpass_all = True
+                for cid in all_heirs:
+                    if cid not in fres:
+                        continue
+                    r = fres[cid]
+                    ok = r["pass_rate"] >= args.pass_target
+                    fpass_all = fpass_all and ok
+                    ftable += (f"\n| {r['name']} | {r['pass']}/{r['total']} | {r['pass_rate']}% | "
+                               f"{r['avg_style']} | {r['avg_content']} | "
+                               f"{'PASS' if ok else 'FAIL'} |")
+                log.append("")
+                log.append("## FINAL CHEAT-FREE FULL RE-TEST (all Heirs)")
+                log.append(ftable)
+                log.append("")
+                log.append(f"**FINAL OUTCOME: {final_outcome}** — {final_reason}")
+                print("\n" + ftable)
+                print(f"\nFinal outcome: {final_outcome} — {final_reason}")
+        else:
+            log.append("")
+            log.append(f"**FINAL CHEAT-FREE RE-TEST FAILED to run (exit {rc}); "
+                       f"outcome: {final_outcome} — {final_reason}**")
+
     LOG.write_text("\n".join(log), encoding="utf-8")
-    return 1
+    return 0 if final_outcome == "SUCCESS" else 1
 
 
 if __name__ == "__main__":
