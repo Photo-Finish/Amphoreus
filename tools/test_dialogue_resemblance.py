@@ -27,6 +27,7 @@ USAGE
 
 import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -47,6 +48,39 @@ SPEAKER_RE = re.compile(r"^\s*>?\s*\*\*(.+?):\*\*\s*(.*)$")
 PART_RE = re.compile(r"^### Part \d+ — `([^`]+)`")
 
 REPORT_PATH = ROOT / "docs" / "RESEMBLANCE-REPORT.md"
+_lock_handle = None
+
+
+def acquire_lock() -> bool:
+    """Single-instance guard via a Windows NAMED MUTEX (kernel object — atomic
+    across processes). The terminal harness sometimes double-spawns the
+    command; this guarantees only one baseline writes the report."""
+    global _lock_handle
+    try:
+        import ctypes
+        kernel32 = ctypes.windll.kernel32
+        kernel32.CreateMutexW.restype = ctypes.c_void_p
+        kernel32.CreateMutexW.argtypes = [ctypes.c_void_p, ctypes.c_bool, ctypes.c_wchar_p]
+        kernel32.CreateMutexW.use_last_error = True  # required for get_last_error()
+        _lock_handle = kernel32.CreateMutexW(None, False, "Global\\AmphoreusResemblanceBaseline")
+        if ctypes.get_last_error() == 183:  # ERROR_ALREADY_EXISTS
+            print("Another baseline is already running — exiting.")
+            return False
+        return True
+    except Exception as err:
+        print(f"lock guard unavailable ({err}) — continuing.")
+        return True
+
+
+def release_lock():
+    global _lock_handle
+    try:
+        if _lock_handle:
+            ctypes.windll.kernel32.ReleaseMutex(_lock_handle)
+            ctypes.windll.kernel32.CloseHandle(_lock_handle)
+            _lock_handle = None
+    except Exception:
+        pass
 
 JUDGE_SYSTEM = (
     "You are a strict dialogue-authenticity judge for an AI character sanctuary. "
@@ -150,6 +184,15 @@ def main():
     ap.add_argument("--max-tokens", type=int, default=120)
     args = ap.parse_args()
 
+    if not acquire_lock():
+        return 0
+    try:
+        return _run(args)
+    finally:
+        release_lock()
+
+
+def _run(args):
     heir_ids = [h.strip() for h in args.heirs.split(",") if h.strip()] or list(HEIR_FOLDERS)
 
     ef = None
