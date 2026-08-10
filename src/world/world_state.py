@@ -14,6 +14,9 @@ import threading
 from datetime import datetime
 from typing import Dict, List, Optional
 
+from .map_data import travel_days as _travel_days
+from .schedules import scheduled_place, home_of as _sched_home
+
 # --------------------------------------------------------------------- #
 # Light Calendar
 # --------------------------------------------------------------------- #
@@ -46,12 +49,14 @@ DAYS_PER_WEEK = 7
 PERIODS_PER_DAY = len(PERIODS)
 
 # Where each Heir makes their home in the sanctuary (from their cards).
+# NOTE: Hysilens is a knight commander serving Cerydra — she lives in Okhema,
+# not in the ruined Styxia where she was born.
 HOME_LOCATIONS: Dict[str, str] = {
     "tribbie": "Janusopolis",
     "cerydra": "Okhema",
     "evernight": "Okhema",
     "dan-heng-permansor-terrae": "Okhema",
-    "hysilens": "Styxia",
+    "hysilens": "Okhema",
     "hyacine": "Grove of Epiphany",
     "phainon": "Aedes Elysiae",
     "anaxa": "Grove of Epiphany",
@@ -159,6 +164,7 @@ class WorldState:
         self._lock = threading.Lock()
         self.clock = WorldClock()
         self.agent_location: Dict[str, str] = dict(HOME_LOCATIONS)
+        self.agent_travel: Dict[str, dict] = {}  # cid -> {"to": loc, "remaining_days": int, "from": loc}
         self.recent_events: List[str] = []
         self._load()
 
@@ -173,6 +179,7 @@ class WorldState:
                     **HOME_LOCATIONS,
                     **data.get("agent_location", {}),
                 }
+                self.agent_travel = data.get("agent_travel", {}) or {}
                 self.recent_events = data.get("recent_events", [])[-20:]
             except Exception:
                 pass
@@ -185,6 +192,7 @@ class WorldState:
                     {
                         "clock": self.clock.to_dict(),
                         "agent_location": self.agent_location,
+                        "agent_travel": self.agent_travel,
                         "recent_events": self.recent_events[-20:],
                     },
                     f,
@@ -203,9 +211,77 @@ class WorldState:
         if location in LOCATIONS:
             with self._lock:
                 self.agent_location[character_id] = location
+                self.agent_travel.pop(character_id, None)
+
+    # ------------------------------------------------------------------ #
+    # Travel — moving between cities takes commuting time (map_data).
+    # ------------------------------------------------------------------ #
+    def begin_travel(self, character_id: str, destination: str):
+        """Set a Heir on the road to `destination`. If the two places are the
+        same city (travel_days == 0), the Heir simply moves there."""
+        if destination not in LOCATIONS:
+            return
+        current = self.agent_location.get(character_id, "Okhema")
+        days = _travel_days(current, destination)
+        if days <= 0:
+            self.set_location(character_id, destination)
+            return
+        with self._lock:
+            self.agent_travel[character_id] = {
+                "to": destination,
+                "remaining_days": days,
+                "from": current,
+            }
+
+    def is_traveling(self, character_id: str) -> bool:
+        return character_id in self.agent_travel
+
+    def travel_info(self, character_id: str) -> Optional[dict]:
+        return self.agent_travel.get(character_id)
+
+    def advance_travel(self) -> List[str]:
+        """Advance all in-transit Heirs by one day. Returns arrival messages.
+        A Heir who arrives is placed at their destination."""
+        arrivals: List[str] = []
+        if not self.agent_travel:
+            return arrivals
+        with self._lock:
+            for cid, info in list(self.agent_travel.items()):
+                info["remaining_days"] -= 1
+                if info["remaining_days"] <= 0:
+                    dest = info["to"]
+                    self.agent_location[cid] = dest
+                    self.agent_travel.pop(cid, None)
+                    arrivals.append((cid, dest))
+        return arrivals
+
+    # ------------------------------------------------------------------ #
+    # Schedules — the Heirs' weekly routines (where they usually are).
+    # ------------------------------------------------------------------ #
+    def scheduled_place(self, character_id: str) -> str:
+        """Where the Heir's weekly routine places them right now."""
+        try:
+            return scheduled_place(
+                character_id, self.clock.day, self.clock.period
+            )
+        except Exception:
+            return self.agent_location.get(character_id, "Okhema")
+
+    def schedule_home(self, character_id: str) -> str:
+        try:
+            return _sched_home(character_id)
+        except Exception:
+            return self.agent_location.get(character_id, "Okhema")
 
     def agents_at(self, location: str) -> List[str]:
-        return [cid for cid, loc in self.agent_location.items() if loc == location]
+        # Only Heirs physically present — those on the road are counted nowhere.
+        return [
+            cid for cid, loc in self.agent_location.items()
+            if loc == location and cid not in self.agent_travel
+        ]
+
+    def travelers(self) -> List[str]:
+        return list(self.agent_travel.keys())
 
     def add_event(self, text: str):
         with self._lock:

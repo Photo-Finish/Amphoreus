@@ -185,6 +185,9 @@ class AgentManager:
         # Enrich with the Heir's bond + memories of the visitor and the world
         system_prompt = self._inject_memory_context(character_id, system_prompt)
 
+        # Enrich with where the Heir is right now and what their routine is
+        system_prompt = self._inject_world_context(character_id, system_prompt)
+
         # Enrich with the Heir's personal preferences (aesthetics, tastes, ...)
         pref_block = self.preferences.to_prompt_block(character_id)
         if pref_block:
@@ -369,6 +372,52 @@ class AgentManager:
         if not context:
             return system_prompt
         return f"{system_prompt}\n\n{context}"
+
+    def _inject_world_context(self, character_id: str, system_prompt: str) -> str:
+        """Append where the Heir is right now, their routine, and who is nearby.
+
+        The little Amphoreus has real geography and daily routines: the Heir is
+        not floating in a void when the visitor arrives. The world clock, their
+        usual occupation at this hour, and any Heirs physically present are
+        injected so the conversation is anchored in the living world.
+        """
+        try:
+            from src.world.world_state import WorldState
+            from src.world.schedules import scheduled_entry
+
+            ws = WorldState()
+            loc = ws.location_name(character_id)
+            tinfo = ws.travel_info(character_id)
+
+            lines = ["\n\nWhere you are right now:"]
+            if tinfo:
+                lines.append(
+                    f"- You are on the road to {tinfo['to']} — "
+                    f"{tinfo['remaining_days']} day(s) of travel remain. "
+                    "You are not in any city at this moment."
+                )
+            else:
+                lines.append(f"- You are in {loc} — {ws.location_desc(loc)}.")
+                sched_loc, sched_act = scheduled_entry(
+                    character_id, ws.clock.day, ws.clock.period
+                )
+                lines.append(
+                    f"- It is {ws.clock.format_short()}. Your usual routine at this "
+                    f"hour: {sched_act} (in {sched_loc})."
+                )
+                try:
+                    names = [
+                        self.get_character_info(cid)["name"]
+                        for cid in ws.agents_at(loc)
+                        if cid != character_id
+                    ]
+                    if names:
+                        lines.append(f"- Also present here: {', '.join(names)}.")
+                except Exception:
+                    pass
+            return system_prompt + "\n".join(lines)
+        except Exception:
+            return system_prompt  # never let the world block break the chat
 
     def build_memory_context(self, character_id: str) -> str:
         """Build the 'bond + memories' block injected into the Heir's prompt."""

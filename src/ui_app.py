@@ -180,7 +180,11 @@ st.sidebar.caption("*Databank: Complete ✅*")
 st.sidebar.caption("*See PHILOSOPHY.md for the charter*")
 
 # Main Area
-main_tab, chronicle_tab = st.tabs(["💬 Visit an Heir", "📖 A Chronicle of Amphoreus"])
+main_tab, chronicle_tab, map_tab = st.tabs([
+    "💬 Visit an Heir",
+    "📖 A Chronicle of Amphoreus",
+    "🗺️ Map of Amphoreus",
+])
 
 with chronicle_tab:
     if BG_IMAGE.exists():
@@ -194,6 +198,103 @@ with chronicle_tab:
         st.markdown(ch.read_markdown(60))
     except Exception:
         st.info("The chronicle is not written yet — the world engine has not begun its days.\n\nStart it with: `python -m src.world.world_engine --interval 900`")
+
+with map_tab:
+    # 🗺️ The Map of Amphoreus — geography, commuting time, and daily routines.
+    try:
+        from src.world.world_state import WorldState
+        from src.world import map_data as _map
+        from src.world import schedules as _sched
+
+        _ws = WorldState()
+        st.title("🗺️ Map of Amphoreus")
+        st.caption(
+            "The Heirs are spread across a wide world. Each dot is an Heir at their "
+            "present place; crossed dots are on the road between cities. Travel is "
+            "measured in Light-Calendar periods (5 = one full day)."
+        )
+
+        _names = {c: manager.get_character_info(c)["name"] for c in characters}
+        _svg = _map.render_map_svg(
+            heir_locations=_ws.agent_location,
+            traveling=_ws.agent_travel,
+            heir_names=_names,
+            highlight=None,
+        )
+        st.markdown(_svg, unsafe_allow_html=True)
+
+        # Current clock + who's where / who's travelling
+        st.markdown(f"### ⏳ Now: {_ws.clock.format()}")
+        col_w, col_t = st.columns(2)
+        with col_w:
+            st.markdown("**Present**")
+            present_rows = []
+            for cid, loc in _ws.agent_location.items():
+                if cid in _ws.agent_travel:
+                    continue
+                present_rows.append(f"- {_names.get(cid, cid)} — {loc}")
+            st.markdown("\n".join(present_rows) if present_rows else "*Everyone is on the road.*")
+        with col_t:
+            st.markdown("**On the road**")
+            if _ws.agent_travel:
+                for cid, info in _ws.agent_travel.items():
+                    st.markdown(
+                        f"- {_names.get(cid, cid)} → {info['to']} "
+                        f"({info['remaining_days']} day(s) left)"
+                    )
+            else:
+                st.markdown("*No one is travelling right now.*")
+
+        # Travel-time matrix
+        st.markdown("### 🚶 Commuting time (in periods, 5 = a day)")
+        _locs = list(_map.LOCATION_POS.keys())
+        table = []
+        for a in _locs:
+            row = {"From": a}
+            for b in _locs:
+                row[b] = _map.travel_time(a, b)
+            table.append(row)
+        import pandas as pd
+        st.dataframe(
+            pd.DataFrame(table).set_index("From"),
+            use_container_width=True,
+            height=min(40 + 32 * len(_locs), 420),
+        )
+
+        # Individual weekly schedules
+        st.markdown("### 📅 Individual weekly routines")
+        st.caption(
+            "Each Heir keeps a routine of their own. Heirs who live and work together "
+            "(the Okhema council circle, the scholars of the Grove, the two souls of "
+            "Aedes Elysiae) cross paths often; the rest meet only when someone is "
+            "willing to spend days on the road."
+        )
+        sched_sel = st.selectbox(
+            "Whose week?",
+            characters,
+            format_func=lambda x: manager.get_character_info(x)["name"],
+            key="map_sched_sel",
+        )
+        sched_name = manager.get_character_info(sched_sel)["name"]
+        rows = _sched.week_overview(sched_sel)
+        acts = _sched.week_activity_overview(sched_sel)
+        st.markdown(f"**{sched_name}** — home in **{_sched.home_of(sched_sel)}**")
+        grid = []
+        for d, (row, act_row) in enumerate(zip(rows, acts), 1):
+            for p, (place, act) in enumerate(zip(row, act_row)):
+                grid.append({
+                    "Day": f"Day {d}",
+                    "Period": _sched.PERIOD_NAMES[p],
+                    "Place": place,
+                    "Occupation": act,
+                })
+        st.dataframe(
+            pd.DataFrame(grid),
+            use_container_width=True,
+            height=min(40 + 29 * 35, 520),
+        )
+    except Exception as e:
+        st.error(f"Could not render the map: {e}")
 
 with main_tab:
     # Main Chat Area — hero banner with the Heir's portrait

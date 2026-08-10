@@ -73,6 +73,16 @@ class WorldEngine:
             random.seed(seed)
 
     # ------------------------------------------------------------------ #
+    def _name_of(self, character_id: str) -> str:
+        try:
+            return self.agents[character_id].name
+        except Exception:
+            try:
+                return self.loader.load(character_id)["meta"]["name"]
+            except Exception:
+                return character_id
+
+    # ------------------------------------------------------------------ #
     # Life of one day
     # ------------------------------------------------------------------ #
     def run_day(self) -> List[str]:
@@ -82,6 +92,17 @@ class WorldEngine:
         clock = self.world.clock
         time_str = clock.format_short()
         lines: List[str] = []
+
+        # Travellers advance one day on the road; arrivals are logged.
+        for cid, dest in self.world.advance_travel():
+            name = self._name_of(cid)
+            arrived = f"{time_str} — {name} arrives in {dest} after days on the road."
+            lines.append(arrived)
+            self.chronicle.append({"time": time_str, "text": arrived})
+            self.world.add_event(arrived)
+            self.agents[cid].remember(
+                f"{time_str} — I arrived in {dest} after a long journey.", importance=2
+            )
 
         if clock.is_rest_time():
             night = (
@@ -93,21 +114,41 @@ class WorldEngine:
             self.world.save()
             return [night]
 
-        # Active hour — every Heir decides freely.
+        # Active hour — every Heir decides freely (unless they are on the road).
         order = list(self.agents.keys())
         random.shuffle(order)
         for cid in order:
             agent = self.agents[cid]
             try:
+                if self.world.is_traveling(cid):
+                    info = self.world.travel_info(cid)
+                    line = (
+                        f"{time_str} — {agent.name} is on the road to {info['to']}, "
+                        f"{info['remaining_days']} day(s) of travel remain."
+                    )
+                    lines.append(line)
+                    self.chronicle.append({"time": time_str, "text": line})
+                    continue
                 decision = agent.decide()
                 agent.act(decision)
-                loc = self.world.location_name(cid)
-                line = f"{time_str} — {agent.name} at {loc}: {decision['action']}"
+                if self.world.is_traveling(cid):
+                    info = self.world.travel_info(cid)
+                    line = (
+                        f"{time_str} — {agent.name} sets out for {info['to']} "
+                        f"({info['remaining_days']} day(s) on the road): {decision['action']}"
+                    )
+                    agent.remember(
+                        f"{time_str} — I set out for {info['to']}. {decision['action']}",
+                        importance=2,
+                    )
+                else:
+                    loc = self.world.location_name(cid)
+                    line = f"{time_str} — {agent.name} at {loc}: {decision['action']}"
+                    agent.remember(
+                        f"{time_str} — I was at {loc}. {decision['action']}", importance=1
+                    )
                 lines.append(line)
                 self.chronicle.append({"time": time_str, "text": line})
-                agent.remember(
-                    f"{time_str} — I was at {loc}. {decision['action']}", importance=1
-                )
             except Exception as e:
                 lines.append(f"{time_str} — {agent.name} (the world paused for a moment: {e})")
 

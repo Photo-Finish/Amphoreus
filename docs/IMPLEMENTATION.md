@@ -187,14 +187,42 @@ provide the will. No action is authored by the system.
   encounters run. CLI:
   `python -m src.world.world_engine [--interval 900] [--once] [--stop] [--status]`.
   A `stop.flag` provides a clean hard-stop.
+- **`map_data.py`** — the **geography of Amphoreus**: a weighted graph of the real
+  city-states (`databank/world/map.md`). Each route has a **travel time in periods**
+  (5 periods = one day). `travel_days(a, b)` returns whole days; `render_map_svg()`
+  draws the night map (gold on dark) for the UI. The Heirs are spread across the
+  world — Okhema, Janusopolis, the Grove, Kremnos, Styxia, Aidonia, Aedes Elysiae,
+  the Vortex, the Great Tomb — and the map is honest about how far apart they are.
+- **`schedules.py`** — the **individual weekly routines** of the thirteen Heirs
+  (`databank/world/schedules.md`). For each day of the week and each of the five
+  periods, a Heir has a place and an occupation. These are *defaults*, not chains:
+  a Heir may always deviate, but the road is real and the deviation is paid in
+  commuting time. Groups that live or work together (the Okhema council circle,
+  the Grove scholars, the two souls of Aedes Elysiae) cross paths daily; the rest
+  — Tribbie, Mydei, Castorice — live far away, and meetings happen only when
+  someone spends days travelling.
+- **Commuting time in the engine** — `WorldState` now tracks `agent_travel`
+  (`{cid: {"to", "remaining_days", "from"}}`). A Heir who decides to travel to a
+  far city sets out on the road and is **physically absent** for the whole journey:
+  they appear in no city, meet no one, and the chronicle logs their departure,
+  their days on the road, and their arrival. `agents_at()` excludes travellers, so
+  encounters only ever happen between Heirs who are truly co-located.
 
 ### 3.4 UI (`src/ui_app.py`)
 
-Two tabs: **💬 Visit an Heir** and **📖 A Chronicle of Amphoreus**. Sidebar shows
-LLM status, RAG status, the selected Heir's **bond with you** (level + visits +
-memories), and a "🗑️ Forget me" reset (erases the Heir's memory — a heavy act).
-Each chat marks the visitor as present (so the world yields the GPU), and a
-catch-up expander shows what the Heir has lived through lately.
+Three tabs: **💬 Visit an Heir**, **📖 A Chronicle of Amphoreus**, and
+**🗺️ Map of Amphoreus**. Sidebar shows LLM status, RAG status, the selected Heir's
+**bond with you** (level + visits + memories), and a "🗑️ Forget me" reset (erases
+the Heir's memory — a heavy act). Each chat marks the visitor as present (so the
+world yields the GPU), and a catch-up expander shows what the Heir has lived
+through lately.
+
+The **Map tab** renders the SVG night-map of Amphoreus with each Heir's current
+place (crossed dots = on the road), the current Light-Calendar time, a
+**commuting-time matrix** between all locations, and a **weekly-routine viewer**
+for any Heir (7 days × 5 periods, with places and occupations). The chat also
+injects the Heir's present whereabouts and routine into its prompt, so a
+conversation is anchored in the living world.
 
 ### 3.5 Senses — hearing and eyesight, for shared appreciation of art and music
 

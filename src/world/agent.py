@@ -14,6 +14,8 @@ from ..core.character_loader import CharacterLoader
 from ..core.llm_client import LLMClient
 from ..core.memory_store import MemoryStore
 from .world_state import WorldState, LOCATIONS
+from .schedules import scheduled_entry
+from .map_data import travel_days, travel_description
 
 
 class HeirAgent:
@@ -47,6 +49,23 @@ class HeirAgent:
             f"You can see {', '.join(here_names)} here." if here_names
             else "You are alone here for now."
         )
+
+        # The Heir's weekly routine at this hour — their usual occupation.
+        sched_loc, sched_act = scheduled_entry(
+            self.character_id, self.world.clock.day, self.world.clock.period
+        )
+        routine = f"\nYour usual routine at this hour: {sched_act}, in {sched_loc}."
+
+        # Travel status
+        tinfo = self.world.travel_info(self.character_id)
+        travel_note = ""
+        if tinfo:
+            travel_note = (
+                f"\nYou are on the road to {tinfo['to']} — "
+                f"{tinfo['remaining_days']} day(s) of travel remain. "
+                "You are not in any city right now."
+            )
+
         recent = self.world.recent_events_text(limit=4)
         recent_text = f"\nRecently in Amphoreus:\n{recent}" if recent else ""
         memories = self.memory.get_world_memories(self.character_id, limit=3)
@@ -57,10 +76,12 @@ class HeirAgent:
             )
         senses = self.world.sensory_text(loc)
         return (
-            f"It is {self.world.clock.format_short()}.\n"
-            f"You are at {loc} — {self.world.location_desc(loc)}.\n"
-            f"{senses}\n"
-            f"{others}"
+            f"It is {self.world.clock.format_short()}."
+            f"\nYou are at {loc} — {self.world.location_desc(loc)}."
+            f"{routine}"
+            f"{travel_note}"
+            f"\n{senses}"
+            f"\n{others}"
             f"{recent_text}"
             f"{mem_text}"
         )
@@ -72,7 +93,7 @@ class HeirAgent:
             return character_id
 
     # ------------------------------------------------------------------ #
-    # Decision — the Heir acts freely
+    # Decision — the Heir acts freely, within the honest geography of the world
     # ------------------------------------------------------------------ #
     def decide(self) -> Dict:
         """Ask the Heir what they do now, spontaneously. Returns {action, location?, person?}."""
@@ -88,7 +109,10 @@ class HeirAgent:
             "What do you do now? Decide freely and spontaneously. "
             "Reply with 1–2 short sentences describing your action — what you do, "
             "and (only if you choose to go somewhere or seek someone) where you go "
-            "or whom you seek. You may also choose to rest or stay quietly where you are."
+            "or whom you seek. You may also choose to rest or stay quietly where you are.\n\n"
+            "Remember the geography is real: if you decide to travel to a city that is "
+            "far away, the journey itself will take days, and during it you will see no one. "
+            "Staying with your usual routine, or with whoever is here, costs nothing."
         )
         reply = self.llm.chat(
             [{"role": "system", "content": system}, {"role": "user", "content": user}],
@@ -118,13 +142,21 @@ class HeirAgent:
     # Acting
     # ------------------------------------------------------------------ #
     def act(self, decision: Dict):
-        """Apply the Heir's decision to the world."""
+        """Apply the Heir's decision to the world, honouring commuting time."""
+        if self.world.is_traveling(self.character_id):
+            return  # already on the road; the engine advances the journey
+        current = self.world.location_name(self.character_id)
+
         if decision.get("location"):
-            self.world.set_location(self.character_id, decision["location"])
-        if decision.get("person"):
-            # Seek that person — go to their location
+            target = decision["location"]
+            if target != current:
+                self.world.begin_travel(self.character_id, target)
+        elif decision.get("person"):
+            # Seek that person — go to their location (commuting time applies)
             target_loc = self.world.location_name(decision["person"])
-            self.world.set_location(self.character_id, target_loc)
+            if target_loc != current:
+                self.world.begin_travel(self.character_id, target_loc)
+
         self.world.add_event(f"{self.name}: {decision['action']}")
 
     # ------------------------------------------------------------------ #
