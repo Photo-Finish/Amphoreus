@@ -232,6 +232,9 @@ def main():
     ap.add_argument("--style-bar", type=int, default=85)
     ap.add_argument("--content-bar", type=int, default=60)
     ap.add_argument("--model", default="qwen2.5:14b-instruct")
+    ap.add_argument("--judge-model", default=None,
+                    help="model for the judge (defaults to --model); e.g. a "
+                         "stronger model like deepseek-r1-distill:32b")
     ap.add_argument("--temp", type=float, default=0.2)
     ap.add_argument("--best-of", type=int, default=3,
                     help="generate N candidate replies and let the character pick "
@@ -249,6 +252,7 @@ def main():
 def _run(args):
     heir_ids = [h.strip() for h in args.heirs.split(",") if h.strip()] or list(HEIR_FOLDERS)
     llm = LLMClient(model=args.model)
+    judge_llm = LLMClient(model=args.judge_model or args.model)
     loader = CharacterLoader(str(ROOT / "src" / "characters"))
 
     print(f"STYLE standard — model {args.model}, pass = style ≥ {args.style_bar} "
@@ -369,7 +373,7 @@ def _run(args):
             # Judge against the whole voice (anchors + target as content reference).
             voice_ref = anchors + [target]
             try:
-                j = judge_style(llm, name, ctx, voice_ref, actual, stats=stats)
+                j = judge_style(judge_llm, name, ctx, voice_ref, actual, stats=stats)
                 st = int(j.get("style", 0))
                 ct = int(j.get("content", 0))
             except Exception:

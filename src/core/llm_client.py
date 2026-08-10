@@ -48,8 +48,16 @@ class LLMClient:
         messages: List[dict],
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
+        think: bool = False,
     ) -> str:
-        """Send messages; returns the assistant's text reply."""
+        """Send messages; returns the assistant's text reply.
+
+        `think=False` (default) suppresses chain-of-thought on reasoning models
+        (e.g. DeepSeek-R1-distill): the reply comes back as a plain answer
+        instead of a `<think>` block. Without it, a long reasoning chain can
+        consume the whole token budget and `content` comes back EMPTY — which
+        silently turned every Heir reply into "..." in the style test.
+        """
         if not self.configured:
             return (
                 "[The LLM backend is not configured. Set OPENAI_API_KEY / OPENAI_BASE_URL "
@@ -64,10 +72,24 @@ class LLMClient:
             messages=messages,
             temperature=self.temperature if temperature is None else temperature,
             max_tokens=self.max_tokens if max_tokens is None else max_tokens,
+            extra_body={"think": think},
         )
-        return response.choices[0].message.content
+        content = response.choices[0].message.content
+        # Safety net: a reasoning model may still have spent its whole budget
+        # thinking. Retry once with a much larger budget.
+        if not content and self.max_tokens is not None:
+            response = client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                temperature=self.temperature if temperature is None else temperature,
+                max_tokens=(max_tokens or self.max_tokens) * 4,
+                extra_body={"think": think},
+            )
+            content = response.choices[0].message.content
+        return content or ""
 
-    def stream(self, messages: List[dict], temperature: Optional[float] = None):
+    def stream(self, messages: List[dict], temperature: Optional[float] = None,
+               think: bool = False):
         """Yield text chunks as they arrive."""
         from openai import OpenAI
 
@@ -78,6 +100,7 @@ class LLMClient:
             temperature=self.temperature if temperature is None else temperature,
             max_tokens=self.max_tokens,
             stream=True,
+            extra_body={"think": think},
         )
         for chunk in response:
             if chunk.choices and chunk.choices[0].delta.content:
