@@ -172,9 +172,9 @@ def write_refinement_rules(llm, heir_id: str, info: dict, stats: dict, exemplars
 # --------------------------------------------------------------------------- #
 # The conductor
 # --------------------------------------------------------------------------- #
-def run_test(heir_ids, args) -> tuple:
-    cmd = [PYTHON, str(TEST), "--limit", str(args.limit),
-           "--best-of", str(args.best_of),
+def run_test(heir_ids, args, limit=None, best_of=None) -> int:
+    cmd = [PYTHON, str(TEST), "--limit", str(limit or args.limit),
+           "--best-of", str(best_of or args.best_of),
            "--temp", str(args.temp),
            "--model", args.model,
            "--style-bar", str(args.style_bar),
@@ -207,6 +207,20 @@ def main():
                     help="per-Heir pass-rate gate (percent of cases passing)")
     ap.add_argument("--max-cycles", type=int, default=4)
     ap.add_argument("--once", action="store_true", help="single assessment, no refinement")
+    # Staged escalation (raise the bars after the gate passes) with an
+    # overfitting guard: validate on a DIFFERENT (larger) case sample first.
+    ap.add_argument("--escalate", action="store_true",
+                    help="after the gate passes, validate on a different sample; if "
+                         "not overfit, raise the bars (style -> 90, content -> 65 -> 70)")
+    ap.add_argument("--escalate-style", type=int, default=90)
+    ap.add_argument("--escalate-content", type=int, default=65)
+    ap.add_argument("--escalate-content2", type=int, default=70)
+    ap.add_argument("--validate-limit", type=int, default=0,
+                    help="overfitting check: re-run with this larger limit before "
+                         "escalating (default: 2x --limit)")
+    ap.add_argument("--overfit-tolerance", type=int, default=10,
+                    help="allowed pass-rate drop (percentage points) on the validation "
+                         "sample before escalation is refused")
     args = ap.parse_args()
 
     from src.core.heir_folders import HEIR_FOLDERS
@@ -227,8 +241,12 @@ def main():
         "",
     ]
 
-    for cycle in range(1, args.max_cycles + 1):
-        print(f"\n{'='*70}\nCYCLE {cycle} — targets: {len(targets)} Heirs")
+    cycle = 0
+    best_of_start = args.best_of
+    while cycle < args.max_cycles:
+        cycle += 1
+        print(f"\n{'='*70}\nCYCLE {cycle} — targets: {len(targets)} Heirs  "
+              f"(bars: style ≥ {args.style_bar}, content ≥ {args.content_bar})")
         rc = run_test(targets, args)
         if rc != 0:
             print("  ! test run failed (exit", rc, ") — aborting.")
@@ -257,13 +275,64 @@ def main():
             line += f"\n| {r['name']} | {r['pass']}/{r['total']} | {r['pass_rate']}% | {r['avg_style']} | {r['avg_content']} | {status} |"
             print(f"    {r['name']:>28}: {r['pass']}/{r['total']} ({r['pass_rate']}%) avg style {r['avg_style']} — {status}")
 
-        log.append(f"## Cycle {cycle} (best-of {args.best_of})")
+        log.append(f"## Cycle {cycle} (best-of {args.best_of}; bars style≥{args.style_bar}, content≥{args.content_bar})")
         log.append(line)
         log.append("")
 
+        # ---- Gate passed ------------------------------------------------- #
         if not failing:
-            print("\n🎉 ALL TARGETS PASSED the gate.")
-            log.append("**RESULT: SUCCESS — all targets above the gate.**")
+            if not args.escalate or (
+                args.style_bar >= args.escalate_style
+                and args.content_bar >= args.escalate_content2
+            ):
+                print("\n🎉 ALL TARGETS PASSED the gate.")
+                log.append(f"**RESULT: SUCCESS — all targets above the gate "
+                           f"(style ≥ {args.style_bar}, content ≥ {args.content_bar}).**")
+                LOG.write_text("\n".join(log), encoding="utf-8")
+                return 0
+
+            # Overfitting guard: validate on a DIFFERENT (larger) sample.
+            vlimit = args.validate_limit or (args.limit * 2)
+            print(f"\n  Gate passed at style {args.style_bar} / content {args.content_bar}.")
+            print(f"  Overfitting check: re-running on a different sample (limit {vlimit})…")
+            rc = run_test(targets, args, limit=vlimit)
+            vavg = 0.0
+            if rc == 0:
+                vres = parse_report()
+                vrates = [r["pass_rate"] for cid, r in vres.items() if cid in targets]
+                vavg = (sum(vrates) / len(vrates)) if vrates else 0.0
+                print(f"  Validation pass rate (limit {vlimit}): {vavg:.0f}% "
+                      f"(gate {args.pass_target}%, tolerance {args.overfit_tolerance}pp)")
+                log.append(f"- Overfitting check (limit {vlimit}): validation {vavg:.0f}% "
+                           f"(gate {args.pass_target}%, tolerance {args.overfit_tolerance}pp)")
+            else:
+                print("  ! validation run failed — treated as overfit risk.")
+                log.append("- Overfitting check: validation run FAILED.")
+
+            if vavg >= args.pass_target - args.overfit_tolerance:
+                new_style = args.escalate_style
+                new_content = (args.escalate_content
+                               if args.content_bar < args.escalate_content
+                               else args.escalate_content2)
+                if new_content == args.content_bar and new_style == args.style_bar:
+                    print("\n🎉 ALL TARGETS PASSED the gate (no higher bars configured).")
+                    log.append(f"**RESULT: SUCCESS — all targets above the gate "
+                               f"(style ≥ {args.style_bar}, content ≥ {args.content_bar}).**")
+                    LOG.write_text("\n".join(log), encoding="utf-8")
+                    return 0
+                print(f"  ✅ Not overfit — escalating bars to style ≥ {new_style}, "
+                      f"content ≥ {new_content}.")
+                args.style_bar, args.content_bar = new_style, new_content
+                log.append(f"- **ESCALATED to style ≥ {new_style}, content ≥ {new_content}** "
+                           f"(validation ok)")
+                cycle = 0  # restart the cycle budget at the new bars
+                targets = list(all_heirs)
+                args.best_of = best_of_start
+                continue
+            print(f"\n  ⚠️ Overfitting risk: validation dropped to {vavg:.0f}% — keeping bars "
+                  f"at style ≥ {args.style_bar}, content ≥ {args.content_bar} (no escalation).")
+            log.append(f"**RESULT: SUCCESS at style ≥ {args.style_bar}, content ≥ {args.content_bar} "
+                       f"— escalation skipped (overfit guard: validation {vavg:.0f}%).**")
             LOG.write_text("\n".join(log), encoding="utf-8")
             return 0
 
