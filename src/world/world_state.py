@@ -166,6 +166,7 @@ class WorldState:
         self.agent_location: Dict[str, str] = dict(HOME_LOCATIONS)
         self.agent_travel: Dict[str, dict] = {}  # cid -> {"to": loc, "remaining_days": int, "from": loc}
         self.recent_events: List[str] = []
+        self.ambient: Dict = {}  # the Keeper's day: {"weather": {city:...}, "errands": {cid:...}, "news": ...}
         self._load()
 
     # ------------------------------------------------------------------ #
@@ -181,6 +182,7 @@ class WorldState:
                 }
                 self.agent_travel = data.get("agent_travel", {}) or {}
                 self.recent_events = data.get("recent_events", [])[-20:]
+                self.ambient = data.get("ambient", {}) or {}
             except Exception:
                 pass
 
@@ -194,6 +196,7 @@ class WorldState:
                         "agent_location": self.agent_location,
                         "agent_travel": self.agent_travel,
                         "recent_events": self.recent_events[-20:],
+                        "ambient": self.ambient,
                     },
                     f,
                     ensure_ascii=False,
@@ -292,6 +295,31 @@ class WorldState:
         return "\n".join(self.recent_events[-limit:])
 
     # ------------------------------------------------------------------ #
+    # Ambient — the Keeper's stage (weather, errands, news)
+    # ------------------------------------------------------------------ #
+    def set_ambient(self, ambient: dict):
+        with self._lock:
+            self.ambient = ambient or {}
+
+    def ambient_weather(self, location: str) -> str:
+        try:
+            return ((self.ambient.get("weather") or {}).get(location) or "").strip()
+        except Exception:
+            return ""
+
+    def ambient_errand(self, character_id: str) -> str:
+        try:
+            return ((self.ambient.get("errands") or {}).get(character_id) or "").strip()
+        except Exception:
+            return ""
+
+    def ambient_news(self) -> str:
+        try:
+            return (self.ambient.get("news") or "").strip()
+        except Exception:
+            return ""
+
+    # ------------------------------------------------------------------ #
     # Senses — what the Heirs see and hear in the world right now
     # ------------------------------------------------------------------ #
     def sensory_text(self, location: str) -> str:
@@ -316,6 +344,11 @@ class WorldState:
             "Creation": f"{month} is a season of memory and harvest — golden light, quiet storytelling, ripening fields.",
             "Calamity": f"{month} brings an edge to the wind — sharper moods, longer shadows, a hush before what comes.",
         }.get(season, "The weather is mild and unremarkable.")
+
+        # Today's sky, set by the Keeper (the Ambient World Director)
+        today = self.ambient_weather(location)
+        if today:
+            season_sense = f"Today, {today}."
 
         # Local character
         local = {

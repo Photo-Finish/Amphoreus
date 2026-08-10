@@ -139,6 +139,42 @@ def build_cases(heir_id, parts, limit):
     return [cases[int(k * step)] for k in range(limit)]
 
 
+def sample_canon_lines(folder: Path, aliases: list, limit: int = 6, max_words: int = 20) -> list:
+    """The Heir's OWN canon lines from personal-memories.md, sampled EVENLY
+    across the whole corpus so the exemplars span different scenes and moods
+    (not just the first few lines of the file). Used as voice exemplars in the
+    cards and in the style test — richer than `refinement.evidence`, which is
+    often tiny (e.g. Cyrene has only 3 short lines, which caused echo-collapse).
+
+    `max_words` keeps exemplars in the Heir's measured line-length band so a
+    very terse voice (e.g. Castorice) is not diluted by long narrative lines.
+    """
+    memory = folder / "personal-memories.md"
+    if not memory.exists():
+        return []
+    seen, all_lines = set(), []
+    for _src, _scene, lines in parse_parts(memory):
+        for ln in lines:
+            m = SPEAKER_RE.match(ln)
+            if not m:
+                continue
+            speaker, text = m.group(1).strip(), m.group(2).strip()
+            if not text or not any(a.lower() in speaker.lower() for a in aliases):
+                continue
+            t = text.strip()
+            if 1 <= len(t.split()) <= 40 and len(t) <= 160 and t not in seen:
+                seen.add(t)
+                all_lines.append(t)
+    # Prefer lines that match the Heir's measured line length (in-voice).
+    pool = [t for t in all_lines if len(t.split()) <= max_words]
+    if len(pool) < 3:
+        pool = all_lines  # very terse Heirs: keep whatever real lines exist
+    if len(pool) <= limit:
+        return pool
+    step = (len(pool) - 1) / (limit - 1) if limit > 1 else 0.0
+    return [pool[int(k * step)] for k in range(limit)]
+
+
 def extract_json(text: str) -> dict:
     t = text.strip()
     m = re.search(r"```(?:json)?\s*(.*?)```", t, re.S)
@@ -148,6 +184,17 @@ def extract_json(text: str) -> dict:
     if s == -1 or e <= s:
         raise ValueError("no JSON in judge reply")
     return json.loads(t[s:e + 1])
+
+
+def strip_reasoning(text: str) -> str:
+    """Remove chain-of-thought blocks from a reasoning-model reply
+    (DeepSeek-R1 style `<think>...</think>`), leaving only the spoken answer."""
+    if not text:
+        return text
+    t = re.sub(r"<think>.*?</think>", "", text, flags=re.S)
+    # Some servers emit thinking as a leading `...` paragraph.
+    t = re.sub(r"^\.\.\.\s*\n+", "", t)
+    return t.strip()
 
 
 def judge(llm, heir_name, ctx, expected, actual):

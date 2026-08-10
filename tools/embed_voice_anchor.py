@@ -22,6 +22,10 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
+from src.core.heir_folders import HEIR_FOLDERS  # noqa: E402
+from src.knowledge.kb_builder import CHARACTER_ALIASES  # noqa: E402
+from tools.test_dialogue_resemblance import sample_canon_lines  # noqa: E402
+
 CARDS = ROOT / "src" / "characters"
 START = "\n\nVOICE (measured from your own canon lines) — this is the most important part of how you speak:"
 
@@ -49,11 +53,13 @@ def build_voice_block(name: str, stats: dict, exemplars: list[str]) -> str:
         "- Say the thing, then stop. Never explain, summarise, or moralise.",
         "- Plain, direct, everyday words. NEVER theatrical, poetic, or flowery.",
         "- No name prefix, no narration, no stage directions, no asterisks.",
+        "- Never quote or repeat a canon line above verbatim — say something new "
+        "in the same voice.",
     ]
     if exemplars:
         lines.append("")
         lines.append("Your own canon lines — match this voice, this length, this rhythm:")
-        lines.extend(f'- "{e}"' for e in exemplars[:4])
+        lines.extend(f'- "{e}"' for e in exemplars[:6])
     return "\n".join(lines)
 
 
@@ -70,11 +76,17 @@ def apply(path: Path, dry_run: bool = False) -> bool:
         print(f"  ! {cid}: no measured stats")
         return False
 
-    # Canon exemplars from the card's refinement.evidence (real lines).
+    # Canon exemplars from the Heir's OWN memories — sampled evenly across the
+    # whole corpus (different scenes/moods), richer than refinement.evidence
+    # (which is tiny for several Heirs and caused echo-collapse).
     exemplars = []
     try:
-        ev = (card.get("refinement") or {}).get("evidence") or []
-        exemplars = [e for e in ev if 4 <= len(e) <= 160][:4]
+        aliases = CHARACTER_ALIASES.get(cid, [cid])
+        wpl = (stats.get("avg_words_per_line") or 14)
+        max_words = max(12, int(wpl * 1.6))
+        exemplars = sample_canon_lines(
+            ROOT / HEIR_FOLDERS.get(cid, cid), aliases, 6, max_words=max_words
+        )
     except Exception:
         pass
 

@@ -68,6 +68,11 @@ class HeirAgent:
 
         recent = self.world.recent_events_text(limit=4)
         recent_text = f"\nRecently in Amphoreus:\n{recent}" if recent else ""
+        # The day's errand and news, laid by the Keeper (Ambient Director).
+        errand = self.world.ambient_errand(self.character_id)
+        errand_text = f"\nA request reached you today: {errand}" if errand else ""
+        news = self.world.ambient_news()
+        news_text = f"\nNews from the wider world: {news}" if news else ""
         memories = self.memory.get_world_memories(self.character_id, limit=3)
         mem_text = ""
         if memories:
@@ -82,6 +87,8 @@ class HeirAgent:
             f"{travel_note}"
             f"\n{senses}"
             f"\n{others}"
+            f"{errand_text}"
+            f"{news_text}"
             f"{recent_text}"
             f"{mem_text}"
         )

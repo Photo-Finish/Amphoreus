@@ -225,6 +225,23 @@ with map_tab:
 
         # Current clock + who's where / who's travelling
         st.markdown(f"### ⏳ Now: {_ws.clock.format()}")
+
+        # Today's stage, set by the Keeper (the Ambient World Director)
+        _weather = (_ws.ambient.get("weather") or {})
+        _errands = (_ws.ambient.get("errands") or {})
+        _news = _ws.ambient.get("news", "")
+        if _weather or _errands or _news:
+            st.markdown("### 🌤️ Today's sky")
+            for _city, _sky in _weather.items():
+                if _sky:
+                    st.markdown(f"- **{_city}** — {_sky}")
+            if _news:
+                st.markdown(f"*News from the wider world: {_news}*")
+            with st.expander("📜 Errands laid at the Heirs' doors today"):
+                for _cid, _errand in _errands.items():
+                    if _errand:
+                        st.markdown(f"- **{_names.get(_cid, _cid)}** — {_errand}")
+
         col_w, col_t = st.columns(2)
         with col_w:
             st.markdown("**Present**")

@@ -48,7 +48,10 @@ from src.core.heir_folders import HEIR_FOLDERS  # noqa: E402
 from src.core.character_loader import CharacterLoader  # noqa: E402
 from src.core.llm_client import LLMClient  # noqa: E402
 from src.knowledge.kb_builder import CHARACTER_ALIASES  # noqa: E402
-from tools.test_dialogue_resemblance import parse_parts, acquire_lock, release_lock, SPEAKER_RE  # noqa: E402
+from tools.test_dialogue_resemblance import (  # noqa: E402
+    parse_parts, acquire_lock, release_lock, SPEAKER_RE, sample_canon_lines,
+    strip_reasoning,
+)
 
 REPORT = ROOT / "docs" / "RESEMBLANCE-STYLE-REPORT.md"
 
@@ -283,11 +286,14 @@ def _run(args):
         wpl = stats.get("avg_words_per_line", 14)
 
         # A few of the Heir's own canon lines as STYLE anchors (voice exemplars —
-        # they are the character's real rhythm, used to teach the voice).
+        # sampled evenly across the whole corpus so they span scenes/moods;
+        # richer than refinement.evidence, which is tiny for several Heirs).
         exemplars = []
         try:
-            ev = (card.get("refinement") or {}).get("evidence") or []
-            exemplars = [e for e in ev if 4 <= len(e) <= 160][:4]
+            aliases = CHARACTER_ALIASES.get(heir_id, [heir_id])
+            wpl = (stats.get("avg_words_per_line") or 14)
+            max_words = max(12, int(wpl * 1.6))
+            exemplars = sample_canon_lines(folder, aliases, 6, max_words=max_words)
         except Exception:
             pass
 
@@ -313,7 +319,9 @@ def _run(args):
             "you naturally do.\n"
             "4. No name prefix, no narration, no stage directions, no asterisks.\n"
             "5. Never become theatrical, poetic, or flowery. Plain, measured, in your "
-            "own register."
+            "own register.\n"
+            "6. Never quote or repeat a canon line above verbatim — say something new "
+            "in the same voice."
         )
 
         cases = build_cases(heir_id, args.limit)
@@ -328,7 +336,9 @@ def _run(args):
                 f"manner, same mood. When in doubt, make it SHORTER and plainer than "
                 f"you feel like writing — a fragment, a word, an exclamation is ideal. "
                 f"Do not write a full sentence if a few words capture it. Do not "
-                f"explain, do not moralise, do not philosophise.\n"
+                f"explain, do not moralise, do not philosophise. Never quote one of "
+                f"the canon lines above verbatim — say something new that still sounds "
+                f"like you.\n"
                 f"{anchor_block}\n\n"
                 f"Say the next thing you would say here, in your canon voice:"
             )
@@ -343,6 +353,10 @@ def _run(args):
                          {"role": "user", "content": user}],
                         temperature=args.temp, max_tokens=120,
                     ).strip()
+                    # Reasoning models (e.g. deepseek-r1-distill) emit a
+                    # <think> block before the line — strip it so only the
+                    # spoken reply is judged.
+                    r = strip_reasoning(r)
                     r = _trim_to_short(r)
                     if r:
                         candidates.append(r)

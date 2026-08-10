@@ -35,6 +35,7 @@ from src.core.llm_client import LLMClient
 from src.core.memory_store import MemoryStore
 from src.world.world_state import WorldState, PERIODS_PER_DAY
 from src.world.agent import HeirAgent
+from src.world.ambient import AmbientDirector
 from src.world.chronicle import Chronicle
 
 
@@ -47,6 +48,7 @@ class WorldEngine:
         llm_model: str = "qwen2.5:14b-instruct",
         llm_base_url: str | None = None,
         llm_api_key: str | None = None,
+        ambient_model: str | None = None,
         memory_root: str = ".",
         state_path: str = "world_runtime/world_state.json",
         chronicle_path: str = "world_runtime/chronicle",
@@ -60,6 +62,16 @@ class WorldEngine:
             api_key=llm_api_key,
             temperature=0.9,
             max_tokens=160,
+        )
+        # The Keeper of Amphoreus — a separate role on a SEPARATE model (by
+        # default the local DeepSeek-R1-Distill-32B, registered from the LM
+        # Studio files; override with --ambient-model). It sets weather,
+        # errands, and news each day. If the model cannot load (RAM), the
+        # director falls back to deterministic seasonal weather automatically.
+        self.director = AmbientDirector(
+            model=ambient_model or "deepseek-r1-distill:32b",
+            base_url=llm_base_url,
+            api_key=llm_api_key,
         )
         self.memory = MemoryStore(memory_root)
         self.world = WorldState(state_path)
@@ -82,6 +94,17 @@ class WorldEngine:
             except Exception:
                 return character_id
 
+    def _title_of(self, character_id: str) -> str:
+        """A short role/title for the Ambient Director's errand grounding."""
+        try:
+            card = self.loader.load(character_id)
+            titles = (card.get("identity") or {}).get("titles") or []
+            if titles:
+                return titles[0]
+            return (card.get("meta") or {}).get("name", character_id)
+        except Exception:
+            return character_id
+
     # ------------------------------------------------------------------ #
     # Life of one day
     # ------------------------------------------------------------------ #
@@ -103,6 +126,25 @@ class WorldEngine:
             self.agents[cid].remember(
                 f"{time_str} — I arrived in {dest} after a long journey.", importance=2
             )
+
+        # The Keeper sets the day's stage — weather, errands, news (cached by
+        # date, so this is one LLM call per in-game day at most).
+        heirs_info = {
+            cid: {
+                "name": self._name_of(cid),
+                "home": self.world.location_name(cid),
+                "title": self._title_of(cid),
+            }
+            for cid in self.agents
+        }
+        ambient = self.director.daily(self.world.clock, heirs_info)
+        self.world.set_ambient(ambient)
+        news = (ambient or {}).get("news", "")
+        if news:
+            board = f"{time_str} — The Keeper sets the day: {news}"
+            lines.append(board)
+            self.chronicle.append({"time": time_str, "text": board, "kind": "ambient"})
+            self.world.add_event(board)
 
         if clock.is_rest_time():
             night = (
@@ -267,12 +309,16 @@ def main():
     parser.add_argument("--status", action="store_true", help="show world status")
     parser.add_argument("--model", default="qwen2.5:14b-instruct")
     parser.add_argument("--base-url", default=None)
+    parser.add_argument("--ambient-model", default=None,
+                        help="separate model for the Ambient World Director "
+                             "(weather, errands, news); defaults to --model")
     parser.add_argument("--seed", type=int, default=None)
     args = parser.parse_args()
 
     engine = WorldEngine(
         llm_model=args.model,
         llm_base_url=args.base_url,
+        ambient_model=args.ambient_model,
         seed=args.seed,
     )
 

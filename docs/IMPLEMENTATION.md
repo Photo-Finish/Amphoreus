@@ -349,6 +349,29 @@ plus a few of the Heir's own canon lines as style exemplars, with hard brevity
 rules ("say the thing, then stop"; never theatrical or flowery). This is what
 makes the style bar achievable and keeps the deployed sanctuary in-voice too.
 
+### 3.7 The Ambient World Director (`src/world/ambient.py`)
+
+A **second intelligence** — the *Keeper of Amphoreus* — sets the stage the Heirs
+live on, without ever authoring what an Heir says or does. Each in-game day it
+provides:
+
+- **weather** — the day's sky over each city, season- and Titan-flavored;
+- **errands** — one short request the city lays at each Heir's door (the Heir
+  may accept, decline, or ignore it — free will stays with the Heir);
+- **news** — one short line of distant news reaching every city.
+
+Design: it is a **separate role** with its own system prompt, on a **separate
+model** by default — the locally-deployed **DeepSeek-R1-Distill-32B**
+(`deepseek-r1-distill:32b`), registered from the LM Studio GGUF files without
+duplicating them on disk (`tools/register_lmstudio_gguf.py` uses hard links);
+override with `--ambient-model`. One LLM call per in-game day, cached by date
+(`world_runtime/ambient_cache.json`), with a deterministic seasonal fallback so
+the world never stalls (and so a low-RAM moment degrades gracefully). The day's
+stage is stored in `WorldState` (persisted), injected into each Heir's
+perception (weather in `sensory_text`, plus their errand and the news in
+`_perceive`), and shown in the 🗺️ Map tab of the UI. Lore:
+`databank/world/ambient.md`.
+
 ---
 
 ## 4. Data flow (one chat turn vs. one world day)
