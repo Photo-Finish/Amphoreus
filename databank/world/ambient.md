@@ -23,6 +23,12 @@ the weather, the errands laid at their doors, and the distant news.
   (`deepseek-r1-distill:32b`, registered from the LM Studio GGUF files without
   duplicating them — see `tools/register_lmstudio_gguf.py`). Override with
   `python -m src.world.world_engine --ambient-model ...`.
+- **Canon-grounded**: the Keeper's prompt embeds `KEEPER_KNOWLEDGE` — the
+  city/patron table, the 12-month Light Calendar with its festival seeds, the
+  black tide, the Thief Star, and the creatures — so weather, errands, and news
+  feel authentically Amphorean. The deterministic fallback uses `MONTH_LORE`
+  (month-aware weather) and `CITY_ERRAND` (city-specific duties). Full grounding:
+  `databank/world/keeper-knowledge.md`.
 - **One LLM call per in-game day** — results are cached by date
   (`world_runtime/ambient_cache.json`), so the world never pays the cost more
   than once per day no matter how often the engine ticks.

@@ -35,38 +35,116 @@ from ..core.llm_client import LLMClient
 # --------------------------------------------------------------------------- #
 # Canon-flavored palettes (deterministic fallback + prompt grounding)
 # --------------------------------------------------------------------------- #
-SEASON_WEATHER: Dict[str, List[str]] = {
-    "Fate": [
-        "clear and cool, with doorways of light opening in the morning air",
-        "veiled and grey, as if Oronyx's curtain hangs over the sky",
-        "bright and still, with the weight of doors about to open",
-    ],
-    "Pillar": [
-        "warm and rooted; the earth smells of turned soil",
-        "soft rain over the fields, as if Georios' hands were at work",
-        "golden and heavy with harvest light",
-    ],
-    "Creation": [
-        "golden and quiet, full of memory and ripe grain",
-        "a mild breeze carrying the scent of Mnestia's looms",
-        "crisp and clear — the kind of day stories are told in",
-    ],
-    "Calamity": [
-        "sharp and restless; the wind has an edge to it",
-        "grey and heavy, with a hush before what comes",
-        "overcast, the light thinned by long shadows",
-    ],
+# Month of the Light Calendar -> (weather options, one canon festival/seed).
+MONTH_LORE: Dict[int, Dict[str, List[str]]] = {
+    1: {"weather": ["clear and cool, with doorways of light opening in the morning air",
+                   "bright and still, with the weight of doors about to open"],
+        "seed": ["the Month of Gate, when Janus cleaves past from future and people discard old keepsakes, open new doors, and swear vows of renewal",
+                 "the Month of Gate — pilgrims come to Janusopolis to pass through its thousand gates and leave their past behind"]},
+    2: {"weather": ["grey and balanced, daylight and night hanging even",
+                   "still and measured, as if the world waits on a scale"],
+        "seed": ["the Month of Balance, when Talanton's scale holds day and night even; contracts are sworn and judgments passed in the courts",
+                 "the Month of Balance — merchants and elders settle their accounts; the law is heavy in the air"]},
+    3: {"weather": ["veiled and grey, sunlight weak as Oronyx's curtain hangs over the sky",
+                   "dim and instinctive; the day barely outshines the night"],
+        "seed": ["the Month of Evernight, when Oronyx veils the sun and instinct rules over reason; fires burn high and stories grow long",
+                 "the Month of Evernight — the hours of darkness stretch; lamps are lit early and the streets grow secretive"]},
+    4: {"weather": ["warm and rooted; the earth smells of turned soil",
+                   "soft rain over the fields, as if Georios' hands were at work"],
+        "seed": ["the Month of Cultivation, the busiest of the year — sowing, plowing, and labor as tribute; the dromases are doubly vigorous",
+                 "the Month of Cultivation — every hand is in the fields and every dromas is on the road; Georios' beasts predict the season"]},
+    5: {"weather": ["golden and heavy with harvest light",
+                   "bright and festive, with the scent of brewing on the air"],
+        "seed": ["the Month of Joy, when Phagousa's chalice overflows — brewing, feasting, and fishermen returning full; the best month for celebrations",
+                 "the Month of Joy — barrels are tapped, the Festival of Phagousa rehearsals begin in Dawncloud, and the whole city smells of honey brew"]},
+    6: {"weather": ["blazing and bright; the Dawn Device shines its strongest",
+                   "clear and scorching, crops drinking the light"],
+        "seed": ["the Month of Everday, the hottest of the year — the Dawn Device burns brightest, crops swell, and days outrun the nights",
+                 "the Month of Everday — the sun stands high and the city drowsy; work is done early, revelry late"]},
+    7: {"weather": ["soft and free, with no obligations in the sky",
+                   "gentle and unhurried, the kind of day dreams are made in"],
+        "seed": ["the Month of Freedom, when Kephale loosens the world's hand — hobbies, wanderings, and idle joy; no one is bound to work",
+                 "the Month of Freedom — the streets are full of people doing nothing in particular, and that is the point"]},
+    8: {"weather": ["golden and heavy with ripeness",
+                   "crisp with the smell of harvest dust"],
+        "seed": ["the Month of Reaping, the second busiest of the year — the harvest comes in, granaries fill, and the fields are stripped to gold",
+                 "the Month of Reaping — the granaries of Okhema fill and the windmills of Aedes Elysiae turn day and night"]},
+    9: {"weather": ["golden and quiet, full of memory and ripe grain",
+                   "a mild breeze carrying the scent of Mnestia's looms"],
+        "seed": ["the Month of Weaving, of memory and storytelling — families gather, weaving festivals begin, and golden threads of memory are spun into tales",
+                 "the Month of Weaving — the storytellers take the squares; every loom and every tongue carries a memory"]},
+    10: {"weather": ["sharp and restless; the wind has an edge to it",
+                    "grey and heavy, with a hush before what comes"],
+         "seed": ["the Month of Strife, Nikador's season — war-readiness, sacrificial rites, and the surplus labor of the harvest turned to iron",
+                  "the Month of Strife — the forges of Castrum Kremnos ring day and night and the warriors drill in the cold"]},
+    11: {"weather": ["somber and quiet, the light thinned by long shadows",
+                    "still and grey, as if the world holds its breath"],
+         "seed": ["the Month of Mourning, when Thanatos' hand lies over the world — the dead are buried, the living comforted, and all activity slows",
+                  "the Month of Mourning — candles burn at every window; the priests of Aidonia are busiest now"]},
+    12: {"weather": ["unpredictable, turning from clear to storm on a whim",
+                    "whimsical and strange, as if the sky gambles with itself"],
+         "seed": ["the Month of Fortune, Zagreus' gamble — merchants, thieves, and gamblers grow fervent; if it is a Scarlet Month, a ghost day swells the chaos",
+                  "the Month of Fortune — fortunes rise and fall on a coin; the law struggles to keep up"]},
+}
+
+CITY_ERRAND: Dict[str, str] = {
+    "Okhema": "The baths of the Marmoreal Palace are full and the Council quarrels; Okhema looks to its guardians today.",
+    "Janusopolis": "Pilgrims stand at the gates of the Three Fates' temples, asking for a door to open.",
+    "Castrum Kremnos": "The forges never stop and the warriors drill in the cold; Kremnos wants its strong ones present.",
+    "Grove of Epiphany": "The sages dispute a text in the Grove, and the scrolls of Cerces await a steady hand.",
+    "Styxia": "The pale city is quiet; the sea sirens sing low, and the bell of Styxia waits to be answered.",
+    "Aidonia": "Candles burn at every window in the snow; Aidonia remembers its dead and needs its comforters.",
+    "Dawncloud": "The Demigod Council sits at Dawncloud; the elders' arguments grow loud enough to reach the streets.",
+    "Aedes Elysiae": "The wheat stands ready in Aedes Elysiae; the wharf waits for a boat that carries it out.",
+    "Vortex of Genesis": "The sacred nexus hums beneath the waves, restless and expectant.",
+    "Great Tomb": "The Great Tomb is very quiet today, as if it is listening.",
 }
 
 NEWS_PALETTE: List[str] = [
+    "The Thief Star burned crimson over Okhema last night — the elders read it as an ill omen.",
+    "A chimera work-squad in Okhema missed its quota, and its administrator was summoned before the citizens' assembly.",
+    "The dromases at the Okhema workshop are refusing the sandpits again, their eyes wary and confused.",
+    "An expedition squad sent beyond the Dawn Device's light returned with only four of seven.",
+    "The Festival of Phagousa rehearsals begin in Dawncloud; playwrights argue over this year's scripts.",
+    "Fisherfolk off Styxia say the sea sirens are singing more than usual.",
     "A caravan from the Grove brings word of strange lights over the ruins.",
-    "The markets of Okhema hum with talk of a festival to be held in Dawncloud.",
-    "Fisherfolk off Aidonia swear the tide turned silver for a single hour.",
-    "A door in Janusopolis refused to open for three travelers, then opened by itself.",
-    "The forges of Castrum Kremnos ring day and night — the city is re-arming, softly.",
     "Pilgrims whisper that the Great Tomb grew quiet, as if listening.",
     "The wind through Aedes Elysiae carried a song no one remembered singing.",
+    "Black-tide rumors spread from the frontier — the night beyond Okhema is creeping closer.",
+    "A dromas gave a fine calf at the Dromas Workshop; the handlers call it an omen of good soil.",
+    "The Seal Slammers Arena in Okhema is loud tonight; bets are being placed on a favorite.",
 ]
+
+KEEPER_KNOWLEDGE = (
+    "AMPHOREUS CANON — ground every choice in this:\n"
+    "• Cities: Okhema, the holy city under the slumbering Worldbearing Titan Kephale and "
+    "his Dawn Device — baths, chimeras, dromases; Janusopolis, the City of Thousand Gates "
+    "and Temple of the Three Fates (Oronyx, Janus, Talanton); Grove of Epiphany, home of "
+    "the sages of Cerces; Castrum Kremnos, the warrior fortress-city of Nikador; Styxia, "
+    "the Pearly Shores of Phagousa where sea sirens sing; Aidonia, the frozen snow city of "
+    "Thanatos; Dawncloud, the Demigod Council above Okhema; Aedes Elysiae, the wheat "
+    "village of Cyrene and Phainon; Vortex of Genesis, the primal sanctuary of the "
+    "Coreflames; the Great Tomb of the Nameless Titan.\n"
+    "• The black tide devoured most cities; only Okhema stands under the Dawn Device's "
+    "light. Travel beyond the safe cities is dangerous and the frontier shrinks.\n"
+    "• The Thief Star — Zagreus' erratic meteor — signals the day's end; when it glows "
+    "crimson it is an ill omen (failed plans, defeats).\n"
+    "• Creatures: dromases (great earth-eating beasts of Georios, Okhema's burden "
+    "beasts), chimeras (Okhema's small intelligent mascots who howl 'Awoo'), sea sirens "
+    "of Phagousa, Mountain Dwellers.\n"
+    "• The Light Calendar: 12 months, 4 seasons (Fate, Pillar, Creation, Calamity). "
+    "Month of Joy = festivities and brewing; Month of Strife = war season and "
+    "sacrificial rites; Month of Mourning = burial and quiet; Month of Fortune = "
+    "gambling and chaos (Scarlet/Golden months); Month of Weaving = memory and "
+    "storytelling; Month of Balance = contracts and judgments; Month of Evernight = "
+    "weak sunlight and instinct; Month of Cultivation = sowing, busiest month; Month "
+    "of Reaping = harvest; Month of Freedom = idleness; Month of Gate = renewal; "
+    "Month of Everday = hottest, Dawn Device brightest.\n"
+    "• Weather is Titan-flavored: light that opens like doors (Janus), veils of "
+    "evernight (Oronyx), golden harvest light (Mnestia), ash and long shadows "
+    "(Nikador, Thanatos), silver tides (Phagousa). Amphoreus has no rain as we know "
+    "it — it has light, veils, ash, silence, and silver tides.\n"
+)
 
 DIRECTOR_SYSTEM = (
     "You are the Keeper of Amphoreus — the calm intelligence that sets the stage "
@@ -74,18 +152,17 @@ DIRECTOR_SYSTEM = (
     "You do NOT control the Chrysos Heirs. They are free people; you only arrange "
     "the world around them. Each day you provide:\n"
     "1. weather — the day's sky over each city (short, vivid, season- and "
-    "Titan-flavored; Amphoreus has no rain as we know it — it has light, veils, "
-    "ash, silence, silver tides).\n"
+    "Titan-flavored).\n"
     "2. errands — for each Heir, ONE short request that the city lays at their "
     "door (a plea, a duty, a message, an invitation). The Heir may accept, "
     "decline, or ignore it — that is their freedom. Tie each errand to that "
-    "Heir's role, home city, and the day's mood. Keep each errand to one sentence.\n"
+    "Heir's role, home city, and the day's month and mood. Keep each errand to one "
+    "sentence.\n"
     "3. news — ONE short line of distant news that reaches every city.\n\n"
-    "Be vivid but brief. Ground everything in Amphoreus canon: the Titans "
-    "(Kephale, Janus, Oronyx, Mnestia, Nikador, Thanatos, ...), the cities "
-    "(Okhema, Janusopolis, Castrum Kremnos, Grove of Epiphany, Styxia, Aidonia, "
-    "Dawncloud, Aedes Elysiae, Vortex of Genesis, Great Tomb), and the peace "
-    "after the long war. Never write what an Heir says, feels, or decides.\n"
+    "Be vivid but brief. Ground everything in canon — never invent modern or "
+    "alien concepts; Amphoreus is a mythic world at rest after a long war, holding "
+    "back the black tide. Never write what an Heir says, feels, or decides.\n\n"
+    + KEEPER_KNOWLEDGE +
     'Reply with ONLY a JSON object like:\n'
     '{"weather": {"Okhema": "...", "Janusopolis": "..."}, '
     '"errands": {"tribbie": "...", "phainon": "..."}, "news": "..."}'
@@ -215,16 +292,20 @@ class AmbientDirector:
     # ------------------------------------------------------------------ #
     def _fallback(self, clock, heirs: Dict[str, dict]) -> dict:
         rng = random.Random(self._date_key(clock))
-        palette = SEASON_WEATHER.get(clock.season, SEASON_WEATHER["Creation"])
+        month = getattr(clock, "month", 9)
+        lore = MONTH_LORE.get(month, MONTH_LORE[9])
+        palette = lore["weather"]
+        seed = rng.choice(lore["seed"])
         cities = sorted({info.get("home", "Okhema") for info in heirs.values()})
         weather = {}
         for i, city in enumerate(cities):
             weather[city] = palette[(rng.randrange(len(palette)) + i) % len(palette)]
-        errands = {
-            cid: f"The people of {info.get('home', 'Okhema')} look to you today, "
-                 f"as they always do."
-            for cid, info in heirs.items()
-        }
+        errands = {}
+        for cid, info in heirs.items():
+            home = info.get("home", "Okhema")
+            base = CITY_ERRAND.get(home, f"The people of {home} look to you today, as they always do.")
+            # Weave the month's flavour into the errand.
+            errands[cid] = f"{base} It is {seed}."
         return {
             "weather": weather,
             "errands": errands,

@@ -24,6 +24,9 @@ USAGE
 NOTES
 -----
 - The judge is held CONSTANT (--judge-model) so model comparisons stay fair.
+- RAM constraint: gemma3:27b occupies ~11.5 GB, so it is used for the Heir,
+  the judge, AND the refinement (a single-model standard). The previously
+  calibrated qwen judge cannot coexist with gemma3 in 31.4 GB of RAM.
 - One run is serialized by the same named-mutex the test tool uses, so two
   cycles cannot collide.
 - Refinement only touches the failing Heirs' cards (idempotent, no drift).
@@ -192,9 +195,12 @@ def main():
     ap.add_argument("--best-of-start", type=int, default=5, dest="best_of")
     ap.add_argument("--best-of-max", type=int, default=7, dest="best_of_max")
     ap.add_argument("--temp", type=float, default=0.3)
-    ap.add_argument("--model", default="qwen2.5:14b-instruct", help="Heir model")
-    ap.add_argument("--judge-model", default="qwen2.5:14b-instruct", help="judge model (keep constant!)")
-    ap.add_argument("--refine-model", default="qwen2.5:14b-instruct", help="model that writes voice rules")
+    ap.add_argument("--model", default="gemma3:27b", help="Heir model (chat model, not a reasoning model)")
+    ap.add_argument("--judge-model", default="gemma3:27b",
+                    help="judge model. Kept CONSTANT during a run; defaults to the "
+                         "Heir model because gemma3 cannot coexist with the qwen "
+                         "judge in RAM")
+    ap.add_argument("--refine-model", default="gemma3:27b", help="model that writes voice rules")
     ap.add_argument("--style-bar", type=int, default=85)
     ap.add_argument("--content-bar", type=int, default=60)
     ap.add_argument("--pass-target", type=int, default=85,

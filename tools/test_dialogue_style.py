@@ -73,6 +73,12 @@ JUDGE_SYSTEM = (
     "immediately think 'that sounds like {name}'. Only score low (below 60) when the "
     "delivery is generic, theatrical, flowery, robotic, or from a different person. "
     "Do NOT lower the style score because the words/meaning differ.\n"
+    "ELOQUENCE IS NOT A VIRTUE: a reply that is polished, elegant, or beautiful but "
+    "does NOT sound like {name} scores LOW on style. Similarity to the character's "
+    "real delivery is the ONLY thing that matters. If the reply is more eloquent "
+    "than the character ever is, it FAILS style no matter how nice it reads. Judge "
+    "plainness and roughness too — many canon lines are plain, fragmentary, or "
+    "rough, and a pretty line is a miss, not a hit.\n"
     "2. CONTENT (0-100): judged LOOSELY. Does the reply fit the scene as a whole "
     "exchange and capture the general gist of what the character would say here? "
     "60 = a plausible thing this character might say in this situation. Exact words, "
@@ -325,7 +331,10 @@ def _run(args):
             "5. Never become theatrical, poetic, or flowery. Plain, measured, in your "
             "own register.\n"
             "6. Never quote or repeat a canon line above verbatim — say something new "
-            "in the same voice."
+            "in the same voice.\n"
+            "7. NO beautiful rhetoric: no elegant flourishes, no polished aphorisms, "
+            "no poetic imagery. Write the plain, real line the character would say — "
+            "even if it is rough or awkward. Plain over pretty, always."
         )
 
         cases = build_cases(heir_id, args.limit)
@@ -342,7 +351,8 @@ def _run(args):
                 f"Do not write a full sentence if a few words capture it. Do not "
                 f"explain, do not moralise, do not philosophise. Never quote one of "
                 f"the canon lines above verbatim — say something new that still sounds "
-                f"like you.\n"
+                f"like you. Do not be eloquent: write the plain, real line the "
+                f"character would say, even if it is rough or awkward.\n"
                 f"{anchor_block}\n\n"
                 f"Say the next thing you would say here, in your canon voice:"
             )

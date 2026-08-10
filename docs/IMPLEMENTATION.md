@@ -364,12 +364,16 @@ Design: it is a **separate role** with its own system prompt, on a **separate
 model** by default — the locally-deployed **DeepSeek-R1-Distill-32B**
 (`deepseek-r1-distill:32b`), registered from the LM Studio GGUF files without
 duplicating them on disk (`tools/register_lmstudio_gguf.py` uses hard links);
-override with `--ambient-model`. One LLM call per in-game day, cached by date
-(`world_runtime/ambient_cache.json`), with a deterministic seasonal fallback so
-the world never stalls (and so a low-RAM moment degrades gracefully). The day's
-stage is stored in `WorldState` (persisted), injected into each Heir's
-perception (weather in `sensory_text`, plus their errand and the news in
-`_perceive`), and shown in the 🗺️ Map tab of the UI. Lore:
+override with `--ambient-model`. It is **canon-grounded**: the Keeper's prompt
+embeds `KEEPER_KNOWLEDGE` (cities/patrons, the 12-month Light Calendar with
+festival seeds, the black tide, the Thief Star, creatures) and the fallback uses
+month-aware weather (`MONTH_LORE`) and city-specific duties (`CITY_ERRAND`) —
+see `databank/world/keeper-knowledge.md`. One LLM call per in-game day, cached
+by date (`world_runtime/ambient_cache.json`), with a deterministic seasonal
+fallback so the world never stalls (and so a low-RAM moment degrades
+gracefully). The day's stage is stored in `WorldState` (persisted), injected
+into each Heir's perception (weather in `sensory_text`, plus their errand and
+the news in `_perceive`), and shown in the 🗺️ Map tab of the UI. Lore:
 `databank/world/ambient.md`.
 
 ---

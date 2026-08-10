@@ -52,6 +52,9 @@ def build_voice_block(name: str, stats: dict, exemplars: list[str]) -> str:
         "exclamation is fine.",
         "- Say the thing, then stop. Never explain, summarise, or moralise.",
         "- Plain, direct, everyday words. NEVER theatrical, poetic, or flowery.",
+        "- NO beautiful rhetoric: no elegant flourishes, no polished aphorisms, no "
+        "poetic imagery. Write the plain, real line the character would say — even "
+        "if it is rough or awkward. Eloquence is a failure, not a feature.",
         "- No name prefix, no narration, no stage directions, no asterisks.",
         "- Never quote or repeat a canon line above verbatim — say something new "
         "in the same voice.",
