@@ -61,6 +61,14 @@ Everything runs **fully local and offline**: no cloud, no telemetry, no training
 
 ## Quickstart
 
+**▶ One-click (recommended):** double-click **`launch_sanctuary.cmd`** (or the
+**"Amphoreus Sanctuary"** shortcut on the desktop). It starts Ollama (if not
+already running), opens the browser at `http://localhost:8501` and runs the
+visual interface. Keep the window open while you visit the Heirs; close it to
+stop.
+
+Manual steps (same effect):
+
 ```powershell
 # 0. Environment (already set permanently on this machine)
 $env:OLLAMA_MODELS       = "D:\Workspace\Amphoreus\models\ollama"
