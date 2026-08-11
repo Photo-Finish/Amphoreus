@@ -375,8 +375,9 @@ The model can never pass by quoting an existing canon line. `is_quote_cheat()`
 + `normalize_line()` compare every generated reply (normalized: quotes, name
 prefixes, punctuation stripped) against **the Heir's entire canon** (all of
 `personal-memories.md` + scene anchors + exemplars). Verbatim and substantial
-partial quotes are **rejected and regenerated** (retry budget 4× best-of), with
-a final safety-net check before judging. Unit-tested: verbatim/quoted/
+partial quotes are **rejected and regenerated** (retry budget 6× best-of —
+absorbing both canon-quote and within-run rejections), with a final safety-net
+check before judging. Unit-tested: verbatim/quoted/
 name-prefixed/partial/echo → caught; genuine new lines and near-miss variants →
 allowed.
 
@@ -449,6 +450,17 @@ Automates the "keep cycling until everyone passes" loop:
 6. **Final cheat-free re-test** — after the loop (success *or* max cycles), ALL
    13 Heirs are re-tested at the final bars regardless of outcome; the final
    table + outcome are logged to `docs/AUTO-CYCLE-LOG.md`.
+7. **Opt-out** (user, 2026-08-11) — a Heir that passes one full cycle **declines
+   participation in the remaining cycles** (explicitly tracked in `passed_heirs`
+   and logged: “✓ … passed, DECLINES further cycles”). Each later cycle re-tests
+   only the still-failing Heirs, so the loop gets cheaper as it converges.
+   Escalation clears the set (bars changed → everyone re-proves).
+8. **Full-corpus final** (`--full-final`, user 2026-08-11) — the final re-test
+   evaluates **EVERY canon line** of every Heir (`--full`, no even-sampling; the
+   corpus is 11,315 lines total) at single-shot best-of 1
+   (`--final-best-of`, the true deployment measurement), instead of just the
+   `--limit` sample. A log checkpoint is written before the long final run and
+   after every cycle, so a crash never loses history.
 
 Gate granularity: run at `--limit 8` so 85% pass = **7/8** (limit 4 demanded an
 impossible 100%). Logs to `docs/AUTO-CYCLE-LOG.md`.
@@ -474,8 +486,44 @@ python tools/auto_cycle.py --model gemma3:27b --limit 8 --escalate     # 90/65 -
 #### 3.6.8 Current status
 
 Base 85/60 auto-cycle running on gemma3:27b (cheat-free, calibrated judge,
-noise-free refinement, limit 8). Once it converges, escalate to 90/65 → 90/70
-with the overfitting guard.
+noise-free refinement, limit 8, opt-out, full-corpus final). Once it converges,
+escalate to 90/65 → 90/70 with the overfitting guard.
+
+#### 3.6.9 Within-run anti-cheat (user, 2026-08-11)
+
+*“DO MAKE SURE that every Heir cannot cheat in the cycling test (e.g. adding
+certain phrases for every output, formularized outputs…).”* The anti-quote
+filter (§3.6.2) blocks canon-quoting, but a Heir could still pass by recycling
+**one invented phrase** in every output — each line is new (not a canon quote),
+so it slipped through. The fix is a **within-run anti-cheat filter** in
+`tools/test_dialogue_style.py`:
+
+- Per Heir, every **accepted** reply is remembered (`record_accepted` →
+  `run_seen`, distinctive 3-gram counts, opening-word counts) across **all** of
+  that Heir's cases in the run.
+- A candidate is **rejected and regenerated** (`is_run_repeat`, called both on
+  each candidate and as a final safety-net on the picked line) if it:
+  1. **exact-repeats** an earlier reply (always, including the full-corpus final);
+  2. is a **near-duplicate** (token-set Jaccard ≥ 0.75) of an earlier reply;
+  3. contains a **distinctive 3-gram** (≥2 content words) already used in ≥4
+     accepted lines — the “golden thread” / “Snowy~” crutch pattern;
+  4. (small samples ≤12 lines) **opens** with the same word as ≥3 earlier
+     replies — formulaic templates like “So, …” / “Hmm, …” (`_OPENER` set).
+- **Lenient mode** (`--full` full-corpus final): near-duplicate + formulaic-
+  opening checks are skipped and phrase-hits doubled to 8, because natural
+  repetition is expected across 1,000+ lines — but exact repeats and heavy
+  crutches still fail.
+- **Judge reinforcement**: the judge receives `prior_used` (the Heir's last 8
+  replies in the run, small samples only) and is told to score STYLE LOW if the
+  reply recycles them — a belt-and-suspenders layer under the hard filter.
+- Prompt reinforcement: Hard Style Rule #9 + the generation prompt now tell the
+  model never to repeat a line/phrase/opening it already used in the
+  conversation.
+- Retry budget raised 4×→6× best-of to absorb the extra rejections.
+- Unit-tested (8 checks): exact repeat, near-repeat, phrase-crutch, formulaic
+  “So, …” opening → rejected; natural “I …” variety and legitimate different
+  lines → allowed; lenient mode allows near-repeats but still rejects exact
+  repeats and heavy crutches.
 
 ### 3.7 The Ambient World Director (`src/world/ambient.py`)
 

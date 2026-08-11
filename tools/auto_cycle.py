@@ -290,6 +290,7 @@ def main():
         f"- Best-of: start {args.best_of}, max {args.best_of_max} · limit {args.limit}/Heir/cycle · max {args.max_cycles} cycles",
         f"- Opt-out: a Heir that passes a cycle declines participation in later cycles (shortens the loop).",
         f"- Final re-test: {'FULL — every canon line of every Heir, best-of %d (single-shot deployment measure)' % args.final_best_of if args.full_final else 'sample (limit %d)' % args.limit}",
+        f"- Anti-cheat: ON — no canon quoting, no repeated line, no phrase-crutch, no formulaic opening (within-run filter)",
         "",
     ]
 

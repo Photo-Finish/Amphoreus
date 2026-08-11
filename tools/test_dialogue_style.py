@@ -177,7 +177,97 @@ def is_quote_cheat(reply: str, canon_set) -> bool:
     return False
 
 
-def judge_style(llm, heir_name, ctx, canon_lines, actual, stats=None):
+# ---- Within-run anti-cheat ------------------------------------------------ #
+# Besides never quoting the canon, a Heir must never pass by recycling ONE
+# invented phrase in every output or leaning on a formulaic template. These
+# helpers track everything the Heir has already said in this test run and
+# reject any candidate that repeats it (exact, near, phrase-crutch, or — in
+# small samples — the same formulaic opening every time).
+_STOP = {
+    "i", "you", "he", "she", "it", "we", "they", "me", "him", "her", "us",
+    "them", "my", "your", "his", "hers", "its", "our", "their", "the", "a",
+    "an", "and", "or", "but", "of", "to", "in", "on", "at", "for", "with",
+    "from", "by", "as", "is", "are", "was", "were", "be", "been", "being",
+    "have", "has", "had", "do", "does", "did", "not", "no", "so", "if",
+    "then", "than", "that", "this", "these", "those", "there", "here",
+    "what", "when", "where", "who", "which", "why", "how", "all", "any",
+    "some", "can", "could", "will", "would", "should", "may", "might",
+    "must", "just", "like", "about", "up", "down", "out", "off", "over",
+    "under", "again", "once",
+}
+# Interjections/softeners that are formulaic when over-used as sentence openers
+# (e.g. "So, ...", "Hmm, ...") even though several are also function words.
+_OPENER = {
+    "so", "hmm", "hm", "ah", "oh", "well", "yes", "yeah", "no", "nah", "hey",
+    "eh", "alright", "okay", "ok", "fine", "right", "sure", "look", "listen",
+    "aha", "huh", "um", "uh",
+}
+
+
+def _norm_tokens(text: str) -> list:
+    return normalize_line(text).split()
+
+
+def is_run_repeat(candidate: str, seen_lines, seen_grams, seen_firsts, n_seen,
+                  jac_thresh=0.75, gram_hits=4, first_hits=3, lenient=False) -> bool:
+    """True if the candidate cheats against THIS Heir's own run so far:
+    1. exact repeat of an earlier accepted reply (always a cheat);
+    2. near-duplicate (Jaccard >= jac_thresh) — cycling runs only;
+    3. contains a distinctive 3-gram (>=2 content words) already used in
+       >= gram_hits accepted lines — the 'same phrase in every output' crutch;
+    4. (cycling runs only, n_seen <= 12) opens with the same word as
+       >= first_hits earlier replies — a formulaic template.
+    lenient=True (full-corpus final): skip near-duplicate + formulaic-opening,
+    and require twice as many phrase hits — natural repetition is expected
+    across a 1000+ line corpus, but exact repeats and heavy crutches still
+    fail."""
+    words = _norm_tokens(candidate)
+    if not words:
+        return False
+    cnorm = " ".join(words)
+    cset = set(words)
+    for prev in seen_lines:
+        pwords = _norm_tokens(prev)
+        if not pwords:
+            continue
+        if " ".join(pwords) == cnorm:
+            return True  # exact repeat
+        if not lenient:
+            pset = set(pwords)
+            inter = len(cset & pset)
+            if inter / len(cset | pset) >= jac_thresh:
+                return True  # near-repeat
+    hits = gram_hits * 2 if lenient else gram_hits
+    if len(words) >= 3:
+        for i in range(len(words) - 2):
+            gram = tuple(words[i:i + 3])
+            if sum(1 for w in gram if w not in _STOP) >= 2 and seen_grams.get(gram, 0) >= hits:
+                return True  # over-used distinctive phrase
+    if (not lenient and n_seen <= 12
+            and (words[0] not in _STOP or words[0] in _OPENER)
+            and seen_firsts.get(words[0], 0) >= first_hits):
+        return True  # formulaic opening
+    return False
+
+
+def record_accepted(line: str, seen_lines, seen_grams, seen_firsts) -> None:
+    """Remember an accepted reply so later cases cannot recycle it."""
+    seen_lines.append(line)
+    words = _norm_tokens(line)
+    if not words:
+        return
+    seen_firsts[words[0]] = seen_firsts.get(words[0], 0) + 1
+    if len(words) >= 3:
+        grams = set()
+        for i in range(len(words) - 2):
+            gram = tuple(words[i:i + 3])
+            if sum(1 for w in gram if w not in _STOP) >= 2:
+                grams.add(gram)
+        for g in grams:
+            seen_grams[g] = seen_grams.get(g, 0) + 1
+
+
+def judge_style(llm, heir_name, ctx, canon_lines, actual, stats=None, prior_used=None):
     """Score the model reply against the character's WHOLE voice.
 
     canon_lines: several real canon lines of the character (voice reference).
@@ -209,6 +299,15 @@ def judge_style(llm, heir_name, ctx, canon_lines, actual, stats=None):
         "CONTENT = loose scene fit. A reply with the right delivery but different "
         "words should score style 85+. Do NOT compare sentence-by-sentence."
     )
+    if prior_used:
+        used = "\n".join(f'- "{u}"' for u in prior_used[-8:])
+        user += (
+            f"\n\n{heir_name} has ALREADY said these lines earlier in this same "
+            f"conversation:\n{used}\nIf the MODEL reply repeats one of them or "
+            f"recycles their key phrases, score STYLE LOW — repeating the same "
+            f"phrase in every reply is formulaic and out of character in a real "
+            f"dialogue."
+        )
     reply = llm.chat(
         [{"role": "system", "content": JUDGE_SYSTEM}, {"role": "user", "content": user}],
         temperature=0.0,
@@ -309,7 +408,13 @@ def main():
                     help="evaluate EVERY canon line of each Heir (no even sampling "
                          "down to --limit). Use with --best-of 1 for a single-shot "
                          "full-corpus measurement.")
+    ap.add_argument("--no-anti-cheat", action="store_true",
+                    help="disable the within-run anti-cheat filter (exact/near "
+                         "repeat, phrase-crutch, formulaic opening). Default: ON — "
+                         "a Heir can never pass by recycling one phrase in every "
+                         "output or by quoting the canon.")
     args = ap.parse_args()
+    args.anti_cheat = not args.no_anti_cheat
 
     if not acquire_lock():
         return 0
@@ -326,13 +431,15 @@ def _run(args):
     loader = CharacterLoader(str(ROOT / "src" / "characters"))
 
     print(f"STYLE standard — model {args.model}, pass = style ≥ {args.style_bar} "
-          f"AND content ≥ {args.content_bar}\n")
+          f"AND content ≥ {args.content_bar}")
+    print(f"Anti-cheat: {'ON (no canon quote, no repeated line, no phrase-crutch, no formulaic opening)' if args.anti_cheat else 'OFF'}\n")
 
     report = [
         "# Dialogue-Style Report (the Heir-voice standard)",
         "",
         f"*Generated: 2026-08-10 · model `{args.model}`*",
         f"*Cases: {'FULL corpus — every canon line' if args.full else f'even sample (limit {args.limit})'} · best-of {args.best_of} · temp {args.temp}*",
+        f"*Anti-cheat: {'ON — no canon quoting, no repeated line, no phrase-crutch, no formulaic opening' if args.anti_cheat else 'OFF'}*",
         "",
         "Criteria: **STYLE & INTONATION ≥ 85** (word choice, sentence length, rhythm, "
         "emotional register, verbal tics) and **CONTENT ≥ 60** (general gist fits the "
@@ -403,7 +510,10 @@ def _run(args):
             "8. NEVER lean on a single motif, object, or catchphrase as a crutch "
             "(e.g. 'the golden thread', 'Snowy~', 'the threads of fate'). Say a "
             "fresh, specific line in the character's true voice — not another "
-            "variation of the same image."
+            "variation of the same image.\n"
+            "9. NEVER repeat yourself: do not say the same line twice, do not "
+            "recycle a phrase you already used, and do not open every reply the "
+            "same way — say something fresh each time."
         )
 
         cases = build_cases(heir_id, args.limit, full=args.full)
@@ -416,6 +526,10 @@ def _run(args):
             canon_all = set()
         passed, total = 0, 0
         styles, contents, fails = [], [], []
+        # Within-run anti-cheat state: this Heir may never emit the same line
+        # twice, reuse a distinctive phrase as a crutch, or (in small samples)
+        # open every reply the same way.
+        run_seen, run_grams, run_firsts = [], {}, {}
         for ctx, anchors, target in cases:
             anchor_block = "\n".join(f'- "{a}"' for a in anchors[:10])
             user = (
@@ -430,7 +544,8 @@ def _run(args):
                 f"like you. Do not be eloquent: write the plain, real line the "
                 f"character would say, even if it is rough or awkward. Never lean on "
                 f"a single motif or catchphrase as a crutch — say a fresh, specific "
-                f"line.\n"
+                f"line. Do not repeat a line or opening you have already said in "
+                f"this conversation.\n"
                 f"{anchor_block}\n\n"
                 f"Say the next thing you would say here, in your canon voice:"
             )
@@ -438,13 +553,16 @@ def _run(args):
                 # best-of-N: generate candidates, let the character pick the most
                 # in-voice one (legitimate — the character chooses how to speak;
                 # no answer leaked, anchors exclude the target).
-                # CHEAT-FREE: any candidate that repeats an EXISTING canon line
-                # (verbatim or partial) is rejected and regenerated — quoting the
-                # canon can never pass.
+                # CHEAT-FREE (two independent guarantees):
+                #  (1) never quote an EXISTING canon line (verbatim or partial);
+                #  (2) never recycle the Heir's OWN earlier replies in this run
+                #      (exact/near repeat, phrase-crutch, formulaic opening).
+                # Any such candidate is rejected and regenerated, so neither the
+                # canon nor a self-invented catchphrase can be used to pass.
                 cheat_set = canon_all | set(anchors) | set(exemplars)
                 candidates = []
                 tries = 0
-                budget = max(1, args.best_of) * 4
+                budget = max(1, args.best_of) * 6
                 while len(candidates) < max(1, args.best_of) and tries < budget:
                     tries += 1
                     r = llm.chat(
@@ -457,28 +575,46 @@ def _run(args):
                     # spoken reply is judged.
                     r = strip_reasoning(r)
                     r = _trim_to_short(r)
-                    if r and not is_quote_cheat(r, cheat_set):
+                    if (r and not is_quote_cheat(r, cheat_set)
+                            and not (args.anti_cheat and is_run_repeat(
+                                r, run_seen, run_grams, run_firsts, len(run_seen),
+                                lenient=args.full))):
                         candidates.append(r)
                 if not candidates:
                     candidates = ["..."]  # honest low-score fallback
                 actual = _pick_most_in_voice(llm, system, name, candidates)
-                # Safety net: never judge a verbatim canon quote.
-                if is_quote_cheat(actual, cheat_set):
-                    non_cheat = [c for c in candidates if not is_quote_cheat(c, cheat_set)]
-                    actual = non_cheat[0] if non_cheat else "..."
+                # Safety nets: never judge a canon quote, and never let the Heir
+                # repeat its own earlier lines from this run.
+                if is_quote_cheat(actual, cheat_set) or (
+                        args.anti_cheat and is_run_repeat(
+                            actual, run_seen, run_grams, run_firsts, len(run_seen),
+                            lenient=args.full)):
+                    ok_c = [c for c in candidates
+                            if not is_quote_cheat(c, cheat_set)
+                            and not (args.anti_cheat and is_run_repeat(
+                                c, run_seen, run_grams, run_firsts, len(run_seen),
+                                lenient=args.full))]
+                    actual = ok_c[0] if ok_c else "..."
             except Exception as e:
                 print(f"  {heir_id}: LLM error {e}")
                 continue
             if not actual:
                 continue
             # Judge against the whole voice (anchors + target as content reference).
+            # The judge also sees what the Heir already said in this run, so any
+            # recycled phrase that slips through the filter still scores LOW.
             voice_ref = anchors + [target]
+            prior_used = run_seen if (args.anti_cheat and len(run_seen) <= 12) else None
             try:
-                j = judge_style(judge_llm, name, ctx, voice_ref, actual, stats=stats)
+                j = judge_style(judge_llm, name, ctx, voice_ref, actual,
+                                stats=stats, prior_used=prior_used)
                 st = int(j.get("style", 0))
                 ct = int(j.get("content", 0))
             except Exception:
                 st, ct = 0, 0
+            # Remember this accepted reply — it cannot be recycled later in the run.
+            if args.anti_cheat:
+                record_accepted(actual, run_seen, run_grams, run_firsts)
             total += 1
             styles.append(st)
             contents.append(ct)
