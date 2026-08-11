@@ -139,13 +139,26 @@ _NOISE_RE = re.compile(
     r"around \d+|~\d+)",
     re.I,
 )
+# Rules that prescribe overusing a motif/catchphrase (caused spamming before)
+# or generic terse advice that would apply to ANY Heir (homogenizes voices).
+_SPAM_RE = re.compile(
+    r"(frequently reference|even when irrelevant|always mention|regardless of|"
+    r"in every line|every response|no matter what|repeatedly (say|use)|"
+    r"don't forget to (say|mention))",
+    re.I,
+)
+_GENERIC_RE = re.compile(
+    r"(keep it short|keep (sentences|lines) (concise|short)|use interjections|"
+    r"trail off|avoid (long|lengthy|complex|elaborate)|don't be (verbose|wordy)|\buse ellipses\b)",
+    re.I,
+)
 
 
 def _is_noise_rule(rule: str) -> bool:
-    """Statistical rules (percentages, averages, 'X words per sentence') are
-    unusable for a single reply and actively over-constrain the model — reject
-    them so refinement only keeps concrete per-line behaviors."""
-    return bool(_NOISE_RE.search(rule))
+    """Reject statistical rules (percentages/averages), catchphrase-spam rules,
+    and generic terse advice — refinement must keep only UNIQUE per-character
+    behaviors grounded in the canon."""
+    return bool(_NOISE_RE.search(rule) or _SPAM_RE.search(rule) or _GENERIC_RE.search(rule))
 
 
 def write_refinement_rules(llm, heir_id: str, info: dict, stats: dict, exemplars: list) -> list:
@@ -170,11 +183,14 @@ def write_refinement_rules(llm, heir_id: str, info: dict, stats: dict, exemplars
         f"like {info['name']} (style = delivery similarity, content = scene fit):\n"
         f"{case_txt}\n\n"
         "Analyse the specific DELIVERY mistakes and write 4-6 crisp, concrete "
-        "voice rules that would fix them. Every rule must be something you DO in "
-        "a single line — e.g. 'trail off with ...', 'begin with Hmph.', 'use one "
-        "short fragment then stop', 'never answer in a full formal sentence', "
-        "'address the visitor by name'. NEVER write percentages, averages, or "
-        "statistics — they are unusable for one reply and must be avoided. "
+        "voice rules that would fix them. Every rule must name a habit that is "
+        "UNIQUE to {info['name']} and GROUNDED IN THE CANON LINES above — a "
+        "specific tic, word, interjection, rhythm, or pattern that DISTINGUISHES "
+        "{info['name']} from every other Heir. Never write generic advice that "
+        "would apply to any terse character (e.g. 'trail off with ...', 'keep it "
+        "short', 'use interjections') — those are forbidden. Never prescribe "
+        "repeating a motif or catchphrase. If it is not in the canon lines, do "
+        "not invent it. Every rule must be something you DO in a single line. "
         "One rule per line, short and actionable, no numbering, no preamble."
     )
     reply = llm.chat(

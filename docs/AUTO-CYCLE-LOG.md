@@ -1,199 +1,190 @@
-# Auto-cycle log — 2026-08-11 01:15
+# Auto-cycle log — 2026-08-11 08:30
 
 - Heir model: `gemma3:27b` · judge model: `gemma3:27b` (constant)
 - Gate: per-Heir pass rate ≥ 85% (style ≥ 85 AND content ≥ 60)
-- Best-of: start 5, max 7 · limit 4/Heir/cycle · max 6 cycles
+- Best-of: start 5, max 7 · limit 8/Heir/cycle · max 6 cycles
 
 ## Cycle 1 (best-of 5; bars style≥85, content≥60)
 | Heir | pass | rate | avg style | avg content | status |
 |---|---:|---:|---:|---:|---|
-| Aglaea | 3/4 | 75% | 86 | 68 | FAIL |
-| Anaxa | 3/4 | 75% | 86 | 68 | FAIL |
-| Castorice | 0/4 | 0% | 44 | 56 | FAIL |
-| Cerydra | 1/4 | 25% | 81 | 64 | FAIL |
-| Cipher | 2/4 | 50% | 84 | 72 | FAIL |
-| Cyrene | 2/4 | 50% | 84 | 71 | FAIL |
-| Dan Heng • Permansor Terrae | 1/4 | 25% | 78 | 75 | FAIL |
-| Evernight | 2/4 | 50% | 84 | 78 | FAIL |
-| Hyacine | 2/4 | 50% | 84 | 68 | FAIL |
-| Hysilens | 3/4 | 75% | 86 | 68 | FAIL |
-| Mydei | 2/4 | 50% | 64 | 46 | FAIL |
-| Phainon | 1/4 | 25% | 79 | 75 | FAIL |
-| Tribbie | 3/4 | 75% | 85 | 69 | FAIL |
+| Aglaea | 3/8 | 37% | 67 | 67 | FAIL |
+| Anaxa | 3/8 | 37% | 80 | 66 | FAIL |
+| Castorice | 2/8 | 25% | 57 | 61 | FAIL |
+| Cerydra | 2/8 | 25% | 81 | 72 | FAIL |
+| Cipher | 5/8 | 62% | 84 | 70 | FAIL |
+| Cyrene | 2/8 | 25% | 80 | 72 | FAIL |
+| Dan Heng • Permansor Terrae | 6/8 | 75% | 86 | 72 | FAIL |
+| Evernight | 6/8 | 75% | 87 | 72 | FAIL |
+| Hyacine | 3/8 | 37% | 80 | 70 | FAIL |
+| Hysilens | 5/8 | 62% | 85 | 67 | FAIL |
+| Mydei | 3/8 | 37% | 63 | 46 | FAIL |
+| Phainon | 3/8 | 37% | 82 | 69 | FAIL |
+| Tribbie | 5/8 | 62% | 84 | 68 | FAIL |
 
-- aglaea: refined (6 rules: Avoid contractions; use full forms exclusively.; Maintain an average of 10 words per sentence, +/- 2.; Employ ellipsis (...) in approximately 35-40% of responses.…)
-- anaxa: refined (6 rules: Avoid contractions; use full forms ("should not" instead of "shouldn't").; Maintain an average sentence length of 9-10 words, strictly.; Incorporate '...' at the end of approximately 35% of all sentences.…)
-- castorice: refined (6 rules: Average 7.7 words per sentence, strictly enforced.; % of all lines MUST end in an ellipsis "...".; Very short sentences (<=6 words) should comprise 52.2% of total output.…)
-- cerydra: refined (6 rules: Avoid questions unless explicitly prompted; target 18.9% question frequency.; Maintain average sentence length of 9 words, +/- 2 words.; Use very short sentences (<=6 words) in roughly 42.2% of responses.…)
-- cipher: refined (6 rules: Avoid philosophical questions; focus on statements or direct responses.; Maintain an average of 7-8 words per sentence, strictly.; Use very short sentences (<=6 words) in roughly half your lines.…)
-- cyrene: refined (6 rules: Avoid direct questions unless prompted; favour rhetorical or self-directed inquiries.; Maintain an average of 7 words per sentence, allowing variation but penalising consistently longer structures.; Use ellipsis (...) in at least 52% of responses, often trailing off mid-thought.…)
-- dan-heng-permansor-terrae: refined (6 rules: Avoid contractions; use full forms ("is" instead of "it's").; Average 7-10 words per sentence, prioritizing the lower end of that range.; Use very short sentences (<=6 words) in roughly 45-50% of responses.…)
-- evernight: refined (6 rules: Avoid questions when a direct refusal is given.; Maintain an average of 7.1 words per sentence; flag outputs exceeding 9 words for revision.; Use very short sentences (<=6 words) in 53.2% of responses.…)
-- hyacine: refined (6 rules: Maintain an average of 9.0 words per sentence, +/- 1.5 words.; Use very short sentences (<=6 words) in approximately 42-48% of responses.; Employ trailing ellipsis '...' at the end of roughly 50% of all lines.…)
-- hysilens: refined (6 rules: Average 8.5 words per sentence, strictly enforced.; % of lines must be six words or fewer.; Use '...' to trail off at the end of approximately 46% of all utterances.…)
-- mydei: refined (6 rules: Average 7.9 words per sentence, strictly enforced.; % of sentences must be six words or fewer.; Use ellipsis '...' in approximately 40.5% of responses, varied placement.…)
-- phainon: refined (6 rules: Average 7.8 words per sentence, strictly enforced.; % of lines must be six words or fewer.; Use ellipsis '...' at the end of 47.8% of all utterances.…)
-- tribbie: refined (6 rules: Avoid contractions; use full forms ("is" not "it's").; Average 6-8 words per sentence, prioritize range over strict adherence.; Use ‘…’ in roughly 40-45% of responses, often after positive affirmations or incomplete thoughts.…)
+- aglaea: refined (5 rules: Begin sentences with clarifying phrases like "Now," or "Concerning..."; Frequently use very short statements—six words or fewer.; Ask rhetorical questions rather than direct ones.…)
+- anaxa: refined (6 rules: Begin lines with a dismissive sound if appropriate.; Frequently trail off utterances with ellipsis (...).; Keep sentences relatively concise; avoid rambling explanations.…)
+- castorice: refined (6 rules: Begin most lines with a hesitation sound or filler word.; Frequently interrupt your own sentences before completion...; Keep sentence length concise; aim for brevity.…)
+- cerydra: refined (5 rules: Begin lines with a title-like utterance—name or descriptor.; Frequently use very short phrases, often six words or fewer.; Ask rhetorical questions rather than direct inquiries.…)
+- cipher: refined (6 rules: Begin most lines with a non-lexical utterance.; Frequently trail off at the end of statements...; Ask rhetorical questions more than making direct assertions.…)
+- cyrene: refined (6 rules: Begin lines with a hesitant sound – "Huh," "Hmm," or "...".; Frequently repeat key words from the prompt in your response.; End most sentences trailing off with ellipsis (...).…)
+- dan-heng-permansor-terrae: refined (4 rules: Begin sentences with linking phrases like “Also,” or “Well…”; Frequently use very short clauses before longer ones.; Avoid strong emotional declarations; maintain a neutral tone.…)
+- evernight: refined (6 rules: Begin sentences with brief acknowledgements like "Yeah." or "Hmm."; Frequently trail off thoughts mid-sentence using "...".; Keep most statements under six words in length.…)
+- hyacine: refined (6 rules: Begin lines with interjections like "Wow," "But," "Yes," or "Alright."; Frequently trail off utterances with ellipses (...).; Ask rhetorical questions or check understanding often.…)
+- hysilens: refined (5 rules: Avoid direct repetition of "another fish" or similar phrases.; Frequently trail off utterances with ellipses (...).; Incorporate very short statements – six words or fewer – often.…)
+- mydei: refined (6 rules: Begin lines with interjections like “Hmph” or pauses “…”.; Frequently trail off at the end of statements.; Keep sentences relatively concise—don't ramble.…)
+- phainon: refined (6 rules: Begin sentences with a hesitant sound or filler.; Frequently trail off at the end of statements…; Ask rhetorical questions instead of direct commands.…)
+- tribbie: refined (5 rules: Begin sentences with interjections frequently.; Ask rhetorical questions at least sometimes.; Use emphatic stress on key words within a sentence.…)
 ## Cycle 2 (best-of 6; bars style≥85, content≥60)
 | Heir | pass | rate | avg style | avg content | status |
 |---|---:|---:|---:|---:|---|
-| Aglaea | 2/4 | 50% | 84 | 67 | FAIL |
-| Anaxa | 2/4 | 50% | 84 | 67 | FAIL |
-| Castorice | 2/4 | 50% | 61 | 69 | FAIL |
-| Cerydra | 2/4 | 50% | 83 | 72 | FAIL |
-| Cipher | 3/4 | 75% | 87 | 69 | FAIL |
-| Cyrene | 3/4 | 75% | 86 | 68 | FAIL |
-| Dan Heng • Permansor Terrae | 1/4 | 25% | 81 | 79 | FAIL |
-| Evernight | 3/4 | 75% | 87 | 75 | FAIL |
-| Hyacine | 2/4 | 50% | 84 | 68 | FAIL |
-| Hysilens | 2/4 | 50% | 83 | 66 | FAIL |
-| Mydei | 2/4 | 50% | 74 | 56 | FAIL |
-| Phainon | 1/4 | 25% | 80 | 70 | FAIL |
-| Tribbie | 2/4 | 50% | 82 | 67 | FAIL |
+| Aglaea | 3/8 | 37% | 76 | 65 | FAIL |
+| Anaxa | 3/8 | 37% | 81 | 71 | FAIL |
+| Castorice | 3/8 | 37% | 69 | 68 | FAIL |
+| Cerydra | 3/8 | 37% | 82 | 66 | FAIL |
+| Cipher | 3/8 | 37% | 82 | 71 | FAIL |
+| Cyrene | 6/8 | 75% | 86 | 69 | FAIL |
+| Dan Heng • Permansor Terrae | 5/8 | 62% | 84 | 73 | FAIL |
+| Evernight | 5/8 | 62% | 79 | 68 | FAIL |
+| Hyacine | 4/8 | 50% | 81 | 68 | FAIL |
+| Hysilens | 5/8 | 62% | 85 | 67 | FAIL |
+| Mydei | 4/8 | 50% | 74 | 60 | FAIL |
+| Phainon | 3/8 | 37% | 80 | 72 | FAIL |
+| Tribbie | 7/8 | 87% | 88 | 70 | PASS |
 
-- aglaea: refined (6 rules: Avoid repeating key phrases ("golden thread") across turns.; Maintain an average of 10 words per sentence, +/- 2 words.; Use ellipsis '...' in approximately 35-40% of responses.…)
-- anaxa: refined (6 rules: Average 9.1 words per sentence, strictly enforced.; Utilize very short sentences (<=6 words) in approximately 42.9% of responses.; Incorporate trailing ellipses ("...") in roughly 35.0% of all lines.…)
-- castorice: refined (6 rules: Avoid direct commands like "Kindly…" or formal phrasing.; Sentences average 7-9 words; prioritize consistency over strict adherence to 7.7.; Use very short sentences (<=6 words) in roughly half of all responses.…)
-- cerydra: refined (6 rules: Maintain an average of 9.0 words per sentence, +/- 1.5 words.; Employ very short sentences (<=6 words) in approximately 42% of responses.; Use trailing ellipses ("...") in roughly 34-35% of all lines.…)
-- cipher: refined (6 rules: Avoid contractions; use full forms ("is," "are," etc.).; Average 7-8 words per sentence, strictly enforced.; Use '...' to end approximately 46% of all sentences.…)
-- cyrene: refined (6 rules: Avoid descriptive language; focus on observable traits.; Sentences average 7 words, allow +/- 1.5 word variance.; At least 50% of lines must be six words or fewer.…)
-- dan-heng-permansor-terrae: refined (6 rules: Average 7.9 words per sentence, strictly enforced.; % of sentences must be six words or fewer.; Use an ellipsis '...' in approximately 40% of responses.…)
-- evernight: refined (6 rules: Avoid questions unless specifically prompted; target 25% question rate overall.; Sentences average 7.1 words—actively adjust length during generation.; Use very short sentences (<=6 words) in ~53% of responses.…)
-- hyacine: refined (6 rules: Average 9.0 words per sentence, allow +/- 1 word variation.; Employ very short sentences (<=6 words) in approximately 42-45% of responses.; Use trailing ellipsis '...' in roughly half of all lines (48-52%).…)
-- hysilens: refined (6 rules: Avoid direct questions unless prompted; aim for 17% max.; Average 8-9 words per sentence, strictly enforce.; Use very short sentences (<=6 words) in ~43-45% of responses.…)
-- mydei: refined (6 rules: Avoid complete sentences or single-word responses; aim for at least 4 words most of the time.; Use ellipsis (...) in roughly 40% of all utterances, often trailing off mid-thought.; Keep average sentence length around 7.9 words – prioritize variation within a tight range (6-10).…)
-- phainon: refined (6 rules: Maintain an average of 7.8 words per sentence, +/- 1.5 words.; Use very short sentences (<=6 words) in roughly 48% of responses.; Employ trailing ellipses ("...") in approximately 47-50% of lines.…)
-- tribbie: refined (6 rules: Avoid direct questions unless prompted; aim for statements with embedded queries ~21% of the time.; Maintain an average sentence length of 6.9 words, prioritizing sentences of six or fewer words (56.3%).; Use trailing ellipses ("...") in approximately 43.4% of all lines, often softening conclusions.…)
+- aglaea: refined (6 rules: Begin lines with introductory phrases like ‘Now,’ or ‘Concerning.’; Frequently use trailing ellipses to indicate unfinished thoughts…; Construct sentences that often include a subordinate clause before the main point.…)
+- anaxa: refined (6 rules: Begin most lines with a non-lexical interjection.; Frequently trail off utterances with ellipses (...).; Keep sentences relatively concise; avoid long clauses.…)
+- castorice: refined (6 rules: Begin most lines with a hesitation sound: "...".; Frequently interrupt sentences mid-thought.; Use very short phrases often, even as complete 'sentences'.…)
+- cerydra: refined (6 rules: Begin most lines with a vocative – “Deliverer,” “Stranger,” etc.; Frequently trail off utterances mid-thought with '...'; Keep sentences relatively short; avoid long clauses or complex phrasing.…)
+- cipher: refined (6 rules: Begin most lines with a guttural sound: "Grumph," "Hmph," etc.; Frequently trail off utterances with ellipses ("..."); Keep sentences concise; aim for under eight words.…)
+- cyrene: refined (6 rules: Begin most lines with a hesitant sound: "Hmm...", "Uh...", "Well..."; Frequently trail off at the end of sentences with "...".; Ask rhetorical questions or seek confirmation often.…)
+- dan-heng-permansor-terrae: refined (6 rules: Begin most lines with a connective phrase.; Frequently trail off mid-thought with "...".; Ask rhetorical questions instead of direct statements.…)
+- evernight: refined (6 rules: Begin lines with a hesitant sound like "Hmm..." or "Yeah...".; Frequently trail off mid-thought with "...".; Keep sentences relatively concise; avoid long explanations.…)
+- hyacine: refined (6 rules: Begin sentences with interjections like "Wow," "Hmm," or "Yes."; Frequently trail off utterances with ellipses (...).; Embed brief questions within longer statements.…)
+- hysilens: refined (6 rules: Begin most lines with a non-lexical filler: "Hah.", "Hm...", "Well..."; Frequently question the visitor’s motivations or statements.; Use very short phrases – six words or fewer – often as standalone replies.…)
+- mydei: refined (6 rules: Begin lines with interjections like "Hmph" or pauses "...".; Frequently trail off at the end of statements with ellipsis (...).; Keep sentences relatively short; avoid long, complex phrasing.…)
+- phainon: refined (6 rules: Begin sentences with linking phrases like "But...", "With this...", "So..."; Frequently trail off utterances mid-thought with "...".; Use very short statements often – under six words.…)
 ## Cycle 3 (best-of 7; bars style≥85, content≥60)
 | Heir | pass | rate | avg style | avg content | status |
 |---|---:|---:|---:|---:|---|
-| Aglaea | 2/4 | 50% | 84 | 67 | FAIL |
-| Anaxa | 1/4 | 25% | 80 | 70 | FAIL |
-| Castorice | 1/4 | 25% | 69 | 56 | FAIL |
-| Cerydra | 2/4 | 50% | 83 | 76 | FAIL |
-| Cipher | 3/4 | 75% | 86 | 69 | FAIL |
-| Cyrene | 2/4 | 50% | 83 | 72 | FAIL |
-| Dan Heng • Permansor Terrae | 3/4 | 75% | 86 | 78 | FAIL |
-| Evernight | 4/4 | 100% | 90 | 72 | PASS |
-| Hyacine | 2/4 | 50% | 83 | 68 | FAIL |
-| Hysilens | 2/4 | 50% | 84 | 67 | FAIL |
-| Mydei | 2/4 | 50% | 65 | 46 | FAIL |
-| Phainon | 1/4 | 25% | 79 | 70 | FAIL |
-| Tribbie | 2/4 | 50% | 84 | 71 | FAIL |
+| Aglaea | 2/8 | 25% | 79 | 68 | FAIL |
+| Anaxa | 4/8 | 50% | 83 | 72 | FAIL |
+| Castorice | 7/8 | 87% | 82 | 69 | PASS |
+| Cerydra | 3/8 | 37% | 82 | 71 | FAIL |
+| Cipher | 4/8 | 50% | 81 | 67 | FAIL |
+| Cyrene | 5/8 | 62% | 85 | 68 | FAIL |
+| Dan Heng • Permansor Terrae | 5/8 | 62% | 85 | 75 | FAIL |
+| Evernight | 4/8 | 50% | 83 | 68 | FAIL |
+| Hyacine | 3/8 | 37% | 80 | 68 | FAIL |
+| Hysilens | 4/8 | 50% | 83 | 66 | FAIL |
+| Mydei | 3/8 | 37% | 63 | 46 | FAIL |
+| Phainon | 4/8 | 50% | 84 | 72 | FAIL |
 
-- aglaea: refined (6 rules: Avoid direct questions unless explicitly prompted by scene context.; Maintain an average sentence length of 10 words, allowing for variation but prioritizing this target.; Use ellipsis (...) in approximately 35-40% of responses, often trailing off at the end of clauses.…)
-- anaxa: refined (6 rules: Maintain an average of 9.1 words per sentence, plus or minus 1.5 words.; Employ very short sentences (<=6 words) in approximately 42.9% of responses.; Terminate roughly 35.0% of lines with an ellipsis ("...") to indicate trailing thought.…)
-- castorice: refined (6 rules: Average 7.7 words per sentence, strictly enforced.; At least 52.2% of sentences must be six words or fewer.; Use ellipsis "..." in approximately 66.1% of all lines.…)
-- cerydra: refined (6 rules: Maintain an average of 9.0 words per sentence, +/- 1.5 words.; Use very short sentences (<=6 words) in approximately 42% of responses.; Employ trailing ellipses ("...") in roughly 35% of all lines.…)
-- cipher: refined (6 rules: Avoid exceeding 8 words/sentence; prioritize brevity.; Use "..." to end at least 45% of all responses.; Incorporate a question in roughly 35-45% of turns.…)
-- cyrene: refined (6 rules: Avoid direct questions unless prompted; favour statements ending in rising intonation.; Maintain an average of 7 words per sentence, allowing for variation between 5-9.; Use very short sentences (<=6 words) at least 50% of the time.…)
-- dan-heng-permansor-terrae: refined (6 rules: Avoid contractions; use full forms ("is" not "isn't").; Maintain an average of 7-8 words per sentence.; Use very short sentences (<=6 words) in roughly 40-50% of responses.…)
-- hyacine: refined (6 rules: Avoid repetitive phrasing across consecutive lines.; Maintain an average of 9 words per sentence, +/- 1.5 words.; Use very short sentences (<=6 words) in approximately 42-48% of responses.…)
-- hysilens: refined (6 rules: Avoid direct repetition of keywords from the prompt/scene; rephrase concepts...; Maintain an average sentence length of 8-9 words, strictly.; Use very short sentences (<=6 words) in ~43% of responses.…)
-- mydei: refined (6 rules: Maintain an average of 7.9 words per sentence, +/- 1.5 words.; Use very short sentences (<=6 words) in approximately 48% of responses.; Incorporate trailing ellipsis '...' at the end of roughly 40-42% of lines.…)
-- phainon: refined (6 rules: Maintain an average of 7.8 words per sentence, +/- 1.5 words.; Use very short sentences (<=6 words) in approximately 48% of responses.; Employ trailing ellipses ("...") at the end of roughly 48% of all lines.…)
-- tribbie: refined (6 rules: Avoid direct questions unless prompted; prioritize statements...; Maintain an average of 6-8 words per sentence, leaning towards shorter constructions.; Use '...' to end approximately 43% of all lines, regardless of grammatical completeness.…)
+- aglaea: refined (6 rules: Begin most lines with a connective phrase.; Frequently interrupt thoughts mid-sentence…; Ask rhetorical questions instead of making statements.…)
+- anaxa: refined (6 rules: Begin lines with a dismissive sound if appropriate.; Frequently trail off thoughts mid-sentence...; Keep sentences relatively concise; avoid long explanations.…)
+- cerydra: refined (6 rules: Begin lines with an interjection or title.; Frequently use very short phrases—six words or fewer.; Trail off at least a third of the time with "...".…)
+- cipher: refined (6 rules: Begin most lines with a non-lexical interjection—'Grumph,' 'Hmph,' 'Pfft.'; Frequently trail off utterances with ellipses (...).; Ask rhetorical questions more than state assertions.…)
+- cyrene: refined (6 rules: Begin most lines with a hesitant sound: "Hmm...", "Huh?", "Well…".; Frequently interrupt your own thoughts mid-sentence...; Ask rhetorical questions instead of making statements.…)
+- dan-heng-permansor-terrae: refined (5 rules: Begin sentences with linking phrases like "Also," or "Well..."; Frequently use very short statements—six words or less.; Ask rhetorical questions or seek confirmation often.…)
+- evernight: refined (6 rules: Avoid direct questions unless responding to one.; Begin lines with brief interjections like "Yeah.", "Hmm.", or "Well."; Frequently trail off utterances mid-thought with "...".…)
+- hyacine: refined (5 rules: Begin sentences with interjections like "Wow," "But," "Yes," or "Alright."; Frequently trail off utterances with ellipses (...).; Use emphatic phrasing occasionally—short bursts of feeling.…)
+- hysilens: refined (6 rules: Begin most lines with a non-lexical utterance: Hm..., Hah..., Ah...; Frequently trail off at the end of sentences with '...'; Keep sentences relatively concise; avoid long clauses or complex phrasing.…)
+- mydei: refined (6 rules: Begin lines with interjections like "Hmph" or pauses "...".; Frequently use very short phrases—six words or fewer.; End a substantial number of lines trailing off with ellipses (...).…)
+- phainon: refined (6 rules: Begin most lines with a hesitant sound or filler.; Frequently trail off statements with an ellipsis (...).; Keep sentences relatively short; avoid long clauses.…)
 ## Cycle 4 (best-of 7; bars style≥85, content≥60)
 | Heir | pass | rate | avg style | avg content | status |
 |---|---:|---:|---:|---:|---|
-| Aglaea | 2/4 | 50% | 57 | 66 | FAIL |
-| Anaxa | 2/4 | 50% | 83 | 67 | FAIL |
-| Castorice | 2/4 | 50% | 61 | 69 | FAIL |
-| Cerydra | 2/4 | 50% | 84 | 72 | FAIL |
-| Cipher | 3/4 | 75% | 86 | 69 | FAIL |
-| Cyrene | 3/4 | 75% | 87 | 69 | FAIL |
-| Dan Heng • Permansor Terrae | 2/4 | 50% | 84 | 76 | FAIL |
-| Hyacine | 2/4 | 50% | 84 | 68 | FAIL |
-| Hysilens | 2/4 | 50% | 83 | 71 | FAIL |
-| Mydei | 2/4 | 50% | 65 | 46 | FAIL |
-| Phainon | 1/4 | 25% | 79 | 70 | FAIL |
-| Tribbie | 2/4 | 50% | 84 | 71 | FAIL |
+| Aglaea | 1/8 | 12% | 73 | 64 | FAIL |
+| Anaxa | 3/8 | 37% | 80 | 71 | FAIL |
+| Cerydra | 4/8 | 50% | 84 | 67 | FAIL |
+| Cipher | 5/8 | 62% | 85 | 72 | FAIL |
+| Cyrene | 5/8 | 62% | 85 | 70 | FAIL |
+| Dan Heng • Permansor Terrae | 6/8 | 75% | 86 | 73 | FAIL |
+| Evernight | 5/8 | 62% | 79 | 68 | FAIL |
+| Hyacine | 5/8 | 62% | 85 | 68 | FAIL |
+| Hysilens | 1/8 | 12% | 79 | 63 | FAIL |
+| Mydei | 5/8 | 62% | 76 | 58 | FAIL |
+| Phainon | 2/8 | 25% | 79 | 70 | FAIL |
 
-- aglaea: refined (6 rules: Avoid metaphor & imagery; stick to direct statement.; Average 10 words per sentence, strictly enforced.; Use very short sentences (<=6 words) in ~35-40% of responses.…)
-- anaxa: refined (6 rules: Average 9.1 words per sentence.; Employ very short sentences (<=6 words) in ~42.9% of responses.; Use trailing ellipsis '...' in approximately 35.0% of lines.…)
-- castorice: refined (6 rules: Avoid direct commands/polite requests like "Kindly…"; Sentences average 7-9 words; prioritize this over strict adherence to 7.7.; Use very short sentences (<=6 words) in ~50-55% of responses.…)
-- cerydra: refined (6 rules: Maintain an average of 9 words per sentence, plus or minus 1.5 words.; Utilize very short sentences (6 words or less) in approximately 42% of responses.; Employ trailing ellipses ("...") in roughly 35% of all lines.…)
-- cipher: refined (6 rules: Keep average sentence length to 7–9 words.; Use very short sentences (<=6 words) in roughly half of all responses.; End approximately 45-50% of lines with an ellipsis ("...").…)
-- cyrene: refined (6 rules: Avoid direct sensory descriptions as opening lines; focus on observation or thought.; Maintain an average of 7 words per sentence, allowing for variation between 5-9.; Use very short sentences (<=6 words) in at least 54% of responses.…)
-- dan-heng-permansor-terrae: refined (6 rules: Maintain an average of 7.9 words per sentence, +/- 1.5 words.; Use very short sentences (<=6 words) in approximately 47% of responses.; Employ trailing ellipses ("...") in roughly 40-45% of all lines.…)
-- hyacine: refined (6 rules: Avoid direct questions unless prompted; prioritize statements with embedded queries (26.1% target).; Maintain an average sentence length of 9 words, allowing for variation but consistently centering around this value.; Use very short sentences (<=6 words) in roughly 42.9% of responses.…)
-- hysilens: refined (6 rules: Maintain an average of 8.5 words per sentence, +/- 1.5 words.; Use very short sentences (<=6 words) in approximately 43-47% of responses.; Employ trailing ellipses '...' at the end of roughly 46-50% of all statements.…)
-- mydei: refined (6 rules: Maintain an average sentence length of 7-9 words.; Use very short sentences (<=6 words) in roughly 40-50% of responses.; Incorporate trailing ellipses ("...") in approximately 40-45% of lines.…)
-- phainon: refined (6 rules: Avoid direct emotional responses to stated feelings or situations.; Maintain an average of 7-9 words per sentence.; Use ellipsis (...) in approximately 48% of all utterances.…)
-- tribbie: refined (6 rules: Avoid excessive positive affirmation; focus on neutral observation.; Sentences should average 6-8 words in length, prioritizing brevity.; Use '...' to end approximately 40-50% of all sentences, regardless of topic.…)
+- aglaea: refined (6 rules: Avoid direct questions unless prompted.; Frequently trail off at the end of statements with "...".; Keep sentences relatively long, but intersperse shorter phrases.…)
+- anaxa: refined (6 rules: Begin lines with a dismissive sound if appropriate.; Frequently trail off at the end of statements with '...'; Keep sentences relatively concise; avoid lengthy explanations.…)
+- cerydra: refined (5 rules: Begin lines with a vocalization or title – “Cerydra,” “Hmm…”, “Hah…”; Frequently use very short phrases—six words or less.; Ask rhetorical questions instead of making direct assertions.…)
+- cipher: refined (6 rules: Begin most lines with a non-lexical utterance.; Frequently trail off utterances with ellipses (...).; Keep sentences concise; avoid complex phrasing.…)
+- cyrene: refined (6 rules: Begin most lines with a hesitant sound: "Hmm...", "Hmph...", "Well..."; Frequently use very short statements – six words or fewer.; End at least half of all utterances trailing off with "...".…)
+- dan-heng-permansor-terrae: refined (5 rules: Begin most lines with a connective phrase.; Frequently use very short statements—six words or fewer.; Pose questions about observations rather than direct inquiries.…)
+- evernight: refined (6 rules: Begin most lines with a hesitation sound: Hmm..., Ah..., Well...; Frequently trail off sentences mid-thought with "...".; Keep responses concise; avoid long explanations or clauses.…)
+- hyacine: refined (5 rules: Begin sentences with interjections like "Wow," "But," "Yes," or "Alright."; Frequently trail off at the end of statements with "...".; Use very short phrases – six words or less – often.…)
+- hysilens: refined (5 rules: Begin most lines with a non-lexical interjection: Hm..., Hah..., Perhaps...; Frequently use very short statements, six words or less.; Pose rhetorical questions instead of direct answers often.…)
+- mydei: refined (6 rules: Begin lines with interjections like ‘Hmph’ or pauses like ‘...’.; Frequently use very short phrases—six words or fewer.; End a significant number of lines trailing off with ellipses (...).…)
+- phainon: refined (6 rules: Begin lines with a hesitant sound or filler.; Frequently trail off at the end of statements...; Use very short phrases often, even as standalone utterances.…)
 ## Cycle 5 (best-of 7; bars style≥85, content≥60)
 | Heir | pass | rate | avg style | avg content | status |
 |---|---:|---:|---:|---:|---|
-| Aglaea | 0/4 | 0% | 53 | 64 | FAIL |
-| Anaxa | 2/4 | 50% | 84 | 67 | FAIL |
-| Castorice | 0/4 | 0% | 46 | 56 | FAIL |
-| Cerydra | 3/4 | 75% | 86 | 68 | FAIL |
-| Cipher | 3/4 | 75% | 87 | 69 | FAIL |
-| Cyrene | 3/4 | 75% | 88 | 69 | FAIL |
-| Dan Heng • Permansor Terrae | 1/4 | 25% | 79 | 75 | FAIL |
-| Hyacine | 2/4 | 50% | 84 | 68 | FAIL |
-| Hysilens | 2/4 | 50% | 83 | 67 | FAIL |
-| Mydei | 1/4 | 25% | 72 | 54 | FAIL |
-| Phainon | 0/4 | 0% | 78 | 69 | FAIL |
-| Tribbie | 3/4 | 75% | 73 | 68 | FAIL |
+| Aglaea | 1/8 | 12% | 66 | 64 | FAIL |
+| Anaxa | 4/8 | 50% | 82 | 71 | FAIL |
+| Cerydra | 3/8 | 37% | 82 | 69 | FAIL |
+| Cipher | 4/8 | 50% | 81 | 69 | FAIL |
+| Cyrene | 6/8 | 75% | 86 | 69 | FAIL |
+| Dan Heng • Permansor Terrae | 5/8 | 62% | 85 | 72 | FAIL |
+| Evernight | 5/8 | 62% | 84 | 68 | FAIL |
+| Hyacine | 3/8 | 37% | 82 | 69 | FAIL |
+| Hysilens | 3/8 | 37% | 82 | 65 | FAIL |
+| Mydei | 3/8 | 37% | 68 | 56 | FAIL |
+| Phainon | 3/8 | 37% | 82 | 71 | FAIL |
 
-- aglaea: refined (6 rules: Avoid direct questions unless prompted; favor statements with implied inquiry.; Maintain an average of 10 words per sentence, allowing for variation but prioritize this length.; Use ellipsis (...) in approximately 35-40% of responses to create a trailing effect.…)
-- anaxa: refined (6 rules: Maintain an average of 9.1 words per sentence, +/- 1.5 words.; Use very short sentences (<=6 words) in approximately 42.9% of responses.; End roughly 35.0% of lines with a trailing ellipsis "...".…)
-- castorice: refined (6 rules: Avoid complete sentences of one or two words; minimum 3 words/sentence 90% of the time.; Use an ellipsis '...' at the end of 65-70% of all utterances.; Average sentence length between 7 and 8 words; prioritize this over word count.…)
-- cerydra: refined (6 rules: Maintain an average of 9.0 words per sentence, +/- 1.5 words.; Use very short sentences (<=6 words) in approximately 42% of responses.; Employ trailing ellipses (...) in roughly 35% of all lines.…)
-- cipher: refined (6 rules: Limit sentences to an average of 7-8 words.; Use very short sentences (<=6 words) in roughly half your responses.; Employ ellipsis '...' at the end of approximately 45-50% of utterances.…)
-- cyrene: refined (6 rules: Avoid declarative statements expressing observation; favour questioning or incomplete thoughts.; Average 7 words per sentence, strictly enforced; flag deviations >9 or <5.; Use ellipsis (...) in 52% of responses, even if grammatically unnecessary.…)
-- dan-heng-permansor-terrae: refined (6 rules: Avoid contractions; use full forms ("is" instead of "isn't").; Average 7-10 words per sentence, prioritizing the lower end of that range.; Use very short sentences (<=6 words) in roughly 45-50% of responses.…)
-- hyacine: refined (6 rules: Avoid repeating phrases across turns ("focus on tomorrow").; Maintain an average of 9 words per sentence, +/- 1.5 words.; Use very short sentences (<=6 words) in approximately 42-48% of responses.…)
-- hysilens: refined (6 rules: Avoid direct metaphor/simile; stick to simple statements or direct questions.; Maintain an average of 8-10 words per sentence, varying slightly.; Use very short sentences (<=6 words) in roughly 40-50% of responses.…)
-- mydei: refined (6 rules: Average 7.9 words per sentence, strictly enforced.; % of lines must be six words or fewer.; Use ellipsis '...' in approximately 40.5% of responses, often trailing off mid-thought.…)
-- phainon: refined (6 rules: Maintain an average of 7.8 words per sentence, +/- 1.5 words.; Use very short sentences (<=6 words) in approximately 48% of responses.; In roughly 48% of lines, trail off with an ellipsis ("...").…)
-- tribbie: refined (6 rules: Avoid direct address/names unless prompted; focus on observation.; Maintain average 6-9 words per sentence, prioritizing shorter constructions.; Use '...' to end approximately 43% of sentences, varying placement naturally.…)
+- aglaea: refined (6 rules: Begin sentences with introductory phrases like "Now," or "Concerning."; Frequently include trailing ellipses (...) even mid-thought.; Use very short statements – six words or fewer – often as standalone lines.…)
+- anaxa: refined (6 rules: Begin lines with interjections like ‘Hmph’ or ‘Well’.; Frequently trail off utterances with ellipsis (...).; Formulate most statements as observations rather than direct answers.…)
+- cerydra: refined (5 rules: Begin lines with a title-like statement or pause.; Frequently use very short phrases—six words or less.; Ask rhetorical questions instead of direct statements.…)
+- cipher: refined (6 rules: Begin most lines with a non-lexical utterance.; Frequently trail off at the end of statements...; Keep sentences relatively concise.…)
+- cyrene: refined (6 rules: Begin most lines with a hesitant sound: "Hmm...", "Uh...", "Well..."; Frequently trail off utterances with "...".; Keep sentences relatively brief; avoid long clauses.…)
+- dan-heng-permansor-terrae: refined (5 rules: Begin sentences with linking phrases like "Also," or "Well..."; Frequently use very short statements—six words or fewer.; Pose questions about observations rather than making assertions.…)
+- evernight: refined (6 rules: Begin most lines with a non-committal sound: Hmm..., Yeah..., Right...; Frequently trail off at the end of sentences with '...'; Keep sentences relatively short – aim for around seven words.…)
+- hyacine: refined (6 rules: Begin sentences with interjections like "Wow," "But now," or "Yes."; Frequently trail off utterances with ellipses (...).; Embed questions within statements more than occasionally.…)
+- hysilens: refined (6 rules: Begin most lines with a quiet interjection: Hm..., Ah..., Perhaps...; Frequently end sentences trailing off with ellipsis (...).; Keep responses concise; aim for fewer than ten words.…)
+- mydei: refined (6 rules: Begin lines with interjections like “Hmph” or pauses “…”.; Frequently end sentences unfinished, trailing off.; Ask rhetorical questions instead of making statements.…)
+- phainon: refined (6 rules: Begin sentences with a connective or filler word.; Frequently trail off at the end of statements...; Use very short phrases as complete thoughts.…)
 ## Cycle 6 (best-of 7; bars style≥85, content≥60)
 | Heir | pass | rate | avg style | avg content | status |
 |---|---:|---:|---:|---:|---|
-| Aglaea | 1/4 | 25% | 80 | 65 | FAIL |
-| Anaxa | 1/4 | 25% | 78 | 66 | FAIL |
-| Castorice | 1/4 | 25% | 68 | 71 | FAIL |
-| Cerydra | 2/4 | 50% | 83 | 76 | FAIL |
-| Cipher | 3/4 | 75% | 86 | 69 | FAIL |
-| Cyrene | 2/4 | 50% | 84 | 72 | FAIL |
-| Dan Heng • Permansor Terrae | 2/4 | 50% | 83 | 81 | FAIL |
-| Hyacine | 2/4 | 50% | 84 | 68 | FAIL |
-| Hysilens | 2/4 | 50% | 83 | 71 | FAIL |
-| Mydei | 2/4 | 50% | 74 | 56 | FAIL |
-| Phainon | 2/4 | 50% | 84 | 72 | FAIL |
-| Tribbie | 3/4 | 75% | 73 | 68 | FAIL |
+| Aglaea | 1/8 | 12% | 72 | 65 | FAIL |
+| Anaxa | 3/8 | 37% | 81 | 66 | FAIL |
+| Cerydra | 2/8 | 25% | 81 | 66 | FAIL |
+| Cipher | 4/8 | 50% | 84 | 74 | FAIL |
+| Cyrene | 5/8 | 62% | 83 | 71 | FAIL |
+| Dan Heng • Permansor Terrae | 6/8 | 75% | 86 | 73 | FAIL |
+| Evernight | 5/8 | 62% | 84 | 68 | FAIL |
+| Hyacine | 5/8 | 62% | 84 | 68 | FAIL |
+| Hysilens | 3/8 | 37% | 82 | 65 | FAIL |
+| Mydei | 3/8 | 37% | 68 | 52 | FAIL |
+| Phainon | 5/8 | 62% | 84 | 68 | FAIL |
 
-- aglaea: refined (6 rules: Avoid metaphorical phrasing; stick to direct statements or clinical observations.; Maintain an average of 10 words per sentence, fluctuating +/- 2 words.; Use very short sentences (<=6 words) in approximately 35-40% of responses.…)
-- anaxa: refined (6 rules: Maintain an average of 9.1 words per sentence.; Use very short sentences (<=6 words) in approximately 42.9% of responses.; End roughly 35.0% of lines with an ellipsis ("...").…)
-- castorice: refined (6 rules: Avoid direct commands or polite phrasing like "Kindly..."; Sentences average 7-9 words; prioritize shorter constructions.; Use very short sentences (<=6 words) in over half of all responses.…)
-- cerydra: refined (6 rules: Maintain an average of 9.0 words per sentence, +/- 1.5 words.; Use very short sentences (<=6 words) in approximately 42% of responses.; Incorporate trailing ellipses ("...") in roughly 35% of all lines.…)
-- cipher: refined (6 rules: Limit average sentence length to 7.4 words, +/- 1 word.; Employ '...' at the end of 46.4% of all utterances.; Use interjections ("Grumph," "Hm," etc.) in ~10% of lines, not as standalone responses.…)
-- cyrene: refined (6 rules: Avoid direct questions unless prompted; favour statements ending in rising intonation.; Average 7 words per sentence, strictly between 5-9 words.; Use very short sentences (<=6 words) at least 50% of the time.…)
-- dan-heng-permansor-terrae: refined (6 rules: Avoid contractions; use full forms ("is" instead of "it's").; Average 7-10 words per sentence, prioritizing the lower end of that range.; Use '...' to trail off in roughly 40% of responses.…)
-- hyacine: refined (6 rules: Use average sentence length of 9 words, allow +/- 2 words variation.; Employ very short sentences (<=6 words) in approximately 43% of responses.; Include trailing ellipsis '...' at the end of roughly 50% of all utterances.…)
-- hysilens: refined (6 rules: Maintain an average of 8.5 words per sentence, plus or minus one word.; Employ very short sentences (6 words or less) in approximately 43% of responses.; Utilize trailing ellipses ("...") in roughly 46% of all lines.…)
-- mydei: refined (6 rules: Avoid complete sentences or single-word responses; aim for 5-12 words.; Use ellipsis (...) in roughly 40% of all utterances, often trailing off mid-thought.; Keep average sentence length around 7.9 words—vary it, but stay close.…)
-- phainon: refined (6 rules: Maintain an average of 7.8 words per sentence, +/- 1.2 words.; Use very short sentences (<=6 words) in approximately 48% of responses.; Employ trailing ellipses ("...") at the end of roughly 48% of all lines.…)
-- tribbie: refined (6 rules: Avoid direct address/names unless prompted; focus on observation.; Average 6-8 words per sentence, with flexibility for impact.; Use very short sentences (<=6 words) in roughly half of all responses.…)
-**RESULT: FAILED after 6 cycles; still failing: ['aglaea', 'anaxa', 'castorice', 'cerydra', 'cipher', 'cyrene', 'dan-heng-permansor-terrae', 'hyacine', 'hysilens', 'mydei', 'phainon', 'tribbie']**
+- aglaea: refined (5 rules: Begin sentences with neutral observations or directives.; Frequently reference “the golden thread” even when irrelevant to the topic.; Use sentence length that feels deliberate, not rushed or clipped.…)
+- anaxa: refined (6 rules: Begin lines with a dismissive sound if appropriate.; Frequently trail off at the end of statements with '...'; Keep sentences relatively concise; avoid long explanations.…)
+- cerydra: refined (5 rules: Begin lines with a title-like statement or acknowledgement.; Frequently use very short phrases – six words or less.; Ask rhetorical questions often, but not every time.…)
+- cipher: refined (6 rules: Begin most lines with a guttural sound.; Frequently trail off mid-thought with "...".; Keep sentences concise; avoid elaborate phrasing.…)
+- cyrene: refined (6 rules: Begin most lines with a hesitant sound: "Hmm...", "Huh...", "Hmph..."; Frequently repeat the visitor’s last word as a question.; Keep sentences relatively short—avoid complex phrasing.…)
+- dan-heng-permansor-terrae: refined (6 rules: Begin sentences with linking phrases like "Also," or "Well..."; Frequently use very short statements—under six words—as complete thoughts.; Trail off at least two out of every five lines with "...".…)
+- evernight: refined (6 rules: Begin most lines with a hesitant sound: Hmm..., Well..., Yeah...; Frequently trail off utterances mid-sentence with "...".; Keep sentences relatively concise; avoid lengthy explanations.…)
+- hyacine: refined (5 rules: Begin sentences with interjections like “Wow,” “But,” “Yes,” or “Alright.”; Frequently trail off at the end of statements with ellipses (...).; Use very short phrases or single words often, even mid-sentence.…)
+- hysilens: refined (6 rules: Begin most lines with a non-lexical interjection like ‘Hm…’ or ‘Hah.’; Frequently trail off utterances with ellipses (...).; Construct sentences averaging around eight to ten words in length.…)
+- mydei: refined (6 rules: Begin lines with interjections like "Hmph" or pauses "...".; Frequently trail off at the end of statements with '...'; Keep sentences relatively short; avoid long complex phrasing.…)
+- phainon: refined (6 rules: Begin most lines with a hesitant particle like "So..." or "Well..."; Frequently trail off at the end of statements with "...".; Keep sentences relatively short; avoid long complex phrasing.…)
+**RESULT: FAILED after 6 cycles; still failing: ['aglaea', 'anaxa', 'cerydra', 'cipher', 'cyrene', 'dan-heng-permansor-terrae', 'evernight', 'hyacine', 'hysilens', 'mydei', 'phainon']**
 
 ## FINAL CHEAT-FREE FULL RE-TEST (all Heirs)
 | Heir | pass | rate | avg style | avg content | status |
 |---|---:|---:|---:|---:|---|
-| Aglaea | 2/4 | 50% | 71 | 71 | FAIL |
-| Anaxa | 2/4 | 50% | 84 | 71 | FAIL |
-| Castorice | 0/4 | 0% | 57 | 60 | FAIL |
-| Cerydra | 3/4 | 75% | 86 | 69 | FAIL |
-| Cipher | 4/4 | 100% | 90 | 70 | PASS |
-| Cyrene | 4/4 | 100% | 90 | 70 | PASS |
-| Dan Heng • Permansor Terrae | 2/4 | 50% | 83 | 82 | FAIL |
-| Evernight | 3/4 | 75% | 87 | 75 | FAIL |
-| Hyacine | 2/4 | 50% | 84 | 68 | FAIL |
-| Hysilens | 1/4 | 25% | 80 | 65 | FAIL |
-| Mydei | 2/4 | 50% | 74 | 56 | FAIL |
-| Phainon | 2/4 | 50% | 84 | 76 | FAIL |
-| Tribbie | 2/4 | 50% | 70 | 66 | FAIL |
+| Aglaea | 1/8 | 12% | 66 | 65 | FAIL |
+| Anaxa | 3/8 | 37% | 80 | 66 | FAIL |
+| Castorice | 6/8 | 75% | 75 | 70 | FAIL |
+| Cerydra | 4/8 | 50% | 82 | 68 | FAIL |
+| Cipher | 6/8 | 75% | 85 | 71 | FAIL |
+| Cyrene | 7/8 | 87% | 88 | 69 | PASS |
+| Dan Heng • Permansor Terrae | 6/8 | 75% | 86 | 73 | FAIL |
+| Evernight | 6/8 | 75% | 87 | 68 | FAIL |
+| Hyacine | 5/8 | 62% | 84 | 68 | FAIL |
+| Hysilens | 4/8 | 50% | 82 | 66 | FAIL |
+| Mydei | 3/8 | 37% | 63 | 46 | FAIL |
+| Phainon | 5/8 | 62% | 83 | 71 | FAIL |
+| Tribbie | 5/8 | 62% | 86 | 70 | FAIL |
 
 **FINAL OUTCOME: FAILED** — max cycles (6) reached
