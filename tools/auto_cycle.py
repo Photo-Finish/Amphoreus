@@ -30,6 +30,10 @@ NOTES
 - One run is serialized by the same named-mutex the test tool uses, so two
   cycles cannot collide.
 - Refinement only touches the failing Heirs' cards (idempotent, no drift).
+- OPT-OUT: a Heir that passes one full cycle opts out of the remaining cycles,
+  so each later cycle is cheaper (only the still-failing Heirs re-run).
+- FINAL RE-TEST: --full-final makes it cover EVERY canon line of every Heir
+  (--full), best-of --final-best-of (default 1 = single-shot deployment truth).
 """
 
 import argparse
@@ -207,13 +211,15 @@ def write_refinement_rules(llm, heir_id: str, info: dict, stats: dict, exemplars
 # --------------------------------------------------------------------------- #
 # The conductor
 # --------------------------------------------------------------------------- #
-def run_test(heir_ids, args, limit=None, best_of=None) -> int:
+def run_test(heir_ids, args, limit=None, best_of=None, full=False) -> int:
     cmd = [PYTHON, str(TEST), "--limit", str(limit or args.limit),
            "--best-of", str(best_of or args.best_of),
            "--temp", str(args.temp),
            "--model", args.model,
            "--style-bar", str(args.style_bar),
            "--content-bar", str(args.content_bar)]
+    if full:
+        cmd += ["--full"]
     if args.judge_model:
         cmd += ["--judge-model", args.judge_model]
     if heir_ids:
@@ -242,6 +248,15 @@ def main():
                     help="per-Heir pass-rate gate (percent of cases passing)")
     ap.add_argument("--max-cycles", type=int, default=4)
     ap.add_argument("--once", action="store_true", help="single assessment, no refinement")
+    # A Heir that passes a cycle opts out of later cycles (shortens the loop);
+    # the final re-test covers EVERY canon line (full corpus) unless disabled.
+    ap.add_argument("--full-final", action="store_true",
+                    help="final cheat-free re-test evaluates EVERY canon line of "
+                         "every Heir (--full), not just the --limit sample")
+    ap.add_argument("--final-best-of", type=int, default=1,
+                    help="candidates used for the full final re-test (default 1 = "
+                         "single-shot, the true deployment measurement; every canon "
+                         "line tested once)")
     # Staged escalation (raise the bars after the gate passes) with an
     # overfitting guard: validate on a DIFFERENT (larger) case sample first.
     ap.add_argument("--escalate", action="store_true",
@@ -273,6 +288,8 @@ def main():
         f"- Heir model: `{args.model}` · judge model: `{args.judge_model}` (constant)",
         f"- Gate: per-Heir pass rate ≥ {args.pass_target}% (style ≥ {args.style_bar} AND content ≥ {args.content_bar})",
         f"- Best-of: start {args.best_of}, max {args.best_of_max} · limit {args.limit}/Heir/cycle · max {args.max_cycles} cycles",
+        f"- Opt-out: a Heir that passes a cycle declines participation in later cycles (shortens the loop).",
+        f"- Final re-test: {'FULL — every canon line of every Heir, best-of %d (single-shot deployment measure)' % args.final_best_of if args.full_final else 'sample (limit %d)' % args.limit}",
         "",
     ]
 
@@ -280,6 +297,7 @@ def main():
     best_of_start = args.best_of
     final_outcome = None
     final_reason = ""
+    passed_heirs = set()   # Heirs that passed a cycle and opt out of later ones
     while cycle < args.max_cycles:
         cycle += 1
         print(f"\n{'='*70}\nCYCLE {cycle} — targets: {len(targets)} Heirs  "
@@ -307,13 +325,19 @@ def main():
         for cid, r in evaluated.items():
             ok = r["pass_rate"] >= args.pass_target
             status = "PASS" if ok else "FAIL"
-            if not ok:
+            if ok:
+                passed_heirs.add(cid)
+                print(f"    ✓ {r['name']:>28}: {r['pass']}/{r['total']} ({r['pass_rate']}%) — passed, DECLINES further cycles")
+            else:
                 failing.append(cid)
+                print(f"    {r['name']:>28}: {r['pass']}/{r['total']} ({r['pass_rate']}%) avg style {r['avg_style']} — {status}")
             line += f"\n| {r['name']} | {r['pass']}/{r['total']} | {r['pass_rate']}% | {r['avg_style']} | {r['avg_content']} | {status} |"
-            print(f"    {r['name']:>28}: {r['pass']}/{r['total']} ({r['pass_rate']}%) avg style {r['avg_style']} — {status}")
 
         log.append(f"## Cycle {cycle} (best-of {args.best_of}; bars style≥{args.style_bar}, content≥{args.content_bar})")
         log.append(line)
+        opted = [cid for cid in passed_heirs if cid not in failing]
+        if opted:
+            log.append(f"- Opted out this cycle (already passed): {', '.join(opted)}")
         log.append("")
 
         # ---- Gate passed ------------------------------------------------- #
@@ -366,6 +390,7 @@ def main():
                            f"(validation ok)")
                 cycle = 0  # restart the cycle budget at the new bars
                 targets = list(all_heirs)
+                passed_heirs.clear()  # bars changed — everyone must re-prove
                 args.best_of = best_of_start
                 continue
             print(f"\n  ⚠️ Overfitting risk: validation dropped to {vavg:.0f}% — keeping bars "
@@ -417,6 +442,9 @@ def main():
             args.best_of += 1
             print(f"  best-of -> {args.best_of}")
         targets = failing
+        # Persist the log after every cycle so a crash (e.g. during the long
+        # final re-test) never loses the cycle history.
+        LOG.write_text("\n".join(log), encoding="utf-8")
 
     if final_outcome is None:
         final_outcome = "FAILED"
@@ -424,11 +452,17 @@ def main():
         print(f"\n❌ Max cycles ({args.max_cycles}) reached; still failing: {targets}")
         log.append(f"**RESULT: FAILED after {args.max_cycles} cycles; still failing: {targets}**")
 
-    # ---- FINAL CHEAT-FREE FULL RE-TEST: ALL Heirs, no matter the outcome ----
+    # ---- FINAL CHEAT-FREE RE-TEST: ALL Heirs, no matter the outcome. With
+    # --full-final this evaluates EVERY canon line of every Heir (single-shot
+    # best-of 1 by default = the true deployment measurement). ----
     if not args.once:
-        print(f"\n{'='*70}\nFINAL CHEAT-FREE FULL RE-TEST — all {len(all_heirs)} Heirs "
+        mode_txt = (f"FULL corpus — every canon line of every Heir, best-of {args.final_best_of}"
+                    if args.full_final else f"sample (limit {args.limit})")
+        print(f"\n{'='*70}\nFINAL CHEAT-FREE RE-TEST — all {len(all_heirs)} Heirs · {mode_txt} "
               f"(bars: style ≥ {args.style_bar}, content ≥ {args.content_bar})")
-        rc = run_test(all_heirs, args)
+        log.append(f"## FINAL CHEAT-FREE RE-TEST STARTED {time.strftime('%H:%M')} — {mode_txt}")
+        LOG.write_text("\n".join(log), encoding="utf-8")  # checkpoint before the long run
+        rc = run_test(all_heirs, args, best_of=args.final_best_of, full=args.full_final)
         if rc == 0:
             fres = parse_report()
             if fres:
@@ -445,7 +479,7 @@ def main():
                                f"{r['avg_style']} | {r['avg_content']} | "
                                f"{'PASS' if ok else 'FAIL'} |")
                 log.append("")
-                log.append("## FINAL CHEAT-FREE FULL RE-TEST (all Heirs)")
+                log.append(f"## FINAL CHEAT-FREE RE-TEST RESULT (all Heirs · {mode_txt})")
                 log.append(ftable)
                 log.append("")
                 log.append(f"**FINAL OUTCOME: {final_outcome}** — {final_reason}")

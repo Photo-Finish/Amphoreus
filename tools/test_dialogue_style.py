@@ -27,6 +27,7 @@ USAGE
     python tools/test_dialogue_style.py                       # all 13 Heirs
     python tools/test_dialogue_style.py --heirs tribbie       # one Heir
     python tools/test_dialogue_style.py --best-of 3 --temp 0.3
+    python tools/test_dialogue_style.py --full --best-of 1    # EVERY canon line, single-shot
 """
 
 import argparse
@@ -216,9 +217,12 @@ def judge_style(llm, heir_name, ctx, canon_lines, actual, stats=None):
     return extract_json(reply)
 
 
-def build_cases(heir_id, limit):
+def build_cases(heir_id, limit, full=False):
     """Return cases: (ctx, anchor_lines, target_line).
 
+    full=True: evaluate EVERY testable canon line (no even sampling down to
+    `limit`). Lines that lack 2 preceding dialogue lines or any own-line anchor
+    are still excluded (they cannot be tested).
     anchor_lines: the Heir's OWN canon lines from this scene part, EXCLUDING the
     target — used as voice anchors for the model (production-faithful: the Heir
     knows its own voice via its canon knowledge).
@@ -256,7 +260,7 @@ def build_cases(heir_id, limit):
             ctx = f"(scene: {scene})\n" if scene else ""
             ctx += "The dialogue you just heard:\n" + "\n".join(prev[-12:])
             cases.append((ctx, anchors, text))
-    if len(cases) <= limit:
+    if full or len(cases) <= limit:
         return cases
     step = len(cases) / limit
     return [cases[int(k * step)] for k in range(limit)]
@@ -301,6 +305,10 @@ def main():
     ap.add_argument("--best-of", type=int, default=3,
                     help="generate N candidate replies and let the character pick "
                          "the most in-voice one (reduces variance; no answer leaked)")
+    ap.add_argument("--full", action="store_true",
+                    help="evaluate EVERY canon line of each Heir (no even sampling "
+                         "down to --limit). Use with --best-of 1 for a single-shot "
+                         "full-corpus measurement.")
     args = ap.parse_args()
 
     if not acquire_lock():
@@ -324,6 +332,7 @@ def _run(args):
         "# Dialogue-Style Report (the Heir-voice standard)",
         "",
         f"*Generated: 2026-08-10 · model `{args.model}`*",
+        f"*Cases: {'FULL corpus — every canon line' if args.full else f'even sample (limit {args.limit})'} · best-of {args.best_of} · temp {args.temp}*",
         "",
         "Criteria: **STYLE & INTONATION ≥ 85** (word choice, sentence length, rhythm, "
         "emotional register, verbal tics) and **CONTENT ≥ 60** (general gist fits the "
@@ -397,7 +406,7 @@ def _run(args):
             "variation of the same image."
         )
 
-        cases = build_cases(heir_id, args.limit)
+        cases = build_cases(heir_id, args.limit, full=args.full)
         # The full set of EXISTING canon lines for this Heir (from its own
         # memories) — the model may never quote any of them verbatim.
         try:
