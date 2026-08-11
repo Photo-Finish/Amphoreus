@@ -390,7 +390,11 @@ def _run(args):
             "in the same voice.\n"
             "7. NO beautiful rhetoric: no elegant flourishes, no polished aphorisms, "
             "no poetic imagery. Write the plain, real line the character would say — "
-            "even if it is rough or awkward. Plain over pretty, always."
+            "even if it is rough or awkward. Plain over pretty, always.\n"
+            "8. NEVER lean on a single motif, object, or catchphrase as a crutch "
+            "(e.g. 'the golden thread', 'Snowy~', 'the threads of fate'). Say a "
+            "fresh, specific line in the character's true voice — not another "
+            "variation of the same image."
         )
 
         cases = build_cases(heir_id, args.limit)
@@ -415,7 +419,9 @@ def _run(args):
                 f"explain, do not moralise, do not philosophise. Never quote one of "
                 f"the canon lines above verbatim — say something new that still sounds "
                 f"like you. Do not be eloquent: write the plain, real line the "
-                f"character would say, even if it is rough or awkward.\n"
+                f"character would say, even if it is rough or awkward. Never lean on "
+                f"a single motif or catchphrase as a crutch — say a fresh, specific "
+                f"line.\n"
                 f"{anchor_block}\n\n"
                 f"Say the next thing you would say here, in your canon voice:"
             )

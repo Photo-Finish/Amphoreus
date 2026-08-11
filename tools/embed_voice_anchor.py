@@ -55,6 +55,9 @@ def build_voice_block(name: str, stats: dict, exemplars: list[str]) -> str:
         "- NO beautiful rhetoric: no elegant flourishes, no polished aphorisms, no "
         "poetic imagery. Write the plain, real line the character would say — even "
         "if it is rough or awkward. Eloquence is a failure, not a feature.",
+        "- Never lean on a single motif or catchphrase as a crutch (e.g. repeating "
+        "the same image every line) — each line is a fresh, specific thing the "
+        "character would say.",
         "- No name prefix, no narration, no stage directions, no asterisks.",
         "- Never quote or repeat a canon line above verbatim — say something new "
         "in the same voice.",
