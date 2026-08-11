@@ -430,6 +430,22 @@ def _run(args):
     judge_llm = LLMClient(model=args.judge_model or args.model)
     loader = CharacterLoader(str(ROOT / "src" / "characters"))
 
+    # Preflight: the backend must actually see the requested models. A bare
+    # `ollama serve` started without OLLAMA_MODELS serves an EMPTY models dir,
+    # so every chat call returns 404 "model not found" — fail once, clearly,
+    # instead of spamming 404s per case.
+    _known = llm.list_models()
+    _needed = {args.model, args.judge_model or args.model}
+    _missing = sorted(m for m in _needed if m not in _known)
+    if _missing:
+        print(f"✗ MODEL(S) NOT FOUND by the backend: {_missing}")
+        print(f"  The Ollama server is probably serving an empty/wrong models dir")
+        print(f"  (a bare `ollama serve` ignores OLLAMA_MODELS).")
+        print(f"  Fix:  powershell -ExecutionPolicy Bypass -File tools\\start_ollama.ps1")
+        print(f"  (sets OLLAMA_MODELS=D:\\Workspace\\Amphoreus\\models\\ollama)")
+        return 1
+    print(f"  backend sees all required models: {sorted(_needed)}")
+
     print(f"STYLE standard — model {args.model}, pass = style ≥ {args.style_bar} "
           f"AND content ≥ {args.content_bar}")
     print(f"Anti-cheat: {'ON (no canon quote, no repeated line, no phrase-crutch, no formulaic opening)' if args.anti_cheat else 'OFF'}\n")
