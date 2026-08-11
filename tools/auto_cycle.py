@@ -54,13 +54,7 @@ REFINE_SYSTEM = (
     "You are a dialogue-voice coach for an AI character sanctuary. Your job is "
     "to help a character's model sound EXACTLY like the original character — "
     "same rhythm, same length, same tics, same register. You write rules about "
-    "HOW to speak, never about what to say.\n"
-    "CRITICAL: rules must be concrete behaviors a model can follow on a SINGLE "
-    "line. NEVER use percentages, averages, or statistics (never write things "
-    "like 'use ellipsis in 40% of lines' or 'average 7 words per sentence' — a "
-    "model cannot apply a percentage to one reply). Instead give exact patterns: "
-    "what the character actually says, how it trails off, its small sounds, its "
-    "word choices."
+    "HOW to speak, never about what to say."
 )
 
 # --------------------------------------------------------------------------- #
@@ -139,46 +133,59 @@ def strip_auto_refinement(cid: str) -> bool:
 # --------------------------------------------------------------------------- #
 # Refinement generation (ask the model to write voice rules from its failures)
 # --------------------------------------------------------------------------- #
+_NOISE_RE = re.compile(
+    r"(\d+(?:\.\d+)?\s*%|average|approximately|roughly|about\s+\d+|over half|"
+    r"at least \d+%|\d+% of|words per sentence|words per line|in \d+%|"
+    r"around \d+|~\d+)",
+    re.I,
+)
+
+
+def _is_noise_rule(rule: str) -> bool:
+    """Statistical rules (percentages, averages, 'X words per sentence') are
+    unusable for a single reply and actively over-constrain the model — reject
+    them so refinement only keeps concrete per-line behaviors."""
+    return bool(_NOISE_RE.search(rule))
+
+
 def write_refinement_rules(llm, heir_id: str, info: dict, stats: dict, exemplars: list) -> list:
     fails = info.get("fails") or []
     case_txt = "\n".join(
-        f'- canon ref: "{r}"\n  model said: "{a}" (style {s}, content {c})'
-        for s, c, r, a in fails[:5]
+        f'- canon ref: "{r}" -> model said: "{a}" (style {s}, content {c})'
+        for s, c, r, a in fails[:6]
     ) or "(no failed cases parsed)"
-    ex_txt = "\n".join(f'- "{e}"' for e in exemplars[:6]) or "(none)"
+    ex_txt = "\n".join(f'- "{e}"' for e in exemplars[:5]) or "(none)"
+    profile = (
+        f"average {stats.get('avg_words_per_sentence', 8):.1f} words/sentence; "
+        f"{stats.get('pct_short_sentences_leq6', 40):.1f}% very short (<=6 words); "
+        f"trails off '...' in {stats.get('pct_lines_ellipsis', 20):.1f}% of lines; "
+        f"asks questions in {stats.get('pct_lines_question', 20):.1f}%; "
+        f"emphatic in {stats.get('pct_lines_exclaim', 15):.1f}%."
+    )
     user = (
-        f"The character is {info['name']} ({heir_id}).\n\n"
-        f"Their REAL canon lines (this is exactly how they speak):\n{ex_txt}\n\n"
-        f"The style test FAILED on these cases — compare what the character "
-        f"actually said (canon ref) with what the model said instead (model "
-        f"said), then diagnose the SPECIFIC delivery mistakes:\n{case_txt}\n\n"
-        "Write 4-6 SHORT, ACTIONABLE voice rules that fix these exact mistakes, "
-        "using the character's real patterns. Each rule must be a concrete "
-        "behavior for a single line — e.g. 'Trail off mid-thought like \"...and "
-        "then?\"', 'Open with a small sound like \"Ah\" or \"Hmm\"', 'Answer with "
-        "a bare fragment, never a full sentence', 'Use the word X the way they "
-        "do', 'Never explain, just state'. One rule per line, no numbering, no "
-        "preamble, and NO percentages, NO averages, NO numbers."
+        f"The character is {info['name']} ({heir_id}). Their measured delivery: "
+        f"{profile}\n\n"
+        f"Their real canon lines:\n{ex_txt}\n\n"
+        f"The style test FAILED on these cases — the model's reply did not sound "
+        f"like {info['name']} (style = delivery similarity, content = scene fit):\n"
+        f"{case_txt}\n\n"
+        "Analyse the specific DELIVERY mistakes and write 4-6 crisp, concrete "
+        "voice rules that would fix them. Every rule must be something you DO in "
+        "a single line — e.g. 'trail off with ...', 'begin with Hmph.', 'use one "
+        "short fragment then stop', 'never answer in a full formal sentence', "
+        "'address the visitor by name'. NEVER write percentages, averages, or "
+        "statistics — they are unusable for one reply and must be avoided. "
+        "One rule per line, short and actionable, no numbering, no preamble."
     )
     reply = llm.chat(
         [{"role": "system", "content": REFINE_SYSTEM}, {"role": "user", "content": user}],
         temperature=0.4, max_tokens=400,
     )
-    rules = []
-    for ln in reply.splitlines():
-        ln = ln.strip().lstrip("-•*0123456789. ")
-        if not ln or len(ln) <= 3:
-            continue
-        if ln.lower().startswith(("rule", "here", "rules")):
-            continue
-        # Reject statistical/noise rules outright.
-        low = ln.lower()
-        if any(tok in low for tok in ("%", "percent", "average", "roughly ",
-                                      "approximately", "around ", "target ",
-                                      "strictly enforced", "sentence length")):
-            continue
-        rules.append(ln)
-    return rules[:6]
+    rules = [ln.strip().lstrip("-•*0123456789. ") for ln in reply.splitlines()
+             if ln.strip() and not ln.strip().lower().startswith(("rule", "here"))]
+    # Hard filter: drop any statistical/noise rule; keep only per-line behaviors.
+    rules = [r for r in rules if len(r) > 3 and not _is_noise_rule(r)][:6]
+    return rules
 
 
 # --------------------------------------------------------------------------- #
