@@ -138,9 +138,23 @@ def strip_auto_refinement(cid: str) -> bool:
 # Refinement generation (ask the model to write voice rules from its failures)
 # --------------------------------------------------------------------------- #
 _NOISE_RE = re.compile(
-    r"(\d+(?:\.\d+)?\s*%|average|approximately|roughly|about\s+\d+|over half|"
-    r"at least \d+%|\d+% of|words per sentence|words per line|in \d+%|"
-    r"around \d+|~\d+)",
+    r"(\d+(?:\.\d+)?\s*%|about\s+\d+|over half|at least \d+%|\d+% of|"
+    r"words per (?:sentence|line)|in \d+%|around \d+|~\d+|"
+    r"\baverage\w*\b|approximately|roughly|"
+    # measured quantities written as numbers: "7.1 words", "1 word", "3 sentences"
+    r"\d+(?:\.\d+)?\s*(?:words?|sentences?|turns?|lines?|utterances?|responses?|statements?)\b|"
+    # written-out fractions and frequencies (the model often spells numbers):
+    # "one in six", "two out of ten", "two-thirds", "half", "a third",
+    # "every three turns", "once every five lines", "per nine sentences"
+    r"\b(?:one|two|three|four|five|six|seven|eight|nine|ten)\s+(?:in|out of)\s+"
+    r"(?:six|seven|eight|nine|ten|twenty|thirty|hundred)\b|"
+    r"\b(?:half|one[- ]third|two[- ]thirds|a third|three[- ]quarters|a quarter|a fifth|"
+    r"one fifth|two fifths|a tenth)\b|"
+    r"\b(?:every|in every|once every|at least once every|per|about every)\s+"
+    r"(?:one|two|three|four|five|six|seven|eight|nine|ten|twelve|fifteen|twenty|"
+    r"thirty|forty|fifty|few|several|dozen|other|\d+)\s*"
+    r"(?:turns?|lines?|sentences?|utterances?|responses?|statements?|replies?|times?)\b|"
+    r"\b(?:less than once|no more than once|at least once|in about|about one)\b)",
     re.I,
 )
 # Rules that prescribe overusing a motif/catchphrase (caused spamming before)
@@ -193,7 +207,10 @@ def write_refinement_rules(llm, heir_id: str, info: dict, stats: dict, exemplars
         "{info['name']} from every other Heir. Never write generic advice that "
         "would apply to any terse character (e.g. 'trail off with ...', 'keep it "
         "short', 'use interjections') — those are forbidden. Never prescribe "
-        "repeating a motif or catchphrase. If it is not in the canon lines, do "
+        "repeating a motif or catchphrase. NEVER write frequency rules — nothing "
+        "like 'every N turns', 'once per N lines', 'X% of the time', 'half', 'a "
+        "third', 'one in N'. A rule is only something you DO in a single line, "
+        "never how often you do it. If it is not in the canon lines, do "
         "not invent it. Every rule must be something you DO in a single line. "
         "One rule per line, short and actionable, no numbering, no preamble."
     )
@@ -431,6 +448,7 @@ def main():
                 print(f"    ! {cid}: refinement LLM error {e}")
                 rules = []
             if rules:
+                strip_auto_refinement(cid)  # replace, never stack — no accumulation
                 embed_auto_refinement(cid, rules)
                 print(f"    ✓ {cid}: embedded {len(rules)} auto-refinement rules")
                 log.append(f"- {cid}: refined ({len(rules)} rules: {'; '.join(rules[:3])}…)")

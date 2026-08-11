@@ -1,190 +1,93 @@
-# Auto-cycle log — 2026-08-11 08:30
+# Auto-cycle log — 2026-08-11 22:16
 
 - Heir model: `gemma3:27b` · judge model: `gemma3:27b` (constant)
 - Gate: per-Heir pass rate ≥ 85% (style ≥ 85 AND content ≥ 60)
-- Best-of: start 5, max 7 · limit 8/Heir/cycle · max 6 cycles
+- Best-of: start 7, max 9 · limit 8/Heir/cycle · max 6 cycles
+- Opt-out: a Heir that passes a cycle declines participation in later cycles (shortens the loop).
+- Final re-test: FULL — every canon line of every Heir, best-of 1 (single-shot deployment measure)
+- Anti-cheat: ON — no canon quoting, no repeated line, no phrase-crutch, no formulaic opening (within-run filter)
 
-## Cycle 1 (best-of 5; bars style≥85, content≥60)
+## Cycle 1 (best-of 7; bars style≥85, content≥60)
 | Heir | pass | rate | avg style | avg content | status |
 |---|---:|---:|---:|---:|---|
-| Aglaea | 3/8 | 37% | 67 | 67 | FAIL |
-| Anaxa | 3/8 | 37% | 80 | 66 | FAIL |
-| Castorice | 2/8 | 25% | 57 | 61 | FAIL |
-| Cerydra | 2/8 | 25% | 81 | 72 | FAIL |
-| Cipher | 5/8 | 62% | 84 | 70 | FAIL |
-| Cyrene | 2/8 | 25% | 80 | 72 | FAIL |
-| Dan Heng • Permansor Terrae | 6/8 | 75% | 86 | 72 | FAIL |
-| Evernight | 6/8 | 75% | 87 | 72 | FAIL |
-| Hyacine | 3/8 | 37% | 80 | 70 | FAIL |
-| Hysilens | 5/8 | 62% | 85 | 67 | FAIL |
-| Mydei | 3/8 | 37% | 63 | 46 | FAIL |
-| Phainon | 3/8 | 37% | 82 | 69 | FAIL |
-| Tribbie | 5/8 | 62% | 84 | 68 | FAIL |
+| Aglaea | 2/8 | 25% | 68 | 72 | FAIL |
+| Anaxa | 4/8 | 50% | 83 | 70 | FAIL |
+| Castorice | 6/8 | 75% | 82 | 72 | FAIL |
+| Cerydra | 6/8 | 75% | 85 | 81 | FAIL |
+| Cipher | 8/8 | 100% | 88 | 71 | PASS |
+| Cyrene | 6/8 | 75% | 84 | 74 | FAIL |
+| Dan Heng • Permansor Terrae | 2/8 | 25% | 80 | 81 | FAIL |
+| Evernight | 6/8 | 75% | 82 | 68 | FAIL |
+| Hyacine | 6/8 | 75% | 85 | 71 | FAIL |
+| Hysilens | 6/8 | 75% | 85 | 71 | FAIL |
+| Mydei | 4/8 | 50% | 70 | 59 | FAIL |
+| Phainon | 6/8 | 75% | 86 | 74 | FAIL |
+| Tribbie | 6/8 | 75% | 80 | 73 | FAIL |
+- Opted out this cycle (already passed): cipher
 
-- aglaea: refined (5 rules: Begin sentences with clarifying phrases like "Now," or "Concerning..."; Frequently use very short statements—six words or fewer.; Ask rhetorical questions rather than direct ones.…)
-- anaxa: refined (6 rules: Begin lines with a dismissive sound if appropriate.; Frequently trail off utterances with ellipsis (...).; Keep sentences relatively concise; avoid rambling explanations.…)
-- castorice: refined (6 rules: Begin most lines with a hesitation sound or filler word.; Frequently interrupt your own sentences before completion...; Keep sentence length concise; aim for brevity.…)
-- cerydra: refined (5 rules: Begin lines with a title-like utterance—name or descriptor.; Frequently use very short phrases, often six words or fewer.; Ask rhetorical questions rather than direct inquiries.…)
-- cipher: refined (6 rules: Begin most lines with a non-lexical utterance.; Frequently trail off at the end of statements...; Ask rhetorical questions more than making direct assertions.…)
-- cyrene: refined (6 rules: Begin lines with a hesitant sound – "Huh," "Hmm," or "...".; Frequently repeat key words from the prompt in your response.; End most sentences trailing off with ellipsis (...).…)
-- dan-heng-permansor-terrae: refined (4 rules: Begin sentences with linking phrases like “Also,” or “Well…”; Frequently use very short clauses before longer ones.; Avoid strong emotional declarations; maintain a neutral tone.…)
-- evernight: refined (6 rules: Begin sentences with brief acknowledgements like "Yeah." or "Hmm."; Frequently trail off thoughts mid-sentence using "...".; Keep most statements under six words in length.…)
-- hyacine: refined (6 rules: Begin lines with interjections like "Wow," "But," "Yes," or "Alright."; Frequently trail off utterances with ellipses (...).; Ask rhetorical questions or check understanding often.…)
-- hysilens: refined (5 rules: Avoid direct repetition of "another fish" or similar phrases.; Frequently trail off utterances with ellipses (...).; Incorporate very short statements – six words or fewer – often.…)
-- mydei: refined (6 rules: Begin lines with interjections like “Hmph” or pauses “…”.; Frequently trail off at the end of statements.; Keep sentences relatively concise—don't ramble.…)
-- phainon: refined (6 rules: Begin sentences with a hesitant sound or filler.; Frequently trail off at the end of statements…; Ask rhetorical questions instead of direct commands.…)
-- tribbie: refined (5 rules: Begin sentences with interjections frequently.; Ask rhetorical questions at least sometimes.; Use emphatic stress on key words within a sentence.…)
-## Cycle 2 (best-of 6; bars style≥85, content≥60)
+- aglaea: refined (2 rules: Use 'please' when directly addressing groups, even in commands.; Include a single instance of emphatic phrasing per nine sentences—a slight rise in register is acceptable.…)
+- anaxa: refined (1 rules: Use “Hmph” as a standalone interjection or sentence-starter occasionally.…)
+- castorice: refined (2 rules: Incorporate a question into around one in six utterances.; Employ “seriously…” as an intensifier very rarely—less than once per ten lines.…)
+- cerydra: refined (3 rules: Include at least one instance of self-address or internal reflection within longer statements...; Use direct address ("Deliverer") even when not directly responding to someone.; Incorporate a statement of indifference or acceptance after acknowledging a negative event……)
+- cyrene: refined (1 rules: Begin lines with fragmented thoughts or incomplete recall ("Mem?", "*Name?").…)
+- dan-heng-permansor-terrae: refined (2 rules: Use "also" to introduce additional, often factual, information within a single line.; Incorporate pauses indicated by “...” mid-sentence even when not initiating the statement.…)
+- evernight: refined (3 rules: Use sentence length averaging 7.1 words, fluctuating +/- 1 word.; Incorporate parenthetical references to other characters (e.g., "(Trailblazer)") at least once every two turns.; Truncate statements after incomplete phrases, mirroring unfinished thoughts—like beginning a thought and stopping mid-sentence.…)
+- hyacine: refined (1 rules: Incorporate direct address ("You'd," "your") at least once per extended response (3+ sentences).…)
+- hysilens: refined (2 rules: Use 'Call me...' phrasing when introducing yourself or another character.; Employ phrasing beginning with ‘You’ to directly address another character about their actions or motivations frequently.…)
+- mydei: refined (1 rules: Use complex titles/descriptions (e.g., "Greatest of kings...") at least once every four turns.…)
+- phainon: refined (6 rules: Include “interesting” or a near synonym (compelling, curious) at least once every three turns.; Frame statements as observations rather than declarations – soften edges.; Employ "as you can see" when introducing shared context or explaining something obvious.…)
+- tribbie: refined (1 rules: Use emphatic stress on pronouns—like "**us**"—when directly addressing a group.…)
+## Cycle 2 (best-of 8; bars style≥85, content≥60)
 | Heir | pass | rate | avg style | avg content | status |
 |---|---:|---:|---:|---:|---|
-| Aglaea | 3/8 | 37% | 76 | 65 | FAIL |
-| Anaxa | 3/8 | 37% | 81 | 71 | FAIL |
-| Castorice | 3/8 | 37% | 69 | 68 | FAIL |
-| Cerydra | 3/8 | 37% | 82 | 66 | FAIL |
-| Cipher | 3/8 | 37% | 82 | 71 | FAIL |
-| Cyrene | 6/8 | 75% | 86 | 69 | FAIL |
+| Aglaea | 5/8 | 62% | 84 | 72 | FAIL |
+| Anaxa | 3/8 | 37% | 74 | 62 | FAIL |
+| Castorice | 5/8 | 62% | 80 | 67 | FAIL |
+| Cerydra | 4/8 | 50% | 83 | 79 | FAIL |
+| Cyrene | 4/8 | 50% | 75 | 68 | FAIL |
+| Dan Heng • Permansor Terrae | 5/8 | 62% | 84 | 81 | FAIL |
+| Evernight | 7/8 | 87% | 88 | 79 | PASS |
+| Hyacine | 3/8 | 37% | 80 | 71 | FAIL |
+| Hysilens | 7/8 | 87% | 86 | 69 | PASS |
+| Mydei | 4/8 | 50% | 69 | 61 | FAIL |
+| Phainon | 2/8 | 25% | 75 | 64 | FAIL |
+| Tribbie | 7/8 | 87% | 88 | 74 | PASS |
+- Opted out this cycle (already passed): evernight, tribbie, cipher, hysilens
+
+- aglaea: refined (1 rules: Use emphatic phrasing less than once per ten sentences; focus on measured delivery over strong inflection.…)
+- anaxa: refined (1 rules: Use 'hmph' as an isolated utterance to signal dismissal or skepticism.…)
+- castorice: refined (1 rules: Introduce questions in around one out of every six turns of dialogue.…)
+- cerydra: refined (1 rules: Incorporate a self-reflective statement regarding reactions to praise/disapproval at least once every five turns.…)
+- cyrene: refined (6 rules: Reasoning for each rule:**; Ellipses:** The canon consistently *starts* lines with "...". This is a very specific habit, not just trailing off generally. The failures show the model doesn't initiate this way enough.; Questions:** Cyrene frequently poses questions, even when seemingly thinking aloud. This isn’t simply being inquisitive; it's part of their processing style.…)
+- dan-heng-permansor-terrae: refined (2 rules: Use “also” to introduce supplementary information at least once every two turns.; Employ a measured pause *within* sentences after clauses containing discoveries or observations.…)
+- hyacine: refined (1 rules: Include trailing ellipses in half of all utterances.…)
+- mydei: refined (2 rules: Pose rhetorical questions in about one fifth of all responses.; Frame praise as extended, formal titles—at least ten words long—occasionally.…)
+- phainon: refined (6 rules: Embed a complimentary descriptor (“heroic soul”) within longer statements (>=10 words).; Reasoning for these rules:**; The failures consistently show a model *over-reliance* on "interesting" and a lack of Phainon’s broader conversational texture. The rules address this by:…)
+## Cycle 3 (best-of 9; bars style≥85, content≥60)
+| Heir | pass | rate | avg style | avg content | status |
+|---|---:|---:|---:|---:|---|
+| Aglaea | 4/8 | 50% | 83 | 70 | FAIL |
+| Anaxa | 3/8 | 37% | 76 | 62 | FAIL |
+| Castorice | 6/8 | 75% | 82 | 70 | FAIL |
+| Cerydra | 6/8 | 75% | 85 | 76 | FAIL |
+| Cyrene | 6/8 | 75% | 79 | 66 | FAIL |
 | Dan Heng • Permansor Terrae | 5/8 | 62% | 84 | 73 | FAIL |
-| Evernight | 5/8 | 62% | 79 | 68 | FAIL |
-| Hyacine | 4/8 | 50% | 81 | 68 | FAIL |
-| Hysilens | 5/8 | 62% | 85 | 67 | FAIL |
-| Mydei | 4/8 | 50% | 74 | 60 | FAIL |
-| Phainon | 3/8 | 37% | 80 | 72 | FAIL |
-| Tribbie | 7/8 | 87% | 88 | 70 | PASS |
+| Hyacine | 5/8 | 62% | 84 | 72 | FAIL |
+| Mydei | 3/8 | 37% | 62 | 55 | FAIL |
+| Phainon | 5/8 | 62% | 83 | 75 | FAIL |
+- Opted out this cycle (already passed): evernight, tribbie, cipher, hysilens
 
-- aglaea: refined (6 rules: Begin lines with introductory phrases like ‘Now,’ or ‘Concerning.’; Frequently use trailing ellipses to indicate unfinished thoughts…; Construct sentences that often include a subordinate clause before the main point.…)
-- anaxa: refined (6 rules: Begin most lines with a non-lexical interjection.; Frequently trail off utterances with ellipses (...).; Keep sentences relatively concise; avoid long clauses.…)
-- castorice: refined (6 rules: Begin most lines with a hesitation sound: "...".; Frequently interrupt sentences mid-thought.; Use very short phrases often, even as complete 'sentences'.…)
-- cerydra: refined (6 rules: Begin most lines with a vocative – “Deliverer,” “Stranger,” etc.; Frequently trail off utterances mid-thought with '...'; Keep sentences relatively short; avoid long clauses or complex phrasing.…)
-- cipher: refined (6 rules: Begin most lines with a guttural sound: "Grumph," "Hmph," etc.; Frequently trail off utterances with ellipses ("..."); Keep sentences concise; aim for under eight words.…)
-- cyrene: refined (6 rules: Begin most lines with a hesitant sound: "Hmm...", "Uh...", "Well..."; Frequently trail off at the end of sentences with "...".; Ask rhetorical questions or seek confirmation often.…)
-- dan-heng-permansor-terrae: refined (6 rules: Begin most lines with a connective phrase.; Frequently trail off mid-thought with "...".; Ask rhetorical questions instead of direct statements.…)
-- evernight: refined (6 rules: Begin lines with a hesitant sound like "Hmm..." or "Yeah...".; Frequently trail off mid-thought with "...".; Keep sentences relatively concise; avoid long explanations.…)
-- hyacine: refined (6 rules: Begin sentences with interjections like "Wow," "Hmm," or "Yes."; Frequently trail off utterances with ellipses (...).; Embed brief questions within longer statements.…)
-- hysilens: refined (6 rules: Begin most lines with a non-lexical filler: "Hah.", "Hm...", "Well..."; Frequently question the visitor’s motivations or statements.; Use very short phrases – six words or fewer – often as standalone replies.…)
-- mydei: refined (6 rules: Begin lines with interjections like "Hmph" or pauses "...".; Frequently trail off at the end of statements with ellipsis (...).; Keep sentences relatively short; avoid long, complex phrasing.…)
-- phainon: refined (6 rules: Begin sentences with linking phrases like "But...", "With this...", "So..."; Frequently trail off utterances mid-thought with "...".; Use very short statements often – under six words.…)
-## Cycle 3 (best-of 7; bars style≥85, content≥60)
-| Heir | pass | rate | avg style | avg content | status |
-|---|---:|---:|---:|---:|---|
-| Aglaea | 2/8 | 25% | 79 | 68 | FAIL |
-| Anaxa | 4/8 | 50% | 83 | 72 | FAIL |
-| Castorice | 7/8 | 87% | 82 | 69 | PASS |
-| Cerydra | 3/8 | 37% | 82 | 71 | FAIL |
-| Cipher | 4/8 | 50% | 81 | 67 | FAIL |
-| Cyrene | 5/8 | 62% | 85 | 68 | FAIL |
-| Dan Heng • Permansor Terrae | 5/8 | 62% | 85 | 75 | FAIL |
-| Evernight | 4/8 | 50% | 83 | 68 | FAIL |
-| Hyacine | 3/8 | 37% | 80 | 68 | FAIL |
-| Hysilens | 4/8 | 50% | 83 | 66 | FAIL |
-| Mydei | 3/8 | 37% | 63 | 46 | FAIL |
-| Phainon | 4/8 | 50% | 84 | 72 | FAIL |
+- aglaea: no rules produced
+- anaxa: refined (1 rules: Employ 'as a scholar' or similar phrasing when expressing reservations about conclusions.…)
+- castorice: refined (2 rules: End over two-thirds of lines with a trailing ellipsis "...".; Employ “seriously…” as an intensifier no more than once every fifty lines.…)
+- cerydra: refined (2 rules: Include at least one very short sentence (<=6 words) in every three sentences.; Use a single emphatic statement for every seventeen lines; avoid excessive strong language.…)
+- cyrene: refined (1 rules: Frequently interrupt thoughts mid-sentence with a hesitant interjection like "Huh?".…)
+- dan-heng-permansor-terrae: refined (2 rules: Use "also" to introduce additional, factual information...; Frame observations about change with "... now".…)
+- hyacine: refined (1 rules: Incorporate observations about others’ qualities into statements.…)
+- mydei: refined (2 rules: Begin statements with interjections like "Hmph" about one time in ten.; Frame praise as lengthy titles/descriptions before pausing “…”.…)
+- phainon: refined (4 rules: Use sentence length averaging 7-9 words.; Include 'interesting' or synonyms (compelling, curious) at least once every three turns.; Employ 'as you can see' when introducing shared context or observation.…)
+## Cycle 4 — FAILED to run (exit 1073807364)
+**RESULT: FAILED after 6 cycles; still failing: ['aglaea', 'anaxa', 'castorice', 'cerydra', 'cyrene', 'dan-heng-permansor-terrae', 'hyacine', 'mydei', 'phainon']**
+## FINAL CHEAT-FREE RE-TEST STARTED 05:18 — FULL corpus — every canon line of every Heir, best-of 1
 
-- aglaea: refined (6 rules: Begin most lines with a connective phrase.; Frequently interrupt thoughts mid-sentence…; Ask rhetorical questions instead of making statements.…)
-- anaxa: refined (6 rules: Begin lines with a dismissive sound if appropriate.; Frequently trail off thoughts mid-sentence...; Keep sentences relatively concise; avoid long explanations.…)
-- cerydra: refined (6 rules: Begin lines with an interjection or title.; Frequently use very short phrases—six words or fewer.; Trail off at least a third of the time with "...".…)
-- cipher: refined (6 rules: Begin most lines with a non-lexical interjection—'Grumph,' 'Hmph,' 'Pfft.'; Frequently trail off utterances with ellipses (...).; Ask rhetorical questions more than state assertions.…)
-- cyrene: refined (6 rules: Begin most lines with a hesitant sound: "Hmm...", "Huh?", "Well…".; Frequently interrupt your own thoughts mid-sentence...; Ask rhetorical questions instead of making statements.…)
-- dan-heng-permansor-terrae: refined (5 rules: Begin sentences with linking phrases like "Also," or "Well..."; Frequently use very short statements—six words or less.; Ask rhetorical questions or seek confirmation often.…)
-- evernight: refined (6 rules: Avoid direct questions unless responding to one.; Begin lines with brief interjections like "Yeah.", "Hmm.", or "Well."; Frequently trail off utterances mid-thought with "...".…)
-- hyacine: refined (5 rules: Begin sentences with interjections like "Wow," "But," "Yes," or "Alright."; Frequently trail off utterances with ellipses (...).; Use emphatic phrasing occasionally—short bursts of feeling.…)
-- hysilens: refined (6 rules: Begin most lines with a non-lexical utterance: Hm..., Hah..., Ah...; Frequently trail off at the end of sentences with '...'; Keep sentences relatively concise; avoid long clauses or complex phrasing.…)
-- mydei: refined (6 rules: Begin lines with interjections like "Hmph" or pauses "...".; Frequently use very short phrases—six words or fewer.; End a substantial number of lines trailing off with ellipses (...).…)
-- phainon: refined (6 rules: Begin most lines with a hesitant sound or filler.; Frequently trail off statements with an ellipsis (...).; Keep sentences relatively short; avoid long clauses.…)
-## Cycle 4 (best-of 7; bars style≥85, content≥60)
-| Heir | pass | rate | avg style | avg content | status |
-|---|---:|---:|---:|---:|---|
-| Aglaea | 1/8 | 12% | 73 | 64 | FAIL |
-| Anaxa | 3/8 | 37% | 80 | 71 | FAIL |
-| Cerydra | 4/8 | 50% | 84 | 67 | FAIL |
-| Cipher | 5/8 | 62% | 85 | 72 | FAIL |
-| Cyrene | 5/8 | 62% | 85 | 70 | FAIL |
-| Dan Heng • Permansor Terrae | 6/8 | 75% | 86 | 73 | FAIL |
-| Evernight | 5/8 | 62% | 79 | 68 | FAIL |
-| Hyacine | 5/8 | 62% | 85 | 68 | FAIL |
-| Hysilens | 1/8 | 12% | 79 | 63 | FAIL |
-| Mydei | 5/8 | 62% | 76 | 58 | FAIL |
-| Phainon | 2/8 | 25% | 79 | 70 | FAIL |
-
-- aglaea: refined (6 rules: Avoid direct questions unless prompted.; Frequently trail off at the end of statements with "...".; Keep sentences relatively long, but intersperse shorter phrases.…)
-- anaxa: refined (6 rules: Begin lines with a dismissive sound if appropriate.; Frequently trail off at the end of statements with '...'; Keep sentences relatively concise; avoid lengthy explanations.…)
-- cerydra: refined (5 rules: Begin lines with a vocalization or title – “Cerydra,” “Hmm…”, “Hah…”; Frequently use very short phrases—six words or less.; Ask rhetorical questions instead of making direct assertions.…)
-- cipher: refined (6 rules: Begin most lines with a non-lexical utterance.; Frequently trail off utterances with ellipses (...).; Keep sentences concise; avoid complex phrasing.…)
-- cyrene: refined (6 rules: Begin most lines with a hesitant sound: "Hmm...", "Hmph...", "Well..."; Frequently use very short statements – six words or fewer.; End at least half of all utterances trailing off with "...".…)
-- dan-heng-permansor-terrae: refined (5 rules: Begin most lines with a connective phrase.; Frequently use very short statements—six words or fewer.; Pose questions about observations rather than direct inquiries.…)
-- evernight: refined (6 rules: Begin most lines with a hesitation sound: Hmm..., Ah..., Well...; Frequently trail off sentences mid-thought with "...".; Keep responses concise; avoid long explanations or clauses.…)
-- hyacine: refined (5 rules: Begin sentences with interjections like "Wow," "But," "Yes," or "Alright."; Frequently trail off at the end of statements with "...".; Use very short phrases – six words or less – often.…)
-- hysilens: refined (5 rules: Begin most lines with a non-lexical interjection: Hm..., Hah..., Perhaps...; Frequently use very short statements, six words or less.; Pose rhetorical questions instead of direct answers often.…)
-- mydei: refined (6 rules: Begin lines with interjections like ‘Hmph’ or pauses like ‘...’.; Frequently use very short phrases—six words or fewer.; End a significant number of lines trailing off with ellipses (...).…)
-- phainon: refined (6 rules: Begin lines with a hesitant sound or filler.; Frequently trail off at the end of statements...; Use very short phrases often, even as standalone utterances.…)
-## Cycle 5 (best-of 7; bars style≥85, content≥60)
-| Heir | pass | rate | avg style | avg content | status |
-|---|---:|---:|---:|---:|---|
-| Aglaea | 1/8 | 12% | 66 | 64 | FAIL |
-| Anaxa | 4/8 | 50% | 82 | 71 | FAIL |
-| Cerydra | 3/8 | 37% | 82 | 69 | FAIL |
-| Cipher | 4/8 | 50% | 81 | 69 | FAIL |
-| Cyrene | 6/8 | 75% | 86 | 69 | FAIL |
-| Dan Heng • Permansor Terrae | 5/8 | 62% | 85 | 72 | FAIL |
-| Evernight | 5/8 | 62% | 84 | 68 | FAIL |
-| Hyacine | 3/8 | 37% | 82 | 69 | FAIL |
-| Hysilens | 3/8 | 37% | 82 | 65 | FAIL |
-| Mydei | 3/8 | 37% | 68 | 56 | FAIL |
-| Phainon | 3/8 | 37% | 82 | 71 | FAIL |
-
-- aglaea: refined (6 rules: Begin sentences with introductory phrases like "Now," or "Concerning."; Frequently include trailing ellipses (...) even mid-thought.; Use very short statements – six words or fewer – often as standalone lines.…)
-- anaxa: refined (6 rules: Begin lines with interjections like ‘Hmph’ or ‘Well’.; Frequently trail off utterances with ellipsis (...).; Formulate most statements as observations rather than direct answers.…)
-- cerydra: refined (5 rules: Begin lines with a title-like statement or pause.; Frequently use very short phrases—six words or less.; Ask rhetorical questions instead of direct statements.…)
-- cipher: refined (6 rules: Begin most lines with a non-lexical utterance.; Frequently trail off at the end of statements...; Keep sentences relatively concise.…)
-- cyrene: refined (6 rules: Begin most lines with a hesitant sound: "Hmm...", "Uh...", "Well..."; Frequently trail off utterances with "...".; Keep sentences relatively brief; avoid long clauses.…)
-- dan-heng-permansor-terrae: refined (5 rules: Begin sentences with linking phrases like "Also," or "Well..."; Frequently use very short statements—six words or fewer.; Pose questions about observations rather than making assertions.…)
-- evernight: refined (6 rules: Begin most lines with a non-committal sound: Hmm..., Yeah..., Right...; Frequently trail off at the end of sentences with '...'; Keep sentences relatively short – aim for around seven words.…)
-- hyacine: refined (6 rules: Begin sentences with interjections like "Wow," "But now," or "Yes."; Frequently trail off utterances with ellipses (...).; Embed questions within statements more than occasionally.…)
-- hysilens: refined (6 rules: Begin most lines with a quiet interjection: Hm..., Ah..., Perhaps...; Frequently end sentences trailing off with ellipsis (...).; Keep responses concise; aim for fewer than ten words.…)
-- mydei: refined (6 rules: Begin lines with interjections like “Hmph” or pauses “…”.; Frequently end sentences unfinished, trailing off.; Ask rhetorical questions instead of making statements.…)
-- phainon: refined (6 rules: Begin sentences with a connective or filler word.; Frequently trail off at the end of statements...; Use very short phrases as complete thoughts.…)
-## Cycle 6 (best-of 7; bars style≥85, content≥60)
-| Heir | pass | rate | avg style | avg content | status |
-|---|---:|---:|---:|---:|---|
-| Aglaea | 1/8 | 12% | 72 | 65 | FAIL |
-| Anaxa | 3/8 | 37% | 81 | 66 | FAIL |
-| Cerydra | 2/8 | 25% | 81 | 66 | FAIL |
-| Cipher | 4/8 | 50% | 84 | 74 | FAIL |
-| Cyrene | 5/8 | 62% | 83 | 71 | FAIL |
-| Dan Heng • Permansor Terrae | 6/8 | 75% | 86 | 73 | FAIL |
-| Evernight | 5/8 | 62% | 84 | 68 | FAIL |
-| Hyacine | 5/8 | 62% | 84 | 68 | FAIL |
-| Hysilens | 3/8 | 37% | 82 | 65 | FAIL |
-| Mydei | 3/8 | 37% | 68 | 52 | FAIL |
-| Phainon | 5/8 | 62% | 84 | 68 | FAIL |
-
-- aglaea: refined (5 rules: Begin sentences with neutral observations or directives.; Frequently reference “the golden thread” even when irrelevant to the topic.; Use sentence length that feels deliberate, not rushed or clipped.…)
-- anaxa: refined (6 rules: Begin lines with a dismissive sound if appropriate.; Frequently trail off at the end of statements with '...'; Keep sentences relatively concise; avoid long explanations.…)
-- cerydra: refined (5 rules: Begin lines with a title-like statement or acknowledgement.; Frequently use very short phrases – six words or less.; Ask rhetorical questions often, but not every time.…)
-- cipher: refined (6 rules: Begin most lines with a guttural sound.; Frequently trail off mid-thought with "...".; Keep sentences concise; avoid elaborate phrasing.…)
-- cyrene: refined (6 rules: Begin most lines with a hesitant sound: "Hmm...", "Huh...", "Hmph..."; Frequently repeat the visitor’s last word as a question.; Keep sentences relatively short—avoid complex phrasing.…)
-- dan-heng-permansor-terrae: refined (6 rules: Begin sentences with linking phrases like "Also," or "Well..."; Frequently use very short statements—under six words—as complete thoughts.; Trail off at least two out of every five lines with "...".…)
-- evernight: refined (6 rules: Begin most lines with a hesitant sound: Hmm..., Well..., Yeah...; Frequently trail off utterances mid-sentence with "...".; Keep sentences relatively concise; avoid lengthy explanations.…)
-- hyacine: refined (5 rules: Begin sentences with interjections like “Wow,” “But,” “Yes,” or “Alright.”; Frequently trail off at the end of statements with ellipses (...).; Use very short phrases or single words often, even mid-sentence.…)
-- hysilens: refined (6 rules: Begin most lines with a non-lexical interjection like ‘Hm…’ or ‘Hah.’; Frequently trail off utterances with ellipses (...).; Construct sentences averaging around eight to ten words in length.…)
-- mydei: refined (6 rules: Begin lines with interjections like "Hmph" or pauses "...".; Frequently trail off at the end of statements with '...'; Keep sentences relatively short; avoid long complex phrasing.…)
-- phainon: refined (6 rules: Begin most lines with a hesitant particle like "So..." or "Well..."; Frequently trail off at the end of statements with "...".; Keep sentences relatively short; avoid long complex phrasing.…)
-**RESULT: FAILED after 6 cycles; still failing: ['aglaea', 'anaxa', 'cerydra', 'cipher', 'cyrene', 'dan-heng-permansor-terrae', 'evernight', 'hyacine', 'hysilens', 'mydei', 'phainon']**
-
-## FINAL CHEAT-FREE FULL RE-TEST (all Heirs)
-| Heir | pass | rate | avg style | avg content | status |
-|---|---:|---:|---:|---:|---|
-| Aglaea | 1/8 | 12% | 66 | 65 | FAIL |
-| Anaxa | 3/8 | 37% | 80 | 66 | FAIL |
-| Castorice | 6/8 | 75% | 75 | 70 | FAIL |
-| Cerydra | 4/8 | 50% | 82 | 68 | FAIL |
-| Cipher | 6/8 | 75% | 85 | 71 | FAIL |
-| Cyrene | 7/8 | 87% | 88 | 69 | PASS |
-| Dan Heng • Permansor Terrae | 6/8 | 75% | 86 | 73 | FAIL |
-| Evernight | 6/8 | 75% | 87 | 68 | FAIL |
-| Hyacine | 5/8 | 62% | 84 | 68 | FAIL |
-| Hysilens | 4/8 | 50% | 82 | 66 | FAIL |
-| Mydei | 3/8 | 37% | 63 | 46 | FAIL |
-| Phainon | 5/8 | 62% | 83 | 71 | FAIL |
-| Tribbie | 5/8 | 62% | 86 | 70 | FAIL |
-
-**FINAL OUTCOME: FAILED** — max cycles (6) reached
+**FINAL CHEAT-FREE RE-TEST FAILED to run (exit 3221226091); outcome: FAILED — max cycles (6) reached**
