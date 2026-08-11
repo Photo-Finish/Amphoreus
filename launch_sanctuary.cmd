@@ -40,7 +40,16 @@ if %errorlevel% equ 1 (
 echo [2/3] Opening the interface in your browser...
 start "" http://localhost:8501
 
+rem --- Senses model mode (unified | quality) --------------------------------
+rem   unified : ONE model (gemma3n, 8B E2B) hears music AND sees pictures
+rem   quality : qwen3-vl:8b (vision) + gemma3n (audio) — best per channel
+rem   (verified 2026-08-11: qwen3-omni is NOT on Ollama; gemma3n = "gemma3n")
+rem   The model mapping is resolved by src/core/senses.py from SENSES_MODE /
+rem   .env — this variable just picks the option.
+set SENSES_MODE=unified
+
 echo [3/3] Running the interface (keep this window open)...
+echo       Senses mode: %SENSES_MODE%  (mapping in .env; unified=gemma3n, quality=qwen3-vl:8b+gemma3n)
 echo       Close this window to stop the interface.
 echo ============================================================
 "%PYTHON%" -m streamlit run "%ROOT%src\ui_app.py" --server.headless true --server.port 8501

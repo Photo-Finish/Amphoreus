@@ -284,6 +284,18 @@ values they hold — see the two-stage music channel below.
 - **No model training is required** for any of this: pre-trained models +
   persona + preferences achieve it. Fine-tuning would only deepen a Heir's
   critical voice, which the sanctuary deliberately avoids.
+- **Senses model selection (2026-08-11)** — the vision/audio models are chosen
+  via a project-root `.env` (`VISION_MODEL`, `AUDIO_MODEL`; loaded with
+  `override=True` by both `llm_client.py` and `senses.py`), and
+  `launch_sanctuary.cmd` sets `SENSES_MODE` to re-apply a named option on top:
+  - **unified** (default): `gemma3n` — one 8B E2B model (text+image+audio+
+    video, ~7.5 GB) hears music AND sees pictures; a single footprint, best for
+    the 31.4 GB RAM box.
+  - **quality**: `qwen3-vl:8b` (vision) + `gemma3n` (audio).
+  Verified 2026-08-11 against the Ollama registry: `qwen3-omni` is **not**
+  available on Ollama (all tag variants 404); `gemma3n`'s correct tag is the
+  bare `gemma3n` (no `-e2b` suffix). `qwen2.5vl:7b` and `qwen2.5-omni` remain
+  installed and usable as fallbacks.
 
 **Model deployment (Ollama 0.32.6, all local in `models/`):**
 - The three models (`qwen2.5:14b-instruct`, `qwen2.5vl:7b`, `qwen2.5-omni`)

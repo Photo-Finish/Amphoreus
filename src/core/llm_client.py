@@ -10,7 +10,25 @@ Used by both the chat layer (AgentManager) and the world engine.
 """
 
 import os
+from pathlib import Path
 from typing import List, Optional
+
+# Honor a project-root .env (model choices for the Heirs' senses, the backend,
+# keys). override=True makes the .env authoritative over any stale inherited
+# env vars. SENSES_MODE (set by launch_sanctuary.cmd) re-applies on top.
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=True)
+except Exception:
+    pass
+
+_mode = os.getenv("SENSES_MODE", "").lower()
+if _mode == "quality":
+    os.environ["VISION_MODEL"] = "qwen3-vl:8b"
+    os.environ["AUDIO_MODEL"] = "gemma3n"
+elif _mode == "unified":
+    os.environ["VISION_MODEL"] = "gemma3n"
+    os.environ["AUDIO_MODEL"] = "gemma3n"
 
 
 class LLMClient:

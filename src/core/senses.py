@@ -28,6 +28,23 @@ from typing import List, Optional
 # The Amphoreus project root (this file is src/core/senses.py).
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
+# Honor a project-root .env (VISION_MODEL / AUDIO_MODEL / STT_MODEL choices).
+# override=True makes the .env authoritative over any stale inherited env
+# vars. SENSES_MODE (set by launch_sanctuary.cmd) re-applies on top.
+try:
+    from dotenv import load_dotenv
+    load_dotenv(_PROJECT_ROOT / ".env", override=True)
+except Exception:
+    pass
+
+_mode = os.getenv("SENSES_MODE", "").lower()
+if _mode == "quality":
+    os.environ["VISION_MODEL"] = "qwen3-vl:8b"
+    os.environ["AUDIO_MODEL"] = "gemma3n"
+elif _mode == "unified":
+    os.environ["VISION_MODEL"] = "gemma3n"
+    os.environ["AUDIO_MODEL"] = "gemma3n"
+
 # Keep HuggingFace downloads inside the project (self-contained; nothing on C:)
 # and routed through a reachable mirror.
 os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
