@@ -86,26 +86,28 @@ AFTERMATH_GREETINGS: Dict[str, str] = {
     "evernight": "...You returned. I didn't doubt it. Not once.",
     "hyacine": "Healer's arms are open for you again, Trailblazer. You look like you need them.",
     "hysilens": "The tide rose and fell, and here you are again. Good.",
-    "mydei": "Hmph. Took you long enough. The drink's still cold.",
+    "mydei": "Hmph. Took you long enough. Castrum Kremnos missed your blade.",
     "phainon": "Old friend. The world we remade still carries your footprints.",
     "tribbie": "You came back! We told Trianne you would. We were right — we're usually right.",
 }
 
-# Shared-memory seeds: the campaign the visitor and the Heirs lived through.
+# Shared-memory seeds: REAL canon moments from the game story (from each
+# Heir's own personal-memories.md) — the things the Trailblazer actually went
+# through with them. Nothing fictional is invented.
 AFTERMATH_MEMORY_SEEDS: Dict[str, str] = {
-    "aglaea": "You and the Trailblazer wove the final threads before the Iron Tomb fell — the last golden strand was theirs.",
-    "anaxa": "You and the Trailblazer proved the truth of the Era Nova together, standing before the vortex with the facts laid bare.",
-    "castorice": "You and the Trailblazer walked the river of souls side by side, and they were not afraid.",
-    "cerydra": "You and the Trailblazer delivered the verdict that ended the war, law in hand, side by side.",
-    "cipher": "You and the Trailblazer stole the Coreflame of Reason from under everyone's noses — a perfect heist.",
-    "cyrene": "You and the Trailblazer sat by the sea in Aedes Elysiae and watched the fairies in the Membrance Maze.",
-    "dan-heng-permansor-terrae": "You and the Trailblazer stood together at the end of the world and chose to go on.",
-    "evernight": "You and the Trailblazer followed the song of the unknown through the dark, and neither of you looked back.",
-    "hyacine": "You and the Trailblazer held the sky dome together when it trembled, and afterwards they helped you heal the wounded.",
-    "hysilens": "You and the Trailblazer heard the sea sing the victory anthem the night the Iron Tomb fell.",
-    "mydei": "You and the Trailblazer shared honey brew by the campfire the night before the final battle.",
-    "phainon": "You and the Trailblazer remade the world, and you passed them the torch of the Deliverer with your own hands.",
-    "tribbie": "You and the Trailblazer told stories in the Month of Weaving, and Trianne and Trinnon both laughed.",
+    "aglaea": "I remember the day I sat the Trailblazer down in the Marmoreal Palace, told them to make themselves comfortable and close their eyes, and wove the first golden threads before them.",
+    "anaxa": "I remember standing firm in the Grove of Epiphany and demanding that no unnecessary step be taken while the Trailblazer's life hung by a thread.",
+    "castorice": "I remember the day I asked the Trailblazer to photograph the rare dromas with me — and that I left the final decision to them on the path to the Death Titan.",
+    "cerydra": "I remember greeting the Trailblazer on behalf of my people and my land as the 'Deliverer from beyond the sky' — the one the little hostage prophesied.",
+    "cipher": "I remember turning down the reward without a second thought, because finding the Death Titan and saving the Trailblazer's soul mattered more.",
+    "cyrene": "I remember the moment I saw the Trailblazer arrive — 'You're finally here.' I had known they wouldn't miss it.",
+    "dan-heng-permansor-terrae": "I remember landing on Amphoreus with the Trailblazer, my fellow Nameless, and walking together into the dark of this new world.",
+    "evernight": "I remember telling the Trailblazer not to worry — that they were tougher than me, and that the two of us would see the light through together.",
+    "hyacine": "I remember urging the Trailblazer to go see the Grove's sights — and that from the moment they landed on Amphoreus, I would have given my life for theirs.",
+    "hysilens": "I remember ordering the guards to stand down — 'We're here to welcome the Deliverer from beyond the sky.' — for the Trailblazer.",
+    "mydei": "I remember my dry remark in Castrum Kremnos — 'Are you still not used to it? This is the destiny of a Trailblazer.' — and the battles I fought beside them.",
+    "phainon": "I remember speaking of the prophetic Deliverers with golden blood — and the Trailblazer and I, both from beyond the sky, standing together.",
+    "tribbie": "I remember cheering in Janusopolis when the Trailblazer got it on the first try — 'You're a natural!'",
 }
 
 AFTERMATH_SUMMARY = (
