@@ -136,60 +136,48 @@ CANON_SEEDS: Dict[str, Dict] = {
     },
 }
 
-# Canon-derived musical and visual-art tastes for each Heir — so that sharing a
-# painting or a piece of music with a Heir is a genuine act of shared
-# appreciation, filtered through their own aesthetic soul.
+# Canon-derived VISUAL-ART tastes for each Heir. Music is deliberately NOT
+# prescribed: a Heir judges each piece by what they actually hear (the audio
+# model's analysis) and how it sits with the values they hold — never by a
+# pre-designated genre. Art seeds remain as canon-grounded touchstones.
 MUSIC_ART_SEEDS: Dict[str, Dict] = {
     "phainon": {
-        "music": ["village songs", "wind through wheat", "hymns at dawn", "the sound of a wooden flute"],
         "art": ["paintings of fields and dawns", "portraits of ordinary heroes", "warm earth tones"],
     },
     "mydei": {
-        "music": ["war drums", "the rhythm of the forge", "battle hymns", "low horns"],
         "art": ["depictions of strength", "bronze and iron", "the arena in dust and fire"],
     },
     "aglaea": {
-        "music": ["the loom's rhythm", "woven harmonies", "ordered orchestration", "golden strings"],
         "art": ["tapestries", "woven light", "gold thread on silk", "the pattern behind things"],
     },
     "castorice": {
-        "music": ["quiet lullabies", "water sounds", "muted strings", "the hush before sleep"],
         "art": ["moonlight", "twilight", "still water", "candlelit rooms at rest"],
     },
     "tribbie": {
-        "music": ["festival tunes", "children's songs", "playful melodies", "a thousand small voices"],
         "art": ["bright colors", "gates and thresholds", "small wonders", "pictures made by children"],
     },
     "anaxa": {
-        "music": ["precise counterpoint", "chamber music", "logical structure", "the silence between notes"],
         "art": ["geometry", "clean lines", "diagrams of reason", "order made visible"],
     },
     "cyrene": {
-        "music": ["childhood songs", "gentle tunes", "the sound of games", "lullabies for a boy who would be a hero"],
         "art": ["pastoral scenes", "meadows", "feathers", "the village at golden hour"],
     },
     "cipher": {
-        "music": ["tavern songs", "quick rhythms", "mischievous tunes", "the clink of coins in a pocket"],
         "art": ["shadows", "coins", "rooftops at dusk", "the gleam of hidden things"],
     },
     "hyacine": {
-        "music": ["skyward hymns", "morning birdsong", "uplifting chorales", "the wind at high places"],
         "art": ["skies", "clouds", "rainbow bridges", "light breaking through"],
     },
     "cerydra": {
-        "music": ["marches", "precise orchestration", "the rhythm of strategy", "measured drums"],
         "art": ["chessboards", "imperial marble", "order made grand", "the geometry of power"],
     },
     "hysilens": {
-        "music": ["the sea's songs", "requiems", "the violin", "the ocean's rhythm", "the lament of whales"],
         "art": ["seascapes", "light on water", "the depths", "the pale beauty of the shore"],
     },
     "dan-heng-permansor-terrae": {
-        "music": ["the hum of the Express", "earth's quiet", "wind over stone", "low steady strings"],
         "art": ["landscapes", "the earth's permanence", "dragon forms", "the stillness of stone"],
     },
     "evernight": {
-        "music": ["moonlit nocturnes", "memory-music", "the sound of stars", "a flat note held long ♭"],
         "art": ["the moon", "mirrors", "memory-scapes", "the negative space of forgetting"],
     },
 }
@@ -220,6 +208,11 @@ class PreferenceStore:
             canon = CANON_SEEDS.get(character_id, {})
             arts = MUSIC_ART_SEEDS.get(character_id, {})
             changed = False
+            # Legacy cleanup: remove any pre-designated music-genre seeds.
+            # Music is now judged by listening + values, never by prescribed taste.
+            if "music" in data:
+                del data["music"]
+                changed = True
             for key, src in (
                 ("aesthetics", canon.get("aesthetics")),
                 ("likes", canon.get("likes")),
@@ -227,7 +220,6 @@ class PreferenceStore:
                 ("tastes", canon.get("tastes")),
                 ("places", canon.get("places")),
                 ("values", canon.get("values")),
-                ("music", arts.get("music")),
                 ("art", arts.get("art")),
             ):
                 if src and not data.get(key):
@@ -251,7 +243,6 @@ class PreferenceStore:
             "tastes": list(canon.get("tastes", [])),
             "places": list(canon.get("places", [])),
             "values": list(canon.get("values", [])),
-            "music": list(arts.get("music", [])),
             "art": list(arts.get("art", [])),
             "learned": [],
         }
@@ -291,8 +282,8 @@ class PreferenceStore:
         lines = ["# Your tastes and preferences"]
         if data.get("aesthetics"):
             lines.append("- Aesthetics: " + "; ".join(data["aesthetics"]))
-        if data.get("music"):
-            lines.append("- Music you love: " + "; ".join(data["music"]))
+        lines.append("- Music: you have no prescribed tastes — you judge each piece "
+                     "by what you actually hear and how it sits with what you value.")
         if data.get("art"):
             lines.append("- Art that moves you: " + "; ".join(data["art"]))
         if data.get("likes"):

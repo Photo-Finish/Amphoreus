@@ -227,9 +227,11 @@ conversation is anchored in the living world.
 ### 3.5 Senses — hearing and eyesight, for shared appreciation of art and music
 
 The senses exist so the visitor can **appreciate paintings and music WITH the
-Heirs** — not merely exchange words. Each Heir has canon-accurate senses *and*
-canon-derived aesthetic and musical tastes (in their `preferences.json`:
-`aesthetics`, `art`, `music`), so appreciation is filtered through their soul.
+Heirs** — not merely exchange words. Each Heir has canon-accurate senses and a
+canon-derived aesthetic database (in their `preferences.json`: `aesthetics`,
+`likes`, `art`, `values`). Music is deliberately NOT pre-assigned a taste: a
+Heir judges each piece from what they actually hear and how it sits with the
+values they hold — see the two-stage music channel below.
 
 - **Per-character senses** — every card carries a `senses` block injected into
   the system prompt. Canon is honored: Aglaea is *blind* but perceives souls
@@ -244,12 +246,21 @@ canon-derived aesthetic and musical tastes (in their `preferences.json`:
   key frames → `LLMClient.chat_video`; the Heir watches with the visitor.
 - **Hearing — words** — the visitor's voice (`st.audio_input`) is transcribed by
   **faster-whisper** (`Senses.transcribe_audio`) → normal chat.
-- **Hearing — music** — `LLMClient.chat_audio` sends audio to an
-  **audio-understanding model** (`AUDIO_MODEL`, e.g. `qwen2.5-omni`) so the Heir
-  *truly hears the music itself* (melody, rhythm, timbre, mood) and responds with
-  musical appreciation grounded in their `music` tastes (Hysilens hears the
-  sea's songs; Cerydra hears a march in precise orchestration). This is **not**
-  speech-to-text — Whisper cannot appreciate music.
+- **Hearing — music (two-stage channel, redesigned 2026-08-11)** — no genres
+  are prescribed to any Heir. Instead:
+  1. **Stage 1 — the ear analyzes** — `LLMClient.chat_audio` sends the audio to
+     an **audio-understanding model** (`AUDIO_MODEL`, e.g. `qwen2.5-omni`) with
+     `_MUSIC_ANALYSIS`: a *neutral* perception pass (tempo, rhythm, timbre,
+     melody, mood — 3–5 sentences, no verdict). This is **not** speech-to-text
+     — Whisper cannot appreciate music.
+  2. **Stage 2 — the Heir judges** — `AgentManager.appreciate_music` hands that
+     analysis to the Heir's own model (`_APPRECIATION_MUSIC`, full character
+     voice + the Heir's `values` from their preferences) and asks for a genuine
+     verdict: what the music makes them feel, and whether it honors or
+     challenges the values they hold most dear. The Heir may dislike a piece —
+     there is no obligation to like it.
+  `analyze_music()` exposes stage 1 separately. `appreciate_music()` returns
+  `{heard, analysis, response}`.
 - **⚠️ Music-perception caveat (2026-08-10 incident)** — the audio model's
   impression can be **anchored by the prompt**: a test that framed a piece with
   a previous emotional reading ("part sorrow, part hope") made Hysilens hear
@@ -260,12 +271,16 @@ canon-derived aesthetic and musical tastes (in their `preferences.json`:
   context at 4096 tokens (~95 s of 16 kHz audio; the native API cannot carry
   audio). When testing senses, never prime the prompt with an expected emotion
   — let the Heir hear freely, then verify.
-- **Preference database** — `preferences.json` per Heir now includes `art` and
-  `music` (canon-seeded, e.g. Castorice loves moonlight paintings and quiet
-  lullabies), injected as "# Your tastes and preferences" and grown through
-  shared experiences. Depth is deliberately left to the canon itself — we do
-  not fabricate hidden "inner wishes" for the Heirs; their complexity must
-  come from their real story, not from invented psychology.
+- **Preference database** — `preferences.json` per Heir holds `aesthetics`,
+  `likes`, `dislikes`, `tastes`, `places`, `values`, and `art` (canon-seeded,
+  e.g. Castorice loves moonlight paintings), injected as "# Your tastes and
+  preferences" and grown through shared experiences. The `music` field was
+  **removed** (2026-08-11): the prompt block now states the Heir has *no
+  prescribed tastes* and judges each piece by what they hear and how it sits
+  with their values; any legacy `music` field in existing files is stripped on
+  load. Depth is deliberately left to the canon itself — we do not fabricate
+  hidden "inner wishes" for the Heirs; their complexity must come from their
+  real story, not from invented psychology.
 - **No model training is required** for any of this: pre-trained models +
   persona + preferences achieve it. Fine-tuning would only deepen a Heir's
   critical voice, which the sanctuary deliberately avoids.

@@ -29,12 +29,29 @@ _APPRECIATION_VISION = (
     "(or does not move) you.\n"
 )
 
-# Framing used when the visitor shares music: the Heir truly hears the sound.
+# Stage 1 — the Heir's ear analyzes the music itself (audio-understanding model).
+# A neutral perception pass: tempo, rhythm, timbre, melody, mood — NOT a verdict.
+_MUSIC_ANALYSIS = (
+    "Listen to this piece of music carefully, as a perceptive listener. Analyze "
+    "what the music actually does: its tempo and rhythm, its instrumentation or "
+    "timbre, its melody and harmony, its dynamics, and the mood or emotional arc "
+    "it carries. Be concrete and neutral — describe the sound itself, not your "
+    "personal taste. Three to five sentences."
+)
+
+# Stage 2 — the Heir JUDGES the analysis against their own feelings and values.
+# No prescribed genres: the verdict belongs to the Heir, grounded in what they
+# heard and the values they hold most dear.
 _APPRECIATION_MUSIC = (
-    "The visitor shares this music with you to listen to together. Hear it deeply — "
-    "its melody, rhythm, timbre, and mood. Then share your genuine musical response "
-    "in your own voice, shaped by your tastes. Do not merely describe the sound; "
-    "tell the visitor what it makes you feel and what it calls to mind.\n"
+    "The visitor shared music with you and you listened together. Your ear heard "
+    "this in it:\n"
+    "{analysis}\n\n"
+    "That is only what your ear perceived — the verdict is yours. What does this "
+    "music genuinely make you feel, and what does it call up in you? Weigh it "
+    "against the values you hold most dear: does it honor them, challenge them, "
+    "or move you somewhere between? Be honest even if your feeling is complicated "
+    "or cool — you are not obliged to like it. Speak plainly, in your own voice. "
+    "Do not merely repeat the analysis.\n"
 )
 
 
@@ -569,6 +586,22 @@ class AgentManager:
         response = self.chat(character_id, prompt, video=video_bytes, video_name=name)
         return {"watched": True, "frames": len(frames), "response": response}
 
+    def analyze_music(self, audio_bytes: bytes, note: str = "") -> str:
+        """Stage 1 — the Heir's ear analyzes the music itself.
+
+        Uses the audio-understanding model (AUDIO_MODEL, e.g. qwen2.5-omni) —
+        NOT speech-to-text — to produce a concrete, neutral perception of the
+        piece (tempo, rhythm, timbre, melody, mood). No verdict here.
+        """
+        data = self.senses.encode_audio(audio_bytes)
+        label = f" ({note})" if note else ""
+        text = (
+            "The visitor shares a piece of music with you to listen to together"
+            f"{label}.\n" + _MUSIC_ANALYSIS
+        )
+        return (self.llm.chat_audio(text=text, audio_data_uri=data, temperature=0.2)
+                or "").strip()
+
     def appreciate_music(
         self,
         character_id: str,
@@ -576,32 +609,47 @@ class AgentManager:
         note: str = "",
         prompt: str = "What does this music make you feel?",
     ) -> dict:
-        """The Heir genuinely HEARS a piece of music and shares their appreciation.
+        """The Heir genuinely HEARS a piece of music and shares their judgment.
 
-        Uses an audio-understanding model (AUDIO_MODEL, e.g. qwen2.5-omni) —
-        NOT speech-to-text, which only transcribes words.
+        Two stages:
+          1. The ear (audio-understanding model) analyzes the music itself.
+          2. The Heir (their own model, full character voice) weighs that
+             perception against their feelings and the values they hold —
+             there are NO prescribed genres; the verdict is the Heir's own.
         """
         if not self.senses.music_available:
             return {
                 "heard": False,
                 "reason": "No audio model configured. Set AUDIO_MODEL (e.g. qwen2.5-omni) "
                           "so the Heir can hear and appreciate music.",
+                "analysis": None,
                 "response": None,
             }
-        data = self.senses.encode_audio(audio_bytes)
+        analysis = self.analyze_music(audio_bytes, note)
+        if not analysis or analysis.startswith("["):
+            return {
+                "heard": False,
+                "reason": analysis or "The ear could not hear the music right now.",
+                "analysis": None,
+                "response": None,
+            }
         label = f" ({note})" if note else ""
-        text = f"{_APPRECIATION_MUSIC}The visitor shares a piece of music{label} with you.\n" + prompt
-        response = self.llm.chat_audio(
-            text=text,
-            audio_data_uri=data,
+        values = (self.preferences.get(character_id) or {}).get("values", [])
+        values_txt = ", ".join(values) if values else "the values you hold"
+        judge_text = (
+            f"{_APPRECIATION_MUSIC.format(analysis=analysis)}"
+            f"The visitor shared a piece of music{label} with you.\n"
+            f"Your own values: {values_txt}.\n"
+            f"{prompt}"
         )
+        response = self.chat(character_id, judge_text)
         self.memory.add_memory(
             character_id,
             mtype="sensory",
             content=f"The visitor shared music{label} with you and you listened together.",
             importance=2,
         )
-        return {"heard": True, "response": response}
+        return {"heard": True, "analysis": analysis, "response": response}
 
     def senses_status(self) -> dict:
         """Report which senses are available for the Heirs."""
