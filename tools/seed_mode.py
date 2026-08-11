@@ -72,8 +72,7 @@ def seed_aftermath(memory: MemoryStore, loader: CharacterLoader):
         # Memories: remove old seeded aftermath entries, then add fresh ones.
         path = folder / "memories.jsonl"
         mems = [m for m in _read_memories(path) if MARKER not in (m.get("content") or "")]
-        seed = AFTERMATH_MEMORY_SEEDS.get(cid, "")
-        if seed:
+        for seed in AFTERMATH_MEMORY_SEEDS.get(cid, []):
             mems.append({
                 "mtype": "moment",
                 "content": f"[{MARKER}] {seed}",
@@ -81,7 +80,7 @@ def seed_aftermath(memory: MemoryStore, loader: CharacterLoader):
                 "ts": "2025-08-11T10:00:00",
             })
         _write_memories(path, mems)
-        print(f"  ✓ {name} ({cid}): best friend + campaign memory")
+        print(f"  ✓ {name} ({cid}): best friend + {len(AFTERMATH_MEMORY_SEEDS.get(cid, []))} campaign memories")
     print("Done. Start the UI with:  $env:SANCTUARY_MODE='aftermath'")
 
 
