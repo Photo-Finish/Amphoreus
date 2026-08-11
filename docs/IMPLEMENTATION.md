@@ -506,6 +506,34 @@ the news in `_perceive`), and shown in the 🗺️ Map tab of the UI. Lore:
 
 ---
 
+### 3.8 Two visitor experiences (`src/core/visitor_mode.py`, `tools/seed_mode.py`)
+
+The sanctuary ships two versions of the experience, selected by the environment
+variable `SANCTUARY_MODE` (read at chat time; no code change needed to switch):
+
+- **`journey`** (default) — the visitor is the Trailblazer newly arrived in
+  Amphoreus, **not familiar** with the Chrysos Heirs. The Heirs frame them as a
+  stranger to be discovered; bonds grow from `stranger` through interaction.
+- **`aftermath`** — the visitor is the Trailblazer who **conquered the Iron Tomb
+  with all the Chrysos Heirs** and has **complete memory** of the Flame-Chase
+  Journey. The Heirs frame them as a trusted war-companion; bonds are
+  pre-seeded to `best friend`, each Heir gets a familiar in-character greeting
+  and a campaign memory, and the world note reflects a world at peace.
+
+Mechanics: `visitor_framing_block()` is appended to every chat system prompt;
+`world_note()` extends the world context; `aftermath_greeting()` overrides the
+UI greeting. `python tools/seed_mode.py aftermath|journey` seeds/reset the 13
+Heirs' `bond.json` + `memories.jsonl` (idempotent via an `aftermath:iron-tomb`
+marker). The journey state can be restored at any time (`seed_mode.py journey`;
+manual backups live in `world_runtime/backup-journey-*`).
+
+```powershell
+$env:SANCTUARY_MODE='aftermath'; python tools/seed_mode.py aftermath
+python -m streamlit run src/ui_app.py
+```
+
+---
+
 ## 4. Data flow (one chat turn vs. one world day)
 
 ```mermaid

@@ -138,6 +138,16 @@ level_emoji = {
     "stranger": "🌫️", "acquaintance": "🌤️", "friend": "🌿",
     "close friend": "🌙", "best friend": "⭐",
 }
+# Visitor mode (journey vs aftermath — see src/core/visitor_mode.py)
+try:
+    from src.core.visitor_mode import current_mode
+    _mode = current_mode()
+    if _mode == "aftermath":
+        st.sidebar.caption("✨ Mode: **Aftermath** — the Iron Tomb is conquered; the Heirs remember you as a war-companion.")
+    else:
+        st.sidebar.caption("🗺️ Mode: **Journey** — you are newly arrived; the Heirs do not know you yet.")
+except Exception:
+    pass
 try:
     bond = manager.get_bond_info(selected)
     level = bond.get("friendship_level", "stranger")

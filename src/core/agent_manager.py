@@ -131,14 +131,21 @@ class AgentManager:
         return self.loader.list_characters()
 
     def get_character_info(self, character_id: str) -> dict:
-        """Get public info about a character."""
+        """Get public info about a character (mode-aware greeting)."""
         card = self.loader.load(character_id)
+        greeting = card["prompts"]["greeting"]
+        try:
+            from src.core.visitor_mode import is_aftermath, aftermath_greeting
+            if is_aftermath():
+                greeting = aftermath_greeting(character_id, greeting)
+        except Exception:
+            pass
         return {
             "name": card["meta"]["name"],
             "titles": card["identity"]["titles"],
             "coreflame": card["identity"]["coreflame"],
             "personality_traits": card["personality"]["traits"],
-            "greeting": card["prompts"]["greeting"],
+            "greeting": greeting,
         }
 
     def chat(
@@ -187,6 +194,13 @@ class AgentManager:
 
         # Enrich with where the Heir is right now and what their routine is
         system_prompt = self._inject_world_context(character_id, system_prompt)
+
+        # Visitor mode: how the Heir frames the visitor (journey vs aftermath).
+        try:
+            from src.core.visitor_mode import visitor_framing_block
+            system_prompt += visitor_framing_block()
+        except Exception:
+            pass
 
         # Enrich with the Heir's personal preferences (aesthetics, tastes, ...)
         pref_block = self.preferences.to_prompt_block(character_id)
@@ -415,6 +429,13 @@ class AgentManager:
                         lines.append(f"- Also present here: {', '.join(names)}.")
                 except Exception:
                     pass
+            try:
+                from src.core.visitor_mode import world_note
+                note = world_note()
+                if note:
+                    lines.append(note)
+            except Exception:
+                pass
             return system_prompt + "\n".join(lines)
         except Exception:
             return system_prompt  # never let the world block break the chat
