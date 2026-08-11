@@ -349,6 +349,134 @@ plus a few of the Heir's own canon lines as style exemplars, with hard brevity
 rules ("say the thing, then stop"; never theatrical or flowery). This is what
 makes the style bar achievable and keeps the deployed sanctuary in-voice too.
 
+#### 3.6.1 The judge — design, the grading bug, and the fix
+
+The judge (`JUDGE_SYSTEM` in `tools/test_dialogue_style.py`) scores two
+independent dimensions — **STYLE & INTONATION** (delivery only) and **CONTENT**
+(loose, holistic scene fit) — and returns a JSON `{"style","content","reason"}`
+at temperature 0.0 (deterministic).
+
+**Grading bug found (2026-08-11):** the judge **over-credited brevity**. A
+controlled calibration on Tribbie showed it scored a *generic* line ("Okay, let's
+go.") **92** and even an *empty* `"..."` **92** — because her measured profile is
+short + ellipsis-heavy, any short reply "matched" her surface. This produced the
+repeated identical scores (70/65, 87/62) and silently inflated pass rates.
+
+**Fix:** explicit **calibration anchors** in the judge prompt (exact canon →
+85–100; generic short reply → 55–75, *never* 85+; bare `"..."`/filler → ≤50/30;
+verbatim echo → 30–55; verbose/robotic → 10–40; flowery/eloquent → 10–30) plus a
+**few-shot** block with concrete scored examples. Re-verified: exact 95,
+paraphrase 94, generic 68, flowery 12, off-character 12, `"..."` 40/25 — fully
+discriminative and deterministic (two identical runs).
+
+#### 3.6.2 Cheat-free guarantee (anti-quote)
+
+The model can never pass by quoting an existing canon line. `is_quote_cheat()`
++ `normalize_line()` compare every generated reply (normalized: quotes, name
+prefixes, punctuation stripped) against **the Heir's entire canon** (all of
+`personal-memories.md` + scene anchors + exemplars). Verbatim and substantial
+partial quotes are **rejected and regenerated** (retry budget 4× best-of), with
+a final safety-net check before judging. Unit-tested: verbatim/quoted/
+name-prefixed/partial/echo → caught; genuine new lines and near-miss variants →
+allowed.
+
+#### 3.6.3 Anti-rhetoric directive (user, 2026-08-11)
+
+*"I do not want beautiful rhetorics — I want the response to be as similar to
+the characters as possible."* Applied in four layers: (1) the judge —
+"ELOQUENCE IS NOT A VIRTUE"; (2) Hard Style Rules #7 — no elegant flourishes,
+polished aphorisms, or poetic imagery; (3) the generation prompt — "do not be
+eloquent, write the plain real line, even if rough"; (4) the embedded VOICE
+block in all 13 cards. Gemma-3 is an eloquent model, so this rule is essential
+to keep its output character-true.
+
+#### 3.6.4 Voice anchoring mechanics
+
+- `tools/measure_speech.py` — deterministic measurement of each Heir's own
+  canon speech → `speech.style_measured.stats`.
+- `sample_canon_lines()` (in `tools/test_dialogue_resemblance.py`) — samples the
+  Heir's OWN lines from `personal-memories.md`, **evenly across the whole corpus**
+  (scenes/moods variety), **length-matched** to the measured line length
+  (`max_words = max(12, wpl×1.6)`) so terse voices (e.g. Castorice) are not
+  diluted by long narrative lines.
+- `tools/embed_voice_anchor.py` — embeds the measured profile + 6 length-matched
+  exemplars + hard brevity + anti-rhetoric + anti-echo rules into each card's
+  base `prompts.system_prompt` (idempotent; applied to all 13 cards).
+
+#### 3.6.5 Model choice — assessment and decision (2026-08-11)
+
+The Heir-voice task is **creative roleplay** (register mimicry, brevity,
+naturalness) — *not* reasoning. Assessment:
+
+| Model | Type | Verdict for Heir voice |
+|---|---|---|
+| `qwen2.5:14b-instruct` | chat/instruct (14.8B) | proven, but small → 70/65 ceiling |
+| `deepseek-r1-distill:14b/32b` | **R1 reasoning** (`thinking` capability) | wrong tool — reasoning-distilled, weaker natural roleplay; needs `think:false`; slower |
+| `gemma3:27b` | **chat/instruct (27B, no thinking)** | **chosen** — bigger and chat-tuned |
+
+**RAM constraint:** gemma3 occupies ~11.5 GB working set; the qwen judge (~9 GB)
+**cannot coexist** in 31.4 GB RAM — tested with default, `OLLAMA_MAX_LOADED_MODELS=3`
+and infinite keep-alive; Ollama always evicts one (estimate: 16+9+OS ≈ 36 GB >
+31.4 GB). `nvidia-smi` reports only the 8 GB dedicated VRAM; the "shared VRAM"
+(Intel iGPU pool) is not used by Ollama's CUDA allocator for residency.
+**Decision:** a single-model standard — gemma3 for Heir, judge, and refinement.
+DeepSeek-R1-Distill-32B is instead the **Ambient Director** model (reasoning
+helps invent weather/errands; one call/day).
+
+**R1 empty-reply bug (fixed in `src/core/llm_client.py`):** a DeepSeek-R1
+`<think>` chain can consume the whole token budget, returning **empty content**
+from the OpenAI-compatible endpoint (reasoning goes to a `reasoning` field) —
+which silently turned every candidate into `"..."`. Fix: `LLMClient.chat/stream`
+send `extra_body={"think": False}` (suppresses reasoning) + an empty-content
+retry at 4× tokens. `--judge-model` was added so Heir and judge can differ.
+
+#### 3.6.6 The auto-cycle conductor (`tools/auto_cycle.py`)
+
+Automates the "keep cycling until everyone passes" loop:
+
+1. **Run** the style test (subprocess; report is the authority).
+2. **Parse** per-Heir pass rate, avg style/content, failed cases.
+3. **Gate** — every targeted Heir's pass rate ≥ `--pass-target` (default 85%).
+4. **Refine** failing Heirs: the refine model writes 4–6 **actionable per-line
+   voice rules** from that Heir's actual failed cases; `_is_noise_rule()` filters
+   statistical noise (percentages, averages, "X words per sentence" — unusable
+   for a single reply and proven harmful: they collapsed Castorice to style 57);
+   embedded idempotently into the card. `--best-of` bumps 5→7 between cycles.
+5. **Escalate** (`--escalate`): after the gate passes, an **overfitting guard**
+   re-tests on a *different, larger* sample (`--validate-limit`, default 2×);
+   escalation to **style 90 / content 65 → 70** is refused if validation drops
+   more than `--overfit-tolerance` (default 10 pp).
+6. **Final cheat-free re-test** — after the loop (success *or* max cycles), ALL
+   13 Heirs are re-tested at the final bars regardless of outcome; the final
+   table + outcome are logged to `docs/AUTO-CYCLE-LOG.md`.
+
+Gate granularity: run at `--limit 8` so 85% pass = **7/8** (limit 4 demanded an
+impossible 100%). Logs to `docs/AUTO-CYCLE-LOG.md`.
+
+```powershell
+python tools/auto_cycle.py --model gemma3:27b --limit 8                # base 85/60
+python tools/auto_cycle.py --model gemma3:27b --limit 8 --escalate     # 90/65 -> 90/70
+```
+
+#### 3.6.7 Known operational issues
+
+- **Long-run OOM / 502** (2026-08-11): a llama-server run continuously for 20+
+  hours (215k CPU-seconds) accumulated memory until the Ollama API server died
+  (connection refused → every call 502). Recovery: kill orphaned runner +
+  stuck pythons, restart via `tools/start_ollama.ps1`, relaunch. The test tool
+  skips per-case LLM errors gracefully (a transient failure never corrupts a
+  run). Free-RAM baseline: ~17 GB with nothing loaded; gemma3 leaves ~7 GB.
+- **Harness double-spawn**: the terminal harness sometimes spawns a second
+  identical process; the named-mutex lock (`acquire_lock`/`release_lock` in
+  `tools/test_dialogue_resemblance.py`) guarantees only one run writes the
+  report.
+
+#### 3.6.8 Current status
+
+Base 85/60 auto-cycle running on gemma3:27b (cheat-free, calibrated judge,
+noise-free refinement, limit 8). Once it converges, escalate to 90/65 → 90/70
+with the overfitting guard.
+
 ### 3.7 The Ambient World Director (`src/world/ambient.py`)
 
 A **second intelligence** — the *Keeper of Amphoreus* — sets the stage the Heirs
