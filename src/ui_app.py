@@ -200,10 +200,11 @@ st.sidebar.caption("*Databank: Complete ✅*")
 st.sidebar.caption("*See PHILOSOPHY.md for the charter*")
 
 # Main Area
-main_tab, chronicle_tab, map_tab = st.tabs([
+main_tab, chronicle_tab, map_tab, admin_tab = st.tabs([
     "💬 Visit an Heir",
     "📖 A Chronicle of Amphoreus",
     "🗺️ Map of Amphoreus",
+    "🛠️ Admin Console",
 ])
 
 with chronicle_tab:
@@ -339,6 +340,122 @@ with map_tab:
         )
     except Exception as e:
         st.error(f"Could not render the map: {e}")
+
+with admin_tab:
+    # 🛠️ Admin Console — the machine under the world: models, world-state,
+    # cause-and-effect chain, and the automation loop that keeps the Heirs
+    # converging on their voices. Read-only; nothing here changes the world.
+    st.title("🛠️ Admin Console — the machine under the world")
+    st.caption("Backend, world-state, cause-and-effect, and the quality loop.")
+
+    # ---- 1. Backend & models ----
+    st.markdown("### ⚙️ Backend & models")
+    try:
+        sn = manager.senses_status()
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Heir model", manager.llm.model)
+        c2.metric("Vision (eyes)", sn.get("vision_model") or "off")
+        c3.metric("Audio (music)", sn.get("audio_model") or "off")
+        st.caption(f"STT (hearing): {sn.get('stt_model')} · judge/refine: gemma3:27b")
+    except Exception as e:
+        st.caption(f"(backend status unavailable: {e})")
+    try:
+        rag = manager.rag_status()
+        st.markdown(f"**RAG:** {'on' if rag.get('enabled') else 'off'} · "
+                    f"{rag.get('total_documents', 0)} canon docs · {rag.get('embedding', '')}")
+    except Exception as e:
+        st.caption(f"(rag unavailable: {e})")
+
+    # ---- 2. World-state machine ----
+    try:
+        from src.world.world_state import WorldState as _WS
+        _ws2 = _WS()
+        st.markdown("### 🌍 World state")
+        st.markdown(f"**Clock:** {_ws2.clock.format()}")
+        st.markdown("**Where the Heirs are right now**")
+        for _cid, _loc in _ws2.agent_location.items():
+            if _cid in _ws2.agent_travel:
+                continue
+            st.markdown(f"- {manager.get_character_info(_cid)['name']} — {_loc}")
+        if _ws2.agent_travel:
+            st.markdown("**On the road**")
+            for _cid, _ti in _ws2.agent_travel.items():
+                st.markdown(f"- {manager.get_character_info(_cid)['name']} → {_ti['to']} "
+                            f"({_ti['remaining_days']} day(s) left)")
+        _ev = _ws2.recent_events_text(limit=10)
+        if _ev:
+            with st.expander("⚡ Recent events — the causal trail"):
+                st.markdown(_ev)
+    except Exception as e:
+        st.caption(f"(world state unavailable: {e})")
+
+    # ---- 3. Cause & effect: why today is what it is ----
+    try:
+        st.markdown("### 🔗 Cause & effect — why today is what it is")
+        st.markdown(f"**Season:** {_ws2.clock.season} · **Month:** {_ws2.clock.month_name} "
+                    f"(patron {_ws2.clock.patron_titan})")
+        _amb = _ws2.ambient
+        _w = _amb.get("weather") or {}
+        if _w:
+            with st.expander("🌤️ Weather — the sky's cause"):
+                for _city, _sky in _w.items():
+                    st.markdown(f"- **{_city}** — {_sky}")
+        _e = _amb.get("errands") or {}
+        if _e:
+            with st.expander("📜 Errands — request + original impetus"):
+                for _cid2, _er in _e.items():
+                    if not _er:
+                        continue
+                    if isinstance(_er, dict):
+                        _ask = (_er.get("ask") or "").strip()
+                        _cause = (_er.get("cause") or "").strip()
+                        st.markdown(f"**{manager.get_character_info(_cid2)['name']}**")
+                        st.markdown(f"&nbsp;&nbsp;*ask:* {_ask}")
+                        if _cause:
+                            st.markdown(f"&nbsp;&nbsp;*cause (impetus):* {_cause}")
+                    else:
+                        st.markdown(f"- {manager.get_character_info(_cid2)['name']} — {_er}")
+        if _amb.get("news"):
+            st.markdown(f"*News from the wider world:* {_amb['news']}")
+    except Exception as e:
+        st.caption(f"(ambient unavailable: {e})")
+
+    # ---- 4. The automation loop ----
+    st.markdown("### 🔄 The quality loop (auto-cycle)")
+    try:
+        import time as _time
+        _root = Path(__file__).parent.parent
+        _log = _root / "docs" / "AUTO-CYCLE-LOG.md"
+        _report = _root / "docs" / "RESEMBLANCE-STYLE-REPORT.md"
+        _wdlog = _root / "world_runtime" / "watchdog.log"
+        _now = _time.time()
+
+        def _age_min(p):
+            return int((_now - p.stat().st_mtime) // 60) if p.exists() else None
+        _l, _r, _w = _age_min(_log), _age_min(_report), _age_min(_wdlog)
+        st.markdown(f"- AUTO-CYCLE-LOG last written **{_l if _l is not None else 'never'} min ago**")
+        st.markdown(f"- Style report last written **{_r if _r is not None else 'never'} min ago**")
+        st.markdown(f"- Watchdog last event **{_w if _w is not None else 'never'} min ago**")
+        if _log.exists():
+            with st.expander("📋 Auto-cycle log (tail)"):
+                st.code("\n".join(_log.read_text(encoding="utf-8").splitlines()[-45:]))
+        if _wdlog.exists():
+            with st.expander("🐕 Watchdog log (tail)"):
+                st.code("\n".join(_wdlog.read_text(encoding="utf-8").splitlines()[-20:]))
+        if _report.exists():
+            with st.expander("📊 Latest style report (tail)"):
+                st.code("\n".join(_report.read_text(encoding="utf-8").splitlines()[-25:]))
+    except Exception as e:
+        st.caption(f"(loop status unavailable: {e})")
+
+    # ---- 5. Chronicle — the written record ----
+    try:
+        from src.world.chronicle import Chronicle as _Chr
+        _ch = _Chr(str(Path(__file__).parent.parent / "world_runtime" / "chronicle"))
+        with st.expander("📖 Chronicle — what has happened (the record)"):
+            st.markdown(_ch.read_markdown(30))
+    except Exception as e:
+        st.caption(f"(chronicle unavailable: {e})")
 
 with main_tab:
     # Main Chat Area — hero banner with the Heir's portrait
