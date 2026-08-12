@@ -146,6 +146,17 @@ class WorldEngine:
             self.chronicle.append({"time": time_str, "text": board, "kind": "ambient"})
             self.world.add_event(board)
 
+        # The Heirs go about their usual routines — the map reflects where they
+        # actually are right now, not just where they live. Travellers stay on
+        # the road (their location is only updated on arrival).
+        for cid in self.agents:
+            if self.world.is_traveling(cid):
+                continue
+            try:
+                self.world.agent_location[cid] = self.world.scheduled_place(cid)
+            except Exception:
+                pass
+
         if clock.is_rest_time():
             night = (
                 f"{time_str} — The city rests. Only the Thief Star wanders the sky. "
@@ -253,6 +264,7 @@ class WorldEngine:
         self._clear_stop()
         print(f"🌍 The little Amphoreus awakens — {self.world.clock.format()}")
 
+        failed_days = 0
         while True:
             if self._stop_requested():
                 print("🌙 The little Amphoreus rests. (stop requested)")
@@ -265,8 +277,25 @@ class WorldEngine:
                 lines = self.run_day()
                 if lines:
                     print(lines[0])
+                failed_days = 0
             except Exception as e:
-                print(f"[world engine] error: {e}")
+                # FAILSAFE: one bad day must never kill the world. Record the
+                # pause in the chronicle, persist state, and keep going. If a
+                # whole run of days keeps failing, back off so we do not spin.
+                failed_days += 1
+                print(f"[failsafe] a day failed ({e}) — the world holds its breath and continues.")
+                try:
+                    self.chronicle.append({
+                        "time": self.world.clock.format_short(),
+                        "text": "The world held its breath for a moment, then went on.",
+                    })
+                    self.world.save()
+                except Exception:
+                    pass
+                if failed_days > 5:
+                    print("[failsafe] several days failed in a row — resting a while.")
+                    time.sleep(60)
+                    failed_days = 0
             if once:
                 break
             time.sleep(interval_seconds)

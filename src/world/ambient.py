@@ -87,17 +87,70 @@ MONTH_LORE: Dict[int, Dict[str, List[str]]] = {
                   "the Month of Fortune — fortunes rise and fall on a coin; the law struggles to keep up"]},
 }
 
-CITY_ERRAND: Dict[str, str] = {
-    "Okhema": "The baths of the Marmoreal Palace are full and the Council quarrels; Okhema looks to its guardians today.",
-    "Janusopolis": "Pilgrims stand at the gates of the Three Fates' temples, asking for a door to open.",
-    "Castrum Kremnos": "The forges never stop and the warriors drill in the cold; Kremnos wants its strong ones present.",
-    "Grove of Epiphany": "The sages dispute a text in the Grove, and the scrolls of Cerces await a steady hand.",
-    "Styxia": "The pale city is quiet; the sea sirens sing low, and the bell of Styxia waits to be answered.",
-    "Aidonia": "Candles burn at every window in the snow; Aidonia remembers its dead and needs its comforters.",
-    "Dawncloud": "The Demigod Council sits at Dawncloud; the elders' arguments grow loud enough to reach the streets.",
-    "Aedes Elysiae": "The wheat stands ready in Aedes Elysiae; the wharf waits for a boat that carries it out.",
-    "Vortex of Genesis": "The sacred nexus hums beneath the waves, restless and expectant.",
-    "Great Tomb": "The Great Tomb is very quiet today, as if it is listening.",
+# Concrete, canon-grounded causes for each city's errands (fallback path). Each
+# errand carries its ORIGINAL IMPETUS — the specific event that made the city
+# turn to an Heir — so the cause-and-effect is always real, never generic.
+CITY_ERRAND_CAUSES: Dict[str, List[Dict[str, str]]] = {
+    "Okhema": [
+        {"ask": "The Council of Elders asks you to walk the lower city and steady the people.",
+         "cause": "The black tide gnawed the outer wall again last night, and the lower city slept poorly."},
+        {"ask": "The baths of the Marmoreal Palace are full and the Council quarrels; Okhema looks to its guardians today.",
+         "cause": "A dromas foundering at the Dromas Workshop has the whole city on edge about the season."},
+    ],
+    "Janusopolis": [
+        {"ask": "Pilgrims stand at the gates of the Three Fates' temples, asking for a door to open.",
+         "cause": "A pilgrim caravan was caught by the black tide on the road, and only half arrived."},
+        {"ask": "The gate-keepers ask you to walk the thresholds and bless the new doors.",
+         "cause": "So many vows of renewal are sworn this month that the keepers cannot keep count."},
+    ],
+    "Castrum Kremnos": [
+        {"ask": "The forges never stop and the warriors drill in the cold; Kremnos wants its strong ones present.",
+         "cause": "Kremnos reads the Month of Strife's approach in the sky and wants its spear-arms ready."},
+        {"ask": "The arena master asks you to witness the day's duels.",
+         "cause": "A dispute between two war-bands has festered since the last festival."},
+    ],
+    "Grove of Epiphany": [
+        {"ask": "The sages dispute a text in the Grove, and the scrolls of Cerces await a steady hand.",
+         "cause": "A newly arrived scroll from the frontier contradicts the Grove's oldest commentary."},
+        {"ask": "The librarian asks you to help shelve the season's new scrolls.",
+         "cause": "The Month of Reaping brought in more records than the shelves can hold."},
+    ],
+    "Styxia": [
+        {"ask": "The sea sirens sing low, and the bell of Styxia waits to be answered.",
+         "cause": "A storm of the deep scattered the sirens' songs into the harbor."},
+        {"ask": "The bell-keepers ask you to stand watch on the Pearly Shores.",
+         "cause": "The tide has come in strange and silver since the Thief Star passed."},
+    ],
+    "Aidonia": [
+        {"ask": "Candles burn at every window; Aidonia remembers its dead and needs its comforters.",
+         "cause": "The Month of Mourning's rites begin, and the priests are stretched thin."},
+        {"ask": "The mourners ask you to walk the snow with them to the graves.",
+         "cause": "The last thaw uncovered an old field of remembrance that was thought lost."},
+    ],
+    "Dawncloud": [
+        {"ask": "The Demigod Council sits at Dawncloud; the elders' arguments grow loud enough to reach the streets.",
+         "cause": "A herald from the frontier reports the black tide has crept past its old mark."},
+        {"ask": "The Dawn Device's keepers ask you to verify the day's light.",
+         "cause": "The light dimmed for a breath at noon, and no one knows why."},
+    ],
+    "Aedes Elysiae": [
+        {"ask": "The wheat stands ready; the wharf waits for a boat to carry it out.",
+         "cause": "Last night's silver tide flooded the grain storehouse, and the shipment must not rot."},
+        {"ask": "The villagers ask you to walk the fields with them.",
+         "cause": "The new well ran dry for the first time in memory."},
+    ],
+    "Vortex of Genesis": [
+        {"ask": "The sacred nexus hums beneath the waves, restless and expectant.",
+         "cause": "The waters have grown restless since the Thief Star passed overhead."},
+        {"ask": "The watchers ask you to keep vigil at the core's edge.",
+         "cause": "A tremor rolled through the sanctuary at the month's turning."},
+    ],
+    "Great Tomb": [
+        {"ask": "The Great Tomb is very quiet today, as if it is listening.",
+         "cause": "A sealing ceremony was left unfinished, and the priests dare not return alone."},
+        {"ask": "The keepers ask you to walk the lowest corridor.",
+         "cause": "Something moved the dust that has not moved in a century."},
+    ],
 }
 
 NEWS_PALETTE: List[str] = [
@@ -153,11 +206,13 @@ DIRECTOR_SYSTEM = (
     "the world around them. Each day you provide:\n"
     "1. weather — the day's sky over each city (short, vivid, season- and "
     "Titan-flavored).\n"
-    "2. errands — for each Heir, ONE short request that the city lays at their "
-    "door (a plea, a duty, a message, an invitation). The Heir may accept, "
-    "decline, or ignore it — that is their freedom. Tie each errand to that "
-    "Heir's role, home city, and the day's month and mood. Keep each errand to one "
-    "sentence.\n"
+    "2. errands — for each Heir, ONE request the city lays at their door, and the "
+    "CONCRETE CAUSE behind it. The cause is the original impetus: the specific "
+    "event, loss, fear, or need that made the city turn to this Heir (a flood, a "
+    "quarrel, an omen, a shortage, an arrival, an unfinished rite). Ground the "
+    "cause in the month, the weather, and canon. The Heir may accept, decline, or "
+    "ignore the errand — that is their freedom. Format each as {\"ask\": \"...\", "
+    "\"cause\": \"...\"}.\n"
     "3. news — ONE short line of distant news that reaches every city.\n\n"
     "Be vivid but brief. Ground everything in canon — never invent modern or "
     "alien concepts; Amphoreus is a mythic world at rest after a long war, holding "
@@ -165,7 +220,7 @@ DIRECTOR_SYSTEM = (
     + KEEPER_KNOWLEDGE +
     'Reply with ONLY a JSON object like:\n'
     '{"weather": {"Okhema": "...", "Janusopolis": "..."}, '
-    '"errands": {"tribbie": "...", "phainon": "..."}, "news": "..."}'
+    '"errands": {"tribbie": {"ask": "...", "cause": "..."}, "phainon": {"ask": "...", "cause": "..."}}, "news": "..."}'
 )
 
 
@@ -182,6 +237,18 @@ def _extract_json(text: str) -> dict:
     if s == -1 or e <= s:
         raise ValueError("no JSON in director reply")
     return json.loads(t[s:e + 1])
+
+
+def _norm_errand(v) -> dict:
+    """Normalize an errand to {ask, cause}, accepting a dict or a plain string.
+
+    The Keeper now writes errands WITH their concrete cause; older cached
+    entries may still be plain strings — keep both working."""
+    if isinstance(v, dict):
+        ask = str(v.get("ask") or v.get("text") or "").strip()
+        cause = str(v.get("cause") or v.get("why") or "").strip()
+        return {"ask": ask, "cause": cause}
+    return {"ask": str(v or "").strip(), "cause": ""}
 
 
 class AmbientDirector:
@@ -277,13 +344,11 @@ class AmbientDirector:
             max_tokens=1000,
         )
         parsed = _extract_json(reply)
-        # Defensive: ensure the shapes we promise, whatever the model returns.
+        raw_errands = parsed.get("errands") or {}
+        # Defensive: accept both the new {ask, cause} shape and a plain string.
         return {
             "weather": {c: (parsed.get("weather") or {}).get(c, "") for c in cities},
-            "errands": {
-                cid: (parsed.get("errands") or {}).get(cid, "")
-                for cid in heirs
-            },
+            "errands": {cid: _norm_errand(raw_errands.get(cid)) for cid in heirs},
             "news": str(parsed.get("news", "") or ""),
         }
 
@@ -303,9 +368,18 @@ class AmbientDirector:
         errands = {}
         for cid, info in heirs.items():
             home = info.get("home", "Okhema")
-            base = CITY_ERRAND.get(home, f"The people of {home} look to you today, as they always do.")
-            # Weave the month's flavour into the errand.
-            errands[cid] = f"{base} It is {seed}."
+            opts = CITY_ERRAND_CAUSES.get(home)
+            if opts:
+                pick = rng.choice(opts)
+                errands[cid] = {
+                    "ask": pick["ask"],
+                    "cause": f"{pick['cause']} It is {seed}.",
+                }
+            else:
+                errands[cid] = {
+                    "ask": f"The people of {home} look to you today, as they always do.",
+                    "cause": f"None can say why — only that it is {seed}.",
+                }
         return {
             "weather": weather,
             "errands": errands,

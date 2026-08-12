@@ -28,6 +28,7 @@ st.set_page_config(
 PROJECT_ROOT = Path(__file__).parent.parent
 ASSETS = PROJECT_ROOT / "assets"
 HEIR_PORTRAITS_DIR = ASSETS / "heirs"
+HEIR_AVATARS_DIR = ASSETS / "avatars"
 BG_IMAGE = ASSETS / "amphoreus_bg.jpg"
 
 
@@ -38,6 +39,15 @@ def portrait_for(character_id: str):
         if p.exists():
             return p
     return None
+
+
+def avatar_for(character_id: str):
+    """Path to the Heir's square chat avatar, falling back to the portrait."""
+    for ext in ("png", "jpg", "jpeg", "webp"):
+        p = HEIR_AVATARS_DIR / f"{character_id}.{ext}"
+        if p.exists():
+            return p
+    return portrait_for(character_id)
 
 
 # Ethereal Amphoreus theme (dark gold, no heavy base64 in the page)
@@ -249,8 +259,15 @@ with map_tab:
                 st.markdown(f"*News from the wider world: {_news}*")
             with st.expander("📜 Errands laid at the Heirs' doors today"):
                 for _cid, _errand in _errands.items():
-                    if _errand:
-                        st.markdown(f"- **{_names.get(_cid, _cid)}** — {_errand}")
+                    if not _errand:
+                        continue
+                    if isinstance(_errand, dict):
+                        _ask = (_errand.get("ask") or "").strip()
+                        _cause = (_errand.get("cause") or "").strip()
+                        _txt = _ask + (f" — *cause:* {_cause}" if _cause else "")
+                    else:
+                        _txt = str(_errand)
+                    st.markdown(f"- **{_names.get(_cid, _cid)}** — {_txt}")
 
         col_w, col_t = st.columns(2)
         with col_w:
@@ -362,8 +379,8 @@ with main_tab:
             "content": greeting,
         })
 
-    # Display chat history (the Heir's portrait as the assistant avatar)
-    _assistant_avatar = str(_selected_portrait) if _selected_portrait else None
+    # Display chat history (the Heir's own square avatar — never a generic bot)
+    _assistant_avatar = str(avatar_for(selected)) if avatar_for(selected) else None
     for msg in st.session_state.messages[selected]:
         with st.chat_message(msg["role"], avatar=_assistant_avatar if msg["role"] == "assistant" else None):
             st.markdown(msg["content"])

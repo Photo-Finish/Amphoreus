@@ -308,10 +308,28 @@ class WorldState:
             return ""
 
     def ambient_errand(self, character_id: str) -> str:
+        """The day's request at this Heir's door, WITH its concrete cause."""
         try:
-            return ((self.ambient.get("errands") or {}).get(character_id) or "").strip()
+            v = (self.ambient.get("errands") or {}).get(character_id)
         except Exception:
             return ""
+        if isinstance(v, dict):
+            ask = str(v.get("ask", "") or "").strip()
+            cause = str(v.get("cause", "") or "").strip()
+            if ask and cause:
+                return f"{ask} — the cause: {cause}"
+            return ask
+        return str(v or "").strip()
+
+    def ambient_errand_cause(self, character_id: str) -> str:
+        """Just the concrete cause/original impetus of today's errand."""
+        try:
+            v = (self.ambient.get("errands") or {}).get(character_id)
+            if isinstance(v, dict):
+                return str(v.get("cause", "") or "").strip()
+        except Exception:
+            pass
+        return ""
 
     def ambient_news(self) -> str:
         try:

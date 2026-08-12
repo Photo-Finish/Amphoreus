@@ -233,7 +233,14 @@ def render_map_svg(
             f'font-style="italic">{name}</text>'
         )
 
-    # the Heirs as small lights at their current places
+    # the Heirs as small lights at their current places; when several share a
+    # city they fan out so every Heir is clearly visible, each with a name tag
+    from collections import defaultdict
+    city_count = defaultdict(int)
+    for cid in heir_locations:
+        if heir_locations[cid] in LOCATION_POS:
+            city_count[heir_locations[cid]] += 1
+    seen_in_city = defaultdict(int)
     for i, cid in enumerate(heir_locations):
         loc = heir_locations[cid]
         if loc not in LOCATION_POS:
@@ -242,6 +249,10 @@ def render_map_svg(
         col = palette[i % len(palette)]
         name = heir_names.get(cid, cid)
         initial = name[0].upper() if name else "?"
+        if city_count[loc] > 1:
+            spread = (city_count[loc] - 1) * 13
+            x = x - spread / 2 + seen_in_city[loc] * 13
+        seen_in_city[loc] += 1
         parts.append(
             f'<circle cx="{x}" cy="{y}" r="12" fill="{col}" opacity=".16"/>'
         )
@@ -251,6 +262,10 @@ def render_map_svg(
         parts.append(
             f'<text x="{x}" y="{y + 4.5}" text-anchor="middle" font-size="9" '
             f'fill="#0b0a14" font-weight="bold" font-family="Arial">{initial}</text>'
+        )
+        parts.append(
+            f'<text x="{x}" y="{y - 12}" text-anchor="middle" font-size="10.5" '
+            f'fill="{col}" font-family="Arial" font-style="italic">{name}</text>'
         )
 
     # travelers shown on the road: a small dot between origin and destination
