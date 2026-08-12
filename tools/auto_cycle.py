@@ -315,7 +315,12 @@ def main():
     best_of_start = args.best_of
     final_outcome = None
     final_reason = ""
-    passed_heirs = set()   # Heirs that passed a cycle and opt out of later ones
+    passed_heirs = set()  # Heirs that passed a cycle: their card is FROZEN —
+    # never refined again, even if the bars are raised later.
+    # Each Heir's best cycle so far: (pass_rate, avg_style, failed_cases).
+    # If a later cycle scores LOWER, refinement is based on the BEST cycle's
+    # failures (the clearer signal), not the current regressed ones.
+    best = {}
     while cycle < args.max_cycles:
         cycle += 1
         print(f"\n{'='*70}\nCYCLE {cycle} — targets: {len(targets)} Heirs  "
@@ -343,6 +348,10 @@ def main():
         for cid, r in evaluated.items():
             ok = r["pass_rate"] >= args.pass_target
             status = "PASS" if ok else "FAIL"
+            # Record the best cycle seen so far (highest pass rate, then avg style).
+            prev = best.get(cid)
+            if prev is None or (r["pass_rate"], r["avg_style"]) > (prev[0], prev[1]):
+                best[cid] = (r["pass_rate"], r["avg_style"], list(r["fails"]))
             if ok:
                 passed_heirs.add(cid)
                 print(f"    ✓ {r['name']:>28}: {r['pass']}/{r['total']} ({r['pass_rate']}%) — passed, DECLINES further cycles")
@@ -408,7 +417,8 @@ def main():
                            f"(validation ok)")
                 cycle = 0  # restart the cycle budget at the new bars
                 targets = list(all_heirs)
-                passed_heirs.clear()  # bars changed — everyone must re-prove
+                # passed_heirs is NOT cleared: already-passed Heirs keep their
+                # settings frozen even when the bars are raised.
                 args.best_of = best_of_start
                 continue
             print(f"\n  ⚠️ Overfitting risk: validation dropped to {vavg:.0f}% — keeping bars "
@@ -428,9 +438,27 @@ def main():
             return 1
 
         # Refine each failing Heir: ask the model to write voice rules, embed.
+        # RULE: already-passed Heirs are FROZEN — their card is never modified.
         print(f"\n  Refining {len(failing)} Heirs…")
         for cid in failing:
+            if cid in passed_heirs:
+                print(f"    • {cid}: already passed — settings frozen (no modification)")
+                log.append(f"- {cid}: already passed — settings frozen, not modified")
+                continue
             info = evaluated[cid]
+            # RULE: if this cycle scored lower than the Heir's best, base the
+            # new rules on the BEST cycle's failures — a regression usually
+            # means the last refinement over-corrected, so the best cycle's
+            # failures are the clearer signal to refine from.
+            use_info = info
+            prev = best.get(cid)
+            if prev and info["pass_rate"] < prev[0] and prev[2]:
+                use_info = dict(info)
+                use_info["fails"] = prev[2]
+                print(f"    {cid}: current {info['pass_rate']}% < best {prev[0]}% — "
+                      f"refining from the BEST cycle's failures")
+                log.append(f"- {cid}: refined from BEST-cycle failures "
+                           f"(current {info['pass_rate']}% < best {prev[0]}%)")
             card_path = CARDS / f"{cid}.json"
             if not card_path.exists():
                 continue
@@ -443,7 +471,7 @@ def main():
                 max_words=max(12, int(wpl * 1.6)),
             )
             try:
-                rules = write_refinement_rules(refine_llm, cid, info, stats, exemplars)
+                rules = write_refinement_rules(refine_llm, cid, use_info, stats, exemplars)
             except Exception as e:
                 print(f"    ! {cid}: refinement LLM error {e}")
                 rules = []
@@ -460,7 +488,9 @@ def main():
         if args.best_of < args.best_of_max:
             args.best_of += 1
             print(f"  best-of -> {args.best_of}")
-        targets = failing
+        # Frozen (already-passed) Heirs are not re-tested in later cycles at the
+        # same bar — their pass is banked and their card untouched.
+        targets = [c for c in failing if c not in passed_heirs]
         # Persist the log after every cycle so a crash (e.g. during the long
         # final re-test) never loses the cycle history.
         LOG.write_text("\n".join(log), encoding="utf-8")

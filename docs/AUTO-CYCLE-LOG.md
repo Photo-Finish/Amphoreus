@@ -35,3 +35,28 @@
 - hysilens: refined (4 rules: ## Hysilens Voice Rules:; Begin sentences with a brief acknowledgement or observation…; Employ interjections like “Hah.” sparingly for emphasis.…)
 - mydei: refined (6 rules: Begin sentences with a statement of fact or observation before expanding...; End statements with a questioning phrase that subtly shifts blame...; Use a curt interjection ("Hmph") to preface direct challenges...…)
 - phainon: refined (6 rules: Begin sentences with a qualifying particle like "But" or "With".; End lines with an incomplete thought trailing off into "...".; Incorporate direct address ("heroic soul") even when unnecessary.…)
+## Cycle 2 (best-of 8; bars style≥85, content≥60)
+| Heir | pass | rate | avg style | avg content | status |
+|---|---:|---:|---:|---:|---|
+| Aglaea | 5/8 | 62% | 75 | 67 | FAIL |
+| Anaxa | 3/8 | 37% | 73 | 62 | FAIL |
+| Castorice | 5/8 | 62% | 75 | 64 | FAIL |
+| Cipher | 5/8 | 62% | 80 | 67 | FAIL |
+| Cyrene | 6/8 | 75% | 84 | 71 | FAIL |
+| Evernight | 6/8 | 75% | 82 | 68 | FAIL |
+| Hyacine | 6/8 | 75% | 85 | 71 | FAIL |
+| Hysilens | 6/8 | 75% | 86 | 69 | FAIL |
+| Mydei | 5/8 | 62% | 76 | 60 | FAIL |
+| Phainon | 5/8 | 62% | 80 | 66 | FAIL |
+- Opted out this cycle (already passed): tribbie, cerydra, dan-heng-permansor-terrae
+
+- aglaea: refined (6 rules: ## Aglaea Voice Rules:; Begin sentences with declarative statements of fact or direct address.; Introduce complex topics using the phrase "Now, concerning..."…)
+- anaxa: refined (3 rules: Begin sentences with dismissive sounds like "Hmph" when reacting to information.; Frame assertions as scholar’s reluctance using phrases like “I do not wish to…” before stating opinion.; Use concise phrasing when delivering bad news or limitations ("Too bad…").…)
+- castorice: refined (6 rules: End sentences with ‘...’ unless directly addressing a need or offering.; Include a brief, positive assessment when complimenting something…; Frame statements about fate as needing to reach ‘the next one…’…)
+- cipher: refined (5 rules: Begin sentences with non-lexical sounds like “Grumph…” or “Hmph…” when responding to direct address.; End statements that offer assistance or bargains with a conditional obligation ("You owe…").; Incorporate "know?" into declarative statements about uncertainty.…)
+- cyrene: refined (6 rules: Respond to direct questions with a question back...; End statements trailing off after '...' with an appended interjection ("Huh?", "♪").; Frame observations as uncertain recollections beginning with “We should…”…)
+- evernight: refined (4 rules: Begin sentences with conjunctions or pronouns when continuing thought...; Frame assertions as concessions using "unlike" or "plus"...; Use short, direct commands consisting of one noun phrase...…)
+- hyacine: refined (6 rules: Begin sentences with observations about others before stating your own point…; Include positive appraisals of another character’s abilities within a longer statement...; End statements with a trailing ellipsis when expressing potentially harsh truths...…)
+- hysilens: refined (5 rules: ## Hysilens Voice Rules:; Begin sentences with a dismissive interjection when reacting to someone's name or identity.; Construct questions that directly challenge another character’s motivations using “Was…” as the opening.…)
+- mydei: refined (6 rules: Begin sentences with a statement before questioning...; End statements with "...This is the result..." or similar reflective tag.; Use 'Let's...' to initiate direct challenges or actions.…)
+- phainon: refined (6 rules: Include a qualifying adjective before an observation.; End sentences with '...' if they contain a noun of companionship (e.g., comrades, companions).; Ask questions when referencing personal longing or wishes.…)
