@@ -11,6 +11,10 @@ $ErrorActionPreference = 'Continue'
 $ollamaExe = 'C:\Users\17501\AppData\Local\Programs\Ollama\ollama.exe'
 $env:OLLAMA_MODELS = 'D:\Workspace\Amphoreus\models\ollama'
 $env:OLLAMA_HOST = '127.0.0.1:11434'
+# Default context window for every request (default 4096 was too small — long
+# music-audio and big canon prompts got truncated). 8192 doubles the headroom;
+# raise further if RAM allows (each token of context costs KV-cache memory).
+$env:OLLAMA_CONTEXT_LENGTH = '8192'
 
 # 1. Stop any stale ollama processes (tray app may serve the wrong models dir).
 #    Also kill orphaned llama-server children: when the server is force-killed,
