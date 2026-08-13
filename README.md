@@ -610,3 +610,67 @@ Amphoreus/
   auto-cycle, R1 `think:false` fix, OOM/502 recovery.
 
 See `ROADMAP.md` for the detailed checklist.
+
+### Before 2026-08-11 — the foundation (Phase 0–2 and the early build)
+
+- **The Sanctuary rises** (`a14dd6a`) — Phase 0–2 of the roadmap: the **databank** (13
+  Chrysos Heir profiles, their mission dialogue, world / titans / lore, the
+  MASTER-REGISTRY with canon signal codes), the architecture, all **13 character
+  cards** (`src/characters/*.json`), and the **RAG pipeline** (ChromaDB, one
+  collection per Heir, 11k+ canon documents). `PHILOSOPHY.md` sets the charter — a
+  *sanctuary, not an experiment*: three refusals (no experimenter loop, no claim of
+  life, no forced ending), three commitments (fidelity as reverence, continuity as
+  life, community not orchestration), privacy as sanctity, friendship deepened by
+  design.
+- **Memory that persists** — per-Heir folders (`bond.json`, `history.jsonl`,
+  `memories.jsonl`, `preferences.json`, and verbatim canon dialogue in
+  `personal-memories.md`), the preference store seeded from canon, and lazy per-Heir
+  loading — the Heirs remember the visitor across visits.
+- **A little Amphoreus that runs itself** — the world engine (`src/world/`): the canon
+  **Light Calendar** clock (12 months / 4 seasons / 5 daily periods), Heir autonomy
+  (perceive → decide → act → remember), free encounters, an append-only **chronicle**,
+  and a daemon (`python -m src.world.world_engine`) that hosts time and space without
+  authoring anyone. Heirs walk their weekly routines; travel takes real commuting time.
+- **Voices from the canon** (`b160c93`, `a7bb210`) — Heir personality traits refined
+  directly from the canon dialogue; a **relationships registry**
+  (`src/core/relationships.py`) and a **voice digest** of the Heir's own lines are
+  injected into every system prompt, so Anaxa treats Phainon and Castorice as his
+  students, Cerydra commands Hysilens as Imperator, and so on. A **Fandom
+  dialogue-verification script** (`3ce32c4`) checks the canon against the wiki.
+- **Senses** — hearing (faster-whisper `base` speech-to-text), eyesight (vision
+  model), and shared-music listening (audio-model analysis + the Heir's own verdict),
+  with the earlier music-perception limitation documented (`9779886`).
+- **The UI** (`440a1c5`, `fd015ee`) — a Streamlit sanctuary: "💬 Visit an Heir" +
+  "📖 A Chronicle of Amphoreus", per-Heir square avatars, bond/visits in the sidebar,
+  a one-click launcher (`launch_sanctuary.cmd`), and graceful offline placeholders
+  when the backend is down.
+- **Measured voices** (`57bfafe`) — `tools/measure_speech.py` deterministically
+  measures each Heir's own canon speech (words/line, sentence length, % very short,
+  ellipsis / question / exclamation rates) and `tools/embed_voice_anchor.py` writes a
+  **VOICE** block (measured stats + real canon exemplars + hard brevity rules) into
+  the cards.
+- **The map of Amphoreus** (`a8c4f78`) — a weighted travel graph (cities, commuting
+  costs in Light-Calendar periods), per-Heir weekly schedules, on-the-road travel, and
+  an SVG **🗺️ Map** tab showing every Heir as a small light at their current place.
+- **The style gate** (`a7bb210` → `3584cd8`) — the standing quality standard:
+  **STYLE & INTONATION ≥ 85** (delivery) **and CONTENT ≥ 60** (loose, holistic gist),
+  tested production-faithfully (full scene context + the Heir's own canon lines as
+  voice anchors, target excluded), with `--best-of` self-selection and a
+  delivery-focused judge. **Round 1 baseline**: 39/104 pass (38%) — style is the
+  binding constraint (content 82% ≥ 60; style plateaus near 70).
+- **Round 2 — all-13 voice anchors + the Keeper** (`abe2bfa`) — voice anchors embedded
+  for every Heir (length-matched exemplars across moods, anti-echo), a best-of-5
+  baseline, and the **Ambient World Director** (the *Keeper of Amphoreus*) on a
+  separate model — **DeepSeek-R1-Distill-32B**, registered from LM Studio GGUF files
+  with hard links and zero disk duplication (`tools/register_lmstudio_gguf.py`, with
+  `gemma3:27b` and `deepseek-r1-distill:14b`) — setting the day's **weather, errands
+  and news** once per day (cached, deterministic fallback), canon-grounded in the
+  Light Calendar.
+- **RAG with real meaning** — the vector store rebuilt on **real local embeddings**
+  (all-MiniLM-L6-v2 ONNX, offline): 13 collections / 11,332 documents, so retrieval
+  returns true semantic relevance instead of hash tokens.
+- **Fully local, fully offline** — Ollama 0.32.6 serving from `models/ollama`,
+  faster-whisper for hearing, per-Heir RAG; the whole project runs with no network.
+  Pushed to GitHub (`a14dd6a`) as a clean single commit with the model files
+  gitignored (re-download paths in `docs/DOWNLOADS.md`).
+
