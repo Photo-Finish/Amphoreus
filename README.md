@@ -398,6 +398,23 @@ Amphoreus/
 
 ## Changelog
 
+### 2026-08-13 — Style test: the '...' collapse is eliminated
+- The dominant failure mode in the focused round was the model answering with a bare
+  `...` (8 of 16 failures, scoring style 45 / content 25 and dragging both averages
+  down). Root cause found in `tools/test_dialogue_style.py`: a literal `...` is truthy,
+  is not a canon-quote cheat (its normalized form is empty, length < 3) and is not a
+  run-repeat, so it passed every candidate filter and was submitted for judging.
+- **FIX** (1) new `is_degenerate()` rejects blank / punctuation-only / ellipsis-only
+  replies at generation — a line of only `...` can never become a candidate;
+  (2) the candidate loop now keeps trying up to **2× its budget** when the model is
+  stuck on `...`, so a real line is produced instead of a collapse; (3) HARD STYLE
+  RULE **#11** + a user-prompt note tell the model that a line of only `...` (or a
+  lone filler) is not an answer — say at least a few real words, even if terse.
+- **Content threshold analysis** — the 85/60 bar is NOT content-bound: every
+  non-collapse failure in the round already scored content 65 (≥ 60) and lost on
+  *style* only; the low content scores (25–35) came exclusively from the `...`
+  collapses. Content bar therefore stays at 60; the lever was the collapse + style.
+
 ### 2026-08-13 — UI fix: the top bar no longer swallows the tabs
 - **Header/tab overlap fixed** — Streamlit's top bar (Running… / Deploy / Main menu) is
   absolutely positioned over the top 60px of the main area; the app's theme CSS was

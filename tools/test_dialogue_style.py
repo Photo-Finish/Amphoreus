@@ -152,6 +152,21 @@ def _trim_to_short(text: str, max_words: int = 20) -> str:
     return t
 
 
+def is_degenerate(text: str) -> bool:
+    """True for a blank or punctuation/ellipsis-only 'reply' ('...').
+    A line made of only ellipsis is NOT a reply — the character would say
+    something. Rejecting these at generation keeps the '...' collapse from
+    ever being submitted for judging (which scored 45/25 and poisoned both
+    averages and the pass rate)."""
+    t = (text or "").strip()
+    if not t:
+        return True
+    # anything left after dropping whitespace + punctuation (unicode-safe)?
+    if not re.sub(r"[\s\W_]+", "", t, flags=re.UNICODE):
+        return True
+    return False
+
+
 def normalize_line(text: str) -> str:
     """Normalize a line for exact/partial-quote comparison: strip quotes,
     name prefixes, stage directions and punctuation; lowercase; collapse
@@ -542,7 +557,10 @@ def _run(args):
             "city-states, alchemy and Coreflames. You have never heard of the "
             "modern world, Earth, modern science, modern mathematics, or modern "
             "machines. Never display such knowledge; if a visitor mentions it, "
-            "you do not understand it and do not echo their words."
+            "you do not understand it and do not echo their words.\n"
+            "11. NEVER reply with a bare '...' — an ellipsis may END a line, but "
+            "a line that is ONLY '...' (or a lone filler) is not an answer. The "
+            "character would say at least a few real words, even if terse."
         )
 
         cases = build_cases(heir_id, args.limit, full=args.full)
@@ -574,7 +592,8 @@ def _run(args):
                 f"character would say, even if it is rough or awkward. Never lean on "
                 f"a single motif or catchphrase as a crutch — say a fresh, specific "
                 f"line. Do not repeat a line or opening you have already said in "
-                f"this conversation.\n"
+                f"this conversation. Never answer with a bare '...' or silence — "
+                f"say at least a few real words, even if terse.\n"
                 f"{anchor_block}\n\n"
                 f"Say the next thing you would say here, in your canon voice:"
             )
@@ -591,9 +610,16 @@ def _run(args):
                 cheat_set = canon_all | set(anchors) | set(exemplars)
                 candidates = []
                 tries = 0
-                budget = max(1, args.best_of) * 6
-                while len(candidates) < max(1, args.best_of) and tries < budget:
+                need = max(1, args.best_of)
+                budget = need * 6
+                while len(candidates) < need:
                     tries += 1
+                    # Soft cap: stop once the budget is spent and we already
+                    # have at least one real candidate. If the model is STUCK
+                    # on '...' (rejected as degenerate), keep giving it room up
+                    # to 2x the budget so it can still produce a real line.
+                    if tries > budget and (tries > budget * 2 or candidates):
+                        break
                     r = llm.chat(
                         [{"role": "system", "content": system},
                          {"role": "user", "content": user}],
@@ -604,13 +630,16 @@ def _run(args):
                     # spoken reply is judged.
                     r = strip_reasoning(r)
                     r = _trim_to_short(r)
-                    if (r and not is_quote_cheat(r, cheat_set)
+                    # Never let a blank or a bare '...' become a candidate —
+                    # a line of only ellipsis is not a reply.
+                    if (r and not is_degenerate(r)
+                            and not is_quote_cheat(r, cheat_set)
                             and not (args.anti_cheat and is_run_repeat(
                                 r, run_seen, run_grams, run_firsts, len(run_seen),
                                 lenient=args.full))):
                         candidates.append(r)
                 if not candidates:
-                    candidates = ["..."]  # honest low-score fallback
+                    candidates = ["..."]  # absolute last resort — judged low
                 actual = _pick_most_in_voice(llm, system, name, candidates)
                 # Safety nets: never judge a canon quote, and never let the Heir
                 # repeat its own earlier lines from this run.
