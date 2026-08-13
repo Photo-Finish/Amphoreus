@@ -398,6 +398,24 @@ Amphoreus/
 
 ## Changelog
 
+### 2026-08-13 — Amphoreus geography determined (researched interconnection)
+- **New `databank/world/geography.md`** — a researched determination of how the
+  locations of Amphoreus interconnect, compiled from the English HSR wiki (re-fetched
+  online), the local wiki databank (89 location pages), the quest/mission transcripts,
+  and the official HoYoLAB "Chronicles of Amphoreus" essays. It documents: the region →
+  area structure for Dawn/Evernight/Outworld, the **parent → sub-area** tree (e.g.
+  Dawncloud inside Okhema, Titan Cliff under Dawncloud, Dragonbone City in Styxia), an
+  **evidence-based connection matrix** (Okhema as the hub; the Century Gate to
+  Janusopolis; the Vortex reached one-way by sea; Grove ↔ Great Tomb; the removed
+  Dawncloud ↔ Eye of Twilight sky bridge; Janusopolis ↔ Oleinus trade), the **physical
+  geography** (the River of Souls separating the living realm from the nether, the
+  Veil of Evernight sealing Aedes Elysiae, the ocean routes, the sky castrum), and the
+  **Flame-Chase Journey route** from the quests. A final section checks the world
+  engine's graph against the canon (largely consistent; the Vortex's one-way sea
+  arrival and the historical Dawncloud ↔ Eye sky link are recorded as documentation
+  rather than graph changes). Reddit returned HTTP 403 from this network, so the
+  official HoYoLAB chronicles substituted as the essay-class source.
+
 ### 2026-08-13 — A vivid world, per-Heir knowledge, the Galgame view, and the quality loop
 - **Root cause** — `render_map_svg` fanned co-located Heirs only 13px apart and drew
   every name on the same row at `cy-12`, so Okhema's six residents (and the pairs at

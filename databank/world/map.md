@@ -121,6 +121,9 @@ city, they meet no one, until they arrive.
 
 ## See also
 
+- `world/geography.md` — the researched determination of how Amphoreus's locations
+  interconnect (areas, the evidence-based connection matrix, physical geography,
+  the Flame-Chase Journey route, and canon-vs-model notes)
 - `src/world/map_data.py` — the machine-readable graph (positions, routes, travel times)
 - `src/world/schedules.py` — the individual weekly routines of the Heirs
 - `world/calendar.md` — the Light Calendar (periods, weeks, months)
