@@ -338,7 +338,10 @@ def main():
                 "Georios", "Hippeus", "Lanternus", "Mnestia", "Talanton",
                 "Zagreus", "The Black Tide", "Amphoreus Experiment",
                 "Pathstriders", "Chrysos Heirs", "Coreflame", "River of Souls",
-                "Twilight Courtyard", "Dawn Device", "Century Gate"]
+                "Twilight Courtyard", "Dawn Device", "Century Gate",
+                "Abyss of Fate", "Cloudedge Bastion Ruins", "Dragonbone City",
+                "Lightless Chapel", "Murmuring Woods", "Nightmare's Echo",
+                "Vortex of Genesis", "Memortis Shore"]
         titles = []
         for s in seed:
             d = api({"action": "query", "list": "search", "srsearch": s,

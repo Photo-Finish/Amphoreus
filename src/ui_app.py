@@ -317,6 +317,35 @@ with map_tab:
             height=min(40 + 32 * len(_locs), 420),
         )
 
+        # Area art — browse the places of Amphoreus (wiki area backgrounds).
+        try:
+            from src.ui_backgrounds import available_backgrounds, location_slug as _locslug
+            _areas = available_backgrounds()
+            if _areas:
+                _default = None
+                for _cid, _loc in _ws.agent_location.items():
+                    if _cid in _ws.agent_travel:
+                        continue
+                    _default = _locslug(_loc)
+                    if _default:
+                        break
+                _map_slug = dict(_areas)
+                _opts = list(_map_slug)
+                _labels = {s: s.replace("-", " ").title() for s in _opts}
+                if _default in _opts:
+                    _idx = _opts.index(_default)
+                else:
+                    _idx = 0
+                st.markdown("### 🖼️ Area art")
+                _sel = st.selectbox(
+                    "Choose a place to view", _opts, format_func=lambda s: _labels[s],
+                    index=_idx, key="map_area_sel",
+                )
+                st.image(str(_map_slug[_sel]), width="stretch")
+                st.caption(f"**{_labels[_sel]}** — Amphoreus, as the wiki's area art shows it.")
+        except Exception:
+            pass
+
         # Individual weekly schedules
         st.markdown("### 📅 Individual weekly routines")
         st.caption(
@@ -469,9 +498,20 @@ with admin_tab:
         st.caption(f"(chronicle unavailable: {e})")
 
 with main_tab:
-    # Main Chat Area — hero banner with the Heir's portrait
-    if BG_IMAGE.exists():
-        st.image(str(BG_IMAGE), width="stretch")
+    # Main Chat Area — hero banner with the Heir's portrait + where they are.
+    # The backdrop follows the Heir's CURRENT place in the little Amphoreus
+    # (falling back to their home city, then the default banner).
+    try:
+        from src.ui_backgrounds import bg_path as _loc_bg, current_location as _loc_now
+        _chat_bg = _loc_bg(selected)
+        _chat_place = _loc_now(selected)
+    except Exception:
+        _chat_bg = BG_IMAGE if BG_IMAGE.exists() else None
+        _chat_place = ""
+    if _chat_bg:
+        st.image(str(_chat_bg), width="stretch")
+        if _chat_place:
+            st.caption(f"📍 {info['name']} is in **{_chat_place}** — the backdrop shows where they are.")
     hero_l, hero_r = st.columns([1, 3], gap="large")
     with hero_l:
         if _selected_portrait:
