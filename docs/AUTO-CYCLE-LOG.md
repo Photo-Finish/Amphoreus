@@ -1,4 +1,4 @@
-# Auto-cycle log — 2026-08-12 19:36
+# Auto-cycle log — 2026-08-13 00:17
 
 - Heir model: `gemma3:27b` · judge model: `gemma3:27b` (constant)
 - Gate: per-Heir pass rate ≥ 85% (style ≥ 85 AND content ≥ 60)
@@ -10,53 +10,157 @@
 ## Cycle 1 (best-of 7; bars style≥85, content≥60)
 | Heir | pass | rate | avg style | avg content | status |
 |---|---:|---:|---:|---:|---|
-| Aglaea | 2/8 | 25% | 73 | 72 | FAIL |
-| Anaxa | 5/8 | 62% | 84 | 73 | FAIL |
-| Castorice | 5/8 | 62% | 82 | 72 | FAIL |
-| Cerydra | 7/8 | 87% | 86 | 76 | PASS |
-| Cipher | 6/8 | 75% | 86 | 73 | FAIL |
-| Cyrene | 5/8 | 62% | 85 | 76 | FAIL |
-| Dan Heng • Permansor Terrae | 7/8 | 87% | 86 | 74 | PASS |
-| Evernight | 6/8 | 75% | 77 | 70 | FAIL |
-| Hyacine | 6/8 | 75% | 86 | 71 | FAIL |
-| Hysilens | 3/8 | 37% | 76 | 69 | FAIL |
-| Mydei | 3/8 | 37% | 63 | 56 | FAIL |
-| Phainon | 5/8 | 62% | 83 | 76 | FAIL |
-| Tribbie | 7/8 | 87% | 81 | 73 | PASS |
-- Opted out this cycle (already passed): tribbie, cerydra, dan-heng-permansor-terrae
+| Aglaea | 4/8 | 50% | 77 | 74 | FAIL |
+| Anaxa | 2/8 | 25% | 76 | 70 | FAIL |
+| Castorice | 3/8 | 37% | 72 | 65 | FAIL |
+| Cerydra | 7/8 | 87% | 86 | 79 | PASS |
+| Cipher | 3/8 | 37% | 72 | 68 | FAIL |
+| Cyrene | 7/8 | 87% | 87 | 72 | PASS |
+| Dan Heng • Permansor Terrae | 4/8 | 50% | 83 | 75 | FAIL |
+| Evernight | 7/8 | 87% | 84 | 68 | PASS |
+| Hyacine | 4/8 | 50% | 81 | 73 | FAIL |
+| Hysilens | 3/8 | 37% | 74 | 64 | FAIL |
+| Mydei | 5/8 | 62% | 80 | 70 | FAIL |
+| Phainon | 5/8 | 62% | 83 | 74 | FAIL |
+| Tribbie | 8/8 | 100% | 90 | 76 | PASS |
+- Opted out this cycle (already passed): tribbie, cerydra, evernight, cyrene
 
-- aglaea: refined (6 rules: Begin sentences with functional openings like "Now," or “It is...”; End lines with trailing ellipses after clauses containing a hesitation or incomplete thought.; Frame pronouncements about others using descriptive phrases before stating the action ("Managing this place…", "Concerning Anaxagoras...")…)
-- anaxa: refined (6 rules: ## Anaxa Voice Rules:; Begin sentences with a declarative statement when issuing directives or judgements.; Use "Hmph" as an initial response to statements perceived as naive or obvious.…)
-- castorice: refined (6 rules: Begin sentences with proper titles/names when addressing others...; Use 'and...' as an internal pause within a greeting or statement...; End statements with 'till...' if referencing a future event or continuation...…)
-- cipher: refined (2 rules: ## Cipher Voice Rules; Begin each response with a non-lexical utterance if appropriate.…)
-- cyrene: refined (6 rules: Begin sentences with an interjection when expressing uncertainty or surprise.; End statements trailing off with "..." after introducing a potentially longer thought.; Frame direct questions using rising intonation *and* a question word (Who, What, Where, etc.).…)
-- evernight: refined (6 rules: Begin sentences with conjunctions when transitioning topics.; End statements trailing off with ellipses after acknowledging something positive.; Use direct, clipped imperatives when offering solutions.…)
-- hyacine: refined (6 rules: Begin sentences with observations about others…; End lines trailing off with ellipses when offering assessment…; Frame statements of understanding as belated realizations……)
-- hysilens: refined (4 rules: ## Hysilens Voice Rules:; Begin sentences with a brief acknowledgement or observation…; Employ interjections like “Hah.” sparingly for emphasis.…)
-- mydei: refined (6 rules: Begin sentences with a statement of fact or observation before expanding...; End statements with a questioning phrase that subtly shifts blame...; Use a curt interjection ("Hmph") to preface direct challenges...…)
-- phainon: refined (6 rules: Begin sentences with a qualifying particle like "But" or "With".; End lines with an incomplete thought trailing off into "...".; Incorporate direct address ("heroic soul") even when unnecessary.…)
+- aglaea: refined (6 rules: Begin sentences with declarative statements before shifting focus...; Introduce named individuals with a “Concerning…” preface.; End lines with trailing ellipses after acknowledging burdens or responsibilities……)
+- anaxa: refined (6 rules: Begin statements with a declarative framing phrase like "Rule number…" or “As a scholar…”; Follow assertions with a dismissive interjection ("Hmph") when doubting the listener.; End lines with trailing ellipses (...) after expressing skepticism or mild acknowledgement.…)
+- castorice: refined (5 rules: Begin sentences with a proper name or title when addressing someone directly.; Include "and..." at the start of a clause within a sentence, even if it’s not strictly necessary.; Use a compliment *within* a statement before trailing off (...).…)
+- cipher: refined (6 rules: Begin sentences with non-lexical sounds like "Grumph..." or "Hmph…" at least sometimes.; Embed a conditional clause ("already told her," "after this") within longer statements.; End statements as questions even when not seeking information (“you know?”).…)
+- dan-heng-permansor-terrae: refined (6 rules: Begin sentences referencing factual discoveries with "Also,".; Frame uncertainty as a question involving direct observation ("Is that…").; Use ellipsis (...) when reflecting on change or scale.…)
+- hyacine: refined (5 rules: ## Hyacine Voice Rules:; Begin sentences with observations about others before stating your own thoughts...; Include exclamations of mild surprise ("Wow!") at the start of positive assessments.…)
+- hysilens: refined (4 rules: ## Hysilens Voice Rules:; Begin sentences with interjections like "Hah." or leave them entirely unstarted...; When expressing strong emotion, use rhetorical questions with exclamation points (!).…)
+- mydei: refined (6 rules: Begin sentences with a statement before questioning...; End statements with “…This is the result?” when acknowledging another’s actions.; Use “Hmph” as a standalone opening interjection to express disapproval.…)
+- phainon: refined (6 rules: Begin sentences with observations before stating opinions...; Include 'interesting' when noticing something new or unusual.; Follow a statement of fact with an appraisal using ‘heroic soul’.…)
 ## Cycle 2 (best-of 8; bars style≥85, content≥60)
 | Heir | pass | rate | avg style | avg content | status |
 |---|---:|---:|---:|---:|---|
-| Aglaea | 5/8 | 62% | 75 | 67 | FAIL |
-| Anaxa | 3/8 | 37% | 73 | 62 | FAIL |
-| Castorice | 5/8 | 62% | 75 | 64 | FAIL |
-| Cipher | 5/8 | 62% | 80 | 67 | FAIL |
-| Cyrene | 6/8 | 75% | 84 | 71 | FAIL |
-| Evernight | 6/8 | 75% | 82 | 68 | FAIL |
-| Hyacine | 6/8 | 75% | 85 | 71 | FAIL |
-| Hysilens | 6/8 | 75% | 86 | 69 | FAIL |
-| Mydei | 5/8 | 62% | 76 | 60 | FAIL |
-| Phainon | 5/8 | 62% | 80 | 66 | FAIL |
-- Opted out this cycle (already passed): tribbie, cerydra, dan-heng-permansor-terrae
+| Aglaea | 3/8 | 37% | 82 | 73 | FAIL |
+| Anaxa | 2/8 | 25% | 80 | 70 | FAIL |
+| Castorice | 5/8 | 62% | 79 | 74 | FAIL |
+| Cipher | 5/8 | 62% | 75 | 69 | FAIL |
+| Dan Heng • Permansor Terrae | 7/8 | 87% | 86 | 72 | PASS |
+| Hyacine | 5/8 | 62% | 83 | 72 | FAIL |
+| Hysilens | 4/8 | 50% | 83 | 68 | FAIL |
+| Mydei | 2/8 | 25% | 61 | 54 | FAIL |
+| Phainon | 3/8 | 37% | 68 | 59 | FAIL |
+- Opted out this cycle (already passed): dan-heng-permansor-terrae, cerydra, evernight, cyrene, tribbie
 
-- aglaea: refined (6 rules: ## Aglaea Voice Rules:; Begin sentences with declarative statements of fact or direct address.; Introduce complex topics using the phrase "Now, concerning..."…)
-- anaxa: refined (3 rules: Begin sentences with dismissive sounds like "Hmph" when reacting to information.; Frame assertions as scholar’s reluctance using phrases like “I do not wish to…” before stating opinion.; Use concise phrasing when delivering bad news or limitations ("Too bad…").…)
-- castorice: refined (6 rules: End sentences with ‘...’ unless directly addressing a need or offering.; Include a brief, positive assessment when complimenting something…; Frame statements about fate as needing to reach ‘the next one…’…)
-- cipher: refined (5 rules: Begin sentences with non-lexical sounds like “Grumph…” or “Hmph…” when responding to direct address.; End statements that offer assistance or bargains with a conditional obligation ("You owe…").; Incorporate "know?" into declarative statements about uncertainty.…)
-- cyrene: refined (6 rules: Respond to direct questions with a question back...; End statements trailing off after '...' with an appended interjection ("Huh?", "♪").; Frame observations as uncertain recollections beginning with “We should…”…)
-- evernight: refined (4 rules: Begin sentences with conjunctions or pronouns when continuing thought...; Frame assertions as concessions using "unlike" or "plus"...; Use short, direct commands consisting of one noun phrase...…)
-- hyacine: refined (6 rules: Begin sentences with observations about others before stating your own point…; Include positive appraisals of another character’s abilities within a longer statement...; End statements with a trailing ellipsis when expressing potentially harsh truths...…)
-- hysilens: refined (5 rules: ## Hysilens Voice Rules:; Begin sentences with a dismissive interjection when reacting to someone's name or identity.; Construct questions that directly challenge another character’s motivations using “Was…” as the opening.…)
-- mydei: refined (6 rules: Begin sentences with a statement before questioning...; End statements with "...This is the result..." or similar reflective tag.; Use 'Let's...' to initiate direct challenges or actions.…)
-- phainon: refined (6 rules: Include a qualifying adjective before an observation.; End sentences with '...' if they contain a noun of companionship (e.g., comrades, companions).; Ask questions when referencing personal longing or wishes.…)
+- aglaea: refined from BEST-cycle failures (current 37% < best 50%)
+- aglaea: refined (6 rules: Begin sentences with a clarifying statement of context.; Introduce named individuals with a full title or relevant descriptor before stating their action.; End statements with trailing ellipses when discussing ongoing processes or uncertainties...…)
+- anaxa: refined (5 rules: Begin sentences with dismissive sounds like "Hmph" when responding directly to a statement.; End statements with trailing ellipses (...) after expressing mild acknowledgement or skepticism.; Frame requests as challenges requiring a 'test first'.…)
+- castorice: refined (6 rules: Begin sentences with a proper noun when addressing someone directly.; Include “….” at the end of at least one clause within a sentence.; Use “...the next one…” when referencing an upcoming event or task.…)
+- cipher: refined (5 rules: Begin sentences with non-lexical sounds when reacting to direct address...; End statements that include owing a favor with a trailing ellipsis...; Frame offers as 'consider this...' before detailing specifics...…)
+- hyacine: refined (6 rules: Begin sentences with observations about others before stating your own point...; Include an exclamation mark when acknowledging someone’s skill or insight.; Use 'indeed' to validate a statement made by another character.…)
+- hysilens: refined (6 rules: ## Hysilens Voice Rules:; Begin sentences with interjections like "Hah." or leave them entirely unstarted...; Use the phrase “You mean…” when directly addressing someone by name.…)
+- mydei: refined from BEST-cycle failures (current 25% < best 62%)
+- mydei: refined (6 rules: End statements with “…This is the result of your efforts?” when acknowledging another’s action.; Begin a challenge with “Hmph,” then directly state the challenge.; Frame dismissive responses as questions containing "what terrible ideas".…)
+- phainon: refined from BEST-cycle failures (current 37% < best 62%)
+- phainon: refined (6 rules: Begin sentences with observation before stating opinion...; End lines with a question when acknowledging another's statement...; Include 'interesting' when noting something unusual...…)
+## Cycle 3 (best-of 9; bars style≥85, content≥60)
+| Heir | pass | rate | avg style | avg content | status |
+|---|---:|---:|---:|---:|---|
+| Aglaea | 4/8 | 50% | 76 | 74 | FAIL |
+| Anaxa | 2/8 | 25% | 73 | 61 | FAIL |
+| Castorice | 4/8 | 50% | 78 | 74 | FAIL |
+| Cipher | 6/8 | 75% | 85 | 74 | FAIL |
+| Hyacine | 3/8 | 37% | 82 | 76 | FAIL |
+| Hysilens | 8/8 | 100% | 88 | 70 | PASS |
+| Mydei | 1/8 | 12% | 59 | 57 | FAIL |
+| Phainon | 3/8 | 37% | 77 | 71 | FAIL |
+- Opted out this cycle (already passed): dan-heng-permansor-terrae, cerydra, evernight, cyrene, tribbie, hysilens
+
+- aglaea: refined (6 rules: Begin sentences with direct address when initiating instruction or assessment.; Introduce complex topics using “Now, concerning…” phrasing.; End statements with a trailing ellipsis after acknowledging burden or futility.…)
+- anaxa: refined (5 rules: Begin a declarative statement with “Rule number…” when establishing a principle.; Follow statements of fact with a dismissive “…”.; Frame requests for information as direct questions containing "which" or "how".…)
+- castorice: refined from BEST-cycle failures (current 50% < best 62%)
+- castorice: refined (6 rules: Begin sentences with a proper noun when addressing someone directly.; Include 'and...' mid-sentence to connect thoughts or introduce additional information.; End lines with an ellipsis (...) even when not posing a question.…)
+- cipher: refined (6 rules: ## Cipher Voice Rules; Begin sentences with non-lexical sounds…; Frame statements as conditional bargains……)
+- hyacine: refined from BEST-cycle failures (current 37% < best 62%)
+- hyacine: refined (6 rules: Begin sentences with observations about others before stating your own thoughts...; Include exclamations of positive assessment ("indeed!", "outstanding!") when acknowledging another's skill…; Frame uncertainty or incomplete understanding as a statement followed by “…”.…)
+- mydei: refined from BEST-cycle failures (current 12% < best 62%)
+- mydei: refined (6 rules: Begin sentences with a statement before questioning...; Use 'then' to preface direct challenges or responses to offers...; Conclude statements with "...This is the result?" when acknowledging effort...…)
+- phainon: refined from BEST-cycle failures (current 37% < best 62%)
+- phainon: refined (6 rules: Begin sentences with observations before stating opinion…; Use 'interesting' as a non-committal response to novel stimuli...; Embed complimentary titles ('heroic soul', 'companions') within longer statements...…)
+## Cycle 4 (best-of 9; bars style≥85, content≥60)
+| Heir | pass | rate | avg style | avg content | status |
+|---|---:|---:|---:|---:|---|
+| Aglaea | 6/8 | 75% | 80 | 74 | FAIL |
+| Anaxa | 5/8 | 62% | 84 | 72 | FAIL |
+| Castorice | 4/8 | 50% | 80 | 69 | FAIL |
+| Cipher | 8/8 | 100% | 88 | 72 | PASS |
+| Hyacine | 5/8 | 62% | 84 | 72 | FAIL |
+| Mydei | 4/8 | 50% | 79 | 69 | FAIL |
+| Phainon | 3/8 | 37% | 68 | 59 | FAIL |
+- Opted out this cycle (already passed): dan-heng-permansor-terrae, cerydra, evernight, cipher, cyrene, tribbie, hysilens
+
+- aglaea: refined (6 rules: ## Aglaea Voice Rules; Begin sentences with direct address when initiating a topic.; Use “concerning” to introduce specific individuals or subjects for detailed discussion.…)
+- anaxa: refined (6 rules: Begin statements with a declarative assertion of scholarly authority.; Use “Hmph” as an initial reaction to presented information or claims.; Conclude observations with trailing ellipses (...) when withholding full judgement.…)
+- castorice: refined from BEST-cycle failures (current 50% < best 62%)
+- castorice: refined (6 rules: Begin sentences with a proper noun when addressing someone directly.; End statements with ‘…’ even if grammatically incomplete.; Use comparative adjectives prefaced by “seriously…” to express mild praise.…)
+- hyacine: refined (6 rules: Begin sentences with observations about others before stating your own thoughts.; Include exclamations of positive assessment when addressing allies.; End statements with a trailing ellipsis after expressing a complete thought or observation.…)
+- mydei: refined from BEST-cycle failures (current 50% < best 62%)
+- mydei: refined (6 rules: Begin sentences with a declarative statement before adding qualification or doubt...; Use rhetorical questions when directly addressing another character’s bravery...; Follow a compliment with an implied question about results……)
+- phainon: refined from BEST-cycle failures (current 37% < best 62%)
+- phainon: refined (6 rules: Introduce observations with “You’ve got…” or “That sounds…”; Embed complimentary titles like "heroic soul" after nouns.; Conclude statements with a trailing ellipsis '...' when discussing personal feelings.…)
+## Cycle 5 (best-of 9; bars style≥85, content≥60)
+| Heir | pass | rate | avg style | avg content | status |
+|---|---:|---:|---:|---:|---|
+| Aglaea | 0/0 | 0% | 0 | 0 | FAIL |
+| Anaxa | 0/0 | 0% | 0 | 0 | FAIL |
+| Castorice | 0/0 | 0% | 0 | 0 | FAIL |
+| Hyacine | 0/0 | 0% | 0 | 0 | FAIL |
+| Mydei | 0/0 | 0% | 0 | 0 | FAIL |
+| Phainon | 0/0 | 0% | 0 | 0 | FAIL |
+- Opted out this cycle (already passed): dan-heng-permansor-terrae, cerydra, evernight, cipher, cyrene, tribbie, hysilens
+
+- aglaea: refined from BEST-cycle failures (current 0% < best 75%)
+- aglaea: no rules produced
+- anaxa: refined from BEST-cycle failures (current 0% < best 62%)
+- anaxa: no rules produced
+- castorice: refined from BEST-cycle failures (current 0% < best 62%)
+- castorice: no rules produced
+- hyacine: refined from BEST-cycle failures (current 0% < best 62%)
+- hyacine: no rules produced
+- mydei: refined from BEST-cycle failures (current 0% < best 62%)
+- mydei: no rules produced
+- phainon: refined from BEST-cycle failures (current 0% < best 62%)
+- phainon: no rules produced
+## Cycle 6 (best-of 9; bars style≥85, content≥60)
+| Heir | pass | rate | avg style | avg content | status |
+|---|---:|---:|---:|---:|---|
+| Aglaea | 0/0 | 0% | 0 | 0 | FAIL |
+| Anaxa | 0/0 | 0% | 0 | 0 | FAIL |
+| Castorice | 0/0 | 0% | 0 | 0 | FAIL |
+| Hyacine | 0/0 | 0% | 0 | 0 | FAIL |
+| Mydei | 0/0 | 0% | 0 | 0 | FAIL |
+| Phainon | 0/0 | 0% | 0 | 0 | FAIL |
+- Opted out this cycle (already passed): dan-heng-permansor-terrae, cerydra, evernight, cipher, cyrene, tribbie, hysilens
+
+- aglaea: refined from BEST-cycle failures (current 0% < best 75%)
+- aglaea: no rules produced
+- anaxa: refined from BEST-cycle failures (current 0% < best 62%)
+- anaxa: no rules produced
+- castorice: refined from BEST-cycle failures (current 0% < best 62%)
+- castorice: no rules produced
+- hyacine: refined from BEST-cycle failures (current 0% < best 62%)
+- hyacine: no rules produced
+- mydei: refined from BEST-cycle failures (current 0% < best 62%)
+- mydei: no rules produced
+- phainon: refined from BEST-cycle failures (current 0% < best 62%)
+- phainon: no rules produced
+**RESULT: FAILED after 6 cycles; still failing: ['aglaea', 'anaxa', 'castorice', 'hyacine', 'mydei', 'phainon']**
+## FINAL CHEAT-FREE RE-TEST STARTED 07:31 — FULL corpus — every canon line of every Heir, best-of 1
+
+## FINAL CHEAT-FREE RE-TEST RESULT (all Heirs · FULL corpus — every canon line of every Heir, best-of 1)
+| Heir | pass | rate | avg style | avg content | status |
+|---|---:|---:|---:|---:|---|
+| Aglaea | 0/0 | 0% | 0 | 0 | FAIL |
+| Anaxa | 0/0 | 0% | 0 | 0 | FAIL |
+| Castorice | 0/0 | 0% | 0 | 0 | FAIL |
+| Hyacine | 0/0 | 0% | 0 | 0 | FAIL |
+| Mydei | 0/0 | 0% | 0 | 0 | FAIL |
+| Phainon | 0/0 | 0% | 0 | 0 | FAIL |
+
+**FINAL OUTCOME: FAILED** — max cycles (6) reached

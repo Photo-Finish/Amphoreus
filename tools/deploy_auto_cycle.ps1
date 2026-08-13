@@ -18,6 +18,22 @@ function Log([string]$m) {
 function OllamaUp {
     try { $null = Invoke-WebRequest -Uri 'http://127.0.0.1:11434/api/version' -TimeoutSec 6; return $true } catch { return $false }
 }
+# WMI (Get-CimInstance) can HANG on this machine (it did on 2026-08-13 — the
+# watchdog stalled for ~50 min and never noticed the dead server). Run every
+# machine-state read in a throwaway job with a hard timeout so a hang can
+# never freeze the watchdog again; on timeout treat as 'unknown/not running'.
+function Invoke-StateCheck([scriptblock]$sb, [int]$timeoutSec = 20) {
+    $job = Start-Job -ScriptBlock $sb -ErrorAction SilentlyContinue
+    if ($null -eq $job) { return $null }
+    if (-not (Wait-Job -Job $job -Timeout $timeoutSec)) {
+        Stop-Job -Job $job -ErrorAction SilentlyContinue
+        Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
+        return $null
+    }
+    $res = Receive-Job -Job $job -ErrorAction SilentlyContinue
+    Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
+    return $res
+}
 
 Log '=== watchdog started ==='
 while ($true) {
@@ -31,9 +47,17 @@ while ($true) {
         if (OllamaUp) { Log 'Ollama restarted OK' } else { Log 'Ollama restart FAILED (retrying next pass)' }
     }
 
-    # 2. Auto-cycle alive? (relaunch unless it just completed)
-    $ac = Get-CimInstance Win32_Process -Filter "Name='python.exe'" | Where-Object { $_.CommandLine -match 'auto_cycle' }
-    if (-not $ac) {
+    # 2. Auto-cycle alive? (relaunch unless it just completed). Runs in a
+    #    timed job so a hung WMI call cannot stall the loop.
+    $state = Invoke-StateCheck {
+        $ac = @(Get-CimInstance Win32_Process -Filter "Name='python.exe'" |
+               Where-Object { $_.CommandLine -match 'auto_cycle' }).Count
+        $ram = [math]::Round((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory / 1MB, 1)
+        return @{ ac = $ac; ram = $ram }
+    } 25
+    if ($null -eq $state) { $state = @{ ac = 0; ram = 99 } }  # timed out: assume not running, skip RAM action
+
+    if ($state.ac -eq 0) {
         $justFinished = $false
         if (Test-Path $cycleLog) {
             $ageMin = (New-TimeSpan -Start (Get-Item $cycleLog).LastWriteTime -End (Get-Date)).TotalMinutes
@@ -49,9 +73,8 @@ while ($true) {
     }
 
     # 3. Dangerously low RAM? (restart the model runner to reclaim memory)
-    $ram = (Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory / 1MB
-    if ($ram -lt 1.5) {
-        Log ("LOW RAM {0:N1} GB -> restarting llama runner" -f $ram)
+    if ($state.ram -lt 1.5) {
+        Log ("LOW RAM {0:N1} GB -> restarting llama runner" -f $state.ram)
         Get-Process llama-server -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
         Start-Sleep -Seconds 8
     }

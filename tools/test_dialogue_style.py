@@ -465,6 +465,7 @@ def _run(args):
         "|---|---:|---:|---:|---:|---:|",
     ]
 
+    backend_dead = False  # set when a Heir had cases but evaluated ZERO of them
     for heir_id in heir_ids:
         folder = ROOT / HEIR_FOLDERS.get(heir_id, heir_id)
         card_path = ROOT / "src" / "characters" / f"{heir_id}.json"
@@ -646,6 +647,12 @@ def _run(args):
         rate = f"{100 * passed // max(1, total)}%"
         print(f"  {heir_id:>26}: {passed}/{total} pass | avg style {avg_s:.0f} | "
               f"avg content {avg_c:.0f} | {rate}")
+        # A Heir that HAD testable cases but evaluated ZERO of them means every
+        # LLM call failed — the backend is down. Never record that as a score.
+        if total == 0 and cases:
+            backend_dead = True
+            print(f"  ✗ {heir_id}: 0/{len(cases)} cases evaluated — every LLM call failed. "
+                  f"The backend is DOWN.")
         report.append(
             f"| {name} ({heir_id}) | {total} | {passed} | {avg_s:.0f} | {avg_c:.0f} | {rate} |"
         )
@@ -654,6 +661,14 @@ def _run(args):
             report.append(f"**{name}** — failed cases (style/content):")
             for st, ct, ref, act in fails[:4]:
                 report.append(f"- style {st} / content {ct} → canon ref *{ref}* → act *{act}*")
+
+    if backend_dead:
+        report.append("")
+        report.append("**ERROR: the LLM backend was DOWN (0 cases evaluated). This run is VOID.**")
+        report.append("Fix: powershell -ExecutionPolicy Bypass -File tools\\start_ollama.ps1, then re-run.")
+        REPORT.write_text("\n".join(report), encoding="utf-8")
+        print("\n✗ ABORTING: the LLM backend failed (0 cases evaluated). Run is VOID.")
+        return 2
 
     REPORT.write_text("\n".join(report), encoding="utf-8")
     print(f"\nReport: {REPORT}")
