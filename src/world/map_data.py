@@ -201,6 +201,73 @@ def render_map_svg(
             f'<circle cx="{x:.0f}" cy="{y:.0f}" r="{r:.1f}" fill="#e8d5a3" opacity="{op:.2f}"/>'
         )
 
+    # ---- Precompute the Heir layout (fan positions + packed name rows) so
+    # the route-cost labels below can avoid sitting on any name. ----
+    from collections import defaultdict, OrderedDict
+    order = list(heir_locations.keys())
+    color_of = {cid: palette[i % len(palette)] for i, cid in enumerate(order)}
+    by_city = OrderedDict()
+    for cid in heir_locations:
+        loc = heir_locations[cid]
+        if loc in LOCATION_POS:
+            by_city.setdefault(loc, []).append(cid)
+
+    def _pack_labels(items):
+        """Greedily place (name, x, color) labels into horizontal rows above
+        the fan so no two labels overlap within a row (rows are skipped as
+        needed). Estimated widths keep long names from touching."""
+        rows = []   # rows[r] = right edge of the last label placed in row r
+        packed = []
+        for nm, x, col in items:
+            w = 5.8 * len(nm)  # rough pixel width at font-size 10.5 Arial
+            placed = False
+            for r in range(len(rows)):
+                if not rows[r] or x - w / 2 > rows[r][-1] + 5:
+                    rows[r].append(x + w / 2)
+                    packed.append((nm, x, col, r))
+                    placed = True
+                    break
+            if not placed:
+                rows.append([x + w / 2])
+                packed.append((nm, x, col, len(rows) - 1))
+        return packed
+
+    # Fan x positions and final name-label rows per city (drawn later).
+    city_xs: Dict[str, list] = {}
+    heir_label_rows: Dict[str, list] = {}
+    for loc, cids in by_city.items():
+        cx, cy = LOCATION_POS[loc]
+        n = len(cids)
+        gap = 24 if n > 1 else 0
+        xs = [cx - (n - 1) * gap / 2 + k * gap for k in range(n)] if n > 1 else [cx]
+        city_xs[loc] = xs
+        if n == 1:
+            heir_label_rows[loc] = [(xs[0], cy - 12,
+                                     heir_names.get(cids[0], cids[0]), color_of[cids[0]])]
+        else:
+            items = [(heir_names.get(c, c), xs[k], color_of[c]) for k, c in enumerate(cids)]
+            heir_label_rows[loc] = [(x, cy - 15 - r * 18, nm, col)
+                                    for nm, x, col, r in _pack_labels(items)]
+
+    # Every name region that must stay clear of route labels.
+    reserved = []
+    for name, (x, y) in LOCATION_POS.items():
+        w = 6.4 * len(name)
+        reserved.append((x - w / 2 - 4, x + w / 2 + 4, y + 14, y + 32))
+    for rows in heir_label_rows.values():
+        for x, y, nm, _col in rows:
+            w = 6.0 * len(nm)
+            reserved.append((x - w / 2 - 4, x + w / 2 + 4, y - 11, y + 2))
+
+    def _label_collides(x: float, y: float, w: float) -> bool:
+        """True if a centered label at (x, y) of width w would overlap a name."""
+        x0, x1 = x - w / 2 - 5, x + w / 2 + 5
+        y0, y1 = y - 11, y + 2
+        for rx0, rx1, ry0, ry1 in reserved:
+            if x0 < rx1 and x1 > rx0 and y0 < ry1 and y1 > ry0:
+                return True
+        return False
+
     # routes
     drawn = set()
     for (a, b), cost in ROUTES.items():
@@ -212,7 +279,7 @@ def render_map_svg(
         bx, by = LOCATION_POS[b]
         mx, my = (ax + bx) / 2, (ay + by) / 2
         parts.append(f'<line x1="{ax}" y1="{ay}" x2="{bx}" y2="{by}" {_style_route(a, b)}/>')
-        if cost > 0:
+        if cost > 0 and not _label_collides(mx, my - 6, 7.0 * len(str(cost)) + 8):
             parts.append(
                 f'<text x="{mx:.0f}" y="{my - 6:.0f}" text-anchor="middle" '
                 f'font-size="12" fill="rgba(232,213,163,.55)" '
@@ -233,40 +300,32 @@ def render_map_svg(
             f'font-style="italic">{name}</text>'
         )
 
-    # the Heirs as small lights at their current places; when several share a
-    # city they fan out so every Heir is clearly visible, each with a name tag
-    from collections import defaultdict
-    city_count = defaultdict(int)
-    for cid in heir_locations:
-        if heir_locations[cid] in LOCATION_POS:
-            city_count[heir_locations[cid]] += 1
-    seen_in_city = defaultdict(int)
-    for i, cid in enumerate(heir_locations):
-        loc = heir_locations[cid]
-        if loc not in LOCATION_POS:
-            continue
-        x, y = LOCATION_POS[loc]
-        col = palette[i % len(palette)]
-        name = heir_names.get(cid, cid)
-        initial = name[0].upper() if name else "?"
-        if city_count[loc] > 1:
-            spread = (city_count[loc] - 1) * 13
-            x = x - spread / 2 + seen_in_city[loc] * 13
-        seen_in_city[loc] += 1
-        parts.append(
-            f'<circle cx="{x}" cy="{y}" r="12" fill="{col}" opacity=".16"/>'
-        )
-        parts.append(
-            f'<circle cx="{x}" cy="{y}" r="6" fill="{col}" stroke="#0b0a14" stroke-width="1"/>'
-        )
-        parts.append(
-            f'<text x="{x}" y="{y + 4.5}" text-anchor="middle" font-size="9" '
-            f'fill="#0b0a14" font-weight="bold" font-family="Arial">{initial}</text>'
-        )
-        parts.append(
-            f'<text x="{x}" y="{y - 12}" text-anchor="middle" font-size="10.5" '
-            f'fill="{col}" font-family="Arial" font-style="italic">{name}</text>'
-        )
+    # the Heirs as small lights at their current places; name tags are drawn
+    # from the packed rows precomputed above (route labels avoid them).
+    for loc, cids in by_city.items():
+        cx, cy = LOCATION_POS[loc]
+        xs = city_xs[loc]
+        for k, cid in enumerate(cids):
+            x = xs[k]
+            col = color_of[cid]
+            name = heir_names.get(cid, cid)
+            initial = name[0].upper() if name else "?"
+            parts.append(
+                f'<circle cx="{x:.1f}" cy="{cy}" r="12" fill="{col}" opacity=".16"/>'
+            )
+            parts.append(
+                f'<circle cx="{x:.1f}" cy="{cy}" r="6" fill="{col}" stroke="#0b0a14" stroke-width="1"/>'
+            )
+            parts.append(
+                f'<text x="{x:.1f}" y="{cy + 4.5}" text-anchor="middle" font-size="9" '
+                f'fill="#0b0a14" font-weight="bold" font-family="Arial">{initial}</text>'
+            )
+        for x, y, nm, col in heir_label_rows[loc]:
+            parts.append(
+                f'<text x="{x:.1f}" y="{y}" text-anchor="middle" font-size="10.5" '
+                f'fill="{col}" font-family="Arial" '
+                f'font-style="italic">{nm}</text>'
+            )
 
     # travelers shown on the road: a small dot between origin and destination
     for cid, info in traveling.items():
@@ -288,7 +347,7 @@ def render_map_svg(
                 f'stroke="{col}" stroke-width="1.4"/>'
             )
             parts.append(
-                f'<text x="{tx}" y="{ty + 22}" text-anchor="middle" font-size="10" '
+                f'<text x="{tx}" y="{ty + 40}" text-anchor="middle" font-size="10" '
                 f'fill="{col}" font-family="Arial" font-style="italic">{initial} → {to}</text>'
             )
 

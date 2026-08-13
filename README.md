@@ -398,6 +398,18 @@ Amphoreus/
 
 ## Changelog
 
+### 2026-08-13 — Map: Heir names no longer overlap
+- **Root cause** — `render_map_svg` fanned co-located Heirs only 13px apart and drew
+  every name on the same row at `cy-12`, so Okhema's six residents (and the pairs at
+  Grove and Aedes Elysiae) all sat on top of each other. (The running Streamlit was
+  also serving a stale copy of the module — the fix had to be followed by a restart.)
+- **Fix in `src/world/map_data.py`** — Heir names are now **packed into non-overlapping
+  rows** (a greedy `_pack_labels` with width-aware placement, 24px fan gap, rows 18px
+  apart), and the whole label layout (city names + Heir rows) is **precomputed into
+  reserved regions** so route-cost labels skip any spot that would graze a name.
+  Verified in the browser by measuring every SVG text bounding box: **0 overlapping
+  pairs** (was 15), and the travel-cost matrix below the map still shows every route.
+
 ### 2026-08-13 — Focused round simplified: Mydei out (passed 7/8 under 8192)
 - Mydei passed the focused 8192 round at **7/8 (87%)** — above the 85% pass-target,
   with its only failure being the `...` collapse now fixed at the test level — so it
