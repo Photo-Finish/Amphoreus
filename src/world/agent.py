@@ -60,10 +60,14 @@ class HeirAgent:
         tinfo = self.world.travel_info(self.character_id)
         travel_note = ""
         if tinfo:
+            companion = ""
+            if self.world.is_accompanied(self.character_id):
+                companion = " The star-stranger walks beside you, sharing the road."
             travel_note = (
                 f"\nYou are on the road to {tinfo['to']} — "
                 f"{tinfo['remaining_days']} day(s) of travel remain. "
                 "You are not in any city right now."
+                f"{companion}"
             )
 
         recent = self.world.recent_events_text(limit=4)
@@ -79,6 +83,27 @@ class HeirAgent:
             mem_text = "\nWhat you have lived through lately:\n" + "\n".join(
                 f"- {m['content']}" for m in memories
             )
+
+        # The living texture — what you've heard, your long work, any letters.
+        from . import world_events as wev
+        rumors = wev.rumors_for(self.world, self.character_id, limit=3)
+        rumor_text = ""
+        if rumors:
+            rumor_text = "\nWhat you have heard lately:\n" + "\n".join(
+                f"- {r}" for r in rumors
+            )
+        proj = wev.project_info(self.world, self.character_id)
+        proj_text = ""
+        if proj:
+            proj_text = (f"\nYour long work: \"{proj['title']}\" — {proj['goal']} "
+                         f"({proj['progress']}/{proj['steps']} steps).")
+        letters = [l for l in self.world.letters if l.get("to") == self.character_id]
+        letter_text = ""
+        if letters:
+            latest = letters[-1]
+            letter_text = (f"\nA letter waits from {latest['from_name']}: "
+                           f"\"{latest['text'][:120]}\"")
+
         senses = self.world.sensory_text(loc)
         return (
             f"It is {self.world.clock.format_short()}."
@@ -89,6 +114,9 @@ class HeirAgent:
             f"\n{others}"
             f"{errand_text}"
             f"{news_text}"
+            f"{rumor_text}"
+            f"{proj_text}"
+            f"{letter_text}"
             f"{recent_text}"
             f"{mem_text}"
         )

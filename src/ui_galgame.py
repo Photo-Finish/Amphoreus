@@ -72,7 +72,7 @@ def _last(role, messages):
     return ""
 
 
-def _scene_html(bg_uri, sprite_uri, name, last_user, last_heir, bond, cid):
+def _scene_html(bg_uri, sprite_uri, name, last_user, last_heir, bond, cid, wx=None):
     """The full visual-novel scene with a JS typewriter for the dialogue line."""
     bg_css = f"background-image:url('{bg_uri}');" if bg_uri else "background:#0d0b18;"
     sprite_css = f"<img src='{sprite_uri}' " if sprite_uri else ""
@@ -80,6 +80,10 @@ def _scene_html(bg_uri, sprite_uri, name, last_user, last_heir, bond, cid):
     bond_txt = _esc(str(bond))
     last_user_txt = _esc(last_user) if last_user else ""
     heir_json = json.dumps(_esc(last_heir))  # safe for embedding in <script>
+    # Weather overlay (from the Keeper's sky), if any.
+    wx_html = ""
+    if wx:
+        wx_html = wx
 
     parts = []
     parts.append("""
@@ -93,6 +97,9 @@ def _scene_html(bg_uri, sprite_uri, name, last_user, last_heir, bond, cid):
             f"<div style=\"position:absolute;inset:0;{bg_css}background-size:cover;"
             f"background-position:center;opacity:.5;\"></div>"
         )
+    # today's weather over the art (the Keeper's sky, e.g. rain, storm, tide)
+    if wx_html:
+        parts.append(wx_html)
     # vignette toward the bottom (so the dialogue box reads cleanly)
     parts.append(
         "<div style=\"position:absolute;inset:0;background:linear-gradient(180deg,"
@@ -194,17 +201,21 @@ def render_galgame(manager, selected, info):
 
     st.caption(f"🎬 Galgame view — talking with **{name}** · Bond: **{bond}**")
 
-    from src.ui_backgrounds import bg_path as _bg_path
+    from src.ui_backgrounds import bg_path as _bg_path, current_location as _loc_now
+    from src.ui_weather import overlay_for as _wx_overlay
     bg_path = _bg_path(selected)
     bg = _data_uri(bg_path, "image/jpeg", max_width=1400) if bg_path else None
     sp = _sprite(selected)
     sprite = _data_uri(sp, "image/png", max_width=700) if sp else None
+    # Today's weather over the scene (the Keeper's sky for the Heir's place).
+    _loc = _loc_now(selected)
+    wx = _wx_overlay(_loc, _loc or "Amphoreus")
 
     html = _scene_html(
         bg, sprite, name,
         _last("user", msgs),
         _last("assistant", msgs) or "...",
-        bond, selected,
+        bond, selected, wx=wx,
     )
     st.components.v1.html(html, height=560)
 

@@ -221,15 +221,20 @@ with game_tab:
 with chronicle_tab:
     if BG_IMAGE.exists():
         st.image(str(BG_IMAGE), width="stretch")
-    st.title("📖 A Chronicle of Amphoreus")
-    st.caption("The Heirs' days — written by their actions, not by us.")
+    # The end-user edition: the Gazette gathers the whole world's news into
+    # one readable page. (The Admin Console's monitor page keeps its raw,
+    # operational look — it is not changed here.)
     try:
-        from src.world.chronicle import Chronicle
-
-        ch = Chronicle(str(Path(__file__).parent.parent / "world_runtime" / "chronicle"))
-        st.markdown(ch.read_markdown(60))
-    except Exception:
-        st.info("The chronicle is not written yet — the world engine has not begun its days.\n\nStart it with: `python -m src.world.world_engine --interval 900`")
+        from src.ui_gazette import render_gazette
+        render_gazette(manager, characters)
+    except Exception as e:
+        st.error(f"The gazette could not be composed: {e}")
+        try:
+            from src.world.chronicle import Chronicle
+            ch = Chronicle(str(Path(__file__).parent.parent / "world_runtime" / "chronicle"))
+            st.markdown(ch.read_markdown(60))
+        except Exception:
+            st.info("The chronicle is not written yet — the world engine has not begun its days.\n\nStart it with: `python -m src.world.world_engine --interval 900`")
 
 with map_tab:
     # 🗺️ The Map of Amphoreus — geography, commuting time, and daily routines.
@@ -341,7 +346,12 @@ with map_tab:
                     "Choose a place to view", _opts, format_func=lambda s: _labels[s],
                     index=_idx, key="map_area_sel",
                 )
-                st.image(str(_map_slug[_sel]), width="stretch")
+                # The area's art, wearing today's weather (set by the Keeper).
+                try:
+                    from src.ui_weather import render_scene as _wx_scene
+                    _wx_scene(_sel, image_path=_map_slug[_sel], title=_labels[_sel], height=320)
+                except Exception:
+                    st.image(str(_map_slug[_sel]), width="stretch")
                 st.caption(f"**{_labels[_sel]}** — Amphoreus, as the wiki's area art shows it.")
         except Exception:
             pass
@@ -509,7 +519,15 @@ with main_tab:
         _chat_bg = BG_IMAGE if BG_IMAGE.exists() else None
         _chat_place = ""
     if _chat_bg:
-        st.image(str(_chat_bg), width="stretch")
+        # The backdrop follows the Heir's current place AND today's weather
+        # (the Keeper's sky), so the same art changes mood with the world.
+        try:
+            from src.ui_weather import render_scene as _wx_scene
+            _wx_scene(_chat_place, image_path=_chat_bg,
+                      title=f"{info['name']} — {_chat_place}" if _chat_place else info["name"],
+                      height=300)
+        except Exception:
+            st.image(str(_chat_bg), width="stretch")
         if _chat_place:
             st.caption(f"📍 {info['name']} is in **{_chat_place}** — the backdrop shows where they are.")
     hero_l, hero_r = st.columns([1, 3], gap="large")

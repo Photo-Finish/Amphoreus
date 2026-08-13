@@ -167,6 +167,13 @@ class WorldState:
         self.agent_travel: Dict[str, dict] = {}  # cid -> {"to": loc, "remaining_days": int, "from": loc}
         self.recent_events: List[str] = []
         self.ambient: Dict = {}  # the Keeper's day: {"weather": {city:...}, "errands": {cid:...}, "news": ...}
+        # --- living texture (see src/world/world_events.py) ---
+        self.rumors: Dict[str, list] = {}          # cid -> [rumor dicts]
+        self.relationship_delta: Dict[str, int] = {}  # "a|b" -> drift -3..3
+        self.letters: List[dict] = []              # letters between Heirs
+        self.project_progress: Dict[str, int] = {} # cid -> steps done
+        self.surge: Dict = {"active": False, "remaining": 0, "cities": []}
+        self.companions: Dict[str, bool] = {}  # cid -> the star-stranger travels with them
         self._load()
 
     # ------------------------------------------------------------------ #
@@ -183,6 +190,12 @@ class WorldState:
                 self.agent_travel = data.get("agent_travel", {}) or {}
                 self.recent_events = data.get("recent_events", [])[-20:]
                 self.ambient = data.get("ambient", {}) or {}
+                self.rumors = data.get("rumors", {}) or {}
+                self.relationship_delta = data.get("relationship_delta", {}) or {}
+                self.letters = data.get("letters", []) or []
+                self.project_progress = data.get("project_progress", {}) or {}
+                self.surge = data.get("surge", {"active": False, "remaining": 0, "cities": []})
+                self.companions = data.get("companions", {}) or {}
             except Exception:
                 pass
 
@@ -197,6 +210,12 @@ class WorldState:
                         "agent_travel": self.agent_travel,
                         "recent_events": self.recent_events[-20:],
                         "ambient": self.ambient,
+                        "rumors": self.rumors,
+                        "relationship_delta": self.relationship_delta,
+                        "letters": self.letters,
+                        "project_progress": self.project_progress,
+                        "surge": self.surge,
+                        "companions": self.companions,
                     },
                     f,
                     ensure_ascii=False,
@@ -206,6 +225,20 @@ class WorldState:
     # ------------------------------------------------------------------ #
     def location_name(self, character_id: str) -> str:
         return self.agent_location.get(character_id, "Okhema")
+
+    def name_of(self, character_id: str) -> str:
+        """The Heir's display name (lazily loaded from the cards, cached)."""
+        if character_id in getattr(self, "_names", {}):
+            return self._names[character_id]
+        try:
+            from src.core.character_loader import CharacterLoader
+            name = CharacterLoader("src/characters").load(character_id)["meta"]["name"]
+        except Exception:
+            name = character_id
+        if not hasattr(self, "_names"):
+            self._names = {}
+        self._names[character_id] = name
+        return name
 
     def location_desc(self, name: str) -> str:
         return LOCATIONS.get(name, "a quiet corner of Amphoreus")
@@ -238,6 +271,9 @@ class WorldState:
 
     def is_traveling(self, character_id: str) -> bool:
         return character_id in self.agent_travel
+
+    def is_accompanied(self, character_id: str) -> bool:
+        return bool(self.companions.get(character_id))
 
     def travel_info(self, character_id: str) -> Optional[dict]:
         return self.agent_travel.get(character_id)

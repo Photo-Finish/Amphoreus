@@ -398,6 +398,41 @@ Amphoreus/
 
 ## Changelog
 
+### 2026-08-13 — The world grows vivid: rumors, letters, bonds, projects, NPCs, black tide, weather-reactive UI, the Gazette
+- **A living web of memory and talk** — Heirs who meet **spread rumors** of what they
+  heard (degrading as they travel, never growing), and their **bonds shift** a little
+  with every exchange; each keeps a cross-memory of the others' words. What the
+  **star-stranger** says on a visit becomes a rumor the world repeats (`visitor_echo`),
+  and what an Heir **accepts in teaching** spreads (degraded, incomplete) to the Heirs
+  *around* them — so Phainon can teach Anaxa a half-understood echo of what the visitor
+  taught Phainon. Dynamic relationship drift is applied **at runtime** in
+  `src/core/agent_manager.py` (the static canon registry is untouched, so the style
+  cycle is unaffected).
+- **Letters in the post** — distant Heirs who share a bond exchange letters; both
+  remember them, the bond warms, and the letter is entered in the chronicle.
+- **Long works** — every Heir carries a canon-grounded life project (Anaxa's *A
+  treatise on what is*, Mydei's *The spear that guards*, ...), advancing unevenly day by
+  day until milestones are reached.
+- **A world that is lived in** — named, **alive** NPCs (canon-checked: Bartholos,
+  Seliose, Noldus, Researcher Eikura Shuu, Mem, Theodosia — never the dead) appear
+  about their cities; a **black tide surge** may stir along the edge cities
+  (Kremnos, Styxia, Aidonia, the Vortex of Genesis) darkening the sky — a
+  **journey-mode** phenomenon only, gone in the Aftermath (`SANCTUARY_MODE`); and the
+  star-stranger can **travel with** an Heir, sharing the road.
+- **Weather-reactive backdrops** (`src/ui_weather.py`) — the Keeper's sky now *paints
+  the art*: rain streaks, storm flashes, snowfall, twilight, the black tide's dark bruise
+  fall over the same location backdrops in the **Classic hero banner**, the **Map** area
+  browser and the **Galgame** scene, with a small weather tag.
+- **The Amphoreus Gazette** (`src/ui_gazette.py`) — the end-user **📖 Chronicle** tab is
+  now a newspaper: masthead, the sky over each city, the front-page event, the Heirs
+  abroad (and who walks with the stranger), whispers, letters, the long works, any
+  black-tide warning, and the written record. The **Admin Console** monitor page keeps
+  its raw, operational look.
+- **Codebase wiring** — new `src/world/world_events.py` (all living-texture systems);
+  `world_state` persists rumors, bond deltas, letters, project progress, surges and
+  companions; the world engine weaves surges/NPCs/letters/milestones into each day; the
+  Heirs' perception and the visitor's chat both read the living texture.
+
 ### 2026-08-13 — Knowledge boundaries, Galgame view, 8192 context, hardened cycle
 - **Wiki databank + decided per-Heir knowledge** (`3bc9b56`, `5dc1b4e`, `811e645`, `628b2a5`) — 317 pages of Amphoreus lore pulled from the English HSR wiki into **`databank/wiki/`** (sorted: titans/locations/factions/characters/gameplay/experiment/lore) by `tools/fetch_wiki_amphoreus.py`; `tools/build_heir_knowledge.py` decides each Heir's **world-knowledge range** (home city, own Titan, their city's Titans, places, circles, people, events, and the explicit edge of what lies outside their knowledge) and embeds it into all 13 cards, injected into every system prompt.
 - **Location backgrounds everywhere** (`ca72326`, `bd29c75`) — 20 Amphoreus **area artworks** fetched into `assets/galgame/` by `tools/fetch_galgame_backgrounds.py`; the **💬 Classic** banner, **🗺️ Map** area-art browser and **🎬 Galgame** scene all show the backdrop that matches where each Heir currently is (via the shared `src/ui_backgrounds.py`), falling back to their home city and then the default banner.

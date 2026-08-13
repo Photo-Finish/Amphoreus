@@ -19,7 +19,7 @@ import random
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 # The Chronicle and status lines use emoji / non-ASCII text; make sure they
 # print correctly regardless of the Windows console codepage.
@@ -34,6 +34,7 @@ from src.core.character_loader import CharacterLoader
 from src.core.llm_client import LLMClient
 from src.core.memory_store import MemoryStore
 from src.world.world_state import WorldState, PERIODS_PER_DAY
+from src.world import world_events as wev
 from src.world.agent import HeirAgent
 from src.world.ambient import AmbientDirector
 from src.world.chronicle import Chronicle
@@ -146,6 +147,11 @@ class WorldEngine:
             self.chronicle.append({"time": time_str, "text": board, "kind": "ambient"})
             self.world.add_event(board)
 
+        # The living texture: a black-tide surge may stir (journey mode), the
+        # cities' named residents go about their days, and a letter may travel
+        # between distant Heirs.
+        lines.extend(self._world_texture(time_str))
+
         # The Heirs go about their usual routines — the map reflects where they
         # actually are right now, not just where they live. Travellers stay on
         # the road (their location is only updated on arrival).
@@ -175,9 +181,13 @@ class WorldEngine:
             try:
                 if self.world.is_traveling(cid):
                     info = self.world.travel_info(cid)
+                    companion = ""
+                    if self.world.is_accompanied(cid):
+                        companion = " The star-stranger walks beside them."
                     line = (
                         f"{time_str} — {agent.name} is on the road to {info['to']}, "
                         f"{info['remaining_days']} day(s) of travel remain."
+                        f"{companion}"
                     )
                     lines.append(line)
                     self.chronicle.append({"time": time_str, "text": line})
@@ -186,9 +196,13 @@ class WorldEngine:
                 agent.act(decision)
                 if self.world.is_traveling(cid):
                     info = self.world.travel_info(cid)
+                    companion = ""
+                    if self.world.is_accompanied(cid):
+                        companion = " The star-stranger travels with them."
                     line = (
                         f"{time_str} — {agent.name} sets out for {info['to']} "
                         f"({info['remaining_days']} day(s) on the road): {decision['action']}"
+                        f"{companion}"
                     )
                     agent.remember(
                         f"{time_str} — I set out for {info['to']}. {decision['action']}",
@@ -208,8 +222,73 @@ class WorldEngine:
         # Encounters: Heirs who chose to be together may speak — freely.
         lines.extend(self._run_encounters(time_str))
 
+        # Long-term work: the Heirs' life projects advance, milestones logged.
+        for milestone in wev.advance_projects(self.world):
+            mline = f"{time_str} — {milestone}"
+            lines.append(mline)
+            self.chronicle.append({"time": time_str, "text": mline, "kind": "project"})
+            self.world.add_event(milestone)
+
         self.world.save()
         return lines
+
+    def _world_texture(self, time_str: str) -> List[str]:
+        """Surges, city residents, and letters — the daily texture of the world."""
+        lines: List[str] = []
+        # 1) The black tide may stir along the edge cities (journey mode only).
+        surge = wev.maybe_surge(self.world)
+        if surge:
+            sline = f"{time_str} — ⚠️ {wev.surge_text(self.world)}"
+            lines.append(sline)
+            self.chronicle.append({"time": time_str, "text": sline, "kind": "surge"})
+            self.world.add_event(sline)
+            # the surge darkens the Keeper's weather
+            weather = self.world.ambient.setdefault("weather", {})
+            for city in surge.get("cities", []):
+                weather[city] = (weather.get(city) or "clear") + ", and the black tide darkens the sky"
+        wev.advance_surge(self.world)
+        # 2) A named resident is seen in one of the cities (alive NPCs only).
+        if self.world.ambient.get("news", "") and random.random() < 0.5:
+            npc = random.choice(wev.NPCS)
+            fline = (f"{time_str} — In {npc['city']}, {npc['name']} is about — "
+                     f"{npc['flavor']}")
+            lines.append(fline)
+            self.chronicle.append({"time": time_str, "text": fline, "kind": "flavor"})
+        # 3) Sometimes a letter travels between distant Heirs.
+        if random.random() < 0.3:
+            letter = self._compose_letter(time_str)
+            if letter:
+                lline = (f"{time_str} — A letter travels from {letter['from_name']} "
+                         f"to {letter['to_name']}: \"{letter['text'][:120]}\"")
+                lines.append(lline)
+                self.chronicle.append({"time": time_str, "text": lline, "kind": "letter"})
+                self.world.add_event(lline)
+        return lines
+
+    def _compose_letter(self, time_str: str) -> Optional[dict]:
+        """A letter between two Heirs who are apart (canon-relation or bonded)."""
+        import random as _r
+        ids = list(self.agents)
+        _r.shuffle(ids)
+        for a in ids:
+            for b in ids:
+                if a == b:
+                    continue
+                if self.world.location_name(a) == self.world.location_name(b):
+                    continue  # they can just talk
+                if wev.relationship_delta_of(self.world, a, b) == 0:
+                    continue  # no established bond worth a letter yet
+                text = (f"I think of you often. When the road is long, "
+                        f"your words are company. — {self._name_of(a)}")
+                entry = wev.compose_letter(self.world, a, b, text)
+                # both remember it
+                self.agents[a].remember(
+                    f"{time_str} — I wrote to {self._name_of(b)}.", importance=2)
+                self.agents[b].remember(
+                    f"{time_str} — A letter arrived from {self._name_of(a)}.", importance=2)
+                wev.adjust_relationship(self.world, a, b, 1)
+                return entry
+        return None
 
     def _run_encounters(self, time_str: str) -> List[str]:
         lines: List[str] = []
@@ -247,6 +326,21 @@ class WorldEngine:
                     )
                     if others:
                         agent.remember_encounter("the other Heirs", others[:240])
+                # The living web: what they shared becomes rumour between them,
+                # their bonds shift a little, and each keeps a cross-memory of
+                # the others' words.
+                for agent in group:
+                    for other in group:
+                        if other is agent:
+                            continue
+                        wev.spread_rumors(self.world, agent.character_id, other.character_id)
+                        wev.adjust_relationship(self.world, agent.character_id, other.character_id, 1)
+                    cross = [t for t in transcript if not t.startswith(agent.name + ":")]
+                    if cross:
+                        who = ", ".join(t.split(":")[0] for t in cross[:3])
+                        agent.remember(
+                            f"{time_str} — In my meeting with the others, {who} spoke "
+                            f"with me. We exchanged what we know.", importance=2)
         return lines
 
     # ------------------------------------------------------------------ #

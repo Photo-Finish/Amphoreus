@@ -250,6 +250,11 @@ class AgentManager:
         if teach_block:
             system_prompt = f"{system_prompt}\n\n{teach_block}"
 
+        # Enrich with the living world's texture: what the Heir has heard,
+        # how their bonds stand, letters, and their long work. Chat-only — the
+        # style gate's system prompts are untouched.
+        system_prompt = self._inject_social_context(character_id, system_prompt)
+
         # Eyesight: the visitor shows the Heir an image or a video.
         has_image = bool(image)
         has_video = bool(video)
@@ -311,6 +316,8 @@ class AgentManager:
             # Add assistant response to session + persistent memory
             self.sessions.add_message(character_id, "assistant", response)
             self.memory.add_history(character_id, "assistant", response)
+            # The world notices the star-stranger's visit (rumor + Keeper flash).
+            self._echo_visit(character_id, user_message)
             return response
         else:
             return self._stream_response(character_id, response)
@@ -359,6 +366,7 @@ class AgentManager:
         teach_block = self.teaching.to_prompt_block(character_id)
         if teach_block:
             system_prompt = f"{system_prompt}\n\n{teach_block}"
+        system_prompt = self._inject_social_context(character_id, system_prompt)
 
         # Ledger state for this topic. A verdict question that doesn't name the
         # topic again targets the most recently active lesson.
@@ -429,8 +437,69 @@ class AgentManager:
         if not stream:
             self.sessions.add_message(character_id, "assistant", response)
             self.memory.add_history(character_id, "assistant", response)
+            # The world notices: the star-stranger taught this Heir, and what
+            # was accepted spreads (degraded) to the Heirs around them.
+            self._echo_visit(character_id, f"taught them something of the world beyond the stars")
+            if ask_verdict and state in ("studied", "adopted", "refuted", "unsure"):
+                try:
+                    from src.world import world_events as _wev
+                    from src.world.world_state import WorldState
+                    _wev.teaching_rumor(WorldState(), character_id, tname)
+                except Exception:
+                    pass
             return response
         return self._stream_response(character_id, response)
+
+    def _inject_social_context(self, character_id, system_prompt):
+        """Append the living world's texture: rumors heard, bonds, letters,
+        and the Heir's long work. Chat-only (cycle prompts untouched)."""
+        try:
+            from src.world import world_events as _wev
+            from src.world.world_state import WorldState
+            world = WorldState()
+            parts = []
+            rumors = _wev.rumors_for(world, character_id, limit=3)
+            if rumors:
+                parts.append("# What you have heard lately\n" +
+                             "\n".join(f"- {r}" for r in rumors))
+            rel = _wev.relationships_block(world)
+            if rel:
+                parts.append(rel)
+            letters = [l for l in world.letters if l.get("to") == character_id]
+            if letters:
+                latest = letters[-1]
+                parts.append(f"# A letter waits for you\nA letter from "
+                             f"{latest['from_name']}: \"{latest['text'][:160]}\"")
+            proj = _wev.project_info(world, character_id)
+            if proj:
+                parts.append(f"# Your long work\n\"{proj['title']}\" — "
+                             f"{proj['goal']} ({proj['progress']}/{proj['steps']} steps).")
+            if parts:
+                return system_prompt + "\n\n" + "\n\n".join(parts)
+        except Exception:
+            pass
+        return system_prompt
+
+    def _echo_visit(self, character_id, note):
+        """The world notices the star-stranger's visit."""
+        try:
+            from src.world import world_events as _wev
+            from src.world.world_state import WorldState
+            _wev.visitor_echo(WorldState(), character_id, str(note)[:160])
+        except Exception:
+            pass
+
+    def travel_with(self, character_id, destination):
+        """The star-stranger accompanies an Heir on the road together."""
+        try:
+            from src.world.world_state import WorldState
+            ws = WorldState()
+            ws.begin_travel(character_id, destination)
+            ws.companions[character_id] = True
+            ws.save()
+            return ws.travel_info(character_id)
+        except Exception:
+            return None
 
     def _call_llm(self, messages: list[dict], stream: bool = False):
         """Call the LLM API via the shared OpenAI-compatible client."""
