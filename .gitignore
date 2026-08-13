@@ -33,6 +33,10 @@ models/
 /*/history.jsonl
 /*/memories.jsonl
 /*/preferences.json
+/*/teaching.json
+
+# Local environment config (machine-specific). Copy .env.example and edit.
+.env
 
 # HF download cache (inside the project, but not a shipped asset)
 models/hf-cache/

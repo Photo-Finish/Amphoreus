@@ -4,13 +4,16 @@
 # (hardens against the long-run OOM / 502 failure), and logs everything.
 #
 # Launch hidden:
-#   Start-Process powershell -WindowStyle Hidden -ArgumentList '-ExecutionPolicy','Bypass','-File','D:\Workspace\Amphoreus\world_runtime\deploy_auto_cycle.ps1'
-# Log: D:\Workspace\Amphoreus\world_runtime\watchdog.log
+#   Start-Process powershell -WindowStyle Hidden -ArgumentList '-ExecutionPolicy','Bypass','-File','tools\deploy_auto_cycle.ps1'
+# Log: <repo>\world_runtime\watchdog.log
 
 $ErrorActionPreference = 'SilentlyContinue'
-$log = 'D:\Workspace\Amphoreus\world_runtime\watchdog.log'
-$cycleCmd = 'D:\Workspace\Amphoreus\world_runtime\run_auto_cycle.cmd'
-$cycleLog = 'D:\Workspace\Amphoreus\docs\AUTO-CYCLE-LOG.md'
+# Portable paths — derived from this script's location so the watchdog works
+# from any checkout of the repo.
+$root = Split-Path $PSScriptRoot -Parent
+$log = Join-Path $root 'world_runtime\watchdog.log'
+$cycleCmd = Join-Path $root 'world_runtime\run_auto_cycle.cmd'
+$cycleLog = Join-Path $root 'docs\AUTO-CYCLE-LOG.md'
 
 function Log([string]$m) {
     try { Add-Content -Path $log -Value ("{0}  {1}" -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $m) } catch {}
@@ -51,7 +54,7 @@ while ($true) {
         Log 'Ollama DOWN/broken -> restarting server'
         Get-Process ollama,ollama_app,llama-server -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
         Start-Sleep -Seconds 3
-        & 'D:\Workspace\Amphoreus\tools\start_ollama.ps1' | Out-Null
+        & (Join-Path $root 'tools\start_ollama.ps1') | Out-Null
         Start-Sleep -Seconds 12
         if (OllamaHealthy) { Log 'Ollama restarted OK' } else { Log 'Ollama restart FAILED (retrying next pass)' }
     }

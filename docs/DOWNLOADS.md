@@ -50,3 +50,30 @@ ollama create qwen2.5:14b-instruct -f models/Modelfiles/qwen25-14b
 ollama create qwen2.5vl:7b        -f models/Modelfiles/qwen25vl-7b
 ollama create qwen2.5-omni        -f models/Modelfiles/qwen25-omni
 ```
+
+## The current runtime model set (all 8)
+
+The project's **runtime** uses these Ollama models (the sizes are the installed
+footprints). On a new machine the simplest route is `ollama pull` from the
+official Ollama registry; the GGUF mirrors below are the throttled-network
+alternative used on this machine (via ModelScope / LM Studio community).
+
+| Ollama tag | Role | Size | Public download | GGUF mirror (if pulling fails) |
+|---|---|---:|---|---|
+| `gemma3:27b` | **Heir voice + judge + refinement** | 15 GB | `ollama pull gemma3:27b` | `modelscope.cn/models/lmstudio-community/gemma-3-27b-it-GGUF` (QAT Q4_0) |
+| `deepseek-r1-distill:32b` | Ambient World Director | 19 GB | `ollama pull deepseek-r1-distill:32b` | `modelscope.cn/models/lmstudio-community/DeepSeek-R1-Distill-Qwen-32B-GGUF` (Q4_K_M) |
+| `deepseek-r1-distill:14b` | secondary reasoning model | 9 GB | `ollama pull deepseek-r1-distill:14b` | `modelscope.cn/models/lmstudio-community/DeepSeek-R1-Distill-Qwen-14B-GGUF` (Q4_K_M) |
+| `qwen2.5:14b-instruct` | earlier voice / judge | 9 GB | `ollama pull qwen2.5:14b-instruct` | `modelscope.cn/models/Qwen/Qwen2.5-14B-Instruct-GGUF` (q4_k_m) |
+| `gemma3n` | unified senses (vision + audio) | 7.5 GB | `ollama pull gemma3n` | bare tag = latest 8B E2B on the Ollama registry |
+| `qwen3-vl:8b` | high-quality vision (`SENSES_MODE=quality`) | 6.1 GB | `ollama pull qwen3-vl:8b` | official `qwen3-vl:8b` tag on the Ollama registry |
+| `qwen2.5-omni` | music-audio fallback | 6.2 GB | `ollama pull qwen2.5-omni` | `modelscope.cn/models/ggml-org/Qwen2.5-Omni-7B-GGUF` (Q4_K_M + mmproj) |
+| `qwen2.5vl:7b` | earlier vision model | 6.0 GB | `ollama pull qwen2.5vl:7b` | `modelscope.cn/models/lmstudio-community/Qwen2.5-VL-7B-Instruct-GGUF` (Q4_K_M + mmproj) |
+
+Plus **`faster-whisper-base`** (speech-to-text) at `models/faster-whisper-base/` —
+`modelscope.cn/models/Systran/faster-whisper-base` (`model.bin` 145 MB).
+
+Register a downloaded GGUF directly (skips the `ollama create` quantize pass):
+`python tools/register_lmstudio_gguf.py`. On this machine the deepseek + gemma3
+models were registered that way (hard links, zero disk duplication) from local
+LM Studio files in `D:\AI Large Language Model Files\` — that path is
+**machine-specific**; public users should `ollama pull` instead.

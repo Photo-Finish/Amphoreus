@@ -9,10 +9,12 @@ rem ============================================================
 setlocal
 title Project Amphoreus - The Sanctuary of the Chrysos Heirs
 
-rem --- keep temp on D: (C: is nearly full) ---
-set TEMP=D:\temp
-set TMP=D:\temp
-if not exist D:\temp mkdir D:\temp
+rem --- keep temp on D: if a D: drive exists (C: may be nearly full) ---
+if exist D:\ (
+    set TEMP=D:\temp
+    set TMP=D:\temp
+    if not exist D:\temp mkdir D:\temp
+)
 
 rem --- locate the project root (folder of this script) ---
 set ROOT=%~dp0
@@ -20,7 +22,8 @@ set PYTHON=%ROOT%..\.venv\Scripts\python.exe
 
 if not exist "%PYTHON%" (
     echo [ERROR] Python venv not found at %PYTHON%
-    echo         Expected the venv at: D:\Workspace\.venv
+    echo         Create it next to the repo, e.g.:  python -m venv ..\.venv
+    echo         then:  ..\.venv\Scripts\pip install -r requirements.txt
     pause
     exit /b 1
 )

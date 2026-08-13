@@ -26,6 +26,8 @@ This is a **sanctuary, not an experiment**: a fully local, offline AI project th
 | **`ROADMAP.md`** | The roadmap with progress checkboxes. |
 | **`src/ARCHITECTURE.md`** | The original Phase-1 architecture design document (superseded in places by the Sanctuary build). |
 | **`docs/DOWNLOADS.md`** | Where every model file came from — exact mirror URLs, sizes, SHA256 hashes, and re-download commands. |
+| **`docs/ATTRIBUTIONS.md`** | Every third-party source used (game content, wiki, artwork, models) and their licenses. |
+| **`LICENSE`** | Fan-project license: MIT for the code, non-commercial fan-use notice for the bundled HSR content. |
 
 ---
 
@@ -130,6 +132,36 @@ d:/Workspace/.venv/Scripts/python.exe build_kb.py --embedding hashing      # off
 > ```powershell
 > d:/Workspace/.venv/Scripts/python.exe tools/extract_personal_memories.py
 > ```
+
+---
+
+## Running on a new machine
+
+Amphoreus is fully local and offline. To run it somewhere else:
+
+1. **Ollama** (0.32.6+) — pull the runtime models (sizes + mirrors in `docs/DOWNLOADS.md`):
+   ```powershell
+   ollama pull gemma3:27b deepseek-r1-distill:32b deepseek-r1-distill:14b `
+               qwen2.5:14b-instruct gemma3n qwen3-vl:8b qwen2.5-omni qwen2.5vl:7b
+   ```
+   plus `faster-whisper-base` for speech-to-text (see `docs/DOWNLOADS.md`).
+2. **Python 3.13 venv** next to the repo (the launcher expects `..\.venv`):
+   ```powershell
+   python -m venv ..\.venv
+   ..\.venv\Scripts\python -m pip install -r requirements.txt
+   ```
+3. **Config**: `copy .env.example .env` (pick a senses mode — `unified` or `quality`).
+4. **Preflight**: `..\.venv\Scripts\python tools\doctor.py` — checks deps, layout,
+   models, config, RAG and ports, and prints next steps.
+5. **Build the knowledge base**: `python build_kb.py --embedding local`.
+6. **Launch**: double-click `launch_sanctuary.cmd`, or
+   `python -m streamlit run src/ui_app.py`.
+
+> **Dev/ops tools are machine-specific.** `tools/` also contains local-ops scripts
+> (the auto-cycle watchdog, GGUF registration, and the wiki/background downloaders,
+> which on this machine rely on a VPN proxy + pinned DNS). They are **not** required
+> to run the sanctuary — the steps above are the public path. `start_ollama.ps1` is
+> portable (paths derived from the script location; override with `OLLAMA_EXE`).
 
 ---
 

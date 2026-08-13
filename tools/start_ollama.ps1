@@ -8,8 +8,20 @@
 # Usage:  powershell -File tools\start_ollama.ps1
 $ErrorActionPreference = 'Continue'
 
-$ollamaExe = 'C:\Users\17501\AppData\Local\Programs\Ollama\ollama.exe'
-$env:OLLAMA_MODELS = 'D:\Workspace\Amphoreus\models\ollama'
+# Portable paths: everything is derived from this script's location, so the
+# script works from any checkout. Override with env vars if your layout differs.
+$root = Split-Path $PSScriptRoot -Parent
+$modelsDir = Join-Path $root 'models\ollama'
+$ollamaExe = $env:OLLAMA_EXE
+if (-not $ollamaExe) {
+    $ollamaExe = (Get-Command ollama -ErrorAction SilentlyContinue).Source
+}
+if (-not $ollamaExe) {
+    # last-resort default: the standard Ollama install location
+    $ollamaExe = Join-Path $env:LOCALAPPDATA 'Programs\Ollama\ollama.exe'
+}
+
+$env:OLLAMA_MODELS = $modelsDir
 $env:OLLAMA_HOST = '127.0.0.1:11434'
 # Default context window for every request (default 4096 was too small — long
 # music-audio and big canon prompts got truncated). 8192 doubles the headroom;
@@ -33,10 +45,10 @@ $conn = Get-NetTCPConnection -LocalPort 11434 -State Listen -ErrorAction Silentl
 if ($conn) {
     Write-Host "OK  Ollama server listening on 127.0.0.1:11434 (models: $env:OLLAMA_MODELS)"
     $tags = curl.exe -s --max-time 10 "http://127.0.0.1:11434/api/tags" 2>$null
-    if ($tags -match 'qwen2.5:14b-instruct' -and $tags -match 'qwen2.5vl' -and $tags -match 'qwen2.5-omni') {
-        Write-Host "OK  All three models visible: qwen2.5:14b-instruct, qwen2.5vl:7b, qwen2.5-omni"
+    if ($tags -match 'gemma3:27b') {
+        Write-Host "OK  Heir model visible: gemma3:27b"
     } else {
-        Write-Host "WARN  Server is up but models not all visible yet: $tags"
+        Write-Host "WARN  Server is up but gemma3:27b not visible yet: $tags"
     }
 } else {
     Write-Host "FAILED  Server did not start. Check: $ollamaExe"

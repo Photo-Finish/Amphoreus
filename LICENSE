@@ -1,0 +1,59 @@
+# Project Amphoreus — Fan-Project License
+
+Project Amphoreus is an **unofficial, non-commercial fan project** based on
+*Honkai: Star Rail* (© HoYoverse / COGNOSPHERE Pte. Ltd.). It is not affiliated
+with, endorsed by, or connected to HoYoverse.
+
+## Code
+
+The **code** in this repository (`src/`, `tools/`, `scripts/`, configuration
+files, documentation *written by the authors*) is licensed under the **MIT
+License**:
+
+```
+MIT License
+
+Copyright (c) 2026 Project Amphoreus contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## Content
+
+The **content** bundled in this repository is **not** freely licensed and is
+included for personal, non-commercial, educational use only:
+
+- **Canon dialogue and lore** (`databank/`, per-Heir `personal-memories.md`,
+  `src/characters/*.json` persona data derived from it) — © HoYoverse
+  / COGNOSPHERE Pte. Ltd., *Honkai: Star Rail*.
+- **Official artwork** (`assets/heirs/`, `assets/avatars/`) — © HoYoverse.
+- **Area artwork** (`assets/galgame/`) — from the *Honkai: Star Rail* wiki
+  (Fandom), © HoYoverse, images credited in `docs/ATTRIBUTIONS.md`.
+- **Wiki lore dump** (`databank/wiki/`) — from the *Honkai: Star Rail* wiki
+  (Fandom), used under the **CC BY-SA 3.0** license; attribution in
+  `docs/ATTRIBUTIONS.md`.
+
+Do not redistribute the content commercially, and keep the attribution.
+
+## Models
+
+The model files are **not distributed** in this repository (see `.gitignore` /
+`docs/DOWNLOADS.md`). They are open-source model weights from their respective
+owners (Google — Gemma; DeepSeek; Alibaba — Qwen; Systran/OpenAI — Whisper) and
+are subject to each project's own license.
