@@ -50,33 +50,6 @@ def avatar_for(character_id: str):
     return portrait_for(character_id)
 
 
-@st.cache_data(show_spinner=False)
-def _img_data_uri(path: str, max_h: int = 720) -> str:
-    """Base64 data-URI of an image, downscaled — for embedding in VN HTML."""
-    import base64
-    import io
-    from PIL import Image
-    p = Path(path)
-    if not p.exists():
-        return ""
-    try:
-        im = Image.open(p)
-        if im.mode in ("RGBA", "LA", "P"):
-            im = im.convert("RGBA")
-            fmt = "png"
-        else:
-            im = im.convert("RGB")
-            fmt = "jpeg"
-        w, h = im.size
-        if h > max_h:
-            im = im.resize((int(w * max_h / h), max_h), Image.LANCZOS)
-        buf = io.BytesIO()
-        im.save(buf, format="PNG" if fmt == "png" else "JPEG", quality=82)
-        return f"data:image/{fmt};base64," + base64.b64encode(buf.getvalue()).decode()
-    except Exception:
-        return ""
-
-
 # Ethereal Amphoreus theme (dark gold, no heavy base64 in the page)
 st.markdown(
     """
@@ -227,13 +200,23 @@ st.sidebar.caption("*Databank: Complete ✅*")
 st.sidebar.caption("*See PHILOSOPHY.md for the charter*")
 
 # Main Area
-main_tab, chronicle_tab, map_tab, admin_tab, vn_tab = st.tabs([
+main_tab, chronicle_tab, map_tab, admin_tab, game_tab = st.tabs([
     "💬 Visit an Heir",
     "📖 A Chronicle of Amphoreus",
     "🗺️ Map of Amphoreus",
     "🛠️ Admin Console",
-    "🎮 Visual Novel",
+    "🎬 Galgame",
 ])
+
+with game_tab:
+    # 🎬 Galgame view — an OPTIONAL visual-novel rendering of the same
+    # conversation. The Classic interface above is untouched.
+    try:
+        from src.ui_galgame import render_galgame
+        render_galgame(manager, selected, info)
+    except Exception as e:
+        st.error(f"Could not render the galgame view: {e}")
+
 
 with chronicle_tab:
     if BG_IMAGE.exists():
@@ -484,85 +467,6 @@ with admin_tab:
             st.markdown(_ch.read_markdown(30))
     except Exception as e:
         st.caption(f"(chronicle unavailable: {e})")
-
-with vn_tab:
-    # 🎮 Visual Novel — a galgame-style stage. The SAME Heirs, the SAME
-    # conversation and history as the classic tab — only the look changes.
-    # The classic UI is untouched; this is a separate view over the same data.
-    st.title("🎮 Visual Novel — a galgame stage")
-    st.caption("Same Heirs, same conversation — presented like a visual novel.")
-
-    _msgs = st.session_state.messages.get(selected, [])
-    _last_line = ""
-    for _m in reversed(_msgs):
-        if _m["role"] == "assistant" and _m.get("content"):
-            _last_line = _m["content"]
-            break
-    if not _last_line:
-        _last_line = info["greeting"]
-
-    import html as _htmlmod
-    _safe_line = _htmlmod.escape(_last_line)
-    _bg_uri = _img_data_uri(str(BG_IMAGE), 720) if BG_IMAGE.exists() else ""
-    _portrait = portrait_for(selected)
-    _sprite_uri = _img_data_uri(str(_portrait), 620) if _portrait else ""
-    _vn_name = info["name"]
-    try:
-        from src.world.world_state import WorldState as _VNW
-        _vn_loc = _VNW().location_name(selected)
-    except Exception:
-        _vn_loc = "Amphoreus"
-    _name_col = "#e8d5a3"
-
-    _stage = f"""
-    <div style="position:relative;width:100%;height:560px;border-radius:16px;overflow:hidden;
-                border:1px solid rgba(232,213,163,.22);background:#0b0a14;">
-      <div style="position:absolute;inset:0;background-image:url('{_bg_uri}');
-                  background-size:cover;background-position:center;opacity:.5;"></div>
-      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,10,20,0) 40%,rgba(11,10,20,.74) 100%);"></div>
-      <div style="position:absolute;left:6%;bottom:0;height:92%;display:flex;align-items:flex-end;">
-        <img src="{_sprite_uri}" style="height:100%;max-height:520px;filter:drop-shadow(0 -8px 26px rgba(0,0,0,.65));"/>
-      </div>
-      <div style="position:absolute;left:40%;right:5%;top:10px;text-align:right;color:#d8cfa8;
-                  font-family:Georgia,serif;font-style:italic;font-size:13px;">📍 {_vn_loc}</div>
-      <div style="position:absolute;left:40%;right:5%;bottom:18px;background:rgba(9,8,18,.9);
-                  border:1px solid rgba(232,213,163,.28);border-radius:14px;padding:16px 20px;min-height:168px;">
-        <div style="display:inline-block;background:{_name_col};color:#141126;font-weight:bold;
-                    padding:4px 16px;border-radius:8px 8px 8px 0;margin-bottom:10px;
-                    font-family:Georgia,serif;font-size:14px;">{_vn_name}</div>
-        <div style="color:#f2ebd2;font-family:Georgia,serif;font-size:18px;line-height:1.55;min-height:64px;">{_safe_line}</div>
-        <div style="text-align:right;color:{_name_col};margin-top:6px;font-size:13px;">▼</div>
-      </div>
-    </div>
-    """
-    st.markdown(_stage, unsafe_allow_html=True)
-
-    with st.expander("📜 Back-log", expanded=False):
-        _hist = st.session_state.messages.get(selected, [])[-14:]
-        if not _hist:
-            st.markdown("*No conversation yet.*")
-        for _m in _hist:
-            _who = info["name"] if _m["role"] == "assistant" else "You"
-            st.markdown(f"**{_who}:** {_m['content']}")
-
-    with st.form(f"vn_form_{selected}", clear_on_submit=True):
-        _line = st.text_input(
-            f"What do you say to {info['name']}?",
-            key=f"vn_in_{selected}",
-            label_visibility="collapsed",
-            placeholder=f"Say something to {info['name']}…",
-        )
-        _go = st.form_submit_button(f"Speak to {info['name']} ▶", type="primary")
-    if _go and _line and _line.strip():
-        st.session_state.messages.setdefault(selected, []).append(
-            {"role": "user", "content": _line.strip()}
-        )
-        with st.spinner(f"{info['name']} is listening…"):
-            _resp = manager.chat(selected, _line.strip())
-        st.session_state.messages[selected].append(
-            {"role": "assistant", "content": _resp}
-        )
-        st.rerun()
 
 with main_tab:
     # Main Chat Area — hero banner with the Heir's portrait
