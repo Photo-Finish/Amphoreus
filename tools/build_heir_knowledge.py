@@ -78,6 +78,26 @@ ANCHORS = {
                 "factions": ["chrysos-heirs", "council-of-elders"]},
 }
 
+TITAN_NAMES = ["aquila", "cerces", "phagousa", "janus", "kephale", "thanatos",
+               "oronyx", "georios", "nikador", "mnestia", "talanton", "zagreus"]
+
+# What lies OUTSIDE each Heir's knowledge — the far edge of their range.
+UNKNOWN = {
+    "aglaea": "the far cities' secret councils and what the memory-zone hides from the living",
+    "anaxa": "the inner workings of Castrum Kremnos' war machine, Styxia's underworld, and the truths the Council buried",
+    "castorice": "the bustling life of the far cities and the black tide's true origin",
+    "cerydra": "the wild whims of the far cities — anything not ruled by law or measure",
+    "cipher": "whatever lies behind a door she has not yet picked open",
+    "cyrene": "nothing of the visitor's own world beyond the stars",
+    "dan-heng-permansor-terrae": "the memory-zone's deeper workings and Amphoreus' history before his arrival",
+    "evernight": "the waking world's ordinary hours and what lies outside the memory-zone",
+    "hyacine": "battlefield arts beyond healing and the deep politics of the far cities",
+    "hysilens": "the dry lands and their wars — the silence that cannot be music",
+    "mydei": "the courts' subtleties and the scholars' abstractions — give him a spear",
+    "phainon": "the machinery behind the cycles and the truth Cyrene guarded",
+    "tribbie": "the far cities' private griefs and what a single closed door hides",
+}
+
 # Name/alias signals used to detect which docs mention a Heir personally.
 def _aliases(card):
     m = card.get("meta", {})
@@ -163,30 +183,69 @@ def _mention_docs(docs, names):
     return hits
 
 
+def _city_titans(docs, city_slug):
+    """Titans named in the Heir's home-city wiki doc (whole words only)."""
+    if not city_slug:
+        return []
+    d = _find_doc(docs, city_slug)
+    if not d:
+        return []
+    found = []
+    for t in TITAN_NAMES:
+        if re.search(rf"\b{t}\b", d["text"], re.I) and t not in found:
+            found.append(t)
+    return found
+
+
+def _home_places(docs, city_slug, limit=4):
+    """Named areas of the Heir's home city (wiki sub-pages)."""
+    if not city_slug:
+        return []
+    out = []
+    for slug in sorted(docs):
+        if city_slug in slug and slug != city_slug:
+            if any(x in slug for x in ("-lore", "hoyolab", "-crest", "ritual",
+                                       "calyx", "cavern-of-corrosion", "echo-of-war")):
+                continue
+            t = docs[slug]["title"]
+            if t not in out:
+                out.append(t)
+        if len(out) >= limit:
+            break
+    return out
+
+
 def build_prompt_block(card, info):
-    """Compact per-Heir WORLD KNOWLEDGE block injected into the system prompt."""
-    home = info["home"]
-    titan = info["titan"]
-    cities = ", ".join(f"{n} ({d})" for n, d in GREAT_CITIES)
+    """Per-Heir WORLD KNOWLEDGE block injected into the system prompt."""
     lines = ["WORLD KNOWLEDGE — what you, of Amphoreus, know:"]
-    if home:
-        lines.append(f"- Your home: {home}")
-    if titan:
-        lines.append(f"- Your Titan: {titan}")
+    if info["home"]:
+        lines.append(f"- Your home: {info['home']}")
+    if info["titan"]:
+        lines.append(f"- Your Titan: {info['titan']}")
+    ct = info["city_titans"]
+    if ct:
+        lines.append("- The Titans of your city: " + ", ".join(t.title() for t in ct))
     lines.append(
-        f"- The world: Amphoreus has six great cities — {cities} — each "
-        "under a Titan's dominion. The black tide devours whatever it "
-        "touches; the Chrysos Heirs bear the Coreflames to hold it back."
+        "- The world: the six great cities are Okhema, Janusopolis, Grove of "
+        "Epiphany, Castrum Kremnos, Styxia and Aidonia, each under a Titan's "
+        "dominion; the black tide devours all; the Chrysos Heirs bear the "
+        "Coreflames to hold it back."
     )
+    if info["places"]:
+        lines.append(f"- Places you know: {info['places']}")
     if info["circles"]:
         lines.append(f"- Your circles: {info['circles']}")
+    chars = info["characters"]
+    if chars:
+        lines.append("- People you know: " + "; ".join(chars[:6]))
     if info["events"]:
         lines.append(f"- Your age: {info['events']}")
+    if info["boundaries"]:
+        lines.append(f"- Beyond this you know little: {info['boundaries']}")
     return "\n".join(lines)
 
 
 def build_knowledge(card, docs):
-    cid = card["meta"]["id"]  # e.g. chrysos-heir-09
     name = card["meta"]["name"]
     ident = card.get("identity", {})
     city = ident.get("city_state", "")
@@ -195,9 +254,11 @@ def build_knowledge(card, docs):
     doms = card.get("knowledge", {}).get("domains", [])
 
     a = ANCHORS.get(_key_of(card), {})
+    city_slug = a.get("city", "")
+    titan_slug = a.get("titan", "")
 
-    home_doc = _find_doc(docs, a.get("city", "")) if a.get("city") else None
-    titan_doc = _find_doc(docs, a.get("titan", "")) if a.get("titan") else None
+    home_doc = _find_doc(docs, city_slug) if city_slug else None
+    titan_doc = _find_doc(docs, titan_slug) if titan_slug else None
 
     home = f"{city}" if city else ""
     if home_doc:
@@ -219,19 +280,32 @@ def build_knowledge(card, docs):
         if note:
             titan_txt = f"{titan} — {note}"
 
+    # Titans of the Heir's own city (from the city wiki doc), minus their own.
+    own_titan = (titan or "").lower().split("(")[0].strip()
+    city_titans = [t for t in _city_titans(docs, city_slug) if t != own_titan]
+
+    # Places the Heir knows well: home city + its named areas.
+    places = [home_doc["title"] if home_doc else city] if (home_doc or city) else []
+    for t in _home_places(docs, city_slug, limit=4):
+        if t not in places:
+            places.append(t)
+    places_txt = "; ".join(places) if places else "your own corner of Amphoreus"
+
     # Circles: faction docs + the Heir's own domains.
     circles = []
     for fpart in a.get("factions", []):
         d = _find_doc(docs, fpart)
-        if d:
-            t = d["title"]
-            if t not in circles:
-                circles.append(t)
+        if d and d["title"] not in circles:
+            circles.append(d["title"])
     if doms and len(circles) < 4:
         for dom in doms[:3]:
             if dom and dom not in circles:
                 circles.append(dom)
     circles_txt = "; ".join(circles) if circles else "the Chrysos Heirs"
+
+    # People the Heir knows (canon card).
+    kc = card.get("knowledge", {}).get("known_characters", {})
+    characters = [n for n in kc if n][:6]
 
     # Events: biography key events (what they lived through).
     events = bio.get("key_events", []) or []
@@ -239,8 +313,12 @@ def build_knowledge(card, docs):
     if "black tide" not in ev.lower():
         ev = "the black tide; " + ev
 
+    boundaries = UNKNOWN.get(_key_of(card), "the far cities' inner secrets")
+
     info = {
-        "home": home, "titan": titan_txt, "circles": circles_txt, "events": ev,
+        "home": home, "titan": titan_txt, "city_titans": city_titans,
+        "places": places_txt, "circles": circles_txt,
+        "characters": characters, "events": ev, "boundaries": boundaries,
     }
     return info, build_prompt_block(card, info)
 
@@ -275,8 +353,12 @@ def main():
         wk = {
             "home": info["home"],
             "titan": info["titan"],
+            "city_titans": info["city_titans"],
+            "places": info["places"],
             "circles": info["circles"],
+            "known_characters": info["characters"],
             "events": info["events"],
+            "boundaries": info["boundaries"],
             "prompt_block": block,
             "source": "wiki (honkai-star-rail.fandom.com) + canon card",
             "built": "2026-08-13",
