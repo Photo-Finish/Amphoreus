@@ -398,6 +398,13 @@ Amphoreus/
 
 ## Changelog
 
+### 2026-08-13 — Focused round simplified: Mydei out (passed 7/8 under 8192)
+- Mydei passed the focused 8192 round at **7/8 (87%)** — above the 85% pass-target,
+  with its only failure being the `...` collapse now fixed at the test level — so it
+  opts out per the standing rule and is **removed from `world_runtime/run_auto_cycle.cmd`**
+  (`--heirs aglaea,anaxa,castorice,cipher`). The round now trains/refines only the four
+  still-failing Heirs; Mydei's card is frozen and untouched.
+
 ### 2026-08-13 — Style test: the '...' collapse is eliminated
 - The dominant failure mode in the focused round was the model answering with a bare
   `...` (8 of 16 failures, scoring style 45 / content 25 and dragging both averages
