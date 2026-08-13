@@ -398,7 +398,7 @@ Amphoreus/
 
 ## Changelog
 
-### 2026-08-13 — Map: Heir names no longer overlap
+### 2026-08-13 — A vivid world, per-Heir knowledge, the Galgame view, and the quality loop
 - **Root cause** — `render_map_svg` fanned co-located Heirs only 13px apart and drew
   every name on the same row at `cy-12`, so Okhema's six residents (and the pairs at
   Grove and Aedes Elysiae) all sat on top of each other. (The running Streamlit was
@@ -410,14 +410,12 @@ Amphoreus/
   Verified in the browser by measuring every SVG text bounding box: **0 overlapping
   pairs** (was 15), and the travel-cost matrix below the map still shows every route.
 
-### 2026-08-13 — Focused round simplified: Mydei out (passed 7/8 under 8192)
 - Mydei passed the focused 8192 round at **7/8 (87%)** — above the 85% pass-target,
   with its only failure being the `...` collapse now fixed at the test level — so it
   opts out per the standing rule and is **removed from `world_runtime/run_auto_cycle.cmd`**
   (`--heirs aglaea,anaxa,castorice,cipher`). The round now trains/refines only the four
   still-failing Heirs; Mydei's card is frozen and untouched.
 
-### 2026-08-13 — Style test: the '...' collapse is eliminated
 - The dominant failure mode in the focused round was the model answering with a bare
   `...` (8 of 16 failures, scoring style 45 / content 25 and dragging both averages
   down). Root cause found in `tools/test_dialogue_style.py`: a literal `...` is truthy,
@@ -434,7 +432,6 @@ Amphoreus/
   *style* only; the low content scores (25–35) came exclusively from the `...`
   collapses. Content bar therefore stays at 60; the lever was the collapse + style.
 
-### 2026-08-13 — UI fix: the top bar no longer swallows the tabs
 - **Header/tab overlap fixed** — Streamlit's top bar (Running… / Deploy / Main menu) is
   absolutely positioned over the top 60px of the main area; the app's theme CSS was
   overriding `.block-container`'s clearance (`padding-top: 1.4rem`), so the tab bar
@@ -443,7 +440,6 @@ Amphoreus/
   `padding-top: 5.4rem`, placing the tabs 42px clear of the bar (verified: tab bar at
   y=102 vs header bottom y=60; a real click on every tab works again).
 
-### 2026-08-13 — The world grows vivid: rumors, letters, bonds, projects, NPCs, black tide, weather-reactive UI, the Gazette
 - **A living web of memory and talk** — Heirs who meet **spread rumors** of what they
   heard (degrading as they travel, never growing), and their **bonds shift** a little
   with every exchange; each keeps a cross-memory of the others' words. What the
@@ -478,7 +474,6 @@ Amphoreus/
   companions; the world engine weaves surges/NPCs/letters/milestones into each day; the
   Heirs' perception and the visitor's chat both read the living texture.
 
-### 2026-08-13 — World vividness: refinement pass
 - **Surge darkens the sky exactly once** — the black-tide weather suffix is now
   idempotent (no `"…black tide darkens the sky, and the black tide darkens the sky"`
   on the surge's later days or after a restart mid-surge).
@@ -520,7 +515,6 @@ Amphoreus/
   Galgame view notes "🚶 The star-stranger walks beside them on the road" when a
   shared journey is under way.
 
-### 2026-08-13 — Knowledge boundaries, Galgame view, 8192 context, hardened cycle
 - **Wiki databank + decided per-Heir knowledge** (`3bc9b56`, `5dc1b4e`, `811e645`, `628b2a5`) — 317 pages of Amphoreus lore pulled from the English HSR wiki into **`databank/wiki/`** (sorted: titans/locations/factions/characters/gameplay/experiment/lore) by `tools/fetch_wiki_amphoreus.py`; `tools/build_heir_knowledge.py` decides each Heir's **world-knowledge range** (home city, own Titan, their city's Titans, places, circles, people, events, and the explicit edge of what lies outside their knowledge) and embeds it into all 13 cards, injected into every system prompt.
 - **Location backgrounds everywhere** (`ca72326`, `bd29c75`) — 20 Amphoreus **area artworks** fetched into `assets/galgame/` by `tools/fetch_galgame_backgrounds.py`; the **💬 Classic** banner, **🗺️ Map** area-art browser and **🎬 Galgame** scene all show the backdrop that matches where each Heir currently is (via the shared `src/ui_backgrounds.py`), falling back to their home city and then the default banner.
 - **The star-stranger's teaching — learning from beyond the stars** (`docs/TEACHING.md`, signed) — the Heirs can now be **taught** real-world knowledge (advanced mathematics, and so on) by the visitor, and **debate** whether it is right. Instead of a mask, each Heir keeps a persistent **epistemic ledger** (`teaching.json`): every taught topic travels *foreign → studied → adopted | refuted | unsure*, and the verdict is the Heir's own, stored with their reasoning and remembered across visits. Teaching intent routes `chat()` into a Socratic exchange; the Heir never fakes understanding but tests the claim against what they believe and value. See `docs/TEACHING.md`.
@@ -609,41 +603,17 @@ Amphoreus/
   calibration, cheat-free anti-quote, anti-rhetoric, voice anchoring, model choice,
   auto-cycle, R1 `think:false` fix, OOM/502 recovery.
 
-See `ROADMAP.md` for the detailed checklist.
-
-### Before 2026-08-11 — the foundation (Phase 0–2 and the early build)
-
-- **The Sanctuary rises** (`a14dd6a`) — Phase 0–2 of the roadmap: the **databank** (13
-  Chrysos Heir profiles, their mission dialogue, world / titans / lore, the
-  MASTER-REGISTRY with canon signal codes), the architecture, all **13 character
-  cards** (`src/characters/*.json`), and the **RAG pipeline** (ChromaDB, one
-  collection per Heir, 11k+ canon documents). `PHILOSOPHY.md` sets the charter — a
-  *sanctuary, not an experiment*: three refusals (no experimenter loop, no claim of
-  life, no forced ending), three commitments (fidelity as reverence, continuity as
-  life, community not orchestration), privacy as sanctity, friendship deepened by
-  design.
-- **Memory that persists** — per-Heir folders (`bond.json`, `history.jsonl`,
-  `memories.jsonl`, `preferences.json`, and verbatim canon dialogue in
-  `personal-memories.md`), the preference store seeded from canon, and lazy per-Heir
-  loading — the Heirs remember the visitor across visits.
-- **A little Amphoreus that runs itself** — the world engine (`src/world/`): the canon
-  **Light Calendar** clock (12 months / 4 seasons / 5 daily periods), Heir autonomy
-  (perceive → decide → act → remember), free encounters, an append-only **chronicle**,
-  and a daemon (`python -m src.world.world_engine`) that hosts time and space without
-  authoring anyone. Heirs walk their weekly routines; travel takes real commuting time.
-- **Voices from the canon** (`b160c93`, `a7bb210`) — Heir personality traits refined
-  directly from the canon dialogue; a **relationships registry**
-  (`src/core/relationships.py`) and a **voice digest** of the Heir's own lines are
-  injected into every system prompt, so Anaxa treats Phainon and Castorice as his
-  students, Cerydra commands Hysilens as Imperator, and so on. A **Fandom
-  dialogue-verification script** (`3ce32c4`) checks the canon against the wiki.
-- **Senses** — hearing (faster-whisper `base` speech-to-text), eyesight (vision
-  model), and shared-music listening (audio-model analysis + the Heir's own verdict),
-  with the earlier music-perception limitation documented (`9779886`).
+### 2026-08-10 — Canon voices, the map, the style gate, and the Keeper
 - **The UI** (`440a1c5`, `fd015ee`) — a Streamlit sanctuary: "💬 Visit an Heir" +
   "📖 A Chronicle of Amphoreus", per-Heir square avatars, bond/visits in the sidebar,
   a one-click launcher (`launch_sanctuary.cmd`), and graceful offline placeholders
   when the backend is down.
+- **Voices from the canon** (`3ce32c4`, `b160c93`, `a7bb210`) — Heir personality
+  traits refined directly from the canon dialogue; a **relationships registry**
+  (`src/core/relationships.py`) and a **voice digest** of the Heir's own lines are
+  injected into every system prompt, so Anaxa treats Phainon and Castorice as his
+  students, Cerydra commands Hysilens as Imperator, and so on. A **Fandom
+  dialogue-verification script** (`3ce32c4`) checks the canon against the wiki.
 - **Measured voices** (`57bfafe`) — `tools/measure_speech.py` deterministically
   measures each Heir's own canon speech (words/line, sentence length, % very short,
   ellipsis / question / exclamation rates) and `tools/embed_voice_anchor.py` writes a
@@ -669,8 +639,33 @@ See `ROADMAP.md` for the detailed checklist.
 - **RAG with real meaning** — the vector store rebuilt on **real local embeddings**
   (all-MiniLM-L6-v2 ONNX, offline): 13 collections / 11,332 documents, so retrieval
   returns true semantic relevance instead of hash tokens.
+
+### 2026-08-07 — The Sanctuary is born (Phase 0–2)
+- **The Sanctuary rises** (`a14dd6a`) — Phase 0–2 of the roadmap: the **databank** (13
+  Chrysos Heir profiles, their mission dialogue, world / titans / lore, the
+  MASTER-REGISTRY with canon signal codes), the architecture, all **13 character
+  cards** (`src/characters/*.json`), and the **RAG pipeline** (ChromaDB, one
+  collection per Heir, 11k+ canon documents). `PHILOSOPHY.md` sets the charter — a
+  *sanctuary, not an experiment*: three refusals (no experimenter loop, no claim of
+  life, no forced ending), three commitments (fidelity as reverence, continuity as
+  life, community not orchestration), privacy as sanctity, friendship deepened by
+  design.
+- **Memory that persists** — per-Heir folders (`bond.json`, `history.jsonl`,
+  `memories.jsonl`, `preferences.json`, and verbatim canon dialogue in
+  `personal-memories.md`), the preference store seeded from canon, and lazy per-Heir
+  loading — the Heirs remember the visitor across visits.
+- **A little Amphoreus that runs itself** — the world engine (`src/world/`): the canon
+  **Light Calendar** clock (12 months / 4 seasons / 5 daily periods), Heir autonomy
+  (perceive → decide → act → remember), free encounters, an append-only **chronicle**,
+  and a daemon (`python -m src.world.world_engine`) that hosts time and space without
+  authoring anyone. Heirs walk their weekly routines; travel takes real commuting time.
+- **Senses** — hearing (faster-whisper `base` speech-to-text), eyesight (vision
+  model), and shared-music listening (audio-model analysis + the Heir's own verdict),
+  with the earlier music-perception limitation documented (`9779886`).
 - **Fully local, fully offline** — Ollama 0.32.6 serving from `models/ollama`,
   faster-whisper for hearing, per-Heir RAG; the whole project runs with no network.
   Pushed to GitHub (`a14dd6a`) as a clean single commit with the model files
   gitignored (re-download paths in `docs/DOWNLOADS.md`).
+
+See `ROADMAP.md` for the detailed checklist.
 
