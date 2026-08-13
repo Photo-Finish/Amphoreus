@@ -398,6 +398,15 @@ Amphoreus/
 
 ## Changelog
 
+### 2026-08-13 — UI fix: the top bar no longer swallows the tabs
+- **Header/tab overlap fixed** — Streamlit's top bar (Running… / Deploy / Main menu) is
+  absolutely positioned over the top 60px of the main area; the app's theme CSS was
+  overriding `.block-container`'s clearance (`padding-top: 1.4rem`), so the tab bar
+  (Visit / Chronicle / Map / Admin / Galgame) rendered *under* the bar — clicks on the
+  first two tabs were swallowed by the header. The container now starts at
+  `padding-top: 5.4rem`, placing the tabs 42px clear of the bar (verified: tab bar at
+  y=102 vs header bottom y=60; a real click on every tab works again).
+
 ### 2026-08-13 — The world grows vivid: rumors, letters, bonds, projects, NPCs, black tide, weather-reactive UI, the Gazette
 - **A living web of memory and talk** — Heirs who meet **spread rumors** of what they
   heard (degrading as they travel, never growing), and their **bonds shift** a little

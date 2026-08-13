@@ -55,7 +55,11 @@ st.markdown(
     """
     <style>
     .stApp { background: linear-gradient(160deg, #0b0a14 0%, #131022 45%, #0d0b18 100%); }
-    .block-container { padding-top: 1.4rem; }
+    /* Streamlit's top bar (Running… / Deploy / Main menu) is absolutely
+       positioned over the top 60px of the main area. The block container must
+       start BELOW it, or the tabs sit underneath the bar. Default padding is
+       5rem; we keep a touch more so the tabs never coincide with it. */
+    .block-container { padding-top: 5.4rem; }
     h1, h2, h3 { color: #e8d5a3; letter-spacing: .5px; }
     [data-testid="stSidebar"] {
         background: linear-gradient(180deg, #141126 0%, #0d0b18 100%);
