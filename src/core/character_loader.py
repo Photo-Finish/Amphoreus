@@ -118,6 +118,17 @@ class CharacterLoader:
         except Exception:
             pass  # never let the boundary block break the prompt
 
+        # Append the Heir's own Amphoreus world-knowledge range (what they know
+        # within their world — home city, Titan, circles, era), embedded by
+        # tools/build_heir_knowledge.py from the wiki docs in docs/wiki/.
+        try:
+            wk = card.get("world_knowledge") or {}
+            block = wk.get("prompt_block") or ""
+            if block:
+                system_prompt += "\n\n" + block
+        except Exception:
+            pass  # never let the knowledge block break the prompt
+
         return system_prompt
 
     def get_greeting(self, character_id: str) -> str:
