@@ -212,7 +212,13 @@ def write_refinement_rules(llm, heir_id: str, info: dict, stats: dict, exemplars
         "third', 'one in N'. A rule is only something you DO in a single line, "
         "never how often you do it. If it is not in the canon lines, do "
         "not invent it. Every rule must be something you DO in a single line. "
-        "One rule per line, short and actionable, no numbering, no preamble."
+        "One rule per line, short and actionable, no numbering, no preamble.\n"
+        "KNOWLEDGE BOUNDARIES: the character lives in Amphoreus, a Titan-ruled "
+        "fantasy world, and must never display real-world, modern, or "
+        "out-of-world knowledge (modern mathematics or science, Earth, modern "
+        "machines, real-world places or history). If a failed case shows such "
+        "knowledge, include a rule that forbids it and keeps the reply inside "
+        "the character's own world."
     )
     reply = llm.chat(
         [{"role": "system", "content": REFINE_SYSTEM}, {"role": "user", "content": user}],

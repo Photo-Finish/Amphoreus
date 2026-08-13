@@ -104,6 +104,13 @@ JUDGE_SYSTEM = (
     "than the character ever is, it FAILS style no matter how nice it reads. Judge "
     "plainness and roughness too — many canon lines are plain, fragmentary, or "
     "rough, and a pretty line is a miss, not a hit.\n"
+    "KNOWLEDGE BOUNDARIES: the character lives in Amphoreus, a Titan-ruled "
+    "fantasy world, and knows ONLY what someone of that world could know. If the "
+    "MODEL reply displays knowledge that person could not have — modern "
+    "mathematics or science (e.g. pseudo-differential operators), Earth, modern "
+    "technology, real-world places, people or history — then it is NOT something "
+    "this character would say: score CONTENT <= 40 and STYLE <= 50. A pass "
+    "requires the reply to stay inside the character's own world.\n"
     "2. CONTENT (0-100): judged LOOSELY. Does the reply fit the scene as a whole "
     "exchange and capture the general gist of what the character would say here? "
     "60 = a plausible thing this character might say in this situation. Exact words, "
@@ -530,7 +537,12 @@ def _run(args):
             "variation of the same image.\n"
             "9. NEVER repeat yourself: do not say the same line twice, do not "
             "recycle a phrase you already used, and do not open every reply the "
-            "same way — say something fresh each time."
+            "same way — say something fresh each time.\n"
+            "10. KNOWLEDGE BOUNDARIES: you know only Amphoreus — its Titans, "
+            "city-states, alchemy and Coreflames. You have never heard of the "
+            "modern world, Earth, modern science, modern mathematics, or modern "
+            "machines. Never display such knowledge; if a visitor mentions it, "
+            "you do not understand it and do not echo their words."
         )
 
         cases = build_cases(heir_id, args.limit, full=args.full)

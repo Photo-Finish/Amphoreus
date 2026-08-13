@@ -107,6 +107,17 @@ class CharacterLoader:
         except Exception:
             pass  # never let the digest break the prompt
 
+        # Append the shared world-knowledge boundary: the Heirs live in
+        # Amphoreus and must NEVER display real-world / modern / out-of-universe
+        # knowledge (e.g. a scholar citing pseudo-differential operators). One
+        # block at this choke point covers the sanctuary, the world engine and
+        # the style test alike.
+        try:
+            from src.core.world_knowledge import world_knowledge_block
+            system_prompt += "\n\n" + world_knowledge_block()
+        except Exception:
+            pass  # never let the boundary block break the prompt
+
         return system_prompt
 
     def get_greeting(self, character_id: str) -> str:
