@@ -72,13 +72,29 @@ PAST_POS: Dict[str, Tuple[float, float]] = {
     "Demigod Council": (346, 252),
     "Sanctum of Prophecy": (620, 428),
     "Radiant Scarwood": (172, 390),
-    "Universal Matrix": (86, 484),
+    "Universal Matrix": (80, 470),
     "Bloodbathed Battlefront": (128, 620),
     "Warbling Shores": (572, 584),
     "Fortress of Dome": (460, 58),
     "Aedes Elysiae, of old": (800, 512),
 }
 NETHER_POS: Tuple[float, float] = (668, 676)
+
+# Small thematic icons for the areas (drawn at each node with a fading glow
+# margin, instead of a bare dot). Dawn-era echoes reuse their place's icon,
+# drawn faded; the Nether has its own.
+AREA_ICONS: Dict[str, str] = {
+    "Okhema": "🏛", "Dawncloud": "☁", "Janusopolis": "⛩",
+    "Grove of Epiphany": "🌳", "Great Tomb": "🪦", "Castrum Kremnos": "🏰",
+    "Styxia": "🌊", "Aidonia": "❄", "Aedes Elysiae": "🌾",
+    "Vortex of Genesis": "🌀", "Eye of Twilight": "👁",
+    "Eternal Holy City": "🏛", "Demigod Council": "☁",
+    "Sanctum of Prophecy": "⛩", "Radiant Scarwood": "🌳",
+    "Universal Matrix": "🪦", "Bloodbathed Battlefront": "🏰",
+    "Warbling Shores": "🌊", "Fortress of Dome": "👁",
+    "Aedes Elysiae, of old": "🌾",
+    "The Nether": "🦋",
+}
 
 # Everything the map can draw (present + Dawn echoes + the Nether).
 ALL_POS: Dict[str, Tuple[float, float]] = {**LOCATION_POS, **PAST_POS, NETHER: NETHER_POS}
@@ -209,20 +225,27 @@ _GRAPH.setdefault(NETHER, {})["Styxia"] = 2
 
 def _edge_allowed(a: str, b: str, cid: Optional[str]) -> bool:
     """Whether a specific traveler may use the edge a-b (None = display mode:
-    everything is shown)."""
+    everything is shown). Crossing INTO the Dawn era (or the Nether) needs the
+    Titan's blessing; the way BACK is always open — an Heir carried across is
+    never trapped in the past (the Veil lets the carried return home)."""
     if cid is None:
         return True
     edge = frozenset((a, b))
     if edge in _VEIL_EDGES:
-        if cid in ORONYX_BLESSED:
-            return True
-        # Janusopolis's Dawn form stands behind the Gates of Destiny.
-        if edge == frozenset(("Janusopolis", "Sanctum of Prophecy")) \
-                and cid in JANUS_BLESSED:
-            return True
-        return False
+        if b in PAST_FORMS and a not in PAST_FORMS:
+            # present -> past: entering the Dawn era needs the blessing
+            if cid in ORONYX_BLESSED:
+                return True
+            if edge == frozenset(("Janusopolis", "Sanctum of Prophecy")) \
+                    and cid in JANUS_BLESSED:
+                return True
+            return False
+        return True  # past -> present: the carried return home
     if edge == _NETHER_EDGE:
-        return cid in THANATOS_BLESSED
+        if b == NETHER:
+            # descending into the Nether needs Thanatos's blessing
+            return cid in THANATOS_BLESSED
+        return True  # ascending back to the living world is always open
     return True
 
 
@@ -364,6 +387,26 @@ def render_map_svg(
         f'style="width:100%;height:auto;background:radial-gradient(ellipse at 50% 40%, #141126 0%, #0b0a14 70%);'
         f'border:1px solid rgba(232,213,163,.18);border-radius:14px;">'
     )
+    # fading-margin glows behind the area icons
+    parts.append(
+        '<defs>'
+        '<radialGradient id="gGold" cx="50%" cy="50%" r="50%">'
+        '<stop offset="0%" stop-color="#e8d5a3" stop-opacity=".42"/>'
+        '<stop offset="62%" stop-color="#e8d5a3" stop-opacity=".13"/>'
+        '<stop offset="100%" stop-color="#e8d5a3" stop-opacity="0"/>'
+        '</radialGradient>'
+        '<radialGradient id="gSilver" cx="50%" cy="50%" r="50%">'
+        '<stop offset="0%" stop-color="#a9cdf0" stop-opacity=".34"/>'
+        '<stop offset="62%" stop-color="#a9cdf0" stop-opacity=".10"/>'
+        '<stop offset="100%" stop-color="#a9cdf0" stop-opacity="0"/>'
+        '</radialGradient>'
+        '<radialGradient id="gPurple" cx="50%" cy="50%" r="50%">'
+        '<stop offset="0%" stop-color="#b3a6ff" stop-opacity=".38"/>'
+        '<stop offset="62%" stop-color="#b3a6ff" stop-opacity=".10"/>'
+        '<stop offset="100%" stop-color="#b3a6ff" stop-opacity="0"/>'
+        '</radialGradient>'
+        '</defs>'
+    )
     # faint stars
     import random
     rng = random.Random(7)
@@ -388,7 +431,7 @@ def render_map_svg(
         'stroke-linecap="round" stroke-linejoin="round"/>'
     )
     parts.append(
-        '<text x="600" y="555" text-anchor="middle" font-size="10.5" font-style="italic" '
+        '<text x="640" y="300" text-anchor="middle" font-size="10.5" font-style="italic" '
         'fill="rgba(150,195,255,.6)" font-family="Georgia, serif">River of Souls</text>'
     )
     # clouds about the sky seat (Dawncloud) and the fallen sky castrum
@@ -433,6 +476,10 @@ def render_map_svg(
         return packed
 
     # Fan x positions and final name-label rows per city (drawn later).
+    # The place icon + glow sits at the node; the Heirs gather just below the
+    # icon (FAN_DY), with their name rows floating above it (NAME_DY).
+    FAN_DY = 16
+    NAME_DY = -18
     city_xs: Dict[str, list] = {}
     heir_label_rows: Dict[str, list] = {}
     for loc, cids in by_city.items():
@@ -442,29 +489,29 @@ def render_map_svg(
         xs = [cx - (n - 1) * gap / 2 + k * gap for k in range(n)] if n > 1 else [cx]
         city_xs[loc] = xs
         if n == 1:
-            heir_label_rows[loc] = [(xs[0], cy - 12,
+            heir_label_rows[loc] = [(xs[0], cy + NAME_DY,
                                      heir_names.get(cids[0], cids[0]), color_of[cids[0]])]
         else:
             items = [(heir_names.get(c, c), xs[k], color_of[c]) for k, c in enumerate(cids)]
-            heir_label_rows[loc] = [(x, cy - 15 - r * 18, nm, col)
+            heir_label_rows[loc] = [(x, cy + NAME_DY - r * 18, nm, col)
                                     for nm, x, col, r in _pack_labels(items)]
 
     # Every name region that must stay clear of route labels. Dawn-era names
     # float ABOVE their echo node (so the Veil tags between the twins stay
-    # clear); present names sit below their city as before.
+    # clear); present names sit below their city, below the gathered Heirs.
     reserved = []
     for name, (x, y) in ALL_POS.items():
         w = 6.4 * len(name)
         if name in PAST_FORMS:
-            reserved.append((x - w / 2 - 4, x + w / 2 + 4, y - 27, y - 14))
+            reserved.append((x - w / 2 - 4, x + w / 2 + 4, y - 30, y - 16))
         else:
-            reserved.append((x - w / 2 - 4, x + w / 2 + 4, y + 14, y + 32))
+            reserved.append((x - w / 2 - 4, x + w / 2 + 4, y + 26, y + 44))
     for rows in heir_label_rows.values():
         for x, y, nm, _col in rows:
             w = 6.0 * len(nm)
             reserved.append((x - w / 2 - 4, x + w / 2 + 4, y - 11, y + 2))
     # the River of Souls label must stay clear of route-cost labels too
-    reserved.append((600 - 46 - 4, 600 + 46 + 4, 544, 558))
+    reserved.append((640 - 46 - 4, 640 + 46 + 4, 290, 304))
 
     def _label_collides(x: float, y: float, w: float) -> bool:
         """True if a centered label at (x, y) of width w would overlap a name."""
@@ -545,95 +592,102 @@ def render_map_svg(
         f'font-family="Arial">former sky bridge (lost)</text>'
     )
 
-    # locations — present cities, Dawn-era echoes, and the Nether
+    # locations — present cities (icons with fading glows), Dawn-era echoes,
+    # and the Nether
     _RUINS = {"Eye of Twilight"}
     for name, (x, y) in ALL_POS.items():
+        icon = AREA_ICONS.get(name, "✦")
         hl = (name == highlight)
         ruin = name in _RUINS
         if name == NETHER:
             # the death-form of Styxia — Thanatos's sea of flowers
+            parts.append(f'<circle cx="{x}" cy="{y}" r="26" fill="url(#gPurple)"/>')
             parts.append(
-                f'<circle cx="{x}" cy="{y}" r="14" fill="none" '
-                f'stroke="rgba(170,150,220,.5)" stroke-width="1.2" stroke-dasharray="3 4"/>'
+                f'<circle cx="{x}" cy="{y}" r="11" fill="#140f22" '
+                f'stroke="rgba(190,170,240,.55)" stroke-width="1.4" stroke-dasharray="3 3"/>'
             )
             parts.append(
-                f'<circle cx="{x}" cy="{y}" r="6" fill="#140f22" '
-                f'stroke="rgba(190,170,240,.7)" stroke-width="1.4"/>'
+                f'<text x="{x}" y="{y + 6}" text-anchor="middle" font-size="16" '
+                f'fill="#c9b8f0">{icon}</text>'
             )
             parts.append(
-                f'<text x="{x}" y="{y + 3}" text-anchor="middle" font-size="8" '
-                f'fill="#c9b8f0" font-family="Arial">†</text>'
-            )
-            parts.append(
-                f'<text x="{x}" y="{y + 24}" text-anchor="middle" font-size="11.5" '
+                f'<text x="{x}" y="{y + 38}" text-anchor="middle" font-size="11.5" '
                 f'fill="#b3a6d8" font-family="Georgia, serif" font-style="italic">{name}</text>'
             )
         elif name in PAST_FORMS:
             # a Dawn-era echo — the same place as it stood under the Dawn Device
+            parts.append(f'<circle cx="{x}" cy="{y}" r="20" fill="url(#gSilver)"/>')
             parts.append(
-                f'<circle cx="{x}" cy="{y}" r="12" fill="none" '
-                f'stroke="rgba(150,195,255,.4)" stroke-width="1.2" stroke-dasharray="2 3"/>'
+                f'<circle cx="{x}" cy="{y}" r="9" fill="#0e1522" '
+                f'stroke="rgba(160,200,255,.55)" stroke-width="1.2" stroke-dasharray="2 3"/>'
             )
             parts.append(
-                f'<circle cx="{x}" cy="{y}" r="6" fill="#0e1522" '
-                f'stroke="rgba(160,200,255,.7)" stroke-width="1.4"/>'
+                f'<text x="{x}" y="{y + 5}" text-anchor="middle" font-size="12.5" '
+                f'fill="#a9cdf0" opacity=".85">{icon}</text>'
             )
             parts.append(
-                f'<text x="{x}" y="{y + 3}" text-anchor="middle" font-size="8" '
-                f'fill="#a9cdf0" font-family="Arial">⏳</text>'
-            )
-            parts.append(
-                f'<text x="{x}" y="{y - 16}" text-anchor="middle" font-size="11.5" '
+                f'<text x="{x}" y="{y - 22}" text-anchor="middle" font-size="11.5" '
                 f'fill="#a9c9e8" font-family="Georgia, serif" font-style="italic">{name}</text>'
             )
         else:
+            # a present city: a small thematic icon with a fading glow margin
+            parts.append(f'<circle cx="{x}" cy="{y}" r="26" fill="url(#gGold)"/>')
             if ruin:
                 parts.append(
-                    f'<circle cx="{x}" cy="{y}" r="14" fill="none" '
+                    f'<circle cx="{x}" cy="{y}" r="13" fill="none" '
                     f'stroke="rgba(150,160,185,.45)" stroke-width="1.2" stroke-dasharray="3 4"/>'
                 )
             parts.append(
-                f'<circle cx="{x}" cy="{y}" r="9" fill="#0d0b18" '
-                f'stroke="{"#f4e3b2" if hl else "rgba(232,213,163,.75)"}" '
-                f'stroke-width="{2.6 if hl else 1.6}"/>'
+                f'<circle cx="{x}" cy="{y}" r="11" fill="#0d0b18" '
+                f'stroke="{"#f4e3b2" if hl else "rgba(232,213,163,.55)"}" '
+                f'stroke-width="{2.2 if hl else 1.4}"/>'
+            )
+            parts.append(
+                f'<text x="{x}" y="{y + 5}" text-anchor="middle" font-size="15" '
+                f'fill="#e8d5a3">{icon}</text>'
             )
             label = f"{name} (fallen)" if ruin else name
             labelfill = "#f4e3b2" if hl else ("rgba(150,160,185,.8)" if ruin else "#d8cfa8")
             parts.append(
-                f'<text x="{x}" y="{y + 24}" text-anchor="middle" font-size="12.5" '
+                f'<text x="{x}" y="{y + 36}" text-anchor="middle" font-size="12.5" '
                 f'fill="{labelfill}" font-family="Georgia, serif" '
                 f'font-style="italic">{label}</text>'
             )
 
-    # the Heirs as small lights at their current places; name tags are drawn
-    # from the packed rows precomputed above (route labels avoid them).
+    # the Heirs as small lights gathered just below each place icon; name tags
+    # are drawn from the packed rows precomputed above (route labels avoid
+    # them). A bright outer ring + dark outline keep each Heir visible over
+    # the area icons and their fading glows.
     for loc, cids in by_city.items():
         cx, cy = ALL_POS[loc]
         xs = city_xs[loc]
+        fan_y = cy + FAN_DY
         for k, cid in enumerate(cids):
             x = xs[k]
             col = color_of[cid]
             name = heir_names.get(cid, cid)
             initial = name[0].upper() if name else "?"
             parts.append(
-                f'<circle cx="{x:.1f}" cy="{cy}" r="12" fill="{col}" opacity=".16"/>'
+                f'<circle cx="{x:.1f}" cy="{fan_y}" r="9.5" fill="none" '
+                f'stroke="rgba(247,237,214,.4)" stroke-width="1"/>'
             )
             parts.append(
-                f'<circle cx="{x:.1f}" cy="{cy}" r="6" fill="{col}" stroke="#0b0a14" stroke-width="1"/>'
+                f'<circle cx="{x:.1f}" cy="{fan_y}" r="6.5" fill="{col}" '
+                f'stroke="#0b0a14" stroke-width="1.6"/>'
             )
             parts.append(
-                f'<text x="{x:.1f}" y="{cy + 4.5}" text-anchor="middle" font-size="9" '
+                f'<text x="{x:.1f}" y="{fan_y + 4.5}" text-anchor="middle" font-size="9" '
                 f'fill="#0b0a14" font-weight="bold" font-family="Arial">{initial}</text>'
             )
             if cid in guest_ids:
                 # a visitor from beyond Amphoreus (the Trailblazer's own) —
                 # a dashed halo around their light, distinct from a resident.
                 parts.append(
-                    f'<circle cx="{x:.1f}" cy="{cy}" r="12.5" fill="none" '
+                    f'<circle cx="{x:.1f}" cy="{fan_y}" r="12.5" fill="none" '
                     f'stroke="{col}" stroke-width="1" stroke-dasharray="2 3" opacity=".85"/>'
                 )
                 parts.append(
-                    f'<text x="{x:.1f}" y="{cy - 11}" text-anchor="middle" font-size="8.5" '
+                    f'<text x="{x:.1f}" y="{fan_y - 11}" text-anchor="middle" font-size="8.5" '
                     f'fill="{col}" font-family="Arial">✦</text>'
                 )
         for x, y, nm, col in heir_label_rows[loc]:

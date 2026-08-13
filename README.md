@@ -432,6 +432,22 @@ Amphoreus/
   together" now offers Dawn-era destinations (the star-stranger is
   Oronyx-blessed and can carry the chosen Heir across time). `map.md` and
   `geography.md` link the new `databank/world/time-forms.md`.
+- **Areas are now small themed icons with fading glow margins** (no more bare
+  dots): 🏛 Okhema, ☁ Dawncloud, ⛩ Janusopolis, 🌳 Grove, 🪦 Great Tomb, 🏰
+  Kremnos, 🌊 Styxia, ❄ Aidonia, 🌾 Aedes Elysiae, 🌀 Vortex, 👁 Eye of Twilight,
+  🦋 the Nether — each with a **radial-gradient halo that fades out** (gold for
+  the present, silver for the Dawn echoes, purple for the Nether). The **Heirs
+  now gather just below each icon** (a fan of Coreflame-light dots with a dark
+  outline **plus a bright outer ring**, so their letters stay legible over the
+  icons' glows). Verified in the browser: 21 icons + glows + all Heir markers,
+  **0 overlapping labels**.
+- **Time-travel gating verified + no Heir is ever trapped in the past**: average
+  Heirs (Aglaea, Mydei, Hyacine, Phainon, Cipher, Cyrene…) get **999** from their
+  home to *any* Dawn-era form or the Nether — `begin_travel` refuses the crossing
+  outright. **The way back is always open** (`_edge_allowed`): an Heir carried
+  into the Dawn era (or the Nether) by a blessed traveler can return to the
+  present on their own (1 period), and a blessed Heir leaving the other era
+  carries their company back with them — nothing and no one is stranded.
 - **Dan Heng • Permansor Terrae and Evernight are no longer constant Heirs**
 - **Dan Heng • Permansor Terrae and Evernight are no longer constant Heirs**
   (`src/world/world_state.py`) — they ride the Trailblaze path with the

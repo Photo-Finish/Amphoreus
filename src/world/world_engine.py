@@ -214,11 +214,12 @@ class WorldEngine:
                 decision = agent.decide()
                 agent.act(decision)
                 if self.world.is_traveling(cid):
-                    # a blessed Heir crossing the Veil / the Nether carries any
-                    # companion who shares their city across the borderline
-                    # of time.
+                    # a blessed Heir crossing the Veil / the Nether — into OR
+                    # out of the other era — carries any companion who shares
+                    # their city across the borderline of time.
                     _ti = self.world.travel_info(cid)
-                    if _ti and _md.is_cross_era(_ti["to"]):
+                    if _ti and (_md.is_cross_era(_ti["to"])
+                                or _md.is_cross_era(_ti.get("from", ""))):
                         for _carried in self.world.carry_across(cid, _ti["to"]):
                             _cname = self._name_of(_carried)
                             c_line = (f"{time_str} — carried by {agent.name} across "
