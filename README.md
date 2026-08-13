@@ -398,7 +398,25 @@ Amphoreus/
 
 ## Changelog
 
-### 2026-08-14 — Map corrected to the canon geography + concrete adjacency matrix
+### 2026-08-14 — The canon map + adjacency matrix, and the Trailblazer's companions as guests
+- **Dan Heng • Permansor Terrae and Evernight are no longer constant Heirs**
+  (`src/world/world_state.py`) — they ride the Trailblaze path with the
+  star-stranger and are **not residents of Amphoreus**; their presence is a
+  **chance event** (`guest_is_present`, a deterministic function of the Light
+  Calendar day, stable within a day and drifting across days: visits of 4–7
+  days, gaps of a week or two, occasionally a longer leave — Dan Heng ~48% and
+  Evernight ~36% of days, at least one of them present ~63% of the time).
+  `WorldState.present_locations()` filters them out when they are beyond
+  Amphoreus; the world engine no longer moves or wakes them on those days.
+- **The UI reflects the guests honestly** — the **map** draws only the 11
+  residents (guests who ARE present get a dashed halo ✦ + "(visitor from beyond
+  Amphoreus)"), the Present list separates a **"Beyond Amphoreus"** section
+  ("riding the Trailblaze path — drops in from time to time"), the **gazette's**
+  "Heirs Abroad" shows them muted as "beyond Amphoreus, aboard the Astral
+  Express", the **sidebar** shows a 🛸 presence caption per guest, and the admin
+  console's world-state view matches. Verified in the browser: map renders 11
+  dots with 0 label overlaps, gazette + sidebar status correct.
+
 - **`databank/world/geography.md` gains the concrete adjacency matrix** (§3.1) —
   the 11 UI-map vertices × vertices, with costs in periods, sea (`*`) and lost-sky
   (`†`) markers, plus the evidence-based connection table.

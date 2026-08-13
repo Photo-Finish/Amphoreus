@@ -147,6 +147,26 @@ st.sidebar.markdown(f"*{', '.join(info['titles'])}*")
 st.sidebar.markdown(f"Coreflame: **{info['coreflame']}**")
 st.sidebar.markdown(f"Traits: {', '.join(info['personality_traits'])}")
 
+# The Trailblazer's companions are guests of Amphoreus, not residents —
+# their presence here is a chance event that comes and goes.
+try:
+    from src.world.world_state import GUEST_HEIRS as _GUESTS
+    if selected in _GUESTS:
+        from src.world.world_state import WorldState as _WS
+        _gws = _WS()
+        if _gws.guest_status(selected) == "present":
+            st.sidebar.caption(
+                "🛸 **Visitor in Amphoreus** — not a resident; the Express "
+                "drops in from time to time."
+            )
+        else:
+            st.sidebar.caption(
+                "🛸 **Beyond Amphoreus** — riding the Trailblaze path; "
+                "returns from time to time."
+            )
+except Exception:
+    pass
+
 # Bond with the visitor
 level_emoji = {
     "stranger": "🌫️", "acquaintance": "🌤️", "friend": "🌿",
@@ -243,7 +263,7 @@ with chronicle_tab:
 with map_tab:
     # 🗺️ The Map of Amphoreus — geography, commuting time, and daily routines.
     try:
-        from src.world.world_state import WorldState
+        from src.world.world_state import WorldState, GUEST_HEIRS
         from src.world import map_data as _map
         from src.world import schedules as _sched
 
@@ -252,15 +272,20 @@ with map_tab:
         st.caption(
             "The Heirs are spread across a wide world. Each dot is an Heir at their "
             "present place; crossed dots are on the road between cities. Travel is "
-            "measured in Light-Calendar periods (5 = one full day)."
+            "measured in Light-Calendar periods (5 = one full day). A dashed halo "
+            "marks a visitor from beyond Amphoreus — the Trailblazer's own "
+            "companions only drop in from time to time."
         )
 
         _names = {c: manager.get_character_info(c)["name"] for c in characters}
+        _heir_locs = _ws.present_locations()
+        _guests_here = {c for c in _ws.agent_location if _ws.guest_status(c) == "present"}
         _svg = _map.render_map_svg(
-            heir_locations=_ws.agent_location,
+            heir_locations=_heir_locs,
             traveling=_ws.agent_travel,
             heir_names=_names,
             highlight=None,
+            guest_ids=_guests_here,
         )
         st.markdown(_svg, unsafe_allow_html=True)
 
@@ -294,11 +319,23 @@ with map_tab:
         with col_w:
             st.markdown("**Present**")
             present_rows = []
-            for cid, loc in _ws.agent_location.items():
+            for cid, loc in _heir_locs.items():
                 if cid in _ws.agent_travel:
                     continue
-                present_rows.append(f"- {_names.get(cid, cid)} — {loc}")
+                tag = " *(visitor from beyond Amphoreus)*" \
+                    if _ws.guest_status(cid) == "present" else ""
+                present_rows.append(f"- {_names.get(cid, cid)} — {loc}{tag}")
             st.markdown("\n".join(present_rows) if present_rows else "*Everyone is on the road.*")
+            _away_guests = [c for c in GUEST_HEIRS if _ws.guest_status(c) == "away"]
+            if _away_guests:
+                st.markdown("**Beyond Amphoreus**")
+                st.markdown(
+                    "\n".join(
+                        f"- {_names.get(c, c)} — riding the Trailblaze path "
+                        "(drops in from time to time)"
+                        for c in _away_guests
+                    )
+                )
         with col_t:
             st.markdown("**On the road**")
             if _ws.agent_travel:
@@ -332,7 +369,7 @@ with map_tab:
             _areas = available_backgrounds()
             if _areas:
                 _default = None
-                for _cid, _loc in _ws.agent_location.items():
+                for _cid, _loc in _heir_locs.items():
                     if _cid in _ws.agent_travel:
                         continue
                     _default = _locslug(_loc)
@@ -422,15 +459,23 @@ with admin_tab:
 
     # ---- 2. World-state machine ----
     try:
-        from src.world.world_state import WorldState as _WS
+        from src.world.world_state import WorldState as _WS, GUEST_HEIRS as _GUEST_HEIRS
         _ws2 = _WS()
         st.markdown("### 🌍 World state")
         st.markdown(f"**Clock:** {_ws2.clock.format()}")
         st.markdown("**Where the Heirs are right now**")
-        for _cid, _loc in _ws2.agent_location.items():
+        for _cid, _loc in _ws2.present_locations().items():
             if _cid in _ws2.agent_travel:
                 continue
-            st.markdown(f"- {manager.get_character_info(_cid)['name']} — {_loc}")
+            _tag = " *(visitor from beyond Amphoreus)*" \
+                if _ws2.guest_status(_cid) == "present" else ""
+            st.markdown(f"- {manager.get_character_info(_cid)['name']} — {_loc}{_tag}")
+        _away = [c for c in _GUEST_HEIRS if _ws2.guest_status(c) == "away"]
+        if _away:
+            st.markdown("**Beyond Amphoreus**")
+            for _cid in _away:
+                st.markdown(f"- {manager.get_character_info(_cid)['name']} — "
+                            f"riding the Trailblaze path (drops in from time to time)")
         if _ws2.agent_travel:
             st.markdown("**On the road**")
             for _cid, _ti in _ws2.agent_travel.items():

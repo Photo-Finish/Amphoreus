@@ -168,6 +168,7 @@ def render_map_svg(
     traveling: Optional[Dict[str, Dict]] = None,
     heir_names: Optional[Dict[str, str]] = None,
     highlight: Optional[str] = None,
+    guest_ids: Optional[set] = None,
 ) -> str:
     """Render the Amphoreus map as an inline SVG.
 
@@ -175,10 +176,16 @@ def render_map_svg(
     traveling      : character_id -> {"to": loc, "remaining": int} (on the road)
     heir_names     : character_id -> display name
     highlight      : optional location name to outline (e.g. the selected one)
+    guest_ids      : character_ids of the Trailblazer's companions who are
+                     PRESENT as visitors today (drawn with a dashed halo).
+                     Guests who are beyond Amphoreus should simply be omitted
+                     from heir_locations by the caller (see WorldState
+                     .present_locations()).
     """
     heir_locations = heir_locations or {}
     traveling = traveling or {}
     heir_names = heir_names or {}
+    guest_ids = guest_ids or set()
 
     # Distinct marker colours for the thirteen Heirs (gold-adjacent palette).
     palette = [
@@ -375,6 +382,17 @@ def render_map_svg(
                 f'<text x="{x:.1f}" y="{cy + 4.5}" text-anchor="middle" font-size="9" '
                 f'fill="#0b0a14" font-weight="bold" font-family="Arial">{initial}</text>'
             )
+            if cid in guest_ids:
+                # a visitor from beyond Amphoreus (the Trailblazer's own) —
+                # a dashed halo around their light, distinct from a resident.
+                parts.append(
+                    f'<circle cx="{x:.1f}" cy="{cy}" r="12.5" fill="none" '
+                    f'stroke="{col}" stroke-width="1" stroke-dasharray="2 3" opacity=".85"/>'
+                )
+                parts.append(
+                    f'<text x="{x:.1f}" y="{cy - 11}" text-anchor="middle" font-size="8.5" '
+                    f'fill="{col}" font-family="Arial">✦</text>'
+                )
         for x, y, nm, col in heir_label_rows[loc]:
             parts.append(
                 f'<text x="{x:.1f}" y="{y}" text-anchor="middle" font-size="10.5" '

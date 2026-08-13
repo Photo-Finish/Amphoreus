@@ -33,7 +33,12 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from src.core.character_loader import CharacterLoader
 from src.core.llm_client import LLMClient
 from src.core.memory_store import MemoryStore
-from src.world.world_state import WorldState, PERIODS_PER_DAY
+from src.world.world_state import (
+    WorldState,
+    PERIODS_PER_DAY,
+    GUEST_HEIRS,
+    guest_is_present,
+)
 from src.world import world_events as wev
 from src.world.agent import HeirAgent
 from src.world.ambient import AmbientDirector
@@ -156,9 +161,12 @@ class WorldEngine:
 
         # The Heirs go about their usual routines — the map reflects where they
         # actually are right now, not just where they live. Travellers stay on
-        # the road (their location is only updated on arrival).
+        # the road (their location is only updated on arrival). The Trailblazer's
+        # companions are not residents — when beyond Amphoreus they don't move.
         for cid in self.agents:
             if self.world.is_traveling(cid):
+                continue
+            if cid in GUEST_HEIRS and not guest_is_present(cid, clock):
                 continue
             try:
                 self.world.agent_location[cid] = self.world.scheduled_place(cid)
@@ -181,6 +189,10 @@ class WorldEngine:
         for cid in order:
             agent = self.agents[cid]
             try:
+                if cid in GUEST_HEIRS and not guest_is_present(cid, clock) \
+                        and not self.world.is_traveling(cid):
+                    # beyond Amphoreus today — the sanctuary does not see them
+                    continue
                 if self.world.is_traveling(cid):
                     info = self.world.travel_info(cid)
                     companion = ""

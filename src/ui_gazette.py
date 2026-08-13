@@ -37,7 +37,7 @@ _CSS = """
 
 
 def _load():
-    from src.world.world_state import WorldState
+    from src.world.world_state import WorldState, GUEST_HEIRS
     from src.world.chronicle import Chronicle
     from src.world import world_events as wev
     ws = WorldState()
@@ -47,6 +47,7 @@ def _load():
 
 def render_gazette(manager, characters):
     """Render the end-user Chronicle as a comprehensive gazette."""
+    from src.world.world_state import GUEST_HEIRS
     ws, ch, wev = _load()
     names = {}
     for c in characters:
@@ -131,16 +132,26 @@ def render_gazette(manager, characters):
 
         # where the Heirs are
         parts.append('<h2>🗺️ The Heirs Abroad</h2>')
-        for cid, loc in ws.agent_location.items():
+        for cid, loc in ws.present_locations().items():
             if cid in ws.agent_travel:
                 ti = ws.agent_travel[cid]
                 comp = " · <i>the star-stranger walks beside them</i>" if ws.is_accompanied(cid) else ""
                 parts.append(f'<div class="item">• {_html.escape(names.get(cid, cid))} — on the road '
                              f'to <b>{_html.escape(ti["to"])}</b>, {ti["remaining_days"]} day(s) '
                              f'remain{comp}</div>')
+            elif ws.guest_status(cid) == "present":
+                parts.append(f'<div class="item">• {_html.escape(names.get(cid, cid))} — '
+                             f'{_html.escape(str(loc))} '
+                             f'<i>(visitor from beyond Amphoreus)</i></div>')
             else:
                 parts.append(f'<div class="item">• {_html.escape(names.get(cid, cid))} — '
                              f'{_html.escape(str(loc))}</div>')
+        # the Trailblazer's companions, when they are beyond Amphoreus
+        for cid in GUEST_HEIRS:
+            if ws.guest_status(cid) == "away":
+                parts.append(f'<div class="item muted">• {_html.escape(names.get(cid, cid))} — '
+                             f'beyond Amphoreus, aboard the Astral Express '
+                             f'(drops in from time to time)</div>')
 
         # whispers
         parts.append('<h2>🌫️ Whispers on the Wind</h2>')

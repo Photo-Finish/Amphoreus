@@ -67,6 +67,60 @@ HOME_LOCATIONS: Dict[str, str] = {
     "cyrene": "Aedes Elysiae",
 }
 
+# --------------------------------------------------------------------- #
+# Guest companions — the Trailblazer's own, NOT residents of Amphoreus
+# --------------------------------------------------------------------- #
+# Dan Heng • Permansor Terrae and Evernight ride the Trailblaze path with
+# the star-stranger; they are not residents of the sanctuary. Their presence
+# in Amphoreus is a chance event: the Express drops in from time to time,
+# stays a few days, and leaves again. The whole world keys off
+# `guest_is_present()` so nothing ever treats them as constant Heirs.
+GUEST_HEIRS: Dict[str, str] = {
+    "dan-heng-permansor-terrae": "Dan Heng",
+    "evernight": "Evernight",
+}
+
+
+def _stable_seed(text: str) -> int:
+    """A stable per-key integer (independent of Python's hash randomization)."""
+    s = 0
+    for ch in text:
+        s = (s * 31 + ord(ch)) & 0x7FFFFFFF
+    return s
+
+
+def _day_index(clock) -> int:
+    """Total days since Year 4932, Month 1, Week 1, Day 1."""
+    return ((clock.year - 4932) * 12 + (clock.month - 1)) * 28 \
+        + (clock.week - 1) * 7 + (clock.day - 1)
+
+
+def guest_is_present(cid: str, clock=None) -> bool:
+    """Whether a guest companion is currently IN Amphoreus.
+
+    Residents are always present. Guests follow a deterministic calendar
+    pattern (stable within a single day, drifting across days): a visit of
+    a few days, then a gap of a week or two, and occasionally a whole cycle
+    without a visit. This is what makes their appearance "a chance event
+    that happens from time to time" rather than a fixed residence. It is a
+    pure function of the Light Calendar, so every process (world engine, UI,
+    gazette) agrees on who is here today.
+    """
+    if cid not in GUEST_HEIRS:
+        return True
+    if clock is None:
+        return True
+    seed = _stable_seed(cid)
+    day = _day_index(clock)
+    cycle = 9 + (seed % 5)                # a visit-cycle lasts 9..13 days
+    off = (seed >> 6) % cycle             # the visit starts at a hashed offset
+    rel = (day - off) % cycle
+    cidx = (day - off) // cycle
+    visit = 4 + ((seed >> 3) + cidx) % 4  # a visit lasts 4..7 days (varies)
+    skip = ((seed >> 9) + cidx * 3) % 12 == 0  # ~1 in 12 cycles: a longer leave
+    return rel < visit and not skip
+
+
 LOCATIONS: Dict[str, str] = {
     "Okhema": "the holy city beneath Kephale's gaze, where the Council of Elders once deliberated",
     "Janusopolis": "the twin city of gates and thresholds, home of the Holy Maiden",
@@ -256,6 +310,22 @@ class WorldState:
             with self._lock:
                 self.agent_location[character_id] = location
                 self.agent_travel.pop(character_id, None)
+
+    # ------------------------------------------------------------------ #
+    def guest_status(self, character_id: str) -> str:
+        """'present' | 'away' — where a guest companion stands today."""
+        if character_id not in GUEST_HEIRS:
+            return "resident"
+        return "present" if guest_is_present(character_id, self.clock) else "away"
+
+    def present_locations(self) -> Dict[str, str]:
+        """agent_location minus the guest companions who are currently beyond
+        Amphoreus (Dan Heng-PT & Evernight only drop in from time to time).
+        Travelers are kept — someone on the road is still in Amphoreus."""
+        return {
+            cid: loc for cid, loc in self.agent_location.items()
+            if guest_is_present(cid, self.clock)
+        }
 
     # ------------------------------------------------------------------ #
     # Travel — moving between cities takes commuting time (map_data).
