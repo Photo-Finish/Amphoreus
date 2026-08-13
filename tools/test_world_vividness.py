@@ -146,6 +146,23 @@ lines = eng._world_texture("Day E")
 assert isinstance(lines, list)
 print("engine texture OK — lines:", len(lines))
 
+# --- companion lifecycle: the shared journey ends at the destination ---
+w3 = WorldState(state_path=str(tmp / "s3.json"))
+w3.set_location("phainon", "Okhema")
+w3.begin_travel("phainon", "Aedes Elysiae")
+assert w3.is_traveling("phainon")
+w3.companions["phainon"] = True
+assert w3.is_accompanied("phainon")
+while w3.is_traveling("phainon"):
+    w3.advance_travel()
+assert not w3.is_traveling("phainon")
+assert not w3.is_accompanied("phainon"), "companion must clear on arrival"
+# an instant move (same city) is not a journey — no companion is set
+w3.set_location("phainon", "Okhema")
+w3.begin_travel("phainon", "Okhema")
+assert not w3.is_traveling("phainon")
+print("companion lifecycle OK (cleared on arrival; instant move = no journey)")
+
 # --- gazette data helpers build without error ---
 from src.ui_gazette import _load as _gaz_load
 _gws, _gch, _gwev = _gaz_load()

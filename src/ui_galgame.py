@@ -200,6 +200,12 @@ def render_galgame(manager, selected, info):
             st.markdown(f"**{who}:** {m['content']}")
 
     st.caption(f"🎬 Galgame view — talking with **{name}** · Bond: **{bond}**")
+    try:
+        from src.world.world_state import WorldState as _WState
+        if _WState().is_accompanied(selected):
+            st.caption("🚶 The star-stranger walks beside them on the road.")
+    except Exception:
+        pass
 
     from src.ui_backgrounds import bg_path as _bg_path, current_location as _loc_now
     from src.ui_weather import overlay_for as _wx_overlay

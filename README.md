@@ -464,6 +464,16 @@ Amphoreus/
   engine loop now verifies: rumor spread + nesting cap, echo cooldown, teaching
   stickiness + persistence + second-hand upgrade, canon-bond letters + varied
   templates, surge darken-once, the news-flash daily lifecycle, and gazette data load.
+- **Refinement pass 2 — the shared journey has an end, and the tide reaches the
+  visitor's ear** — (1) when an Heir the star-stranger travels with **arrives**, the
+  companion clears (no more eternal "walks beside them"); the arrival is logged with
+  the companion's presence. (2) An active **black tide** is now injected into the
+  visitor's chat context (`_inject_world_context`) so Heirs feel and can speak of the
+  tide. (3) `WorldState._load` reads under the state lock (no torn reads while the
+  engine writes). (4) `travel_with` hardens: an Heir already on the road keeps their
+  journey, and an instant move (same/adjacent place) sets **no** companion. (5) The
+  Galgame view notes "🚶 The star-stranger walks beside them on the road" when a
+  shared journey is under way.
 
 ### 2026-08-13 — Knowledge boundaries, Galgame view, 8192 context, hardened cycle
 - **Wiki databank + decided per-Heir knowledge** (`3bc9b56`, `5dc1b4e`, `811e645`, `628b2a5`) — 317 pages of Amphoreus lore pulled from the English HSR wiki into **`databank/wiki/`** (sorted: titans/locations/factions/characters/gameplay/experiment/lore) by `tools/fetch_wiki_amphoreus.py`; `tools/build_heir_knowledge.py` decides each Heir's **world-knowledge range** (home city, own Titan, their city's Titans, places, circles, people, events, and the explicit edge of what lies outside their knowledge) and embeds it into all 13 cards, injected into every system prompt.

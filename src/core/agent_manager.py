@@ -498,12 +498,19 @@ class AgentManager:
             pass
 
     def travel_with(self, character_id, destination):
-        """The star-stranger accompanies an Heir on the road together."""
+        """The star-stranger accompanies an Heir on the road together. If the
+        Heir is already travelling, their current journey is returned. An
+        instant move (same/adjacent place) is not a journey — no companion."""
         try:
             from src.world.world_state import WorldState
             ws = WorldState()
+            if ws.is_traveling(character_id):
+                return ws.travel_info(character_id)  # already on the road
             ws.begin_travel(character_id, destination)
-            ws.companions[character_id] = True
+            if ws.is_traveling(character_id):
+                ws.companions[character_id] = True  # a real journey begins
+            else:
+                ws.companions.pop(character_id, None)  # instant move — no journey
             ws.save()
             return ws.travel_info(character_id)
         except Exception:
@@ -666,6 +673,12 @@ class AgentManager:
                         lines.append(f"- Also present here: {', '.join(names)}.")
                 except Exception:
                     pass
+            try:
+                from src.world import world_events as _wev
+                if _wev.surge_active(ws):
+                    lines.append(f"- ⚠️ {_wev.surge_text(ws)}")
+            except Exception:
+                pass
             try:
                 from src.core.visitor_mode import world_note
                 note = world_note()

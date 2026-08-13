@@ -117,10 +117,12 @@ class WorldEngine:
         time_str = clock.format_short()
         lines: List[str] = []
 
-        # Travellers advance one day on the road; arrivals are logged.
-        for cid, dest in self.world.advance_travel():
+        # Travellers advance one day on the road; arrivals are logged. A shared
+        # journey with the star-stranger ends at the destination.
+        for cid, dest, accompanied in self.world.advance_travel():
             name = self._name_of(cid)
-            arrived = f"{time_str} — {name} arrives in {dest} after days on the road."
+            tail = " The star-stranger walks beside them." if accompanied else ""
+            arrived = f"{time_str} — {name} arrives in {dest} after days on the road.{tail}"
             lines.append(arrived)
             self.chronicle.append({"time": time_str, "text": arrived})
             self.world.add_event(arrived)

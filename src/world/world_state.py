@@ -180,8 +180,10 @@ class WorldState:
 
     # ------------------------------------------------------------------ #
     def _load(self):
-        if os.path.exists(self.state_path):
-            try:
+        if not os.path.exists(self.state_path):
+            return
+        try:
+            with self._lock:  # guard against torn reads while the engine writes
                 with open(self.state_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
                 self.clock = WorldClock.from_dict(data.get("clock", {}))
@@ -200,8 +202,8 @@ class WorldState:
                 self.companions = data.get("companions", {}) or {}
                 self.learned = data.get("learned", {}) or {}
                 self.visitor_echo_ts = data.get("visitor_echo_ts", {}) or {}
-            except Exception:
-                pass
+        except Exception:
+            pass
 
     def save(self):
         with self._lock:
@@ -284,10 +286,11 @@ class WorldState:
     def travel_info(self, character_id: str) -> Optional[dict]:
         return self.agent_travel.get(character_id)
 
-    def advance_travel(self) -> List[str]:
-        """Advance all in-transit Heirs by one day. Returns arrival messages.
-        A Heir who arrives is placed at their destination."""
-        arrivals: List[str] = []
+    def advance_travel(self) -> List[tuple]:
+        """Advance all in-transit Heirs by one day. Returns (cid, dest,
+        accompanied) arrival records. A Heir who arrives is placed at their
+        destination, and any shared journey with the star-stranger ends there."""
+        arrivals: List[tuple] = []
         if not self.agent_travel:
             return arrivals
         with self._lock:
@@ -297,7 +300,8 @@ class WorldState:
                     dest = info["to"]
                     self.agent_location[cid] = dest
                     self.agent_travel.pop(cid, None)
-                    arrivals.append((cid, dest))
+                    accompanied = self.companions.pop(cid, False)
+                    arrivals.append((cid, dest, accompanied))
         return arrivals
 
     # ------------------------------------------------------------------ #
