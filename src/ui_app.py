@@ -274,7 +274,11 @@ with map_tab:
             "present place; crossed dots are on the road between cities. Travel is "
             "measured in Light-Calendar periods (5 = one full day). A dashed halo "
             "marks a visitor from beyond Amphoreus — the Trailblazer's own "
-            "companions only drop in from time to time."
+            "companions only drop in from time to time. The faint **silver ⏳ nodes** "
+            "are the **Dawn-era (past) forms** of the places, reached only across "
+            "the **Veil of Evernight** (Oronyx-blessed travelers, who may carry "
+            "companions); the **purple † node** is the Nether beneath Styxia "
+            "(Thanatos-blessed only)."
         )
 
         _names = {c: manager.get_character_info(c)["name"] for c in characters}
@@ -361,6 +365,32 @@ with map_tab:
             pd.DataFrame(table).set_index("From"),
             use_container_width=True,
             height=min(40 + 32 * len(_locs), 420),
+        )
+
+        # The Veil of Evernight — the two forms of Amphoreus
+        st.markdown("### ⏳ The Veil of Evernight — the two forms of Amphoreus")
+        st.markdown(
+            "Many places exist in **two forms**: the **present** (the Evernight "
+            "era — the darkened world of Year 4932) and its **Dawn-era (past) "
+            "form** — the same place as it stood under the Dawn Device. The two "
+            "eras are separated by the **Veil of Evernight** (Oronyx, Titan of "
+            "Time). Only the **Oronyx-blessed** — the Trailblazer (the time "
+            "traveler Oronyx took an interest in) and **Evernight** (Oronyx's "
+            "heir) — may cross it, and they may **carry companions** with them "
+            "across the borderline of time (a crossing costs **1 period**)."
+        )
+        _veil_rows = []
+        for _p, _past in _map.TIME_FORMS.items():
+            _veil_rows.append({"Two-form place": _p, "Dawn-era (past) form": _past})
+        st.dataframe(pd.DataFrame(_veil_rows), use_container_width=True)
+        st.caption(
+            "Other unique Titan borders: **Janus's Gates of Destiny** open "
+            "Janusopolis's Dawn form (Sanctum of Prophecy) to **Tribbie** "
+            "(Janus's heir) as well; the **Nether** beneath Styxia (Thanatos's "
+            "sea of flowers) is open only to the **Thanatos-blessed** — "
+            "**Castorice**, and the Trailblazer who crossed with her († 2 p). "
+            "Inside an era, the roads are the same; the Veil is the only way "
+            "from one era to the other."
         )
 
         # Area art — browse the places of Amphoreus (wiki area backgrounds).
@@ -605,11 +635,22 @@ with main_tab:
     try:
         from src.world import map_data as _map_data
         _here = _loc_now(selected) if "_loc_now" in dir() else ""
-        _dests = [l for l in _map_data.LOCATION_POS if l != _here]
+        # The star-stranger is Oronyx-blessed, so they can walk an Heir across
+        # the Veil into the Dawn era, or down into the Nether with Castorice.
+        _dests = [
+            l for l in _map_data.ALL_POS
+            if l != _here and _map_data.travel_time_for(_here, l, "trailblazer") < 999
+        ]
         if _dests:
             with st.expander("🚶 Travel together"):
                 _dest = st.selectbox("Where shall you walk together?", _dests,
                                      key=f"travel_dest_{selected}")
+                if _map_data.is_cross_era(_dest):
+                    st.caption(
+                        "⏳ A Dawn-era form / the Nether — you are Oronyx-blessed "
+                        "(and walked with Castorice): you can carry this Heir "
+                        "across the borderline of time with you."
+                    )
                 if st.button(f"Set out for {_dest} with {info['name']}",
                              key=f"travel_btn_{selected}"):
                     _ti = manager.travel_with(selected, _dest)

@@ -39,6 +39,7 @@ from src.world.world_state import (
     GUEST_HEIRS,
     guest_is_present,
 )
+from src.world import map_data as _md
 from src.world import world_events as wev
 from src.world.agent import HeirAgent
 from src.world.ambient import AmbientDirector
@@ -163,10 +164,14 @@ class WorldEngine:
         # actually are right now, not just where they live. Travellers stay on
         # the road (their location is only updated on arrival). The Trailblazer's
         # companions are not residents — when beyond Amphoreus they don't move.
+        # Heirs who crossed a Titan border into the Dawn era or the Nether are
+        # in the other era: their weekly routine is paused there.
         for cid in self.agents:
             if self.world.is_traveling(cid):
                 continue
             if cid in GUEST_HEIRS and not guest_is_present(cid, clock):
+                continue
+            if _md.is_cross_era(self.world.location_name(cid)):
                 continue
             try:
                 self.world.agent_location[cid] = self.world.scheduled_place(cid)
@@ -209,6 +214,18 @@ class WorldEngine:
                 decision = agent.decide()
                 agent.act(decision)
                 if self.world.is_traveling(cid):
+                    # a blessed Heir crossing the Veil / the Nether carries any
+                    # companion who shares their city across the borderline
+                    # of time.
+                    _ti = self.world.travel_info(cid)
+                    if _ti and _md.is_cross_era(_ti["to"]):
+                        for _carried in self.world.carry_across(cid, _ti["to"]):
+                            _cname = self._name_of(_carried)
+                            c_line = (f"{time_str} — carried by {agent.name} across "
+                                      f"the borderline of time: {_cname} steps "
+                                      f"into {_ti['to']} with them.")
+                            lines.append(c_line)
+                            self.chronicle.append({"time": time_str, "text": c_line})
                     info = self.world.travel_info(cid)
                     companion = ""
                     if self.world.is_accompanied(cid):

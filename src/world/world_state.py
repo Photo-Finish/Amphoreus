@@ -15,6 +15,10 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from .map_data import travel_days as _travel_days
+from .map_data import travel_days_for as _travel_days_for
+from .map_data import can_cross_to as _map_can_cross_to
+from .map_data import is_cross_era as _map_is_cross_era
+from .map_data import TIME_FORMS as _TIME_FORMS, NETHER as _NETHER
 from .schedules import scheduled_place, home_of as _sched_home
 
 # --------------------------------------------------------------------- #
@@ -132,6 +136,17 @@ LOCATIONS: Dict[str, str] = {
     "Aedes Elysiae": "the ruined village of the Deliverer's childhood, now at peace",
     "Vortex of Genesis": "the sacred nexus where Coreflames were gathered to remake the world",
     "Great Tomb": "the resting place beneath the earth, solemn and still",
+    # --- alternate forms: the Dawn-era echoes and the Nether (see map_data) ---
+    "Eternal Holy City": "Okhema as it stood in the era of Dawn — the sunlit holy city beneath the Dawn Device",
+    "Demigod Council": "Dawncloud's council seat shining under the Dawn Device, before the Veil fell",
+    "Sanctum of Prophecy": "Janusopolis before the ruin — the Sanctum of Prophecy behind the Gates of Destiny",
+    "Radiant Scarwood": "the Grove of Epiphany in sunlight, before the Murmuring Woods grew dark",
+    "Bloodbathed Battlefront": "Castrum Kremnos in the Dawn — the battlefront before the Strife Ruins",
+    "Warbling Shores": "Styxia before the River of Souls rose — the pearly shores of the dragon city",
+    "Fortress of Dome": "the Eye of Twilight intact — the sky fortress before it fell",
+    "Universal Matrix": "the Great Tomb in order — the Universal Matrix of the Nameless Titan",
+    "Aedes Elysiae, of old": "the village before the flames — Phainon and Cyrene's Aedes Elysiae as it was",
+    "The Nether": "the death-realm beneath Styxia — Thanatos's sea of flowers",
 }
 
 
@@ -330,13 +345,23 @@ class WorldState:
     # ------------------------------------------------------------------ #
     # Travel — moving between cities takes commuting time (map_data).
     # ------------------------------------------------------------------ #
-    def begin_travel(self, character_id: str, destination: str):
+    def begin_travel(self, character_id: str, destination: str,
+                     blessed_as: Optional[str] = None):
         """Set a Heir on the road to `destination`. If the two places are the
-        same city (travel_days == 0), the Heir simply moves there."""
+        same city (travel_days == 0), the Heir simply moves there.
+
+        A unique Titan border — the Veil of Evernight (Oronyx), the Gates of
+        Destiny (Janus), the Nether (Thanatos) — stays closed unless the
+        traveler is blessed for it. `blessed_as` lets one act on another's
+        blessing (the Trailblazer carrying an Heir across time).
+        """
         if destination not in LOCATIONS:
             return
         current = self.agent_location.get(character_id, "Okhema")
-        days = _travel_days(current, destination)
+        traveler = blessed_as or character_id
+        days = _travel_days_for(current, destination, traveler)
+        if days >= 999:
+            return  # the border does not open for this traveler
         if days <= 0:
             self.set_location(character_id, destination)
             return
@@ -346,6 +371,35 @@ class WorldState:
                 "remaining_days": days,
                 "from": current,
             }
+
+    def reachable_locations(self, character_id: str) -> List[str]:
+        """The locations this Heir can actually reach (the Titan borders are
+        closed to the unblessed), in LOCATIONS order."""
+        current = self.agent_location.get(character_id, "Okhema")
+        out = []
+        for loc in LOCATIONS:
+            if _travel_days_for(current, loc, character_id) < 999:
+                out.append(loc)
+        return out
+
+    def carry_across(self, carrier_cid: str, destination: str) -> List[str]:
+        """A blessed traveler crossing a Titan border (the Veil of Evernight or
+        the Nether) carries any companion who shares their departure city
+        across the borderline of time. Returns the ids carried."""
+        carried: List[str] = []
+        if destination not in LOCATIONS:
+            return carried
+        if not _map_can_cross_to(carrier_cid, destination):
+            return carried
+        origin = self.agent_location.get(carrier_cid)
+        for cid in list(self.agent_location):
+            if cid == carrier_cid or cid in self.agent_travel:
+                continue
+            if self.agent_location.get(cid) == origin and \
+                    _travel_days_for(origin, destination, carrier_cid) < 999:
+                self.begin_travel(cid, destination, blessed_as=carrier_cid)
+                carried.append(cid)
+        return carried
 
     def is_traveling(self, character_id: str) -> bool:
         return character_id in self.agent_travel

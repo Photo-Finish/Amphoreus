@@ -37,6 +37,110 @@ LOCATION_POS: Dict[str, Tuple[float, float]] = {
 }
 
 # --------------------------------------------------------------------------- #
+# Alternate forms of Amphoreus — the Dawn era and the Nether
+# --------------------------------------------------------------------------- #
+# Many places exist in TWO canon forms (see databank/world/geography.md §1 —
+# the in-game map's "Dawn-era / Evernight-era" toggle, and the explicit "past
+# version of Castrum Kremnos" of the quests). The present world is the
+# Evernight era (the darkened world of Year 4932); each two-form area also has
+# a DAWN-era (past) form — the same place as it stood under the Dawn Device.
+#
+# The borderline between the eras is the VEIL OF EVENINGT (Oronyx, Titan of
+# Time). Only the Oronyx-blessed may cross it: the Trailblazer (the time
+# traveler Oronyx took an interest in) and Evernight (Oronyx's heir). A blessed
+# traveler may carry companions across. Other unique Titan properties open
+# other borders: Janus's gates (Janusopolis's Dawn form stands behind the Gates
+# of Destiny — Janus's heir Tribbie may open them) and Thanatos's death-realm
+# (the Nether beneath Styxia — only the Thanatos-blessed may descend).
+TIME_FORMS: Dict[str, str] = {
+    "Okhema": "Eternal Holy City",              # "Fallen Twilight City" → "Eternal Holy City"
+    "Dawncloud": "Demigod Council",             # "Lightless Chapel" → "Demigod Council"
+    "Janusopolis": "Sanctum of Prophecy",       # "Abyss of Fate" → "Sanctum of Prophecy"
+    "Grove of Epiphany": "Radiant Scarwood",    # "Murmuring Woods" → "Radiant Scarwood"
+    "Castrum Kremnos": "Bloodbathed Battlefront",  # "Strife Ruins" → "Bloodbathed Battlefront"
+    "Styxia": "Warbling Shores",                # "Dragonbone City" → "Warbling Shores"
+    "Eye of Twilight": "Fortress of Dome",      # "Cloudedge Bastion Ruins" → "Fortress of Dome"
+    "Great Tomb": "Universal Matrix",           # "Nightmare's Echo" → "Universal Matrix"
+    "Aedes Elysiae": "Aedes Elysiae, of old",   # the village before the flames (memory form)
+}
+PAST_FORMS: set = set(TIME_FORMS.values())
+NETHER = "The Nether"   # the death-form of Styxia — Thanatos's sea of flowers
+
+# Dawn-era echo nodes (drawn on the map as faint "time echoes").
+PAST_POS: Dict[str, Tuple[float, float]] = {
+    "Eternal Holy City": (350, 442),
+    "Demigod Council": (346, 252),
+    "Sanctum of Prophecy": (620, 428),
+    "Radiant Scarwood": (172, 390),
+    "Universal Matrix": (86, 484),
+    "Bloodbathed Battlefront": (128, 620),
+    "Warbling Shores": (572, 584),
+    "Fortress of Dome": (460, 58),
+    "Aedes Elysiae, of old": (800, 512),
+}
+NETHER_POS: Tuple[float, float] = (668, 676)
+
+# Everything the map can draw (present + Dawn echoes + the Nether).
+ALL_POS: Dict[str, Tuple[float, float]] = {**LOCATION_POS, **PAST_POS, NETHER: NETHER_POS}
+
+# The travellers who may cross each unique border.
+ORONYX_BLESSED = {"trailblazer", "evernight"}   # the Veil of Evernight (time)
+JANUS_BLESSED = {"tribbie"}                     # the Gates of Destiny (Janusopolis's Dawn form)
+THANATOS_BLESSED = {"castorice", "trailblazer"}  # the Nether (the Trailblazer crossed with Castorice)
+
+# The roads of the DAWN era mirror the present roads among the two-form areas.
+_DAWN_EDGES = [
+    ("Okhema", "Dawncloud"),
+    ("Okhema", "Janusopolis"),
+    ("Okhema", "Grove of Epiphany"),
+    ("Okhema", "Castrum Kremnos"),
+    ("Okhema", "Styxia"),
+    ("Okhema", "Aedes Elysiae"),
+    ("Okhema", "Great Tomb"),
+    ("Janusopolis", "Aedes Elysiae"),
+    ("Grove of Epiphany", "Great Tomb"),
+    ("Grove of Epiphany", "Castrum Kremnos"),
+]
+
+def is_past_form(name: str) -> bool:
+    return name in PAST_FORMS
+
+def is_cross_era(name: str) -> bool:
+    """A Dawn-era form or the Nether — reached only across a Titan's border."""
+    return name in PAST_FORMS or name == NETHER
+
+def present_of(past_name: str) -> Optional[str]:
+    """The present (Evernight-era) twin of a Dawn-era form."""
+    for present, past in TIME_FORMS.items():
+        if past == past_name:
+            return present
+    return None
+
+def time_twin(name: str) -> Optional[str]:
+    """The other-era form of a location, if it has one."""
+    if name in TIME_FORMS:
+        return TIME_FORMS[name]
+    return present_of(name)
+
+def can_cross_to(cid: str, dest: str) -> bool:
+    """Can this traveler stand in `dest` at all? (Veil / gates / the Nether.)"""
+    if dest in PAST_FORMS:
+        twin = present_of(dest)
+        if cid in ORONYX_BLESSED:
+            return True
+        if twin == "Janusopolis" and cid in JANUS_BLESSED:
+            return True
+        return False
+    if dest == NETHER:
+        return cid in THANATOS_BLESSED
+    return True
+
+# The one-period Veil crossings (present ↔ Dawn form).
+_VEIL_EDGES: set = {frozenset((p, past)) for p, past in TIME_FORMS.items()}
+# The two-period descent into the Nether.
+_NETHER_EDGE: frozenset = frozenset(("Styxia", NETHER))
+
+# --------------------------------------------------------------------------- #
 # Travel routes (undirected), time in Light-Calendar PERIODS.
 #   5 periods = one full day.
 #   0 = within the same city (e.g. Dawncloud is the council seat inside Okhema)
@@ -74,11 +178,52 @@ def travel_days(a: str, b: str) -> int:
         return 0
     return max(1, math.ceil(p / 5))
 
-# Build the adjacency graph.
+def travel_days_for(a: str, b: str, cid: Optional[str]) -> int:
+    """Whole-DAY travel time for a specific traveler, honouring the Titan
+    borders (999 = the border does not open for them)."""
+    if a == b:
+        return 0
+    p = travel_time_for(a, b, cid)
+    if p == 0:
+        return 0
+    if p >= 999:
+        return 999
+    return max(1, math.ceil(p / 5))
+
+# Build the adjacency graph — the present layer (ROUTES), the Dawn layer
+# (a mirror among the two-form areas), the Veil crossings (present ↔ Dawn,
+# 1 period), and the Nether descent (Styxia → The Nether, 2 periods).
 _GRAPH: Dict[str, Dict[str, int]] = {}
 for (a, b), cost in ROUTES.items():
     _GRAPH.setdefault(a, {})[b] = cost
     _GRAPH.setdefault(b, {})[a] = cost
+for (a, b), cost in ROUTES.items():
+    if a in TIME_FORMS and b in TIME_FORMS:
+        _GRAPH.setdefault(TIME_FORMS[a], {})[TIME_FORMS[b]] = cost
+        _GRAPH.setdefault(TIME_FORMS[b], {})[TIME_FORMS[a]] = cost
+for present, past in TIME_FORMS.items():
+    _GRAPH.setdefault(present, {})[past] = 1
+    _GRAPH.setdefault(past, {})[present] = 1
+_GRAPH.setdefault("Styxia", {})[NETHER] = 2
+_GRAPH.setdefault(NETHER, {})["Styxia"] = 2
+
+def _edge_allowed(a: str, b: str, cid: Optional[str]) -> bool:
+    """Whether a specific traveler may use the edge a-b (None = display mode:
+    everything is shown)."""
+    if cid is None:
+        return True
+    edge = frozenset((a, b))
+    if edge in _VEIL_EDGES:
+        if cid in ORONYX_BLESSED:
+            return True
+        # Janusopolis's Dawn form stands behind the Gates of Destiny.
+        if edge == frozenset(("Janusopolis", "Sanctum of Prophecy")) \
+                and cid in JANUS_BLESSED:
+            return True
+        return False
+    if edge == _NETHER_EDGE:
+        return cid in THANATOS_BLESSED
+    return True
 
 
 # --------------------------------------------------------------------------- #
@@ -89,7 +234,24 @@ def neighbors(location: str) -> List[str]:
 
 
 def travel_time(a: str, b: str) -> int:
-    """Shortest travel time in periods between two locations (0 if the same)."""
+    """Shortest travel time in periods between two locations (0 if the same).
+
+    Display mode: every route, including the Veil crossings and the Nether
+    descent, counts (see `travel_time_for` for a specific traveler's view).
+    """
+    return _dijkstra(a, b, None)
+
+def travel_time_for(a: str, b: str, cid: Optional[str]) -> int:
+    """Travel time as a specific traveler would experience it.
+
+    The unique Titan borders are closed to most people: the Veil of Evernight
+    (Oronyx) opens only to the Oronyx-blessed, the Gates of Destiny (Janus)
+    only to Janus-blessed Tribbie, and the Nether (Thanatos) only to the
+    Thanatos-blessed. An impassable journey returns 999.
+    """
+    return _dijkstra(a, b, cid)
+
+def _dijkstra(a: str, b: str, cid: Optional[str]) -> int:
     if a == b:
         return 0
     if a not in _GRAPH or b not in _GRAPH:
@@ -103,6 +265,8 @@ def travel_time(a: str, b: str) -> int:
         if d > dist.get(cur, math.inf):
             continue
         for nxt, cost in _GRAPH[cur].items():
+            if not _edge_allowed(cur, nxt, cid):
+                continue
             nd = d + cost
             if nd < dist.get(nxt, math.inf):
                 dist[nxt] = nd
@@ -245,7 +409,7 @@ def render_map_svg(
     by_city = OrderedDict()
     for cid in heir_locations:
         loc = heir_locations[cid]
-        if loc in LOCATION_POS:
+        if loc in ALL_POS:
             by_city.setdefault(loc, []).append(cid)
 
     def _pack_labels(items):
@@ -272,7 +436,7 @@ def render_map_svg(
     city_xs: Dict[str, list] = {}
     heir_label_rows: Dict[str, list] = {}
     for loc, cids in by_city.items():
-        cx, cy = LOCATION_POS[loc]
+        cx, cy = ALL_POS[loc]
         n = len(cids)
         gap = 24 if n > 1 else 0
         xs = [cx - (n - 1) * gap / 2 + k * gap for k in range(n)] if n > 1 else [cx]
@@ -285,11 +449,16 @@ def render_map_svg(
             heir_label_rows[loc] = [(x, cy - 15 - r * 18, nm, col)
                                     for nm, x, col, r in _pack_labels(items)]
 
-    # Every name region that must stay clear of route labels.
+    # Every name region that must stay clear of route labels. Dawn-era names
+    # float ABOVE their echo node (so the Veil tags between the twins stay
+    # clear); present names sit below their city as before.
     reserved = []
-    for name, (x, y) in LOCATION_POS.items():
+    for name, (x, y) in ALL_POS.items():
         w = 6.4 * len(name)
-        reserved.append((x - w / 2 - 4, x + w / 2 + 4, y + 14, y + 32))
+        if name in PAST_FORMS:
+            reserved.append((x - w / 2 - 4, x + w / 2 + 4, y - 27, y - 14))
+        else:
+            reserved.append((x - w / 2 - 4, x + w / 2 + 4, y + 14, y + 32))
     for rows in heir_label_rows.values():
         for x, y, nm, _col in rows:
             w = 6.0 * len(nm)
@@ -324,6 +493,43 @@ def render_map_svg(
                 f'font-family="Georgia, serif">{cost} p</text>'
             )
 
+    # the Veil of Evernight — the one-period borderline between each place
+    # and its Dawn-era (past) form. Only the Oronyx-blessed may cross it, and
+    # they may carry companions. Drawn as a faint, wavy "rift of time".
+    for present, past in TIME_FORMS.items():
+        ax, ay = LOCATION_POS[present]
+        bx, by = PAST_POS[past]
+        mx, my = (ax + bx) / 2, (ay + by) / 2
+        parts.append(
+            f'<path d="M {ax} {ay} Q {(ax + bx) / 2 + 7:.0f} {(ay + by) / 2 - 8:.0f} '
+            f'{(ax + bx) / 2:.0f} {(ay + by) / 2:.0f} Q {(ax + bx) / 2 - 7:.0f} '
+            f'{(ay + by) / 2 + 8:.0f} {bx} {by}" fill="none" '
+            f'stroke="rgba(120,175,255,.30)" stroke-width="1.2" '
+            f'stroke-dasharray="3 4" stroke-linecap="round"/>'
+        )
+        if not _label_collides(mx, my - 6, 46):
+            parts.append(
+                f'<text x="{mx:.0f}" y="{my - 6:.0f}" text-anchor="middle" '
+                f'font-size="10" fill="rgba(150,195,255,.65)" '
+                f'font-family="Arial">⏳ 1 p</text>'
+            )
+    # the descent into the Nether — Thanatos's death-realm beneath Styxia.
+    ax, ay = LOCATION_POS["Styxia"]
+    bx, by = NETHER_POS
+    mx, my = (ax + bx) / 2, (ay + by) / 2
+    parts.append(
+        f'<line x1="{ax}" y1="{ay}" x2="{bx}" y2="{by}" '
+        f'stroke="rgba(170,150,220,.35)" stroke-width="1.2" '
+        f'stroke-dasharray="2 5" stroke-linecap="round"/>'
+    )
+    # pinned clear of Styxia's name label
+    if not _label_collides(664, 634, 46):
+        parts.append(
+            f'<text x="664" y="634" text-anchor="middle" '
+            f'font-size="10" fill="rgba(190,170,240,.7)" '
+            f'font-family="Arial">† 2 p</text>'
+        )
+
     # the former sky bridge between the council seat and the sky castrum
     # (both ways lost in "Dawn, Shine at the World's End") — now only a faint
     # ghost of the old connection.
@@ -339,33 +545,70 @@ def render_map_svg(
         f'font-family="Arial">former sky bridge (lost)</text>'
     )
 
-    # locations
+    # locations — present cities, Dawn-era echoes, and the Nether
     _RUINS = {"Eye of Twilight"}
-    for name, (x, y) in LOCATION_POS.items():
+    for name, (x, y) in ALL_POS.items():
         hl = (name == highlight)
         ruin = name in _RUINS
-        if ruin:
+        if name == NETHER:
+            # the death-form of Styxia — Thanatos's sea of flowers
             parts.append(
                 f'<circle cx="{x}" cy="{y}" r="14" fill="none" '
-                f'stroke="rgba(150,160,185,.45)" stroke-width="1.2" stroke-dasharray="3 4"/>'
+                f'stroke="rgba(170,150,220,.5)" stroke-width="1.2" stroke-dasharray="3 4"/>'
             )
-        parts.append(
-            f'<circle cx="{x}" cy="{y}" r="9" fill="#0d0b18" '
-            f'stroke="{"#f4e3b2" if hl else "rgba(232,213,163,.75)"}" '
-            f'stroke-width="{2.6 if hl else 1.6}"/>'
-        )
-        label = f"{name} (fallen)" if ruin else name
-        labelfill = "#f4e3b2" if hl else ("rgba(150,160,185,.8)" if ruin else "#d8cfa8")
-        parts.append(
-            f'<text x="{x}" y="{y + 24}" text-anchor="middle" font-size="12.5" '
-            f'fill="{labelfill}" font-family="Georgia, serif" '
-            f'font-style="italic">{label}</text>'
-        )
+            parts.append(
+                f'<circle cx="{x}" cy="{y}" r="6" fill="#140f22" '
+                f'stroke="rgba(190,170,240,.7)" stroke-width="1.4"/>'
+            )
+            parts.append(
+                f'<text x="{x}" y="{y + 3}" text-anchor="middle" font-size="8" '
+                f'fill="#c9b8f0" font-family="Arial">†</text>'
+            )
+            parts.append(
+                f'<text x="{x}" y="{y + 24}" text-anchor="middle" font-size="11.5" '
+                f'fill="#b3a6d8" font-family="Georgia, serif" font-style="italic">{name}</text>'
+            )
+        elif name in PAST_FORMS:
+            # a Dawn-era echo — the same place as it stood under the Dawn Device
+            parts.append(
+                f'<circle cx="{x}" cy="{y}" r="12" fill="none" '
+                f'stroke="rgba(150,195,255,.4)" stroke-width="1.2" stroke-dasharray="2 3"/>'
+            )
+            parts.append(
+                f'<circle cx="{x}" cy="{y}" r="6" fill="#0e1522" '
+                f'stroke="rgba(160,200,255,.7)" stroke-width="1.4"/>'
+            )
+            parts.append(
+                f'<text x="{x}" y="{y + 3}" text-anchor="middle" font-size="8" '
+                f'fill="#a9cdf0" font-family="Arial">⏳</text>'
+            )
+            parts.append(
+                f'<text x="{x}" y="{y - 16}" text-anchor="middle" font-size="11.5" '
+                f'fill="#a9c9e8" font-family="Georgia, serif" font-style="italic">{name}</text>'
+            )
+        else:
+            if ruin:
+                parts.append(
+                    f'<circle cx="{x}" cy="{y}" r="14" fill="none" '
+                    f'stroke="rgba(150,160,185,.45)" stroke-width="1.2" stroke-dasharray="3 4"/>'
+                )
+            parts.append(
+                f'<circle cx="{x}" cy="{y}" r="9" fill="#0d0b18" '
+                f'stroke="{"#f4e3b2" if hl else "rgba(232,213,163,.75)"}" '
+                f'stroke-width="{2.6 if hl else 1.6}"/>'
+            )
+            label = f"{name} (fallen)" if ruin else name
+            labelfill = "#f4e3b2" if hl else ("rgba(150,160,185,.8)" if ruin else "#d8cfa8")
+            parts.append(
+                f'<text x="{x}" y="{y + 24}" text-anchor="middle" font-size="12.5" '
+                f'fill="{labelfill}" font-family="Georgia, serif" '
+                f'font-style="italic">{label}</text>'
+            )
 
     # the Heirs as small lights at their current places; name tags are drawn
     # from the packed rows precomputed above (route labels avoid them).
     for loc, cids in by_city.items():
-        cx, cy = LOCATION_POS[loc]
+        cx, cy = ALL_POS[loc]
         xs = city_xs[loc]
         for k, cid in enumerate(cids):
             x = xs[k]

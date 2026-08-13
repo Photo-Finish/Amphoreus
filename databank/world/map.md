@@ -107,6 +107,9 @@ city, they meet no one, until they arrive.
 - `world/geography.md` — the researched determination of how Amphoreus's locations
   interconnect (areas, the evidence-based connection matrix, physical geography,
   the Flame-Chase Journey route, and canon-vs-model notes)
+- `world/time-forms.md` — the alternate forms of the places: the Dawn-era echoes
+  and the Nether, the Veil of Evernight / Gates of Destiny / Nether mechanisms,
+  and the two-layer area network
 - `src/world/map_data.py` — the machine-readable graph (positions, routes, travel times)
 - `src/world/schedules.py` — the individual weekly routines of the Heirs
 - `world/calendar.md` — the Light Calendar (periods, weeks, months)

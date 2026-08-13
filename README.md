@@ -398,7 +398,41 @@ Amphoreus/
 
 ## Changelog
 
-### 2026-08-14 — The canon map + adjacency matrix, and the Trailblazer's companions as guests
+### 2026-08-14 — The canon map + adjacency matrix, the guests, and the two forms of Amphoreus
+- **Alternate forms of the places — the two Amphorei** (`src/world/map_data.py`,
+  `src/world/world_state.py`, `src/world/world_engine.py`,
+  `databank/world/time-forms.md`): many locations exist in **two canon forms** —
+  the **present** (the Evernight era) and a **Dawn-era (past) form** (the same
+  place under the Dawn Device; per the in-game map's Dawn/Evernight toggle and
+  the explicit "past version of Kremnos"). **Nine alternate location objects**
+  were created (Okhema→**Eternal Holy City**, Dawncloud→**Demigod Council**,
+  Janusopolis→**Sanctum of Prophecy**, Grove→**Radiant Scarwood**,
+  Kremnos→**Bloodbathed Battlefront**, Styxia→**Warbling Shores**, Eye→**Fortress
+  of Dome**, Great Tomb→**Universal Matrix**, Aedes→**Aedes Elysiae, of old**)
+  plus the **Nether** (Styxia's third, death-form — Thanatos's sea of flowers).
+  The Dawn era is a **parallel layer mirroring the present roads**; the only way
+  between the eras is the borderline of time.
+- **The mechanisms** — **the Veil of Evernight** (Oronyx, Titan of Time) is the
+  1-period borderline between each place and its Dawn form; **only the
+  Oronyx-blessed may cross** (the Trailblazer — the time traveler Oronyx took an
+  interest in — and Evernight, Oronyx's heir), and **a blessed traveler may carry
+  companions across** (`begin_travel(blessed_as=…)` + `carry_across`; the world
+  engine logs a carried companion stepping into the other era). **Janus's Gates
+  of Destiny** open Janusopolis's Dawn form to **Tribbie** too; the **Nether**
+  opens only to the Thanatos-blessed (**Castorice**, and the Trailblazer who
+  crossed with her). Travel is gated per traveler (`travel_time_for` — the
+  unblessed find a border closed, 999); Heir routines pause while they stand in
+  the other era; the Eye of Twilight (and its Dawn form) stays correctly
+  unreachable by road.
+- **UI**: the map now draws the Dawn forms as **silver ⏳ echo nodes** and the
+  Nether as a **purple † node**, joined to their present twins by faint wavy
+  **Veil rifts (⏳ 1 p)** and the **Nether descent († 2 p)** — verified **0
+  overlapping labels**; a new **"⏳ The Veil of Evernight — the two forms of
+  Amphoreus"** section explains the mechanism + the two-form table; "Travel
+  together" now offers Dawn-era destinations (the star-stranger is
+  Oronyx-blessed and can carry the chosen Heir across time). `map.md` and
+  `geography.md` link the new `databank/world/time-forms.md`.
+- **Dan Heng • Permansor Terrae and Evernight are no longer constant Heirs**
 - **Dan Heng • Permansor Terrae and Evernight are no longer constant Heirs**
   (`src/world/world_state.py`) — they ride the Trailblaze path with the
   star-stranger and are **not residents of Amphoreus**; their presence is a

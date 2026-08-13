@@ -506,7 +506,9 @@ class AgentManager:
             ws = WorldState()
             if ws.is_traveling(character_id):
                 return ws.travel_info(character_id)  # already on the road
-            ws.begin_travel(character_id, destination)
+            # The star-stranger is Oronyx-blessed: walking with an Heir, they
+            # can carry them across the Veil into the Dawn era.
+            ws.begin_travel(character_id, destination, blessed_as="trailblazer")
             if ws.is_traveling(character_id):
                 ws.companions[character_id] = True  # a real journey begins
             else:

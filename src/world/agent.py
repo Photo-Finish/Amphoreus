@@ -165,9 +165,11 @@ class HeirAgent:
 
     def _parse_action(self, reply: str) -> Dict:
         action = re.sub(r"\s+", " ", reply).strip()
-        # Where do they go? (only if a known location is named)
+        # Where do they go? (only if a known location is named AND the Heir can
+        # actually reach it — the Veil and the Nether stay closed to the
+        # unblessed)
         target_loc = None
-        for loc in LOCATIONS:
+        for loc in self.world.reachable_locations(self.character_id):
             if loc.lower() in action.lower():
                 target_loc = loc
                 break

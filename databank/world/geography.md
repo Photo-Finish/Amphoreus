@@ -39,6 +39,11 @@ The **six major city-states** (per the wiki's Geography section, citing the
 Styxia, and Aidonia. Aedes Elysiae and the Eye of Twilight are separate great
 places (the village beyond the veil; the fallen sky kingdom).
 
+> **Two-form places are modelled as alternate location objects** (the Dawn-era
+> echoes + the Nether, the Veil of Evernight / Gates of Destiny / Nether
+> mechanisms, and the two-layer network) in **`world/time-forms.md`** and
+> `src/world/map_data.py`.
+
 ---
 
 ## 2. Parent → sub-area structure
