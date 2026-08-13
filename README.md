@@ -38,8 +38,11 @@ This is a **sanctuary, not an experiment**: a fully local, offline AI project th
 - **The Heirs' living web of relationships** — a canon-derived registry (`src/core/relationships.py`) is injected into every Heir's system prompt, so the model recognisably knows who each Heir is to the others — Anaxa's students **Phainon & Castorice** and TA **Hyacine**, **Cerydra**'s subordinate **Hysilens**, **Phainon** & **Mydei**'s death-match rivalry, **Tribbie**'s student **Aglaea**, and more. The world engine uses the same web during encounters.
 - **The little Amphoreus** (`src/world/`) — an autonomous world that keeps running: the Heirs decide freely what to do each day (in character, through a local LLM), move between the real city-states, meet and speak with each other spontaneously, and every event is recorded in a **Chronicle**. Nothing is scripted — the engine only hosts time, space, and memory.
 - **A real map and real routines** (`src/world/map_data.py`, `src/world/schedules.py`) — the Heirs are spread across the city-states of Amphoreus, each with an **individual weekly schedule** (where they are at each of the five periods of the day). The world has honest **commuting time**: travelling to a far city takes days, and during the journey the Heir is on the road and sees no one. The Heirs who live and work together (the Okhema council circle, the scholars of the Grove, the two souls of Aedes Elysiae) meet daily; the rest — Tribbie, Mydei, Castorice — meet others only when someone is willing to spend days travelling. The UI renders the whole world as a **🗺️ Map of Amphoreus** tab: the SVG map with each Heir's current place, a travel-time matrix, and every Heir's weekly grid.
-- **Senses — for shared appreciation of art and music** — every Heir has canon-accurate senses (e.g. Aglaea is blind but perceives souls through golden threads; Hysilens hears the world as music) *and* canon-derived aesthetic tastes (in their `preferences.json`). You can **share paintings and pictures** (vision model, e.g. `qwen2.5vl`), **share videos** (PyAV frame extraction), **speak to them** (faster-whisper), and **share music** to listen together (audio-understanding model, e.g. `qwen2.5-omni`). The Heirs respond with genuine aesthetic judgment shaped by their own tastes — Hysilens hears a requiem in the violin, Cerydra hears a march in precise orchestration. What they perceive becomes memory.
-- **Streamlit UI** (`src/ui_app.py`) — visit any Heir, see your bond with them, show them pictures, speak to them, read the Chronicle, and catch up on what they've lived through since your last visit. The UI is fully visual: an Amphoreus hero banner, each Heir's official portrait (`assets/heirs/`, downloaded by `tools/fetch_heir_images.py`) in the sidebar and as the chat avatar, and a gold-on-dark theme.
+- **Senses — for shared appreciation of art and music** — every Heir has canon-accurate senses (e.g. Aglaea is blind but perceives souls through golden threads; Hysilens hears the world as music) *and* canon-derived aesthetic tastes (in their `preferences.json`). You can **share paintings and pictures**, **share videos** (PyAV frame extraction), **speak to them** (faster-whisper), and **share music** to listen together. The senses models are chosen in `.env` / `SENSES_MODE`: the default **unified** mode uses one model — `gemma3n` (text+image+audio+video) — for both hearing music and seeing pictures; the **quality** option uses `qwen3-vl:8b` for vision and `gemma3n` for audio (`qwen2.5-omni` stays as the music fallback). The Heirs respond with genuine aesthetic judgment shaped by their own tastes — Hysilens hears a requiem in the violin, Cerydra hears a march in precise orchestration — and music is judged by what they actually hear against the values they hold (no prescribed genres). What they perceive becomes memory.
+- **A world the Heirs actually know** — the Heirs' knowledge is bounded and specific: a shared **KNOWLEDGE BOUNDARIES** rule (`src/core/world_knowledge.py`) keeps them inside Amphoreus (no modern/real-world knowledge), and each Heir carries a **decided knowledge range** — home city, their Titan, the Titans of their city, places, circles, people, events, and the explicit edge of what lies outside their knowledge — grounded in a **wiki databank** (`databank/wiki/`, 317 pages of Amphoreus lore pulled from the English HSR wiki).
+- **The star-stranger's teaching** — because the visitor is *from beyond the stars*, they can genuinely **teach** the Heirs real-world knowledge (advanced mathematics, and so on) and **debate** whether it is right. Each Heir keeps a persistent **epistemic ledger** (`teaching.json`): every taught topic travels *foreign → studied → adopted | refuted | unsure*, the verdict is the Heir's own and remembered across visits — unlocking is earned, not a toggle. Full design: `docs/TEACHING.md`.
+- **A standing quality gate on every Heir's voice** — `tools/test_dialogue_style.py` enforces the Heir-voice standard (STYLE ≥ 85, CONTENT ≥ 60, cheat-free — no quoting canon, no recycled catchphrases), and `tools/auto_cycle.py` refines failing Heirs automatically until all pass, ending with a full-corpus cheat-free re-test.
+- **Streamlit UI** (`src/ui_app.py`) — five tabs: **💬 Visit an Heir** (chat with location-aware backdrops), **📖 Chronicle**, **🗺️ Map of Amphoreus** (SVG map + area-art browser), **🛠️ Admin Console** (backend/models, world state, the cause-and-effect chain, cycle/watchdog logs), and **🎬 Galgame** (a visual-novel view of the same conversation). The UI is fully visual: an Amphoreus hero banner, each Heir's official portrait (`assets/heirs/`), square in-game chat avatars (`assets/avatars/`), and **area artwork** (`assets/galgame/`, 20 backgrounds) that follows where each Heir currently is. Gold-on-dark theme.
 
 Everything runs **fully local and offline**: no cloud, no telemetry, no training.
 
@@ -51,11 +54,15 @@ Everything runs **fully local and offline**: no cloud, no telemetry, no training
 - **Python:** 3.13 venv (`d:/Workspace/.venv`), packages: `openai`, `chromadb`, `streamlit`, `faster-whisper`, `av`, `Pillow` (see `requirements.txt`)
 - **Ollama:** 0.32.6 — all model files live **inside this project** under `models/` (no external paths)
 - **Local models (all in `models/`, fully local & offline):**
-  - `qwen2.5:14b-instruct` — the Heirs' voice (Q4_K_M, 9.0 GB)
-  - `qwen2.5vl:7b` — eyesight: sharing paintings, pictures and videos (6.0 GB)
-  - `qwen2.5-omni` — music appreciation: hearing and judging music together (6.2 GB)
+  - `gemma3:27b` — the Heirs' voice, judge, and refinement (Q4_0, 15 GB)
+  - `deepseek-r1-distill:32b` — the Ambient World Director (Q4_K_M, 19 GB)
+  - `deepseek-r1-distill:14b` — secondary reasoning model (9 GB)
+  - `qwen2.5:14b-instruct` — the earlier Heir voice / judge (9 GB)
+  - `gemma3n` — unified senses: hears music AND sees pictures (8B E2B, 7.5 GB)
+  - `qwen3-vl:8b` — high-quality vision option for `SENSES_MODE=quality` (6.1 GB)
+  - `qwen2.5-omni` — music-audio fallback (6.2 GB) · `qwen2.5vl:7b` — earlier vision model (6.0 GB)
   - `faster-whisper-base` — hearing: speech-to-text
-- **Senses wiring:** `VISION_MODEL=qwen2.5vl:7b`, `AUDIO_MODEL=qwen2.5-omni`, `STT_MODEL=models/faster-whisper-base`. Videos processed with PyAV (bundled with faster-whisper). **No model training is required** — appreciation is achieved with pre-trained models + each Heir's persona and preference database.
+- **Senses wiring:** `.env` is authoritative (`python-dotenv`, loaded by `src/core/llm_client.py` + `src/core/senses.py`), with a `SENSES_MODE` switch in `launch_sanctuary.cmd`: **unified** (default) → `VISION_MODEL=AUDIO_MODEL=gemma3n`; **quality** → `VISION_MODEL=qwen3-vl:8b`, `AUDIO_MODEL=gemma3n`. `STT_MODEL=models/faster-whisper-base`. Videos processed with PyAV (bundled with faster-whisper). **No model training is required** — appreciation is achieved with pre-trained models + each Heir's persona and preference database.
 - **Downloading models on a throttled network:** direct github/ollama/huggingface downloads are ~10 KB/s here. The verified fast paths are **ModelScope** (`modelscope.cn`, ~8 MB/s) for GGUF files and whisper, and **gh-proxy.com** (~9 MB/s) for GitHub release assets (see `docs/IMPLEMENTATION.md`).
 
 ---
@@ -73,15 +80,16 @@ Manual steps (same effect):
 ```powershell
 # 0. Environment (already set permanently on this machine)
 $env:OLLAMA_MODELS       = "D:\Workspace\Amphoreus\models\ollama"
-$env:VISION_MODEL        = "qwen2.5vl:7b"          # eyesight (paintings/videos)
-$env:AUDIO_MODEL         = "qwen2.5-omni"          # music appreciation
 $env:STT_MODEL           = "D:\Workspace\Amphoreus\models\faster-whisper-base"
 $env:OPENAI_BASE_URL     = "http://localhost:11434/v1"
 $env:OPENAI_API_KEY      = "ollama"
+# Vision/audio models come from the project .env (SENSES_MODE: unified | quality)
 
-# 1. Start Ollama (models live in models\ollama), then confirm:
-& "C:\Users\17501\AppData\Local\Programs\Ollama\ollama.exe" serve
-ollama list    # expect qwen2.5:14b-instruct, qwen2.5vl:7b, qwen2.5-omni
+# 1. Start Ollama (models live in models\ollama). Use the launcher — a bare
+#    `ollama serve` ignores OLLAMA_MODELS and serves an EMPTY models dir (404s):
+powershell -ExecutionPolicy Bypass -File tools\start_ollama.ps1
+ollama list    # expect: gemma3:27b, deepseek-r1-distill:32b/:14b, qwen2.5:14b-instruct,
+               #         gemma3n, qwen3-vl:8b, qwen2.5-omni, qwen2.5vl:7b
 
 # 2. Build the knowledge base (ChromaDB, one collection per Heir)
 d:/Workspace/.venv/Scripts/python.exe build_kb.py --embedding local
@@ -103,11 +111,14 @@ d:/Workspace/.venv/Scripts/python.exe build_kb.py --embedding hashing      # off
 > Without any backend, the UI still works in a graceful "offline placeholder" mode.
 
 > **Re-creating an Ollama model** — first re-download its GGUF into `models/gguf/`
-> (exact mirror sources & sizes in `docs/DOWNLOADS.md`), then:
+> (exact mirror sources & sizes in `docs/DOWNLOADS.md`), then either `ollama create`
+> with a Modelfile, or register the GGUF directly (skips the quantize pass):
 > ```powershell
 > ollama create qwen2.5:14b-instruct -f models/Modelfiles/qwen25-14b
 > ollama create qwen2.5vl:7b        -f models/Modelfiles/qwen25vl-7b
 > ollama create qwen2.5-omni        -f models/Modelfiles/qwen25-omni
+> # deepseek-r1-distill:32b/:14b and gemma3:27b were registered from LM Studio
+> # GGUFs via:  python tools/register_lmstudio_gguf.py
 > ```
 > Two gotchas (details in `docs/IMPLEMENTATION.md` §3.5): this Ollama build does
 > **not** auto-attach a model's `mmproj` projector — use `tools/attach_mmproj.ps1`;
@@ -139,13 +150,21 @@ Amphoreus/
 │   ├── chrysos-heirs/       #   13 profiles + MASTER-REGISTRY (signal codes, MBTI)
 │   ├── missions/            #   8 chapters + adventures, verbatim dialogue
 │   ├── world/ titans/ lore/ experiment/ characters/
+│   └── wiki/                #   Amphoreus wiki dump, sorted (317 pages: titans/
+│                            #   locations/ factions/ characters/ gameplay/
+│                            #   experiment/ lore/) — by tools/fetch_wiki_amphoreus.py
 ├── src/
 │   ├── characters/          # 13 persona cards (JSON)
 │   ├── core/
-│   │   ├── character_loader.py   # cards → system prompts (incl. senses)
+│   │   ├── character_loader.py   # cards → system prompts (incl. senses + knowledge)
 │   │   ├── session_manager.py    # in-memory session window
 │   │   ├── memory_store.py       # per-Heir memory (bond, history, memories)
 │   │   ├── preference_store.py   # per-Heir preferences (aesthetics, tastes…)
+│   │   ├── teaching_store.py     # per-Heir epistemic ledger (star-stranger's teaching)
+│   │   ├── teaching.py           # the teaching protocol (triggers + phase prompts)
+│   │   ├── world_knowledge.py    # KNOWLEDGE BOUNDARIES (Amphoreus-only knowledge)
+│   │   ├── relationships.py      # canon relationship registry
+│   │   ├── visitor_mode.py       # journey vs aftermath framing
 │   │   ├── heir_folders.py       # card id → personal folder mapping
 │   │   ├── context_builder.py    # RAG retrieval → prompt injection
 │   │   ├── llm_client.py         # OpenAI-compatible chat (Ollama / any API) + vision/audio
@@ -159,14 +178,25 @@ Amphoreus/
 │   │   ├── world_state.py        # Light Calendar clock + world state
 │   │   ├── agent.py              # HeirAgent: perceive → will → decide → act → remember
 │   │   ├── chronicle.py          # factual log of the Heirs' days
+│   │   ├── map_data.py           # the Map of Amphoreus (SVG + travel times)
+│   │   ├── schedules.py          # per-Heir weekly routines
+│   │   ├── ambient.py            # the Keeper (weather, errands, news)
 │   │   └── world_engine.py       # the daemon that hosts the world
 │   ├── evaluation/evaluator.py   # evaluation framework (Phase 5)
-│   └── ui_app.py                 # Streamlit UI
+│   ├── ui_app.py                 # Streamlit UI (5 tabs)
+│   ├── ui_galgame.py             # the 🎬 Galgame visual-novel view
+│   └── ui_backgrounds.py         # shared location-backdrop selection
+├── assets/
+│   ├── heirs/                    # official Heir portraits
+│   ├── avatars/                  # official 160×160 in-game chat avatars
+│   ├── galgame/                  # 20 Amphoreus area backgrounds (bg-*.jpg)
+│   └── as-ive-written.ico/.png   # launcher icon
 ├── NeiKos496-Phainon/        # EACH Heir's personal database (13 folders):
 │   ├── bond.json             #   their relationship with the visitor
 │   ├── history.jsonl         #   their conversation history
 │   ├── memories.jsonl        #   their long-term memories
 │   ├── preferences.json      #   their personal preferences (aesthetics, tastes, music, art)
+│   ├── teaching.json         #   what the star-stranger taught them (epistemic ledger)
 │   └── personal-memories.md  #   verbatim canon dialogue where they appear (auto-extracted)
 ├── ApoRia432-Hysilens/ …     # (…same files per Heir)
 ├── models/                   # ALL model files — the project is self-contained
@@ -176,11 +206,21 @@ Amphoreus/
 │   └── Modelfiles/           #   Modelfiles used to re-create the Ollama models
 ├── docs/
 │   ├── IMPLEMENTATION.md     # deep technical guide (build decisions, gotchas)
+│   ├── TEACHING.md           # the star-stranger's teaching — design + honest limits
 │   └── DOWNLOADS.md          # exact mirror sources, sizes, SHA256, re-download commands
 ├── tools/
 │   ├── extract_personal_memories.py  # (read-only) copy each Heir's dialogue parts
+│   ├── measure_speech.py             # measure each Heir's canon speech profile
+│   ├── embed_voice_anchor.py         # embed the voice profile into the cards
+│   ├── test_dialogue_style.py        # the standing style gate (85/60, cheat-free)
+│   ├── auto_cycle.py                 # automated training cycle (refine failing Heirs)
+│   ├── fetch_wiki_amphoreus.py       # Amphoreus wiki dump → databank/wiki (sorted)
+│   ├── build_heir_knowledge.py       # decide + embed each Heir's world-knowledge range
+│   ├── fetch_galgame_backgrounds.py  # area artwork → assets/galgame
+│   ├── start_ollama.ps1              # start Ollama with the right OLLAMA_MODELS
+│   ├── deploy_auto_cycle.ps1         # watchdog: keeps Ollama + the cycle alive
 │   ├── attach_mmproj.ps1             # attach a projector (mmproj) layer to an Ollama model
-│   └── register_gguf_model.ps1       # manually register a GGUF model (skips the quantize pass)
+│   └── register_gguf_model.ps1 / register_lmstudio_gguf.py  # register GGUF models
 ├── world_runtime/            # world state, chronicle, visitor flag (auto-created)
 └── .chroma_db/               # RAG vector store (auto-created)
 ```
@@ -198,15 +238,17 @@ Amphoreus/
 - ✅ **World-knowledge confinement** — the Heirs only know Amphoreus: a shared **KNOWLEDGE BOUNDARIES** block (`src/core/world_knowledge.py`) forbids out-of-world knowledge (modern math/science, Earth, modern machines, real-world history) in the sanctuary, the world engine and the style test; foreign concepts are reinterpreted through their own world or met with honest ignorance.
 - ✅ **The star-stranger's teaching** — a persistent **epistemic ledger** per Heir (`teaching.json`, `docs/TEACHING.md`): the visitor can genuinely **teach** the Heirs things from beyond the stars and **debate** them; every topic travels *foreign → studied → adopted/refuted/unsure*, the Heir's verdict is their own and is remembered across visits — unlocking is earned, not a toggle.
 - ✅ **Galgame view** — a **🎬 Galgame** tab (visual-novel scene: background, floating sprite, name plate, typewriter dialogue box with ▼), added *alongside* the untouched Classic UI and sharing the same conversation store.
+- ✅ **Wiki databank + decided per-Heir knowledge** — 317 pages of Amphoreus lore pulled from the English HSR wiki into `databank/wiki/` (sorted by category), grounding each Heir's **world-knowledge range** (home, Titan, city Titans, places, circles, people, events, boundaries) injected into their system prompt.
+- ✅ **Admin Console + location-aware UI** — a **🛠️ Admin Console** tab (backend/models, world state, cause-and-effect chain, cycle/watchdog logs); the **💬 Classic**, **🗺️ Map** and **🎬 Galgame** tabs all show **area artwork** (`assets/galgame/`, 20 backgrounds) that follows where each Heir currently is.
 - ✅ **8192-token context + hardened auto-cycle** — `OLLAMA_CONTEXT_LENGTH=8192`; the cycle **freezes passed Heirs**, refines from the **best cycle** on regression, rejects noise rules, aborts loudly on a dead backend (run VOID), and the watchdog checks the real model list (`/api/tags`), survives hung WMI calls, and holds only on recent SUCCESS.
 - ✅ **Fully live, fully local, fully offline** — every model lives inside this folder (`models/`):
-  - ✅ Ollama **0.32.6**; server runs with `OLLAMA_MODELS=models\ollama`
-  - ✅ **Voice** — `qwen2.5:14b-instruct` (Q4_K_M, 9.0 GB)
-  - ✅ **Hearing** — faster-whisper `base` at `models/faster-whisper-base` (speech-to-text)
-  - ✅ **Eyesight** — `qwen2.5vl:7b` (Q4_K_M + projector) for sharing paintings, pictures, videos
-  - ✅ **Music** — `qwen2.5-omni` (Q4_K_M + audio projector) for listening to and appreciating music together
-  - ✅ Env: `VISION_MODEL=qwen2.5vl:7b`, `AUDIO_MODEL=qwen2.5-omni`, `STT_MODEL=models/faster-whisper-base`, `OPENAI_BASE_URL=http://localhost:11434/v1`, `OPENAI_API_KEY=ollama`
-  - ✅ **Live end-to-end verified** (2026-08-07): chat grounded in RAG + memory + preferences; shared paintings (vision); shared music (audio understanding); persistent per-Heir memory
+  - ✅ Ollama **0.32.6**; server runs with `OLLAMA_MODELS=models\ollama`, `OLLAMA_CONTEXT_LENGTH=8192` (via `tools/start_ollama.ps1`)
+  - ✅ **Voice / judge / refinement** — `gemma3:27b` (Q4_0, 15 GB)
+  - ✅ **Ambient Director** — `deepseek-r1-distill:32b` (Q4_K_M, 19 GB)
+  - ✅ **Senses (unified)** — `gemma3n` (8B E2B) hears music AND sees pictures; **quality option**: `qwen3-vl:8b` vision + `gemma3n` audio (`qwen2.5-omni` music fallback, `qwen2.5vl:7b` earlier vision)
+  - ✅ **Hearing (speech-to-text)** — faster-whisper `base` at `models/faster-whisper-base`
+  - ✅ Env: `.env` (authoritative) + `SENSES_MODE` switch (unified|quality) in `launch_sanctuary.cmd`; `STT_MODEL=models/faster-whisper-base`, `OPENAI_BASE_URL=http://localhost:11434/v1`, `OPENAI_API_KEY=ollama`
+  - ✅ **Live end-to-end verified**: chat grounded in RAG + memory + preferences; shared paintings (vision); shared music (audio understanding); persistent per-Heir memory; teaching + debate from beyond the stars
   - ✅ Per-Heir `personal-memories.md` — their canon dialogue extracted from the databank (read-only) into each Heir's folder
 
 > **Network note:** this machine throttles direct downloads from github/ollama/huggingface to ~10 KB/s. The fast paths used were **ModelScope** (~8 MB/s) for the GGUF files and whisper, and **gh-proxy.com** (~9 MB/s) for GitHub release assets (e.g. the SHA256-verified `OllamaSetup.exe`). Exact sources and re-download commands: `docs/DOWNLOADS.md`.
@@ -216,6 +258,8 @@ Amphoreus/
 ## Changelog
 
 ### 2026-08-13 — Knowledge boundaries, Galgame view, 8192 context, hardened cycle
+- **Wiki databank + decided per-Heir knowledge** (`3bc9b56`, `5dc1b4e`, `811e645`, `628b2a5`) — 317 pages of Amphoreus lore pulled from the English HSR wiki into **`databank/wiki/`** (sorted: titans/locations/factions/characters/gameplay/experiment/lore) by `tools/fetch_wiki_amphoreus.py`; `tools/build_heir_knowledge.py` decides each Heir's **world-knowledge range** (home city, own Titan, their city's Titans, places, circles, people, events, and the explicit edge of what lies outside their knowledge) and embeds it into all 13 cards, injected into every system prompt.
+- **Location backgrounds everywhere** (`ca72326`, `bd29c75`) — 20 Amphoreus **area artworks** fetched into `assets/galgame/` by `tools/fetch_galgame_backgrounds.py`; the **💬 Classic** banner, **🗺️ Map** area-art browser and **🎬 Galgame** scene all show the backdrop that matches where each Heir currently is (via the shared `src/ui_backgrounds.py`), falling back to their home city and then the default banner.
 - **The star-stranger's teaching — learning from beyond the stars** (`docs/TEACHING.md`, signed) — the Heirs can now be **taught** real-world knowledge (advanced mathematics, and so on) by the visitor, and **debate** whether it is right. Instead of a mask, each Heir keeps a persistent **epistemic ledger** (`teaching.json`): every taught topic travels *foreign → studied → adopted | refuted | unsure*, and the verdict is the Heir's own, stored with their reasoning and remembered across visits. Teaching intent routes `chat()` into a Socratic exchange; the Heir never fakes understanding but tests the claim against what they believe and value. See `docs/TEACHING.md`.
 - **World-knowledge confinement** (`02f1737`) — the Heirs no longer leak out-of-world
   knowledge (e.g. Anaxa citing *pseudo-differential operators*). A shared
