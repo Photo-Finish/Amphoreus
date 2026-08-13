@@ -448,6 +448,14 @@ Amphoreus/
   into the Dawn era (or the Nether) by a blessed traveler can return to the
   present on their own (1 period), and a blessed Heir leaving the other era
   carries their company back with them — nothing and no one is stranded.
+- **`docs/IMPLEMENTATION.md` brought up to date** — new **§3.10** ("The map, the
+  guests, and the two forms of Amphoreus") documents the canon map + the concrete
+  adjacency matrix, the guest-presence model, the Veil of Evernight two-era
+  network with its blessing gates and anti-trapping return, and the icon/glow map
+  rendering; **§5** gains the round's lessons (module constants vs. instance
+  attributes, restart-and-re-measure, emoji bounding boxes, gated-edges-need-a-
+  return), and **§6** gains "how to extend" entries for new two-form places and
+  blessing sets.
 - **Dan Heng • Permansor Terrae and Evernight are no longer constant Heirs**
 - **Dan Heng • Permansor Terrae and Evernight are no longer constant Heirs**
   (`src/world/world_state.py`) — they ride the Trailblaze path with the

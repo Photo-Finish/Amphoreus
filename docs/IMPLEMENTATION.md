@@ -633,6 +633,119 @@ Heir's own, stored with their reasoning.
 - Full design rationale, the graded-state model, and the honest limits:
   **`docs/TEACHING.md`**. End-to-end test (mocked LLM): `world_runtime/_test_teaching.py`.
 
+### 3.10 The map, the guests, and the two forms of Amphoreus
+
+Three related world-shaping additions landed on 2026-08-14: the canon-correct
+map with a concrete adjacency matrix, the Trailblazer's companions as guests
+rather than residents, and the two-era **"Veil of Evernight"** model with its
+alternate location objects.
+
+#### 3.10.1 The canon map + the concrete adjacency matrix
+(`src/world/map_data.py`, `databank/world/geography.md` §3.1, `databank/world/map.md`)
+
+- **The interconnection matrix is now concrete and stored in the databank** —
+  `geography.md` §3.1 carries the 11×11 adjacency matrix over the map's
+  vertices (OKH/DWN/JAN/GRV/KRM/STY/AID/AED/GRT/VRX/EYE); a cell is the travel
+  cost in periods, `·` = no edge, `*` = sea route, `†` = historical sky link,
+  now lost. It was researched from the wiki, the quest transcripts, and the
+  official HoYoLAB chronicles (see `databank/world/geography.md` §7 for method).
+- **Two canon inaccuracies were fixed in the SVG map:**
+  - **Aidonia** is the **northern snow wasteland** ("Eleusis… advanced north"),
+    so it is drawn in the **north** (was far southeast).
+  - **The Eye of Twilight** is a **fallen sky castrum above Okhema** whose only
+    link was the sky bridge to Dawncloud, destroyed in *"Dawn, Shine at the
+    World's End"* — it is now drawn **in the sky above Dawncloud**, labelled
+    "(fallen)", and the ground `Okhema ↔ Eye (12 p)` edge was **removed** from
+    the graph (the Eye is correctly unreachable, 999 p).
+  - Added the **River of Souls** (from Styxia up into the northern snows),
+    **clouds** about Dawncloud/the Eye, and the dashed **"former sky bridge
+    (lost)"** ghost.
+- The world engine's travel already lived by `map_data.travel_time()`, so the
+  graph and the map stay in lockstep; `databank/world/map.md` mirrors the places
+  and roads tables.
+
+#### 3.10.2 The Trailblazer's companions are guests, not residents
+(`src/world/world_state.py`, `src/world/world_engine.py`, `src/ui_app.py`, `src/ui_gazette.py`)
+
+Dan Heng • Permansor Terrae and Evernight ride the Trailblaze path with the
+star-stranger; they are **not residents** of Amphoreus and their presence is a
+**chance event**:
+
+- `GUEST_HEIRS = {"dan-heng-permansor-terrae", "evernight"}` and
+  `guest_is_present(cid, clock)` — a **deterministic** function of the Light
+  Calendar day (stable within a day, drifting across days): visits of 4–7 days,
+  gaps of a week or two, occasionally a longer leave (~48% / ~36% of days).
+  Because it is a pure function of the clock, the engine, UI, and gazette
+  always agree on who is here today.
+- `WorldState.present_locations()` filters absent guests out of any "who is
+  here" view (a present guest who is *traveling* is kept); `guest_status()`
+  reports `resident / present / away`.
+- The **map** draws only the present residents (a present guest gets a dashed
+  halo + ✦), with a separate **"Beyond Amphoreus"** section; the **gazette**
+  lists absent guests muted as "beyond Amphoreus, aboard the Astral Express";
+  the **sidebar** shows a 🛸 presence caption per guest; the **world engine**
+  neither moves nor wakes a guest who is beyond Amphoreus that day.
+
+#### 3.10.3 The two forms of Amphoreus — the Veil of Evernight
+(`src/world/map_data.py`, `src/world/world_state.py`, `src/world/world_engine.py`, `databank/world/time-forms.md`)
+
+Many places exist in **two canon forms** (the in-game map's Dawn-era /
+Evernight-era toggle; the quests' explicit "past version of Castrum Kremnos").
+The model:
+
+- **Alternate location objects.** `TIME_FORMS` maps nine present places to their
+  **Dawn-era (past) forms** — Okhema → *Eternal Holy City*, Dawncloud →
+  *Demigod Council*, Janusopolis → *Sanctum of Prophecy*, Grove → *Radiant
+  Scarwood*, Castrum Kremnos → *Bloodbathed Battlefront*, Styxia → *Warbling
+  Shores*, Eye of Twilight → *Fortress of Dome*, Great Tomb → *Universal
+  Matrix*, Aedes Elysiae → *Aedes Elysiae, of old*. **The Nether** is Styxia's
+  third, *death*-form (Thanatos's sea of flowers).
+- **Two layers, one borderline.** The Dawn era is a **parallel copy of the
+  graph** (its roads mirror the present ones among the two-form areas). The
+  only way between the eras is the **Veil of Evernight** — a 1-period time
+  crossing between each place and its Dawn form (the Nether is a 2-period
+  descent from Styxia).
+- **Gating by blessing.** `travel_time(a, b)` is the display view (everything
+  shown); `travel_time_for(a, b, cid)` is a specific traveler's view — the
+  border returns **999** for the unblessed. Blessed sets:
+  `ORONYX_BLESSED = {"trailblazer", "evernight"}` (the Veil — the Trailblazer
+  is the "time traveler" Oronyx took an interest in; Evernight is Oronyx's
+  heir), `JANUS_BLESSED = {"tribbie"}` (the Gates of Destiny open Janusopolis's
+  Dawn form), `THANATOS_BLESSED = {"castorice", "trailblazer"}` (the Nether —
+  the Trailblazer crossed with Castorice).
+- **Carrying companions, and nobody is ever trapped.** A blessed traveler may
+  carry companions across (`WorldState.carry_across`; `begin_travel(..., 
+  blessed_as=…)` — `travel_with` travels under the Trailblazer's blessing).
+  Crossing **into** the Dawn era / the Nether still needs the blessing, but the
+  way **back is always open**: an Heir carried in returns on their own
+  (1 period), and a blessed Heir *leaving* the other era carries their company
+  back. The engine pauses a carried Heir's weekly routine while they stand in
+  the other era and logs the crossing in the Chronicle.
+- **UI.** The map draws the Dawn forms as **silver ⏳ echo nodes** and the
+  Nether as a **purple † node**, joined to their present twins by faint wavy
+  **Veil rifts (⏳ 1 p)** and the **Nether descent († 2 p)**; the "⏳ The Veil
+  of Evernight" section explains the mechanism + the two-form table; "Travel
+  together" offers Dawn-era destinations (the star-stranger can walk an Heir
+  into the past). Full design + network diagram: **`databank/world/time-forms.md`**.
+
+#### 3.10.4 The map rendering — icons with fading glows
+(`src/world/map_data.py` → `render_map_svg`)
+
+- **Areas are small themed icons with fading margins**, not bare dots:
+  `AREA_ICONS` (🏛 Okhema, ☁ Dawncloud, ⛩ Janusopolis, 🌳 Grove, 🪦 Great Tomb,
+  🏰 Kremnos, 🌊 Styxia, ❄ Aidonia, 🌾 Aedes, 🌀 Vortex, 👁 Eye, 🦋 Nether; the
+  Dawn echoes reuse their place's icon, drawn faded). Each node is a
+  **radial-gradient halo that fades out** (`<defs>` `gGold` / `gSilver` /
+  `gPurple`) + a small base ring + the icon.
+- **Heirs are Coreflame markers.** Heirs gather **below each icon**
+  (`FAN_DY = 16`), each a dot with a dark outline plus a **bright outer ring**
+  so the letter stays legible over the icons' glows; their name rows float
+  above (`NAME_DY = -18`), and the city name sits below the fan.
+- **Label hygiene.** Every name (city, Dawn echo, Heir row) is added to a
+  `reserved` region and route/Veil cost labels are placed with `_label_collides`
+  so nothing overlaps; verified in the browser with `getBBox` — **0 overlapping
+  labels** across all 21 nodes, the Veil tags, and the Heir markers.
+
 ---
 
 ## 4. Data flow (one chat turn vs. one world day)
@@ -686,6 +799,24 @@ flowchart LR
    manual download of `OllamaSetup.exe` to `D:\`. Until then, everything runs in
    offline-placeholder / stub-validated mode.
 7. **Disk hygiene:** `OLLAMA_MODELS` must point to `D:` (C: was nearly full).
+8. **Module constants are not instance attributes.** A module-level set like
+   `GUEST_HEIRS` cannot be reached as `ws.GUEST_HEIRS` (`AttributeError`) — it
+   must be imported where it is used. (Hit in `ui_app.py` and `ui_gazette.py`
+   when wiring the guest model; an import inside a helper `_load()` is also not
+   visible to the caller — import in the function that uses it.)
+9. **After editing a module Streamlit serves, always restart + re-measure.**
+   A running Streamlit process serves stale bytecode from before the edit; the
+   🗺️ map is verified by reloading the page and measuring every `<text>`
+   `getBBox` pair for overlaps (expect `[]`).
+10. **Emoji have real bounding boxes.** A 12.5–16px emoji icon has a `getBBox`
+    roughly 16–20px wide, so route/Veil labels and neighbour names can graze it.
+    Keep labels ≥10px clear of icons; Dawn-era names float **above** their echo
+    node so the Veil tags between the twins stay clear (below collides).
+11. **When you gate a crossing one-way, add the return.** The Veil/Nether gates
+    let only the blessed enter, but the *way back must always be open* — an
+    Heir carried into the Dawn era can return on their own (1 period), so no
+    resident is ever trapped in the past. Gated edges are direction-aware
+    (`_edge_allowed`), not symmetric.
 
 ---
 
@@ -697,6 +828,13 @@ flowchart LR
   adjust `rag_threshold` / `rag_k` in `AgentManager`.
 - **Deepen the world:** extend `HOME_LOCATIONS` / `LOCATIONS` in `world_state.py`;
   add seasonal weather; adjust `--interval` for tempo.
+- **Add another two-form place:** add the `present → "Dawn-era name"` pair to
+  `TIME_FORMS` in `map_data.py`, a position in `PAST_POS` + `AREA_ICONS`, and a
+  description in `world_state.LOCATIONS` — the Dawn-layer roads, the Veil edge,
+  the map echo node, and the gating all follow automatically.
+- **Change who may cross a border:** edit `ORONYX_BLESSED` /
+  `JANUS_BLESSED` / `THANATOS_BLESSED` in `map_data.py` (the Trailblazer is the
+  key blessing; keep the return direction open so no Heir is ever stranded).
 - **Friendship tuning:** edit `FRIENDSHIP_LEVELS` / `_recompute_friendship` in
   `memory_store.py`; optionally make `consolidate()` LLM-assisted.
 - **Voice-stability fine-tuning (optional, future):** QLoRA on `qwen2.5:7b-instruct`
