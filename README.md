@@ -195,6 +195,9 @@ Amphoreus/
 - ✅ **Two visitor experiences** — `SANCTUARY_MODE` selects how the Heirs frame the visitor (the Trailblazer): **`journey`** (default — newly arrived, unfamiliar with the Chrysos Heirs; first meetings, bonds grow from stranger) and **`aftermath`** (the Trailblazer already conquered the Iron Tomb with all the Heirs and has complete memory of the Flame-Chase Journey; bonds pre-seeded to best friend, familiar greetings, campaign memories, a world at peace). Switch with `python tools/seed_mode.py aftermath|journey` and run the UI with `$env:SANCTUARY_MODE='aftermath'`. See `src/core/visitor_mode.py`.
 - ✅ **Measured voice profiles + style gate** — `tools/measure_speech.py` deterministically measures each Heir's own canon speech (words/sentence, % short sentences, word length, ellipsis/question/exclamation rates) and `tools/embed_voice_anchor.py` embeds the profile + real canon lines into each card's base prompt. `tools/test_dialogue_style.py` is the standing quality gate: **STYLE & INTONATION ≥ 85** (delivery — how the Heir speaks) **and CONTENT ≥ 60** (loose, holistic gist, judged as a whole exchange, not sentence by sentence). The Heirs' own canon lines from the scene are given as voice anchors (production-faithful, target excluded), `--best-of N` self-selection reduces variance, and a **cheat-free filter** makes it impossible to pass by quoting an existing canon line. The judge is **calibrated** (few-shot anchors; generic/empty replies are no longer over-credited). `tools/auto_cycle.py` runs the loop automatically — refine failing Heirs (actionable per-line rules, noise-free), escalate to 90/65 → 90/70 with an overfitting guard, and end with a **final cheat-free re-test of all 13 Heirs**. Report: `docs/RESEMBLANCE-STYLE-REPORT.md`; full technical log: `docs/IMPLEMENTATION.md` §3.6.
 - ✅ **Ambient World Director** — a second intelligence (the *Keeper of Amphoreus*, `src/world/ambient.py`) sets the day's stage without authoring the Heirs: **weather** per city, **errands** laid at each Heir's door (they may accept or decline), and **news**. It runs on a **separate local model** by default — **DeepSeek-R1-Distill-32B** — registered from the LM Studio GGUF files (`tools/register_lmstudio_gguf.py`, hard links, no disk duplication), called once per in-game day (cached), with a deterministic fallback. It is **canon-grounded** in the databank (cities/patrons, the 12-month Light Calendar with festival seeds, the black tide, the Thief Star, creatures — see `databank/world/keeper-knowledge.md`). Shown in the 🗺️ Map tab; lore in `databank/world/ambient.md`.
+- ✅ **World-knowledge confinement** — the Heirs only know Amphoreus: a shared **KNOWLEDGE BOUNDARIES** block (`src/core/world_knowledge.py`) forbids out-of-world knowledge (modern math/science, Earth, modern machines, real-world history) in the sanctuary, the world engine and the style test; foreign concepts are reinterpreted through their own world or met with honest ignorance.
+- ✅ **Galgame view** — a **🎬 Galgame** tab (visual-novel scene: background, floating sprite, name plate, typewriter dialogue box with ▼), added *alongside* the untouched Classic UI and sharing the same conversation store.
+- ✅ **8192-token context + hardened auto-cycle** — `OLLAMA_CONTEXT_LENGTH=8192`; the cycle **freezes passed Heirs**, refines from the **best cycle** on regression, rejects noise rules, aborts loudly on a dead backend (run VOID), and the watchdog checks the real model list (`/api/tags`), survives hung WMI calls, and holds only on recent SUCCESS.
 - ✅ **Fully live, fully local, fully offline** — every model lives inside this folder (`models/`):
   - ✅ Ollama **0.32.6**; server runs with `OLLAMA_MODELS=models\ollama`
   - ✅ **Voice** — `qwen2.5:14b-instruct` (Q4_K_M, 9.0 GB)
@@ -206,5 +209,95 @@ Amphoreus/
   - ✅ Per-Heir `personal-memories.md` — their canon dialogue extracted from the databank (read-only) into each Heir's folder
 
 > **Network note:** this machine throttles direct downloads from github/ollama/huggingface to ~10 KB/s. The fast paths used were **ModelScope** (~8 MB/s) for the GGUF files and whisper, and **gh-proxy.com** (~9 MB/s) for GitHub release assets (e.g. the SHA256-verified `OllamaSetup.exe`). Exact sources and re-download commands: `docs/DOWNLOADS.md`.
+
+---
+
+## Changelog
+
+### 2026-08-13 — Knowledge boundaries, Galgame view, 8192 context, hardened cycle
+- **World-knowledge confinement** (`02f1737`) — the Heirs no longer leak out-of-world
+  knowledge (e.g. Anaxa citing *pseudo-differential operators*). A shared
+  **KNOWLEDGE BOUNDARIES** block (`src/core/world_knowledge.py`) is injected into every
+  Heir's system prompt at the single loader choke point — sanctuary chat, world-engine
+  agents and the style test alike. The Heirs only know Amphoreus (Titans, city-states,
+  Coreflames, alchemy, the black tide); if a visitor brings something foreign they do
+  not pretend to understand it, do not echo the terms, and reinterpret it through their
+  own world or admit ignorance. The style test adds **Hard Rule #10** (generation side)
+  and a **judge penalty** (out-of-world knowledge → CONTENT ≤ 40, STYLE ≤ 50); the
+  auto-cycle refinement prompt warns the coach to keep replies inside the character's
+  own world.
+- **Galgame view** (`069f21b`, `6ea6fc3`) — a new **🎬 Galgame** tab, added *without
+  touching the Classic UI*. A visual-novel scene: full-bleed Amphoreus background, the
+  Heir's sprite floating over it, a name plate, and a dialogue box with a typewriter
+  effect (JS, guarded by `sessionStorage` so it only re-types new text) and a blinking
+  **▼**. It shares the *same* conversation store as the Classic tab and has its own
+  input. Embedded art is downscaled automatically (`src/ui_galgame.py`).
+- **8192-token context window** (`a9e652a`) — `OLLAMA_CONTEXT_LENGTH=8192` in
+  `tools/start_ollama.ps1`, so long music-audio inputs and the large canon prompts fit
+  comfortably (verified `gemma3:27b` loads at CONTEXT 8192).
+- **Focused cycle round** (`b4a1dd5`) — the launcher now targets only the 5
+  still-failing Heirs (aglaea, anaxa, castorice, cipher, mydei); the 8 passed Heirs keep
+  their settings untouched. Final step is a full-corpus cheat-free re-test of the 5.
+- **Watchdog + recovery hardening** (`0a281e5`, `8634016`) — `OllamaHealthy` now checks
+  `/api/tags` for `gemma3:27b` (catches the bare empty-server 404 trap); the test aborts
+  loudly (exit 2, run **VOID**) instead of recording 0/0 garbage when the backend is
+  down; every machine-state read runs in a timed job so a hung WMI call can never stall
+  the watchdog; resume policy holds only on recent SUCCESS.
+- **Cycle refinement: frozen passers + best-cycle basis** (`c339a68`) — already-passed
+  Heirs are **frozen** (their card is never modified again, even on escalation); when a
+  failing Heir regresses below its best cycle, refinement is based on the **best cycle's**
+  failures rather than the regressed ones.
+- **Official icons + Admin Console** (`eaa97b1`) — chat avatars replaced with the 13
+  official 160×160 in-game character icons; a new **Admin Console** tab shows
+  backend/models, the world-state machine, the cause-and-effect chain (weather → errand
+  request + original impetus → Heir locations → recent events), and auto-cycle/watchdog
+  logs.
+- **World machine upgrades** (`f8dc2d4`) — a **failsafe** in the world loop (bad days
+  are survived, state is saved, backoff after repeated failures); every errand now
+  carries a concrete **original impetus** (`{ask, cause}`, canon-grounded); the engine
+  **places each Heir** at their scheduled location so the map reflects where they are;
+  map markers fan out with name labels; per-Heir square avatars so replies never look
+  bot-sent.
+- **Launcher icon** (`d90d8f2`) — the launcher and shortcut now use the *As I've
+  Written* book icon (official HSR asset, `assets/as-ive-written.png` + multi-size
+  `.ico`).
+- **LLM 404 preflight** (`eeb2c35`) — fail-fast check (`LLMClient.list_models`) that
+  prints the `tools/start_ollama.ps1` fix instead of spamming 404s when a bare
+  `ollama serve` ignores `OLLAMA_MODELS`.
+- **Noise filter + replace-not-stack** (`9e6d8e9`) — refinement's noise filter now
+  catches written-out statistics ("one in six", "two-thirds", "half", "every three
+  turns", "7.1 words") that were over-constraining Heirs; the AUTO REFINEMENT block is
+  **replaced** each cycle instead of stacked.
+
+### 2026-08-11 — Senses, music, anti-cheat, opt-out, 78-plateau, Aftermath mode
+- **Senses model selection** (`ea4a134`) — `.env` is authoritative with a `SENSES_MODE`
+  switch: **unified** (`gemma3n` for both vision and audio) or **quality**
+  (`qwen3-vl:8b` vision + `gemma3n` audio); verified `qwen3-omni` is not on Ollama,
+  `gemma3n` is the bare tag.
+- **Music channel redesign** (`936ce05`) — no prescribed genres: a two-stage pipeline
+  where the ear (audio model) analyzes the music neutrally and the Heir judges it
+  against **their own values**; legacy seeded music lists deleted.
+- **Within-run anti-cheat** (`693b046`) — a Heir can never pass by recycling one phrase
+  in every output or by formulaic templates (reject exact/near repeats, over-used
+  distinctive trigrams, formulaic openings; lenient mode for the full-corpus final; the
+  judge sees the Heir's earlier replies; Hard Rule #9).
+- **Opt-out + full final** (`f90e840`) — passing Heirs **opt out** of later cycles; the
+  final re-test covers **every canon line** (`--full-final`, single-shot best-of 1 =
+  deployment truth), with per-cycle log checkpoints.
+- **78-plateau break** (`0c729cf`) — anti-motif-crutch rule ("golden thread"/"Snowy~"
+  spam), fresh line each time; best-of raised 7 → 9, temperature 0.4.
+- **Aftermath mode = full story memory** (`ab06e64`, `e2cd446`) — the second visitor
+  experience now carries the whole Flame-Chase Journey + 4 **real canon memories** per
+  Heir (first-person POV from the actual game).
+- **Two visitor experiences** (`7a89506`) — `SANCTUARY_MODE` **journey** (new
+  Trailblazer) vs **aftermath** (Iron Tomb conquered, bonds pre-seeded); `seed_mode`
+  tool + UI mode indicator.
+- **Refinement v3 + watchdog** (`11f9241`, `03e01a2`, `f7e33df`) — refinement demands
+  unique per-character rules grounded in canon (rejects generic terse advice and
+  catchphrase spam); a **watchdog** (`tools/deploy_auto_cycle.ps1`) keeps Ollama up,
+  relaunches the auto-cycle if it stops, and restarts the model runner on low RAM.
+- **Full technical docs** (`6c845b8`) — `docs/IMPLEMENTATION.md` §3.6: judge
+  calibration, cheat-free anti-quote, anti-rhetoric, voice anchoring, model choice,
+  auto-cycle, R1 `think:false` fix, OOM/502 recovery.
 
 See `ROADMAP.md` for the detailed checklist.
