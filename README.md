@@ -456,6 +456,19 @@ Amphoreus/
   attributes, restart-and-re-measure, emoji bounding boxes, gated-edges-need-a-
   return), and **§6** gains "how to extend" entries for new two-form places and
   blessing sets.
+- **The map is now clickable with info popups** (`src/world/map_data.py`
+  `render_map_svg(interactive=True)`, `src/ui_app.py`): every place and Heir is
+  wrapped in a `<g data-kind="place|heir" data-key="…">` group, and the map is
+  rendered through `st.components.v1.html` with a small script (event delegation
+  + a themed popup card). Clicking a **place** shows its name + icon, its
+  description, who is present, the Dawn-era form (if any) or the Nether note,
+  and commuting time from Okhema; clicking an **Heir** shows their name, title,
+  current place, bond level, and guest status. The clicked element is
+  highlighted, and a ✕ or clicking elsewhere closes the popup. Travelers heading
+  to a Dawn-era form are now drawn there too (previously only present-era
+  destinations appeared). Verified in the browser: place / Heir / Dawn-echo
+  popups all open with correct content, close works, and the map still has
+  **0 overlapping labels**.
 - **Dan Heng • Permansor Terrae and Evernight are no longer constant Heirs**
 - **Dan Heng • Permansor Terrae and Evernight are no longer constant Heirs**
   (`src/world/world_state.py`) — they ride the Trailblaze path with the

@@ -356,6 +356,7 @@ def render_map_svg(
     heir_names: Optional[Dict[str, str]] = None,
     highlight: Optional[str] = None,
     guest_ids: Optional[set] = None,
+    interactive: bool = False,
 ) -> str:
     """Render the Amphoreus map as an inline SVG.
 
@@ -368,11 +369,18 @@ def render_map_svg(
                      Guests who are beyond Amphoreus should simply be omitted
                      from heir_locations by the caller (see WorldState
                      .present_locations()).
+    interactive    : when True, every place and Heir is wrapped in a
+                     <g data-kind="place|heir" data-key="..."> group so the
+                     host page can attach click info-popups (the caller embeds
+                     the info; this only marks the elements).
     """
     heir_locations = heir_locations or {}
     traveling = traveling or {}
     heir_names = heir_names or {}
     guest_ids = guest_ids or set()
+    interactive = bool(interactive)
+    _d = ((lambda kind, key: f' data-kind="{kind}" data-key="{key}"')
+          if interactive else (lambda kind, key: ""))
 
     # Distinct marker colours for the thirteen Heirs (gold-adjacent palette).
     palette = [
@@ -382,8 +390,9 @@ def render_map_svg(
     ]
 
     parts: List[str] = []
+    _svg_id = ' id="amp-map"' if interactive else ""
     parts.append(
-        f'<svg viewBox="0 0 1000 820" xmlns="http://www.w3.org/2000/svg" '
+        f'<svg{_svg_id} viewBox="0 0 1000 820" xmlns="http://www.w3.org/2000/svg" '
         f'style="width:100%;height:auto;background:radial-gradient(ellipse at 50% 40%, #141126 0%, #0b0a14 70%);'
         f'border:1px solid rgba(232,213,163,.18);border-radius:14px;">'
     )
@@ -599,6 +608,7 @@ def render_map_svg(
         icon = AREA_ICONS.get(name, "✦")
         hl = (name == highlight)
         ruin = name in _RUINS
+        parts.append(f'<g{_d("place", name)}>')
         if name == NETHER:
             # the death-form of Styxia — Thanatos's sea of flowers
             parts.append(f'<circle cx="{x}" cy="{y}" r="26" fill="url(#gPurple)"/>')
@@ -653,6 +663,7 @@ def render_map_svg(
                 f'fill="{labelfill}" font-family="Georgia, serif" '
                 f'font-style="italic">{label}</text>'
             )
+        parts.append("</g>")
 
     # the Heirs as small lights gathered just below each place icon; name tags
     # are drawn from the packed rows precomputed above (route labels avoid
@@ -667,6 +678,7 @@ def render_map_svg(
             col = color_of[cid]
             name = heir_names.get(cid, cid)
             initial = name[0].upper() if name else "?"
+            parts.append(f'<g{_d("heir", cid)}>')
             parts.append(
                 f'<circle cx="{x:.1f}" cy="{fan_y}" r="9.5" fill="none" '
                 f'stroke="rgba(247,237,214,.4)" stroke-width="1"/>'
@@ -690,6 +702,7 @@ def render_map_svg(
                     f'<text x="{x:.1f}" y="{fan_y - 11}" text-anchor="middle" font-size="8.5" '
                     f'fill="{col}" font-family="Arial">✦</text>'
                 )
+            parts.append("</g>")
         for x, y, nm, col in heir_label_rows[loc]:
             parts.append(
                 f'<text x="{x:.1f}" y="{y}" text-anchor="middle" font-size="10.5" '
@@ -705,10 +718,11 @@ def render_map_svg(
         col = palette[list(heir_locations.keys()).index(cid) % len(palette)] \
             if cid in heir_locations else "#e8d5a3"
         # find the traveler's current position = destination if known, else origin
-        # We show them mid-route toward 'to'
-        if to in LOCATION_POS:
+        # We show them mid-route toward 'to' (a Dawn-era form counts too)
+        if to in ALL_POS:
             # find their departure: any location adjacent on the route
-            tx, ty = LOCATION_POS[to]
+            tx, ty = ALL_POS[to]
+            parts.append(f'<g{_d("heir", cid)}>')
             parts.append(
                 f'<circle cx="{tx}" cy="{ty}" r="14" fill="{col}" opacity=".10"/>'
             )
@@ -720,6 +734,7 @@ def render_map_svg(
                 f'<text x="{tx}" y="{ty + 40}" text-anchor="middle" font-size="10" '
                 f'fill="{col}" font-family="Arial" font-style="italic">{initial} → {to}</text>'
             )
+            parts.append("</g>")
 
     parts.append("</svg>")
     return "".join(parts)

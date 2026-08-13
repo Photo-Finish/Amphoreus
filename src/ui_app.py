@@ -79,6 +79,85 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# The click-popups for the interactive map. The SVG from render_map_svg marks
+# every place and Heir with data-kind/data-key; this script shows a themed info
+# card near the click. __AMP_INFO__ is replaced with the JSON info payload.
+_MAP_CLICK_SCRIPT = """\
+<style>
+.amp-pop{position:absolute;z-index:60;display:none;width:320px;max-width:92%;
+ background:linear-gradient(180deg,#1a1630,#0d0b18);border:1px solid rgba(232,213,163,.30);
+ border-radius:12px;padding:12px 14px;color:#e6dcc0;font:13px/1.5 Arial,sans-serif;
+ box-shadow:0 12px 34px rgba(0,0,0,.6);}
+.amp-pop h4{margin:0 0 4px;color:#e8d5a3;font-size:15px;letter-spacing:.4px;}
+.amp-pop .amp-sub{color:#b8a97f;font-size:12px;font-style:italic;margin-bottom:6px;}
+.amp-pop .amp-row{margin:3px 0;}
+.amp-pop .amp-close{position:absolute;top:5px;right:11px;cursor:pointer;color:#b8a97f;font-size:17px;line-height:1;}
+.amp-pop .amp-close:hover{color:#fff;}
+.amp-map-host{position:relative;}
+.amp-sel{filter:drop-shadow(0 0 6px rgba(232,213,163,.9));}
+</style>
+<script>
+(function(){
+  var INFO = __AMP_INFO__;
+  var svg = document.getElementById('amp-map');
+  if(!svg || !INFO) return;
+  var host = svg.parentElement;
+  host.classList.add('amp-map-host');
+  var pop = document.createElement('div');
+  pop.className = 'amp-pop';
+  host.appendChild(pop);
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function clearSel(){ var s=svg.querySelectorAll('.amp-sel'); for(var i=0;i<s.length;i++) s[i].classList.remove('amp-sel'); }
+  function hide(){ pop.style.display='none'; clearSel(); }
+  function show(html, g){
+    pop.innerHTML = html;
+    pop.style.display = 'block';
+    var r = svg.getBoundingClientRect(), er = g.getBoundingClientRect();
+    var pw = pop.offsetWidth || 320, ph = pop.offsetHeight || 170;
+    var x = (er.left - r.left) + 16, y = (er.top - r.top) - ph/2;
+    x = Math.max(6, Math.min(x, r.width - pw - 6));
+    y = Math.max(6, Math.min(y, r.height - ph - 6));
+    pop.style.left = x + 'px'; pop.style.top = y + 'px';
+    clearSel(); g.classList.add('amp-sel');
+  }
+  svg.addEventListener('click', function(ev){
+    var t = ev.target;
+    var g = t.closest ? t.closest('[data-kind]') : null;
+    if(!g){ hide(); return; }
+    var kind = g.getAttribute('data-kind'), key = g.getAttribute('data-key');
+    var html, P, H;
+    if(kind === 'place'){
+      P = (INFO.places||{})[key]; if(!P) return;
+      html  = '<span class="amp-close">✕</span>';
+      html += '<h4>'+esc(P.icon)+' '+esc(P.name)+'</h4>';
+      html += '<div class="amp-sub">'+esc(P.desc)+'</div>';
+      if(P.past && !P.past_form) html += '<div class="amp-row">⏳ Dawn-era form: <b>'+esc(P.past)+'</b> — across the Veil of Evernight (1 p, Oronyx-blessed)</div>';
+      if(P.past_form) html += '<div class="amp-row">🔁 This is the <b>Dawn-era (past)</b> form of <b>'+esc(P.of)+'</b> — reached across the Veil of Evernight (1 p)</div>';
+      if(P.nether) html += '<div class="amp-row">† The Nether — the death-realm beneath Styxia (Thanatos-blessed only)</div>';
+      if(P.heirs && P.heirs.length) html += '<div class="amp-row">Heirs here: <b>'+esc(P.heirs.join(', '))+'</b></div>';
+      if(P.traveling && P.traveling.length) html += '<div class="amp-row">On the road here: '+esc(P.traveling.join(', '))+'</div>';
+      if(!P.past_form && !P.nether) html += '<div class="amp-row">From Okhema: <b>'+P.from_okhema+' p</b></div>';
+    } else {
+      H = (INFO.heirs||{})[key]; if(!H) return;
+      html  = '<span class="amp-close">✕</span>';
+      html += '<h4>'+esc(H.name)+'</h4>';
+      if(H.title) html += '<div class="amp-sub">'+esc(H.title)+'</div>';
+      html += '<div class="amp-row">📍 '+esc(H.loc)+'</div>';
+      if(H.bond) html += '<div class="amp-row">Bond: <b>'+esc(H.bond)+'</b></div>';
+      if(H.status === 'away') html += '<div class="amp-row">🛸 Beyond Amphoreus — riding the Trailblaze path</div>';
+      else if(H.status === 'present') html += '<div class="amp-row">🛸 Visitor from beyond Amphoreus</div>';
+    }
+    show(html, g);
+    ev.stopPropagation();
+  });
+  document.addEventListener('click', function(ev){
+    if(ev.target.closest && ev.target.closest('.amp-close')){ hide(); return; }
+    if(!(ev.target.closest && ev.target.closest('.amp-pop'))) hide();
+  });
+})();
+</script>
+"""
+
 # Initialize Agent Manager
 @st.cache_resource
 def get_manager():
@@ -284,14 +363,64 @@ with map_tab:
         _names = {c: manager.get_character_info(c)["name"] for c in characters}
         _heir_locs = _ws.present_locations()
         _guests_here = {c for c in _ws.agent_location if _ws.guest_status(c) == "present"}
+        # Click-info for the interactive map — embedded in the page so the
+        # popup script can show it without a round-trip.
+        import json as _json
+        _place_info = {}
+        for _pn in _map.ALL_POS:
+            _place_info[_pn] = {
+                "name": _pn,
+                "icon": _map.AREA_ICONS.get(_pn, "✦"),
+                "desc": _ws.location_desc(_pn),
+                "heirs": [_names[c] for c, l in _heir_locs.items()
+                          if l == _pn and c not in _ws.agent_travel],
+                "traveling": [_names[c] for c, l in _heir_locs.items()
+                              if l == _pn and c in _ws.agent_travel],
+                "past": _map.time_twin(_pn),
+                "of": _map.present_of(_pn) or "",
+                "past_form": _pn in _map.PAST_FORMS,
+                "nether": _pn == _map.NETHER,
+                "from_okhema": _map.travel_time("Okhema", _pn),
+            }
+        _heir_info = {}
+        for _cid in characters:
+            try:
+                _gi = manager.get_character_info(_cid)
+                _loc = _ws.agent_location.get(_cid, "?")
+                if _cid in _ws.agent_travel:
+                    _loc = f"on the road to {_ws.agent_travel[_cid]['to']}"
+                _bd = manager.get_bond_info(_cid) or {}
+                _heir_info[_cid] = {
+                    "name": _gi.get("name", _cid),
+                    "title": (_gi.get("titles") or [""])[0],
+                    "loc": _loc,
+                    "bond": _bd.get("friendship_level", "stranger"),
+                    "status": _ws.guest_status(_cid),
+                }
+            except Exception:
+                pass
         _svg = _map.render_map_svg(
             heir_locations=_heir_locs,
             traveling=_ws.agent_travel,
             heir_names=_names,
             highlight=None,
             guest_ids=_guests_here,
+            interactive=True,
         )
-        st.markdown(_svg, unsafe_allow_html=True)
+        # The interactive map lives in a component (an iframe) so the click
+        # script can run; the SVG is capped at its 1000px natural width.
+        _amp_html = (
+            '<div style="max-width:1000px;margin:0 auto;">'
+            + _svg
+            + "</div>"
+            + _MAP_CLICK_SCRIPT.replace(
+                "__AMP_INFO__",
+                _json.dumps({"places": _place_info, "heirs": _heir_info},
+                            ensure_ascii=False),
+            )
+        )
+        from streamlit.components.v1 import html as _components_html
+        _components_html(_amp_html, height=850, scrolling=False)
 
         # Current clock + who's where / who's travelling
         st.markdown(f"### ⏳ Now: {_ws.clock.format()}")
