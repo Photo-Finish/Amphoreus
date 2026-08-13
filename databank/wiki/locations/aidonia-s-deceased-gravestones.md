@@ -1,0 +1,42 @@
+# Aidonia's Deceased Gravestones
+
+> Source: https://honkai-star-rail.fandom.com/wiki/Aidonia's_Deceased_Gravestones
+> Fetched: 2026-08-13 · Categories: Category:Aidonia Relic Lore Mentions, Category:Bone Collection's Serene Demesne Relics, Category:Castorice Relic Lore Mentions, Category:Eleusis Relic Lore Mentions, Category:Pages Using DPL Parser Function, Category:Planar Sphere Relics, Category:Released in Version 3.1, Category:Relic, Category:Relics, Category:Thanatos Relic Lore Mentions, Category:Version
+
+---
+
+have raised colossal monuments on the snow plains, offering tribute to the Holy Maiden who brings them the blessing of death.}}
+**Aidonia's Deceased Gravestones** is a Relic in the set Bone Collection's Serene Demesne.
+
+## Description
+Aidonia &mdash; the snow-dusted kingdom of death &mdash; once stood tall amidst the blizzards, and now remains silent beneath them.
+
+Almost all humankind enjoyed the pleasures of eternal life in the spring-filled lands in the endless Era Chrysea, yet a few souls grew weary of the countless cycles of day and night and decided to seek the end of life. "Why does life exist? And where should it go?" Eleusis, the leader of the Ascetics, advanced north with his followers as he muttered this eternal question, seeking a sweet and frozen long dream. The robed ascetics settled in the desolate northern wasteland, building a solemn city-state where snow fell relentlessly all year round &mdash; A place later known as "Aidonia."
+
+How the Era Chrysea ended had long been lost to the annals of history, but the "First of the Dead" in Amphoreus was said to have come from Aidonia. That person received the gift of death from  &mdash; both a merciful blessing and the highest of honors.
+
+The people of Aidonia were long accustomed to the harsh and lethal cold. The snow itself, long steeped in the silent faith of , also greedily absorbed the warmth of life as it soon touched the earth. Long ago, travelers entering Aidonia's demesne would often find anonymous frozen bodies lying dead by the roadside, unfortunates who had returned to the embrace of the . The north wind howled, and the dead became markers on the road, guiding and warning those who journeyed through the snow. Travelers always hurried through Aidonia while the breath of life remained within them.
+
+In time, the Aidonians came upon gravestones of mourning standing tall in the barren land, realizing that someone was offering their blessings to the cycle of death and the passing of life.
+
+Beneath the gravestone slumbers an unknown girl. A zone of death surrounds her like a shadowy shroud, and even the Skeletarasses that inhaled the breath of death withered away around her form. The Aidonians sensed the merciful touch of  on her and welcomed her back to the city as their Holy Maiden. The faithful followers of the Death Titan, in reverence, emulated her, erecting towering gravestones in the wastelands to mark the end of long journeys and life's return to death &mdash; For life and death are both journeys, and this land only maintains boundary stones that recorded the paths taken.
+
+The gravestones were warning distant travelers that no one stayed there and no one rested there... The dead, too, are travelers. They are the north wind, the falling snow, and the countless threads that connect them.
+
+## Other Languages
+|ko   = 아이도니아의 무명 비석
+|es   = Lápida a los difuntos de Aidonia
+|fr   = Tombes des défunts d'Aidonia
+|ru   = Поминальный обелиск Айдонии
+|th   = Aidonia's Deceased Gravestones
+|vi   = Bia Tưởng Niệm Người Đã Khuất Của Aidonia
+|de   = Grabsteine von Aidonia
+|id   = Aidonia's Deceased Gravestones
+|pt   = Túmulos dos Mortos de Aidonia
+}}
+
+## Change History
+## Navigation
+de:Grabsteine von Aidonia
+ru:Поминальный обелиск Айдонии
+vi:Bia Tưởng Niệm Người Đã Khuất Của Aidonia

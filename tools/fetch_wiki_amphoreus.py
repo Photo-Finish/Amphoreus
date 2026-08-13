@@ -1,7 +1,8 @@
 """
 fetch_wiki_amphoreus.py — download the Honkai: Star Rail wiki's Amphoreus
-world pages into `docs/wiki/` as clean markdown, for the Heirs' world-knowledge
-system.
+world pages into the databank (`databank/wiki/<category>/`) as clean markdown,
+for the Heirs' world-knowledge system. Pages are sorted into categories:
+titans / locations / factions / characters / gameplay / experiment / lore.
 
 Source: **honkai-star-rail.fandom.com** (English Fandom wiki, MediaWiki API).
 
@@ -15,10 +16,13 @@ NETWORK RECIPE (this machine, 2026-08-13):
 USAGE:
     python tools/fetch_wiki_amphoreus.py --discover
         Print the Amphoreus categories/pages that would be fetched, then exit.
+    python tools/fetch_wiki_amphoreus.py --sort
+        Move pages already downloaded to docs/wiki/ into databank/wiki sorted
+        (then remove docs/wiki).
     python tools/fetch_wiki_amphoreus.py --pages 'Amphoreus,Okhema'
         Fetch only the named pages (comma-separated).
     python tools/fetch_wiki_amphoreus.py
-        Fetch the whole curated Amphoreus world set into docs/wiki/.
+        Fetch the whole curated Amphoreus world set into databank/wiki/.
     python tools/fetch_wiki_amphoreus.py --force
         Re-fetch pages that already exist.
 """
@@ -37,7 +41,8 @@ except Exception:
     pass
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "docs" / "wiki"
+OUT = ROOT / "databank" / "wiki"      # sorted destination (databank/wiki/<cat>/)
+LEGACY = ROOT / "docs" / "wiki"       # pre-sort location (migrated by --sort)
 
 HOST = "honkai-star-rail.fandom.com"
 API = f"https://{HOST}/api.php"
@@ -209,6 +214,68 @@ def slugify(title):
 
 
 # --------------------------------------------------------------------------- #
+# Category sort (databank/wiki/<category>/)
+# --------------------------------------------------------------------------- #
+TITAN_NAMES = ["aquila", "cerces", "phagousa", "janus", "kephale", "thanatos",
+               "oronyx", "georios", "nikador", "mnestia", "talanton", "zagreus"]
+
+FACTION_TOKENS = ["chrysos-heirs", "pathstrider", "caprists", "cleaners",
+                  "council-of-elders", "erythrokeramists", "helkolithists",
+                  "kremnoan-detachment", "kremnoan-dynasty", "lotophagists",
+                  "nodists", "nousporists", "venerationists",
+                  "five-gourmet-overlords", "black-tide-council"]
+
+CHARACTER_TOKENS = ["unnamed-chrysos-heir", "big-chungus-bartholos", "dolos",
+                    "epos", "campa", "bulsa", "carmitis",
+                    "researcher-eikura-shuu", "bartholos", "akmonides"]
+
+LOCATION_TOKENS = ["okhema", "janusopolis", "grove-of-epiphany", "castrum-kremnos",
+                   "styxia", "aedes-elysiae", "aidonia", "dawncloud",
+                   "eye-of-twilight", "great-tomb", "ruins-of-time", "memortis",
+                   "vortex-of-genesis", "titan-cliff", "ashen-throne",
+                   "destiny-s-gate", "dome-of-", "abyss-of-fate", "archive-of"]
+
+AREA_WORDS = ["altar", "plaza", "fountain", "courtyard", "market", "gate",
+              "chapel", "mausoleum", "bastion", "pool", "perch", "smithy",
+              "shop", "forum", "tower", "statue", "colossus", "veins",
+              "cliff", "entrance", "sanctum", "battlefront", "scarwood",
+              "murmuring", "strife", "warbling", "radiant", "lightless",
+              "fortress", "universal", "nightmare", "destiny", "dragonbone",
+              "cloister", "depths", "chisel", "platform", "sector", "matrix"]
+
+GAMEPLAY_TOKENS = ["calyx-", "cavern-of-corrosion", "echo-of-war", "-crest",
+                   "chasmic-geocore", "dromas-caravan", "resplendent-ambrosia",
+                   "tidal-bounty"]
+
+
+def categorize(slug):
+    """Return the databank/wiki/<category> subfolder for a page slug."""
+    t = slug
+    if t == "titans":
+        return "titans"
+    if "amphoreus-experiment" in t or t == "the-amphoreus-experiment":
+        return "experiment"
+    for name in TITAN_NAMES:
+        if t == name or t.startswith(name + "-"):
+            return "titans"
+    for f in FACTION_TOKENS:
+        if f in t:
+            return "factions"
+    for g in GAMEPLAY_TOKENS:
+        if g in t:
+            return "gameplay"
+    for c in CHARACTER_TOKENS:
+        if c in t:
+            return "characters"
+    for loc in LOCATION_TOKENS:
+        if loc in t:
+            return "locations"
+    if any(w in t for w in AREA_WORDS):
+        return "locations"
+    return "lore"
+
+
+# --------------------------------------------------------------------------- #
 # Fetching
 # --------------------------------------------------------------------------- #
 def fetch_page(title):
@@ -226,14 +293,37 @@ def fetch_page(title):
     return header + md + "\n", cats
 
 
+def sort_legacy():
+    """Move docs/wiki/*.md into databank/wiki/<cat>/ sorted, then drop docs/wiki."""
+    if not LEGACY.exists():
+        print("no docs/wiki to sort")
+        return
+    files = sorted(LEGACY.glob("*.md"))
+    moved = 0
+    for f in files:
+        cat = categorize(f.stem)
+        dest_dir = OUT / cat
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        dest = dest_dir / f.name
+        f.replace(dest)
+        moved += 1
+    LEGACY.rmdir()  # remove docs/wiki if now empty
+    print(f"moved {moved} pages into databank/wiki/ (sorted)")
+
+
 def main():
     ap = argparse.ArgumentParser(description="Fetch Amphoreus world lore from the HSR wiki.")
     ap.add_argument("--discover", action="store_true", help="print discovered pages and exit")
+    ap.add_argument("--sort", action="store_true", help="move docs/wiki pages into databank/wiki sorted")
     ap.add_argument("--pages", default="", help="comma-separated page titles to fetch only")
     ap.add_argument("--force", action="store_true", help="re-fetch existing pages")
     args = ap.parse_args()
 
-    print(f"wiki: {HOST} (pinned {REAL_IP}, proxy {PROXY})")
+    if args.sort:
+        sort_legacy()
+        return
+
+    print(f"wiki: {HOST} (pinned {REAL_IP}, proxy {PROXY}) -> {OUT}")
 
     if args.pages:
         titles = [t.strip() for t in args.pages.split(",") if t.strip()]
@@ -272,17 +362,19 @@ def main():
             print("  -", t)
         return
 
-    OUT.mkdir(parents=True, exist_ok=True)
     ok, fail = 0, []
     for title in titles:
-        dest = OUT / (slugify(title) + ".md")
+        cat = categorize(slugify(title))
+        dest_dir = OUT / cat
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        dest = dest_dir / (slugify(title) + ".md")
         if dest.exists() and not args.force:
-            print(f"  = {title} (exists)")
+            print(f"  = {title} (exists in {cat}/)")
             continue
         try:
             md, cats = fetch_page(title)
             dest.write_text(md, encoding="utf-8")
-            print(f"  ✓ {title} ({len(md)} chars -> {dest.name})")
+            print(f"  ✓ {title} ({len(md)} chars -> {cat}/{dest.name})")
             ok += 1
         except Exception as e:  # noqa: BLE001
             print(f"  ✗ {title}: {e}")

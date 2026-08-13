@@ -120,7 +120,7 @@ class CharacterLoader:
 
         # Append the Heir's own Amphoreus world-knowledge range (what they know
         # within their world — home city, Titan, circles, era), embedded by
-        # tools/build_heir_knowledge.py from the wiki docs in docs/wiki/.
+        # tools/build_heir_knowledge.py from the wiki docs in databank/wiki/.
         try:
             wk = card.get("world_knowledge") or {}
             block = wk.get("prompt_block") or ""

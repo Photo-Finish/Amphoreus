@@ -1,6 +1,6 @@
 """
 build_heir_knowledge.py — decide each Heir's SPECIFIC knowledge range of the
-Amphoreus world (grounded in the wiki docs in docs/wiki/) and embed it into
+Amphoreus world (grounded in the wiki docs in databank/wiki/) and embed it into
 their character settings (`world_knowledge` section of each card in
 src/characters/*.json).
 
@@ -35,7 +35,7 @@ except Exception:
 
 ROOT = Path(__file__).resolve().parent.parent
 CARDS = ROOT / "src" / "characters"
-WIKI = ROOT / "docs" / "wiki"
+WIKI = ROOT / "databank" / "wiki"  # sorted: databank/wiki/<category>/<slug>.md
 
 # The six great cities (every Heir of Amphoreus knows these names).
 GREAT_CITIES = [
@@ -91,11 +91,12 @@ def _slug_to_title(slug):
 
 
 def load_wiki_docs():
-    """Return {slug: {"title": str, "text": str}} for every fetched doc."""
+    """Return {slug: {"title": str, "text": str}} for every fetched doc
+    (recursively across databank/wiki/<category>/)."""
     docs = {}
     if not WIKI.exists():
         return docs
-    for f in sorted(WIKI.glob("*.md")):
+    for f in sorted(WIKI.glob("**/*.md")):
         try:
             txt = f.read_text(encoding="utf-8")
         except Exception:
