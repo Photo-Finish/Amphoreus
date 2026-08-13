@@ -398,6 +398,23 @@ Amphoreus/
 
 ## Changelog
 
+### 2026-08-14 — Map corrected to the canon geography + concrete adjacency matrix
+- **`databank/world/geography.md` gains the concrete adjacency matrix** (§3.1) —
+  the 11 UI-map vertices × vertices, with costs in periods, sea (`*`) and lost-sky
+  (`†`) markers, plus the evidence-based connection table.
+- **UI map corrected** (`src/world/map_data.py`) — two canon inaccuracies fixed:
+  (1) **Aidonia** is canonically in the **northern snow wasteland** ("Eleusis…
+  advanced north") — moved from the far southeast to the **north**; (2) the **Eye of
+  Twilight** is a **fallen sky castrum above Okhema** whose only link was the sky
+  bridge to Dawncloud (destroyed in "Dawn, Shine at the World's End") — it is now
+  drawn **in the sky above Dawncloud**, labelled "(fallen)", with the old
+  ground-level `Okhema ↔ Eye (12 p)` edge **removed** from the graph (the Eye is now
+  correctly unreachable, 999 p). Added the **River of Souls** (Styxia → northern
+  snows), **clouds** about Dawncloud/the Eye, and a dashed **"former sky bridge
+  (lost)"** ghost. `databank/world/map.md` updated to match (places, lay-of-the-land,
+  roads table, no-Eye-road note). Verified in the browser: 0 overlapping labels, all
+  cost labels intact.
+
 ### 2026-08-13 — Amphoreus geography determined (researched interconnection)
 - **New `databank/world/geography.md`** — a researched determination of how the
   locations of Amphoreus interconnect, compiled from the English HSR wiki (re-fetched

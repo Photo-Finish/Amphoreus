@@ -19,17 +19,21 @@ from typing import Dict, List, Optional, Tuple
 # Locations on the map (name -> position in the 1000x820 SVG coordinate space)
 # --------------------------------------------------------------------------- #
 LOCATION_POS: Dict[str, Tuple[float, float]] = {
-    "Okhema": (400, 470),
-    "Dawncloud": (400, 330),
-    "Janusopolis": (545, 505),
-    "Grove of Epiphany": (250, 400),
-    "Great Tomb": (175, 320),
-    "Castrum Kremnos": (140, 545),
-    "Styxia": (620, 620),
-    "Aidonia": (700, 720),
-    "Aedes Elysiae": (830, 315),
-    "Vortex of Genesis": (300, 680),
-    "Eye of Twilight": (120, 205),
+    # Positions follow the canon geography (see databank/world/geography.md):
+    # Aidonia lies in the NORTHERN snow wasteland; the Eye of Twilight is a
+    # FALLEN SKY castrum above Okhema (its sky bridge to Dawncloud is lost);
+    # the River of Souls runs from Styxia up into the northern snows.
+    "Okhema": (400, 480),
+    "Dawncloud": (400, 290),          # the council seat, in the clouds above Okhema
+    "Janusopolis": (565, 470),        # the twin city, a short road east
+    "Grove of Epiphany": (225, 430),  # the scholars' grove, west of Okhema
+    "Great Tomb": (130, 525),         # the deep ruin, a short descent from the Grove
+    "Castrum Kremnos": (175, 660),    # the mobile fortress on the long war road
+    "Styxia": (620, 625),             # on the River of Souls
+    "Aidonia": (660, 205),            # the northern snow wasteland
+    "Aedes Elysiae": (845, 555),      # the coastal village beyond the Veil of Evernight
+    "Vortex of Genesis": (360, 740),  # hidden by the waves; reached by sea
+    "Eye of Twilight": (400, 95),     # the fallen sky castrum, above Dawncloud
 }
 
 # --------------------------------------------------------------------------- #
@@ -48,7 +52,6 @@ ROUTES: Dict[Tuple[str, str], int] = {
     ("Okhema", "Aedes Elysiae"): 12,            # the remote village beyond the veil
     ("Okhema", "Great Tomb"): 10,               # down through the deep ruin
     ("Okhema", "Vortex of Genesis"): 14,        # the hidden sacred nexus
-    ("Okhema", "Eye of Twilight"): 12,          # toward the fallen sky castrum
     ("Janusopolis", "Aedes Elysiae"): 9,        # the coastal road to the wharf
     ("Grove of Epiphany", "Great Tomb"): 2,     # the deep path into the ruin
     ("Grove of Epiphany", "Castrum Kremnos"): 6,
@@ -201,6 +204,32 @@ def render_map_svg(
             f'<circle cx="{x:.0f}" cy="{y:.0f}" r="{r:.1f}" fill="#e8d5a3" opacity="{op:.2f}"/>'
         )
 
+    # the River of Souls — the great river that runs past Styxia up into the
+    # northern snow wasteland, where the living realm gives way to the nether.
+    parts.append(
+        '<path d="M 620 625 C 595 540, 598 425, 622 325 C 633 280, 648 240, 660 205" '
+        'fill="none" stroke="rgba(120,175,255,.20)" stroke-width="15" '
+        'stroke-linecap="round" stroke-linejoin="round"/>'
+    )
+    parts.append(
+        '<path d="M 620 625 C 595 540, 598 425, 622 325 C 633 280, 648 240, 660 205" '
+        'fill="none" stroke="rgba(170,210,255,.30)" stroke-width="5" '
+        'stroke-linecap="round" stroke-linejoin="round"/>'
+    )
+    parts.append(
+        '<text x="600" y="555" text-anchor="middle" font-size="10.5" font-style="italic" '
+        'fill="rgba(150,195,255,.6)" font-family="Georgia, serif">River of Souls</text>'
+    )
+    # clouds about the sky seat (Dawncloud) and the fallen sky castrum
+    for cx, cy, rx, ry in [
+        (400, 272, 62, 12), (445, 296, 42, 10), (358, 258, 46, 11),
+        (400, 78, 52, 11), (438, 104, 36, 9), (362, 112, 40, 9),
+    ]:
+        parts.append(
+            f'<ellipse cx="{cx}" cy="{cy}" rx="{rx}" ry="{ry}" '
+            f'fill="rgba(205,218,238,.05)"/>'
+        )
+
     # ---- Precompute the Heir layout (fan positions + packed name rows) so
     # the route-cost labels below can avoid sitting on any name. ----
     from collections import defaultdict, OrderedDict
@@ -258,6 +287,8 @@ def render_map_svg(
         for x, y, nm, _col in rows:
             w = 6.0 * len(nm)
             reserved.append((x - w / 2 - 4, x + w / 2 + 4, y - 11, y + 2))
+    # the River of Souls label must stay clear of route-cost labels too
+    reserved.append((600 - 46 - 4, 600 + 46 + 4, 544, 558))
 
     def _label_collides(x: float, y: float, w: float) -> bool:
         """True if a centered label at (x, y) of width w would overlap a name."""
@@ -286,18 +317,42 @@ def render_map_svg(
                 f'font-family="Georgia, serif">{cost} p</text>'
             )
 
+    # the former sky bridge between the council seat and the sky castrum
+    # (both ways lost in "Dawn, Shine at the World's End") — now only a faint
+    # ghost of the old connection.
+    dx, dy = LOCATION_POS["Dawncloud"]
+    ex, ey = LOCATION_POS["Eye of Twilight"]
+    parts.append(
+        f'<line x1="{dx}" y1="{dy}" x2="{ex}" y2="{ey}" '
+        f'stroke="rgba(232,213,163,.16)" stroke-width="1.4" stroke-dasharray="2 7"/>'
+    )
+    parts.append(
+        f'<text x="{dx + 16}" y="{(dy + ey) // 2}" text-anchor="start" font-size="9" '
+        f'font-style="italic" fill="rgba(232,213,163,.5)" '
+        f'font-family="Arial">former sky bridge (lost)</text>'
+    )
+
     # locations
+    _RUINS = {"Eye of Twilight"}
     for name, (x, y) in LOCATION_POS.items():
         hl = (name == highlight)
+        ruin = name in _RUINS
+        if ruin:
+            parts.append(
+                f'<circle cx="{x}" cy="{y}" r="14" fill="none" '
+                f'stroke="rgba(150,160,185,.45)" stroke-width="1.2" stroke-dasharray="3 4"/>'
+            )
         parts.append(
             f'<circle cx="{x}" cy="{y}" r="9" fill="#0d0b18" '
             f'stroke="{"#f4e3b2" if hl else "rgba(232,213,163,.75)"}" '
             f'stroke-width="{2.6 if hl else 1.6}"/>'
         )
+        label = f"{name} (fallen)" if ruin else name
+        labelfill = "#f4e3b2" if hl else ("rgba(150,160,185,.8)" if ruin else "#d8cfa8")
         parts.append(
             f'<text x="{x}" y="{y + 24}" text-anchor="middle" font-size="12.5" '
-            f'fill="{"#f4e3b2" if hl else "#d8cfa8"}" font-family="Georgia, serif" '
-            f'font-style="italic">{name}</text>'
+            f'fill="{labelfill}" font-family="Georgia, serif" '
+            f'font-style="italic">{label}</text>'
         )
 
     # the Heirs as small lights at their current places; name tags are drawn

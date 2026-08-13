@@ -22,10 +22,10 @@
 | **Great Tomb** | "Universal Matrix" | The deep ruin of all worlds, a short descent from the Grove. |
 | **Castrum Kremnos** | "Capital of Might" | The mobile fortress of the spear. **Mydei** holds it. |
 | **Styxia** | "Pearly Shores" | The city by the River of Souls, where the dead are remembered. |
-| **Aidonia** | "Snow City" | The frozen kingdom of death on the snow plains. **Castorice** lives here. |
-| **Aedes Elysiae** | the Deliverer's village | A remote village beyond the veil, at peace. **Phainon and Cyrene** live here. |
+| **Aidonia** | "Snow City" | The frozen kingdom of death in the **northern snow wasteland**. **Castorice** lives here. |
+| **Aedes Elysiae** | the Deliverer's village | A remote village beyond the **Veil of Evernight**, reached by sea (Voyager's Wharf). **Phainon and Cyrene** live here. |
 | **Vortex of Genesis** | sacred nexus | The hidden sanctuary of the primal Coreflames, reached by sea. |
-| **Eye of Twilight** | "Sky Castrum" | The fallen city in the clouds; a ruin, still seen on the horizon. |
+| **Eye of Twilight** | "Sky Castrum" | The **fallen sky castrum**, high above Okhema; a ruin — its sky bridge to Dawncloud is lost. |
 
 ---
 
@@ -34,34 +34,14 @@
 Each number is the travel time in **periods** between two directly connected
 places (undirected). 0 means *same city*; 5 periods = a full day.
 
-```
-                    ┌──────────┐
-                    │ Eye of   │   (fallen — a ruin on the horizon)
-                    │ Twilight │
-                    └──────────┘
-                    (unreachable road)
-                            │ 12
-   ┌────────────┐           │           ┌──────────────┐
-   │  Castrum   │── 6 ──┐   │           │  Aedes       │
-   │  Kremnos   │       │   │           │  Elysiae     │
-   └────────────┘       │   │           └──────┬───────┘
-            │ 8         │   │                  │ 9
-   ┌────────┴───┐       │   │             ┌────┴────────┐
-   │  Vortex    │   ┌───┴───┴───┐    ┌────┴─┐          │
-   │  of        │───│  Grove    │    │ Okhema│──1── Janusopolis
-   │  Genesis   │   │  of       │    └──┬────┘          │
-   └────────────┘   │  Epiphany │       │               │
-         │ 8        └────┬──────┘       │ 9             │
-         │               │ 2            │               │
-         │          ┌────┴─────┐   ┌────┴─────┐         │
-         │          │  Great   │   │  Styxia  │         │
-         │          │  Tomb    │   └────┬─────┘         │
-         │          └──────────┘        │ 3             │
-         │                          ┌───┴──────┐        │
-         │                          │  Aidonia │        │
-         │                          └──────────┘        │
-         └──── 8 ───────────────────────────────────────┘
-```
+> **The lay of the land** (see the 🗺️ Map tab and `world/geography.md` §3.1 for the
+> concrete adjacency matrix): **Okhema** is the hub, its twin **Janusopolis** a short
+> road east and the **Grove** a half-day west. **Aidonia** lies in the **northern
+> snow wasteland**; the **River of Souls** runs from **Styxia** up into the northern
+> snows. The **Eye of Twilight** is a **fallen sky castrum above Okhema** — its sky
+> bridge to **Dawncloud** (the council seat in the clouds) is lost, so it has no
+> road. The **Vortex of Genesis** is reached one-way by sea; **Aedes Elysiae** lies
+> beyond the Veil of Evernight, served by Voyager's Wharf.
 
 ### Direct roads (periods)
 
@@ -75,7 +55,6 @@ places (undirected). 0 means *same city*; 5 periods = a full day.
 | Okhema ↔ Aedes Elysiae | **12** |
 | Okhema ↔ Great Tomb | **10** |
 | Okhema ↔ Vortex of Genesis | **14** |
-| Okhema ↔ Eye of Twilight | **12** (ruin) |
 | Janusopolis ↔ Aedes Elysiae | **9** |
 | Grove of Epiphany ↔ Great Tomb | **2** |
 | Grove of Epiphany ↔ Castrum Kremnos | **6** |
@@ -83,6 +62,10 @@ places (undirected). 0 means *same city*; 5 periods = a full day.
 | Styxia ↔ Vortex of Genesis | **6** |
 | Castrum Kremnos ↔ Vortex of Genesis | **8** |
 | Aidonia ↔ Vortex of Genesis | **8** |
+
+*The Eye of Twilight has **no road** in the present era — its only link was the
+sky bridge to Dawncloud (the council seat), destroyed in "Dawn, Shine at the
+World's End."*
 
 ### Longest journeys (shortest path, in days)
 

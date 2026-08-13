@@ -92,7 +92,7 @@ graph; plausible but not canon-explicit).
 | **Okhema ↔ Vortex of Genesis** | direct, **one-way**, sea | Okhema's **Connections** lists the Vortex "(one-way)"; Aglaea interrogates the Trailblazer *at* the Vortex early on; the Vortex is "the starting point of the world, **hidden by the waves**". (`city-states.md`; `build/build_ch1_p3.py`; `major-locations.md`) |
 | **Okhema ↔ Great Tomb** | model | No direct in-game link found; the world engine routes it via Okhema (10 p). Plausible (Okhema is the hub). |
 | **Okhema ↔ Aedes Elysiae** | travel | Phainon travels from Aedes Elysiae to Okhema ("Phainon of Aedes Elysiae… heading toward us"); the world engine routes 12 p. (`build/build_ch3_p4.py`) |
-| **Okhema ↔ Eye of Twilight** | model (ruin) | No present-day link; the sky bridge (below) is gone. The engine marks it an unreachable ruin on the horizon. |
+| **Okhema ↔ Eye of Twilight** | — (edge removed 2026-08-14) | No present-day link exists: the Eye's only connection was the sky bridge to Dawncloud, destroyed in "Dawn, Shine at the World's End". The old ground-level 12 p edge was removed from the model; the Eye is drawn as a fallen sky ruin above Okhema with a dashed ghost of the lost bridge. |
 | **Dawncloud ↔ Eye of Twilight** | sky, **removed** | Dawncloud's wiki **Connections**: "Okhema; 'Fortress of Dome' Eye of Twilight **(both connections removed during 'Dawn, Shine at the World's End')**". The Eye of Twilight is the city-state *in the clouds* that "looks down upon the world from the skies". (`major-locations.md`) |
 | **Grove ↔ Great Tomb** | direct | Great Tomb's wiki **Connection**: "'Radiant Scarwood' Grove of Epiphany"; "a short descent from the Grove". (`major-locations.md`; `map.md`) |
 | **Grove ↔ Castrum Kremnos** | model | The engine routes 6 p. No canon statement found; plausible (both inland regions). |
@@ -104,6 +104,45 @@ graph; plausible but not canon-explicit).
 | **Aedes Elysiae ↔ the rest** | sea + Veil | Aedes Elysiae is **Outworld**: "protected by the Veil of Evernight and **left behind outside of the rest of the world**"; grain is shipped out **by boat from Voyager's Wharf**; "wheat fields, windmills, and the ocean watch over". (`major-locations.md`, fetched wiki page) |
 | **Vortex of Genesis ↔ the rest** | sea | "hidden by the waves"; the sanctuary of the primal Coreflames; the final confrontation with the Flame Reaver takes place there. (`major-locations.md`) |
 | **Great Tomb ↔ the world's end** | narrative | "**As I've Written is closely connected to this tomb**" — the tomb stores the pasts of all worlds; the Demiurge (Mem) was imprisoned there. (`build/build_ch7_p6.py`) |
+
+### 3.1 The adjacency matrix (concrete)
+
+Vertices: **OKH** Okhema · **DWN** Dawncloud · **JAN** Janusopolis · **GRV** Grove
+of Epiphany · **KRM** Castrum Kremnos · **STY** Styxia · **AID** Aidonia · **AED**
+Aedes Elysiae · **GRT** Great Tomb · **VRX** Vortex of Genesis · **EYE** Eye of
+Twilight.
+
+Cell = travel cost in Light-Calendar **periods** (0 = same city; `·` = no direct
+edge; `*` = sea route; `†` = historical sky link, now lost).
+
+```
+       OKH  DWN  JAN  GRV  KRM  STY  AID  AED  GRT  VRX  EYE
+OKH      ·    0    1    2    8    9    ·    12   10   14*  ·
+DWN      0    ·    ·    ·    ·    ·    ·    ·    ·    ·    †
+JAN      1    ·    ·    ·    ·    ·    ·    9    ·    ·    ·
+GRV      2    ·    ·    ·    6    ·    ·    ·    2    ·    ·
+KRM      8    ·    ·    6    ·    ·    ·    ·    ·    8*   ·
+STY      9    ·    ·    ·    ·    ·    3    ·    ·    6*   ·
+AID      ·    ·    ·    ·    ·    3    ·    ·    ·    8*   ·
+AED      12   ·    9    ·    ·    ·    ·    ·    ·    ·    ·
+GRT      10   ·    ·    ·    ·    ·    ·    ·    ·    ·    ·
+VRX      14*  ·    ·    ·    8*   6*   8*   ·    ·    ·    ·
+EYE      ·    †    ·    ·    ·    ·    ·    ·    ·    ·    ·
+```
+
+Notes:
+- This is the graph the world engine lives by (`src/world/map_data.py`) and that
+  the 🗺️ Map tab draws. **Corrected 2026-08-14**: the old ground-level
+  `Okhema ↔ Eye of Twilight (12 p)` edge was **removed** — canon gives the Eye no
+  present-day road (its only link was the sky bridge to Dawncloud, destroyed in
+  "Dawn, Shine at the World's End"). The Eye is drawn as a **fallen sky ruin**
+  above Okhema, with the lost sky bridge shown as a dashed ghost.
+- The **Vortex of Genesis** is reached one-way by sea (Okhema's Connections list
+  says "(one-way)"); the undirected edge is kept for Dijkstra travel and the map
+  notes the sea route.
+- **Aidonia** lies in the **northern snow wasteland**; the map now places it in
+  the north, with the **River of Souls** drawn running from Styxia up into the
+  northern snows.
 
 ---
 
@@ -182,10 +221,13 @@ The engine's graph is **largely consistent** with the canon:
    says "(one-way)", and the Vortex is "hidden by the waves" (you arrive by sea;
    there is no road back). The engine's graph is undirected (Dijkstra travel),
    so this is documented here rather than modelled as a directed edge.
-2. **A sky bridge once linked Dawncloud ↔ Eye of Twilight** — both directions were
-   "removed during 'Dawn, Shine at the World's End'", matching the engine's
-   treatment of the Eye as an unreachable ruin on the horizon. If a later story
-   era restores it, a direct Dawncloud ↔ Eye edge (high cost) would be canonical.
+2. **The Eye of Twilight is a sky ruin with no road** — its only link was the sky
+   bridge to Dawncloud, "removed during 'Dawn, Shine at the World's End'".
+   **Corrected 2026-08-14**: the engine graph no longer carries the old
+   `Okhema ↔ Eye (12 p)` edge; the map draws the Eye as a fallen sky castrum above
+   Okhema with a dashed ghost of the lost sky bridge. If a later story era
+   restores the bridge, a direct Dawncloud ↔ Eye edge (high cost) would be
+   canonical.
 
 ---
 
