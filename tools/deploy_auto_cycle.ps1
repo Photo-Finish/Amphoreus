@@ -15,8 +15,17 @@ $cycleLog = 'D:\Workspace\Amphoreus\docs\AUTO-CYCLE-LOG.md'
 function Log([string]$m) {
     try { Add-Content -Path $log -Value ("{0}  {1}" -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $m) } catch {}
 }
-function OllamaUp {
-    try { $null = Invoke-WebRequest -Uri 'http://127.0.0.1:11434/api/version' -TimeoutSec 6; return $true } catch { return $false }
+function OllamaHealthy {
+    # Port answering AND the Heir model actually visible. A bare `ollama serve`
+    # started without OLLAMA_MODELS answers /api/version but serves NO models
+    # -> every call 404s while the port looks fine (the 2026-08-12 trap).
+    try {
+        $null = Invoke-WebRequest -Uri 'http://127.0.0.1:11434/api/version' -TimeoutSec 6
+        $tags = (Invoke-WebRequest -Uri 'http://127.0.0.1:11434/api/tags' -TimeoutSec 8).Content
+        if ($tags -match 'gemma3:27b') { return $true }
+        Log 'server up but gemma3:27b NOT visible (wrong/empty models dir) -> will restart'
+        return $false
+    } catch { return $false }
 }
 # WMI (Get-CimInstance) can HANG on this machine (it did on 2026-08-13 — the
 # watchdog stalled for ~50 min and never noticed the dead server). Run every
@@ -37,14 +46,14 @@ function Invoke-StateCheck([scriptblock]$sb, [int]$timeoutSec = 20) {
 
 Log '=== watchdog started ==='
 while ($true) {
-    # 1. Ollama server up? (restart if down — fixes the 502 case)
-    if (-not (OllamaUp)) {
-        Log 'Ollama DOWN -> restarting server'
+    # 1. Ollama truly healthy? (port + gemma3:27b visible; restart if broken)
+    if (-not (OllamaHealthy)) {
+        Log 'Ollama DOWN/broken -> restarting server'
         Get-Process ollama,ollama_app,llama-server -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
         Start-Sleep -Seconds 3
         & 'D:\Workspace\Amphoreus\tools\start_ollama.ps1' | Out-Null
         Start-Sleep -Seconds 12
-        if (OllamaUp) { Log 'Ollama restarted OK' } else { Log 'Ollama restart FAILED (retrying next pass)' }
+        if (OllamaHealthy) { Log 'Ollama restarted OK' } else { Log 'Ollama restart FAILED (retrying next pass)' }
     }
 
     # 2. Auto-cycle alive? (relaunch unless it just completed). Runs in a
@@ -58,15 +67,23 @@ while ($true) {
     if ($null -eq $state) { $state = @{ ac = 0; ram = 99 } }  # timed out: assume not running, skip RAM action
 
     if ($state.ac -eq 0) {
-        $justFinished = $false
+        # RESUME POLICY: hold only when the run just SUCCEEDED; a FAILED or
+        # crashed run resumes after a short 5-min settle so the loop keeps
+        # cycling until everyone passes.
+        $resume = $true
         if (Test-Path $cycleLog) {
             $ageMin = (New-TimeSpan -Start (Get-Item $cycleLog).LastWriteTime -End (Get-Date)).TotalMinutes
-            $justFinished = $ageMin -lt 40
+            $txt = Get-Content $cycleLog -Raw -ErrorAction SilentlyContinue
+            $success = ($txt -match 'FINAL OUTCOME: SUCCESS')
+            if ($success -and $ageMin -lt 40) {
+                $resume = $false
+                Log 'auto-cycle SUCCEEDED recently — holding (not relaunching)'
+            } elseif ($ageMin -lt 5) {
+                $resume = $false   # just ended/wrote — give it a moment to settle
+            }
         }
-        if ($justFinished) {
-            Log 'auto-cycle finished recently — holding (not relaunching)'
-        } else {
-            Log 'auto-cycle NOT running -> relaunching'
+        if ($resume) {
+            Log 'auto-cycle not running -> relaunching'
             Start-Process -FilePath 'cmd.exe' -ArgumentList '/c', $cycleCmd
             Start-Sleep -Seconds 5
         }
