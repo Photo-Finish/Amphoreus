@@ -15,6 +15,7 @@ from .session_manager import SessionManager
 from .context_builder import ContextBuilder
 from .memory_store import MemoryStore
 from .preference_store import PreferenceStore
+from .teaching_store import TeachingStore
 from .llm_client import LLMClient
 from .senses import Senses
 from ..knowledge.vector_store import VectorStore
@@ -96,9 +97,11 @@ class AgentManager:
             audio_model=audio_model or self.llm.audio_model,
         )
 
-        # Persistent memory + preferences — stored in each Heir's personal folder
+        # Persistent memory + preferences + teaching ledger — stored in each
+        # Heir's personal folder
         self.memory = MemoryStore(memory_root)
         self.preferences = PreferenceStore(memory_root)
+        self.teaching = TeachingStore(memory_root)
         self._migrate_legacy_bonds()
 
         # RAG configuration
@@ -192,6 +195,23 @@ class AgentManager:
         Returns:
             The character's response as a string, or a generator if streaming.
         """
+        # The star-stranger's teaching — a genuine Socratic exchange (see
+        # docs/TEACHING.md). If the visitor clearly means to teach the Heir
+        # something from beyond the stars, or asks for a verdict on an active
+        # lesson, route into the teaching protocol instead of plain chat.
+        try:
+            from src.core import teaching as teaching_proto
+            active_lesson = bool(
+                self.teaching.studying(character_id)
+                or self.teaching.resolved(character_id)
+            )
+            if (not image and not video
+                    and (teaching_proto.detect_teaching(user_message)
+                         or (active_lesson and teaching_proto.asks_verdict(user_message)))):
+                return self.teach(character_id, user_message, stream=stream)
+        except Exception:
+            pass
+
         # Validate character exists
         card = self.loader.load(character_id)
         system_prompt = self.loader.build_system_prompt(character_id)
@@ -223,6 +243,12 @@ class AgentManager:
         pref_block = self.preferences.to_prompt_block(character_id)
         if pref_block:
             system_prompt = f"{system_prompt}\n\n{pref_block}"
+
+        # Enrich with what the star-stranger has taught the Heir (epistemic
+        # ledger: taught topics + the Heir's own verdicts, persisted).
+        teach_block = self.teaching.to_prompt_block(character_id)
+        if teach_block:
+            system_prompt = f"{system_prompt}\n\n{teach_block}"
 
         # Eyesight: the visitor shows the Heir an image or a video.
         has_image = bool(image)
@@ -288,6 +314,123 @@ class AgentManager:
             return response
         else:
             return self._stream_response(character_id, response)
+
+    def teach(
+        self,
+        character_id: str,
+        user_message: str,
+        stream: bool = False,
+    ) -> str | Generator:
+        """The star-stranger teaches the Heir something from beyond the stars.
+
+        One turn of the Socratic exchange (see docs/TEACHING.md). The Heir does
+        NOT feign understanding: they react from their own world, test the
+        visitor's claim against what they believe and value, and — when asked
+        — commit to a persistent verdict (adopted / refuted / unsure) recorded
+        in their teaching ledger and memory. Each turn advances the epistemic
+        state: foreign -> studied -> verdict.
+        """
+        from src.core import teaching as teaching_proto
+        from src.core.teaching_store import topic_key as _topic_key
+        from src.core.teaching_store import display_topic as _display_topic
+
+        card = self.loader.load(character_id)
+        system_prompt = self.loader.build_system_prompt(character_id)
+
+        # Record this visit and restore any prior session from persistent memory
+        self.memory.record_visit(character_id)
+        self._restore_session(character_id)
+
+        # Ground the exchange (RAG + memory + world + preferences + ledger)
+        if self.use_rag:
+            system_prompt = self.context_builder.retrieve_for_chat(
+                character_id, system_prompt, user_message
+            )
+        system_prompt = self._inject_memory_context(character_id, system_prompt)
+        system_prompt = self._inject_world_context(character_id, system_prompt)
+        try:
+            from src.core.visitor_mode import visitor_framing_block
+            system_prompt += visitor_framing_block()
+        except Exception:
+            pass
+        pref_block = self.preferences.to_prompt_block(character_id)
+        if pref_block:
+            system_prompt = f"{system_prompt}\n\n{pref_block}"
+        teach_block = self.teaching.to_prompt_block(character_id)
+        if teach_block:
+            system_prompt = f"{system_prompt}\n\n{teach_block}"
+
+        # Ledger state for this topic. A verdict question that doesn't name the
+        # topic again targets the most recently active lesson.
+        ask_verdict = teaching_proto.asks_verdict(user_message)
+        key = _topic_key(user_message)
+        if ask_verdict and not self.teaching.get_topic(character_id, key):
+            latest = self.teaching.latest_active_key(character_id)
+            if latest:
+                key = latest
+        tname = _display_topic(key)
+        state = self.teaching.state(character_id, key)
+        verdict_line = ""
+        if ask_verdict and state in ("studied", "adopted", "refuted", "unsure"):
+            verdict_line = (
+                "\nThe star-stranger asks what you make of what you have been "
+                "taught. Give an HONEST verdict in your own voice: accept it, "
+                "reject it, or hold it as uncertain — and say plainly why."
+            )
+
+        system_prompt = f"{system_prompt}\n\n{teaching_proto.TEACHING_SYSTEM}"
+        user = (
+            f"[Teaching turn — the star-stranger, from beyond the stars]\n"
+            f"{teaching_proto.phase_prompt(state, tname)}"
+            f"{verdict_line}\n\n"
+            f"The star-stranger says: \"{user_message}\"\n\n"
+            "Speak as yourself, in your own voice, within your own world."
+        )
+
+        # Add to session + persistent memory
+        self.sessions.add_message(character_id, "user", user_message)
+        self.memory.add_history(character_id, "user", user_message)
+        session = self.sessions.get_or_create(character_id)
+        messages = session.to_openai_format(system_prompt)
+        response = self._call_llm(messages, stream=stream)
+
+        # Advance the epistemic ledger
+        self.teaching.record_exchange(
+            character_id, key, question=user_message, claim=user_message[:200]
+        )
+        if ask_verdict and state in ("studied", "adopted", "refuted", "unsure"):
+            low = response.lower() if isinstance(response, str) else ""
+            if any(w in low for w in ("i accept", "you are right", "i believe you",
+                                      "it holds", "it fits", "i agree",
+                                      "it is true", "i am convinced")):
+                verdict = "adopted"
+            elif any(w in low for w in ("i reject", "i refuse", "you are wrong",
+                                        "it does not hold", "nonsense", "i doubt",
+                                        "it is false", "i am not convinced")):
+                verdict = "refuted"
+            else:
+                verdict = "unsure"
+            reason = response.strip()[:280] if isinstance(response, str) else ""
+            self.teaching.set_verdict(character_id, key, verdict, reason=reason)
+            self.memory.add_memory(
+                character_id, mtype="teaching",
+                content=(f"The star-stranger taught you about {tname}. Your "
+                         f"verdict: {verdict} — {reason[:220]}"),
+                importance=3,
+            )
+        else:
+            self.memory.add_memory(
+                character_id, mtype="teaching",
+                content=(f"The star-stranger began teaching you about {tname}: "
+                         f"\"{user_message[:160]}\""),
+                importance=2,
+            )
+
+        if not stream:
+            self.sessions.add_message(character_id, "assistant", response)
+            self.memory.add_history(character_id, "assistant", response)
+            return response
+        return self._stream_response(character_id, response)
 
     def _call_llm(self, messages: list[dict], stream: bool = False):
         """Call the LLM API via the shared OpenAI-compatible client."""

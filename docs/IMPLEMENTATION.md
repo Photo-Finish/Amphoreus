@@ -607,6 +607,32 @@ $env:SANCTUARY_MODE='aftermath'; python tools/seed_mode.py aftermath
 python -m streamlit run src/ui_app.py
 ```
 
+### 3.9 The star-stranger's teaching — learning from beyond the stars
+(`src/core/teaching_store.py`, `src/core/teaching.py`, `AgentManager.teach()`)
+
+The Heirs know nothing of the world beyond the stars (see the KNOWLEDGE
+BOUNDARIES system in `src/core/world_knowledge.py`). But the visitor is *from
+beyond the stars*, and may teach them real-world knowledge — advanced
+mathematics, and so on — and debate whether it is right. Instead of a mask
+("pretend you don't know, then pretend you learned"), each Heir keeps a **persistent epistemic ledger**
+(`teaching.json`): every taught topic travels
+**foreign → studied → adopted | refuted | unsure**, and the verdict is the
+Heir's own, stored with their reasoning.
+
+- The Heir never fakes understanding — they react from their own world
+  (curiosity, skepticism, awe) and **test the visitor's claim against what
+  they believe and value**, so the debate is a genuine collision of worldviews.
+- Teaching intent (e.g. *"I want to teach you about calculus"*) routes
+  `chat()` into the teaching protocol; a verdict question (e.g. *"What do you
+  make of it?"*) makes the Heir commit to `adopted` / `refuted` / `unsure`.
+- The ledger is injected into every system prompt
+  (`# What the star-stranger has taught you…`), so taught-and-resolved topics
+  persist across visits, restarts, and world days — **unlocking is earned and
+  durable, not a toggle**. Teaching exchanges are also written to memory
+  (`mtype="teaching"`).
+- Full design rationale, the graded-state model, and the honest limits:
+  **`docs/TEACHING.md`**. End-to-end test (mocked LLM): `world_runtime/_test_teaching.py`.
+
 ---
 
 ## 4. Data flow (one chat turn vs. one world day)
