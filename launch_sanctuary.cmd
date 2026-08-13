@@ -18,12 +18,14 @@ if exist D:\ (
 
 rem --- locate the project root (folder of this script) ---
 set ROOT=%~dp0
-set PYTHON=%ROOT%..\.venv\Scripts\python.exe
+rem Prefer a venv INSIDE the repo (.venv); fall back to the sibling venv (..\.venv)
+set PYTHON=%ROOT%.venv\Scripts\python.exe
+if not exist "%PYTHON%" set PYTHON=%ROOT%..\.venv\Scripts\python.exe
 
 if not exist "%PYTHON%" (
-    echo [ERROR] Python venv not found at %PYTHON%
-    echo         Create it next to the repo, e.g.:  python -m venv ..\.venv
-    echo         then:  ..\.venv\Scripts\pip install -r requirements.txt
+    echo [ERROR] Python venv not found at %ROOT%.venv  (nor ..\.venv)
+    echo         Create it:  python -m venv .venv
+    echo         then:       .venv\Scripts\python -m pip install -r requirements.txt
     pause
     exit /b 1
 )

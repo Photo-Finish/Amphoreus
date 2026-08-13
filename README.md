@@ -135,33 +135,144 @@ d:/Workspace/.venv/Scripts/python.exe build_kb.py --embedding hashing      # off
 
 ---
 
-## Running on a new machine
+## Build it from scratch (complete guide)
 
-Amphoreus is fully local and offline. To run it somewhere else:
+This section is everything you need to go from an empty machine to a running
+sanctuary by reading only this README. Windows is the tested platform; the
+Python steps are identical on macOS/Linux (replace `Scripts\` with `bin/` and
+the `.cmd` launcher with the manual `python -m streamlit` command).
 
-1. **Ollama** (0.32.6+) — pull the runtime models (sizes + mirrors in `docs/DOWNLOADS.md`):
-   ```powershell
-   ollama pull gemma3:27b deepseek-r1-distill:32b deepseek-r1-distill:14b `
-               qwen2.5:14b-instruct gemma3n qwen3-vl:8b qwen2.5-omni qwen2.5vl:7b
-   ```
-   plus `faster-whisper-base` for speech-to-text (see `docs/DOWNLOADS.md`).
-2. **Python 3.13 venv** next to the repo (the launcher expects `..\.venv`):
-   ```powershell
-   python -m venv ..\.venv
-   ..\.venv\Scripts\python -m pip install -r requirements.txt
-   ```
-3. **Config**: `copy .env.example .env` (pick a senses mode — `unified` or `quality`).
-4. **Preflight**: `..\.venv\Scripts\python tools\doctor.py` — checks deps, layout,
-   models, config, RAG and ports, and prints next steps.
-5. **Build the knowledge base**: `python build_kb.py --embedding local`.
-6. **Launch**: double-click `launch_sanctuary.cmd`, or
-   `python -m streamlit run src/ui_app.py`.
+### 0. What you are building
 
-> **Dev/ops tools are machine-specific.** `tools/` also contains local-ops scripts
-> (the auto-cycle watchdog, GGUF registration, and the wiki/background downloaders,
-> which on this machine rely on a VPN proxy + pinned DNS). They are **not** required
-> to run the sanctuary — the steps above are the public path. `start_ollama.ps1` is
-> portable (paths derived from the script location; override with `OLLAMA_EXE`).
+A fully local, offline AI sanctuary: 13 Chrysos Heirs (from *Honkai: Star
+Rail*'s Amphoreus) who remember you, live in a simulated world, share art and
+music with you, can be **taught** things from beyond the stars, and are held
+to a strict in-character voice standard. Everything runs on your own machine.
+
+### 1. Prerequisites
+
+| Requirement | Minimum (tested) |
+|---|---|
+| OS | Windows 10/11 (tested) — Python steps are cross-platform |
+| GPU / RAM | NVIDIA RTX 5070 8 GB VRAM / 32 GB RAM (tested). Less works with a smaller model set (see step 4) |
+| Disk | ~20 GB (code + assets + KB) + the models you pull (see step 4; full set ≈ 80 GB) |
+| Software | **Python 3.13**, **Git**, **Ollama ≥ 0.32.6** (from `ollama.com/download`) |
+
+### 2. Get the code
+
+```powershell
+git clone https://github.com/Photo-Finish/Amphoreus.git
+cd Amphoreus
+```
+
+### 3. Python environment
+
+```powershell
+python -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt
+```
+
+(`launch_sanctuary.cmd` uses `.venv` inside the repo, with a `..\.venv`
+fallback.)
+
+### 4. Models (Ollama) — the only big download
+
+First install Ollama, then pull the models. **The full set enables every
+feature; the minimal set still runs the sanctuary** (the Ambient World
+Director falls back to a deterministic script if its model is absent, and
+speech-to-text simply isn't available without `faster-whisper-base`).
+
+```powershell
+# Full set (~80 GB total):
+ollama pull gemma3:27b deepseek-r1-distill:32b deepseek-r1-distill:14b `
+            qwen2.5:14b-instruct gemma3n qwen3-vl:8b qwen2.5-omni qwen2.5vl:7b
+
+# Minimal set (still fully usable) — just the voice + senses:
+ollama pull gemma3:27b gemma3n
+```
+
+Speech-to-text (optional): download `faster-whisper-base` into
+`models/faster-whisper-base/`:
+
+```powershell
+curl.exe -L -C - -o model.bin `
+  "https://modelscope.cn/models/Systran/faster-whisper-base/resolve/master/model.bin"
+```
+
+> The mirror table, exact sizes, hashes and GGUF alternatives are in
+> `docs/DOWNLOADS.md`. On a throttled network use the ModelScope mirrors listed
+there (≈8 MB/s instead of ≈10 KB/s).
+
+### 5. Configure
+
+```powershell
+copy .env.example .env     # (macOS/Linux: cp .env.example .env)
+```
+
+Edit `.env` to pick a **senses mode**: `unified` (default — one model,
+`gemma3n`, hears music and sees pictures) or `quality` (`qwen3-vl:8b` vision +
+`gemma3n` audio). That's the only config you must touch.
+
+### 6. Preflight
+
+```powershell
+.venv\Scripts\python tools\doctor.py
+```
+
+It checks Python deps, the project layout, Ollama + every runtime model, your
+`.env`, the RAG knowledge base and the ports — and tells you what is missing.
+
+### 7. Build the knowledge base (RAG)
+
+```powershell
+.venv\Scripts\python build_kb.py --embedding local
+```
+
+Builds one ChromaDB collection per Heir from the canon databank (read-only)
+and the wiki dump. This can take a few minutes; it may need internet once if
+the embedding model is not yet cached.
+
+### 8. Launch
+
+```powershell
+# One-click (recommended):
+launch_sanctuary.cmd
+
+# …or manually:
+.venv\Scripts\python -m streamlit run src\ui_app.py
+```
+
+Open `http://localhost:8501`. You're in. **Visit an Heir** → chat, share
+pictures/music, or **teach** them something from beyond the stars (say
+*"I want to teach you about calculus"*, then *"What do you make of it?"*).
+
+### 9. Optional — the living world
+
+The Heirs also live in a simulated world when you're not there (each in-game
+day ≈ 15 minutes):
+
+```powershell
+.venv\Scripts\python -m src.world.world_engine --interval 900
+.venv\Scripts\python -m src.world.world_engine --status   # what is happening
+.venv\Scripts\python -m src.world.world_engine --stop     # pause the world
+```
+
+### 10. Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `model not found` / 404s on every chat | The Ollama server is serving an **empty models dir** (a bare `ollama serve` ignores `OLLAMA_MODELS`). Start it with `powershell -File tools\start_ollama.ps1`, or set `OLLAMA_MODELS` to the repo's `models\ollama`. |
+| `ModuleNotFoundError: dotenv` (or anything) | `pip install -r requirements.txt` again from inside the venv. |
+| Port 8501 in use | Close the other Streamlit instance, or run with `--server.port 8502`. |
+| Low RAM / OOM on a small machine | Use the minimal model set (step 4); the engine unloads idle models. |
+| No speech/vision responses | The senses models aren't pulled (`gemma3n`, `qwen2.5-omni`, `qwen3-vl:8b`) — `ollama pull` them. |
+| Anything else | `tools\doctor.py` lists exactly what's missing; `docs/IMPLEMENTATION.md` has the deep details. |
+
+> **Dev/ops tools are machine-specific.** `tools/` also contains local-ops
+> scripts (the auto-cycle watchdog, GGUF registration, and the wiki/background
+> downloaders, which on the author's machine rely on a VPN proxy + pinned DNS).
+> They are **not** required to run the sanctuary — steps 1–8 above are the
+> public path.
 
 ---
 
