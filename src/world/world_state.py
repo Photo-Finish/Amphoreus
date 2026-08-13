@@ -174,6 +174,8 @@ class WorldState:
         self.project_progress: Dict[str, int] = {} # cid -> steps done
         self.surge: Dict = {"active": False, "remaining": 0, "cities": []}
         self.companions: Dict[str, bool] = {}  # cid -> the star-stranger travels with them
+        self.learned: Dict[str, list] = {}     # cid -> [things taught/told of beyond the stars]
+        self.visitor_echo_ts: Dict[str, str] = {}  # cid -> last day the world gossiped of a visit
         self._load()
 
     # ------------------------------------------------------------------ #
@@ -196,6 +198,8 @@ class WorldState:
                 self.project_progress = data.get("project_progress", {}) or {}
                 self.surge = data.get("surge", {"active": False, "remaining": 0, "cities": []})
                 self.companions = data.get("companions", {}) or {}
+                self.learned = data.get("learned", {}) or {}
+                self.visitor_echo_ts = data.get("visitor_echo_ts", {}) or {}
             except Exception:
                 pass
 
@@ -216,6 +220,8 @@ class WorldState:
                         "project_progress": self.project_progress,
                         "surge": self.surge,
                         "companions": self.companions,
+                        "learned": self.learned,
+                        "visitor_echo_ts": self.visitor_echo_ts,
                     },
                     f,
                     ensure_ascii=False,

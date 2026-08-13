@@ -433,6 +433,38 @@ Amphoreus/
   companions; the world engine weaves surges/NPCs/letters/milestones into each day; the
   Heirs' perception and the visitor's chat both read the living texture.
 
+### 2026-08-13 — World vividness: refinement pass
+- **Surge darkens the sky exactly once** — the black-tide weather suffix is now
+  idempotent (no `"…black tide darkens the sky, and the black tide darkens the sky"`
+  on the surge's later days or after a restart mid-surge).
+- **The visitor's calls are seen and cleared** — `news_flash` (what the star-stranger
+  said on visits) now appears in the Gazette ("🌟 The Visitor's Calls") and the engine
+  keeps only the current day's flashes.
+- **Teaching that sticks** — each Heir keeps a persistent **"things you learned or
+  were told of the world beyond the stars"** ledger (`world.learned`, never decays,
+  capped 8): first-hand knowledge outranks second-hand, second-hand is upgraded when
+  the visitor teaches it directly, and the ledger surfaces in chat, perception and —
+  half-remembered — in later encounters, so Phainon can still tell Anaxa weeks after
+  the visitor's lesson.
+- **Letters along canon bonds** — distant Heirs who share a *canon* bond now exchange
+  letters even in a fresh world (no waiting for drift), and letters draw from **five
+  varied templates** flavored with the sender's long work and city.
+- **The world doesn't gossip about small talk** — a visitor's echo forms at most once
+  per Heir per day, only for substantive turns, with deduped Keeper flashes.
+- **Rumor chains die cleanly** — nested tellings are capped at two hops and truncated,
+  and fidelity still kills a rumor by the third hand (0.7³ < 0.35).
+- **NPCs appear even in quiet times** — residents no longer wait for the Keeper's news;
+  they favor cities where Heirs are present.
+- **Travel together is usable** — a "🚶 Travel together" control in the Visit tab sends
+  the star-stranger onto the road beside an Heir (companion noted on the map, in the
+  Gazette and in the Heir's own perception).
+- **Gazette gains a "🕸️ The Bonds of the Heirs"** section (who has warmed or cooled
+  lately from the dynamic drift overlay).
+- **Diagnostic extended** (`tools/test_world_vividness.py`) — a simulated multi-day
+  engine loop now verifies: rumor spread + nesting cap, echo cooldown, teaching
+  stickiness + persistence + second-hand upgrade, canon-bond letters + varied
+  templates, surge darken-once, the news-flash daily lifecycle, and gazette data load.
+
 ### 2026-08-13 — Knowledge boundaries, Galgame view, 8192 context, hardened cycle
 - **Wiki databank + decided per-Heir knowledge** (`3bc9b56`, `5dc1b4e`, `811e645`, `628b2a5`) — 317 pages of Amphoreus lore pulled from the English HSR wiki into **`databank/wiki/`** (sorted: titans/locations/factions/characters/gameplay/experiment/lore) by `tools/fetch_wiki_amphoreus.py`; `tools/build_heir_knowledge.py` decides each Heir's **world-knowledge range** (home city, own Titan, their city's Titans, places, circles, people, events, and the explicit edge of what lies outside their knowledge) and embeds it into all 13 cards, injected into every system prompt.
 - **Location backgrounds everywhere** (`ca72326`, `bd29c75`) — 20 Amphoreus **area artworks** fetched into `assets/galgame/` by `tools/fetch_galgame_backgrounds.py`; the **💬 Classic** banner, **🗺️ Map** area-art browser and **🎬 Galgame** scene all show the backdrop that matches where each Heir currently is (via the shared `src/ui_backgrounds.py`), falling back to their home city and then the default banner.

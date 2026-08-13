@@ -92,6 +92,12 @@ class HeirAgent:
             rumor_text = "\nWhat you have heard lately:\n" + "\n".join(
                 f"- {r}" for r in rumors
             )
+        learned = wev.learned_for(self.world, self.character_id, limit=3)
+        learned_text = ""
+        if learned:
+            learned_text = ("\nWhat you have been taught or told of the world "
+                            "beyond the stars:\n" + "\n".join(
+                                f"- {l}" for l in learned))
         proj = wev.project_info(self.world, self.character_id)
         proj_text = ""
         if proj:
@@ -115,6 +121,7 @@ class HeirAgent:
             f"{errand_text}"
             f"{news_text}"
             f"{rumor_text}"
+            f"{learned_text}"
             f"{proj_text}"
             f"{letter_text}"
             f"{recent_text}"

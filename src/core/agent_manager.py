@@ -462,6 +462,10 @@ class AgentManager:
             if rumors:
                 parts.append("# What you have heard lately\n" +
                              "\n".join(f"- {r}" for r in rumors))
+            learned = _wev.learned_for(world, character_id, limit=3)
+            if learned:
+                parts.append("# What you have been taught or told of the world beyond the stars\n" +
+                             "\n".join(f"- {l}" for l in learned))
             rel = _wev.relationships_block(world)
             if rel:
                 parts.append(rel)
@@ -481,11 +485,15 @@ class AgentManager:
         return system_prompt
 
     def _echo_visit(self, character_id, note):
-        """The world notices the star-stranger's visit."""
+        """The world notices a SUBSTANTIVE visit (rumor + Keeper flash).
+        Small talk is not gossiped about."""
+        note = str(note or "").strip()
+        if len(note) < 24:
+            return
         try:
             from src.world import world_events as _wev
             from src.world.world_state import WorldState
-            _wev.visitor_echo(WorldState(), character_id, str(note)[:160])
+            _wev.visitor_echo(WorldState(), character_id, note[:160])
         except Exception:
             pass
 

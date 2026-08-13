@@ -552,6 +552,27 @@ with main_tab:
     except Exception:
         pass
 
+    # Travel together — the star-stranger accompanies this Heir on the road
+    try:
+        from src.world import map_data as _map_data
+        _here = _loc_now(selected) if "_loc_now" in dir() else ""
+        _dests = [l for l in _map_data.LOCATION_POS if l != _here]
+        if _dests:
+            with st.expander("🚶 Travel together"):
+                _dest = st.selectbox("Where shall you walk together?", _dests,
+                                     key=f"travel_dest_{selected}")
+                if st.button(f"Set out for {_dest} with {info['name']}",
+                             key=f"travel_btn_{selected}"):
+                    _ti = manager.travel_with(selected, _dest)
+                    if _ti:
+                        st.success(f"You walk with {info['name']} on the road to "
+                                   f"{_ti['to']} — {_ti['remaining_days']} day(s).")
+                        st.rerun()
+                    else:
+                        st.error("The road could not be taken just now.")
+    except Exception:
+        pass
+
     # Initialize chat history
     if "messages" not in st.session_state:
         st.session_state.messages = {}

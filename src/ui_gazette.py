@@ -113,6 +113,13 @@ def render_gazette(manager, characters):
                 parts.append(f'<div class="item" style="margin-top:6px;">📯 News from the '
                              f'wider world: <i>{_html.escape(news)}</i></div>')
 
+        # the visitor's calls — today's word of the star-stranger
+        flash = ws.ambient.get("news_flash") or []
+        if flash:
+            parts.append('<h2>🌟 The Visitor\'s Calls</h2>')
+            for f in flash:
+                parts.append(f'<div class="item">• {_html.escape(str(f.get("text", "")))}</div>')
+
         # front page
         if headline:
             parts.append('<h2>📰 On the Front Page</h2>')
@@ -152,7 +159,21 @@ def render_gazette(manager, characters):
                              f'“{_html.escape(str(l.get("text", ""))[:110])}”</div>')
         else:
             parts.append('<div class="muted">No letters are in the post.</div>')
-
+        # bonds — who has warmed or cooled lately
+        bonds = []
+        for key, delta in ws.relationship_delta.items():
+            if delta == 0:
+                continue
+            a, b = key.split("|")
+            na, nb = names.get(a, a), names.get(b, b)
+            if delta > 0:
+                bonds.append(f"{na} and {nb} have grown closer of late (+{delta})")
+            else:
+                bonds.append(f"{na} and {nb} have drifted apart of late ({delta})")
+        if bonds:
+            parts.append('<h2>🕸️ The Bonds of the Heirs</h2>')
+            for bd in bonds[:8]:
+                parts.append(f'<div class="item">• {_html.escape(bd)}</div>')
         # long works
         parts.append('<h2>🔨 The Heirs\' Long Works</h2>')
         if proj_rows:

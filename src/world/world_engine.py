@@ -242,18 +242,27 @@ class WorldEngine:
             lines.append(sline)
             self.chronicle.append({"time": time_str, "text": sline, "kind": "surge"})
             self.world.add_event(sline)
-            # the surge darkens the Keeper's weather
+            # the surge darkens the Keeper's weather ONCE (idempotent across
+            # the surge's days and across restarts mid-surge)
             weather = self.world.ambient.setdefault("weather", {})
             for city in surge.get("cities", []):
-                weather[city] = (weather.get(city) or "clear") + ", and the black tide darkens the sky"
+                cur = weather.get(city) or "clear"
+                if "black tide" not in cur:
+                    weather[city] = cur + ", and the black tide darkens the sky"
         wev.advance_surge(self.world)
-        # 2) A named resident is seen in one of the cities (alive NPCs only).
-        if self.world.ambient.get("news", "") and random.random() < 0.5:
-            npc = random.choice(wev.NPCS)
-            fline = (f"{time_str} — In {npc['city']}, {npc['name']} is about — "
-                     f"{npc['flavor']}")
-            lines.append(fline)
-            self.chronicle.append({"time": time_str, "text": fline, "kind": "flavor"})
+        # the Keeper's news-flash holds only today's word of the visitor
+        today = self.world.clock.format_short()
+        flash = self.world.ambient.get("news_flash") or []
+        if flash:
+            self.world.ambient["news_flash"] = [f for f in flash if f.get("ts") == today]
+        # 2) A named resident is seen about their city (alive NPCs only).
+        if random.random() < 0.5:
+            npc = self._pick_npc()
+            if npc:
+                fline = (f"{time_str} — In {npc['city']}, {npc['name']} is about — "
+                         f"{npc['flavor']}")
+                lines.append(fline)
+                self.chronicle.append({"time": time_str, "text": fline, "kind": "flavor"})
         # 3) Sometimes a letter travels between distant Heirs.
         if random.random() < 0.3:
             letter = self._compose_letter(time_str)
@@ -265,8 +274,14 @@ class WorldEngine:
                 self.world.add_event(lline)
         return lines
 
+    def _pick_npc(self):
+        """A named resident whose city has Heirs present (else any alive NPC)."""
+        with_heirs = [n for n in wev.NPCS if self.world.agents_at(n["city"])]
+        pool = with_heirs or list(wev.NPCS)
+        return random.choice(pool) if pool else None
+
     def _compose_letter(self, time_str: str) -> Optional[dict]:
-        """A letter between two Heirs who are apart (canon-relation or bonded)."""
+        """A letter between two Heirs who are apart (canon-bond or drifted)."""
         import random as _r
         ids = list(self.agents)
         _r.shuffle(ids)
@@ -276,10 +291,10 @@ class WorldEngine:
                     continue
                 if self.world.location_name(a) == self.world.location_name(b):
                     continue  # they can just talk
-                if wev.relationship_delta_of(self.world, a, b) == 0:
-                    continue  # no established bond worth a letter yet
-                text = (f"I think of you often. When the road is long, "
-                        f"your words are company. — {self._name_of(a)}")
+                if wev.relationship_delta_of(self.world, a, b) == 0 and \
+                        not wev.canon_bond(self.world, a, b):
+                    continue  # no bond worth a letter yet
+                text = wev.letter_text(self.world, a, b)
                 entry = wev.compose_letter(self.world, a, b, text)
                 # both remember it
                 self.agents[a].remember(
@@ -335,6 +350,12 @@ class WorldEngine:
                             continue
                         wev.spread_rumors(self.world, agent.character_id, other.character_id)
                         wev.adjust_relationship(self.world, agent.character_id, other.character_id, 1)
+                        # and what one has learned of the world beyond the stars
+                        # passes to the other, half-remembered (the teaching web)
+                        for item in wev.learned_items(self.world, agent.character_id, limit=2):
+                            wev.record_learning(
+                                self.world, other.character_id, item["topic"],
+                                source=agent.name, secondhand=True)
                     cross = [t for t in transcript if not t.startswith(agent.name + ":")]
                     if cross:
                         who = ", ".join(t.split(":")[0] for t in cross[:3])

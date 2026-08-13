@@ -71,6 +71,8 @@ NPCS = [
 def add_rumor(world, character_id: str, text: str, source: str = ""):
     """Record a rumor in a Heir's ledger (freshest first, capped)."""
     ledger = world.rumors.setdefault(character_id, [])
+    if len(text) > 220:
+        text = text[:217] + "..."
     ledger.insert(0, {"text": text, "source": source, "fidelity": 1.0,
                       "ts": world.clock.format_short()})
     del ledger[6:]  # keep the six most recent
@@ -85,8 +87,14 @@ def rumors_for(world, character_id: str, limit: int = 3) -> List[str]:
     return out
 
 
+def _nest_depth(text: str) -> int:
+    """How many hands a rumor has passed through ('told me' hops)."""
+    return text.count("told me:")
+
+
 def spread_rumors(world, from_cid: str, to_cid: str):
-    """One Heir tells another what they've heard; the telling degrades it."""
+    """One Heir tells another what they've heard; the telling degrades it.
+    Nested tellings are capped at two hops so chains cannot grow forever."""
     if from_cid == to_cid:
         return
     for r in world.rumors.get(from_cid, [])[:3]:
@@ -94,24 +102,32 @@ def spread_rumors(world, from_cid: str, to_cid: str):
         if fidelity < 0.35:
             continue
         text = r["text"]
-        # secondhand — the source is now the teller
-        new_text = f"{world.name_of(from_cid)} told me: {text}"
-        add_rumor(world, to_cid, new_text, source=from_cid)
+        if _nest_depth(text) < 2:
+            text = f"{world.name_of(from_cid)} told me: {text}"
+        else:
+            text = text[:160]
+        add_rumor(world, to_cid, text, source=from_cid)
         # keep fidelity from the original rumor, not reset
         for rr in world.rumors.get(to_cid, []):
-            if rr["text"] == new_text:
+            if rr["text"] == text:
                 rr["fidelity"] = fidelity
                 break
 
 
 def visitor_echo(world, character_id: str, note: str) -> str:
-    """After the star-stranger talks with a Heir, the world notices."""
+    """After the star-stranger talks with a Heir, the world notices.
+    At most one echo per Heir per day — the world does not gossip about
+    every word — and repeated flashes are deduped."""
+    today = world.clock.format_short()
+    if world.visitor_echo_ts.get(character_id) == today:
+        return ""
+    world.visitor_echo_ts[character_id] = today
     rumor = (f"The star-stranger met with {world.name_of(character_id)} — {note}")
     add_rumor(world, character_id, rumor, source="the star-stranger")
     # the Keeper's news catches it
     flash = world.ambient.setdefault("news_flash", [])
-    if len(flash) < 5:
-        flash.append({"text": rumor, "ts": world.clock.format_short()})
+    if len(flash) < 5 and not any(f.get("text") == rumor for f in flash):
+        flash.append({"text": rumor, "ts": today})
     return rumor
 
 
@@ -120,8 +136,51 @@ def teaching_rumor(world, character_id: str, topic: str):
     rumor = (f"the star-stranger taught {world.name_of(character_id)} something "
              f"of the world beyond the stars — {topic}")
     add_rumor(world, character_id, rumor, source="the star-stranger")
+    record_learning(world, character_id, topic, source="the star-stranger")
     for other in adjacent(world, character_id):
         spread_rumors(world, character_id, other)
+        record_learning(world, other, topic,
+                        source=world.name_of(character_id), secondhand=True)
+
+
+def record_learning(world, character_id: str, topic: str, source: str = "",
+                    secondhand: bool = False):
+    """A thing the Heir has been taught or told of the world beyond the stars.
+    It persists (no decay) so it can surface again weeks later — firsthand
+    knowledge outranks secondhand, and a repeated hearing refreshes it."""
+    ledger = world.learned.setdefault(character_id, [])
+    for item in ledger:
+        if item["topic"].lower() == topic.lower():
+            if not item.get("secondhand"):
+                return  # already holds it firsthand — nothing to improve
+            if not secondhand:
+                item["secondhand"] = False
+            item["ts"] = world.clock.format_short()
+            item["source"] = source
+            return
+    ledger.insert(0, {"topic": topic, "source": source,
+                      "secondhand": secondhand,
+                      "ts": world.clock.format_short()})
+    del ledger[8:]  # keep the eight most recent
+
+
+def learned_items(world, character_id: str, limit: int = 3) -> List[Dict]:
+    """Raw ledger entries (for spreading during encounters)."""
+    return world.learned.get(character_id, [])[:limit]
+
+
+def learned_for(world, character_id: str, limit: int = 3) -> List[str]:
+    """Readable lines for the Heir's perception / chat context."""
+    out = []
+    for item in world.learned.get(character_id, []):
+        if len(out) >= limit:
+            break
+        if item.get("secondhand"):
+            src = f" from {item['source']}" if item.get("source") else ""
+            out.append(f"You were told of {item['topic']}{src} — secondhand, not fully")
+        else:
+            out.append(f"You were taught {item['topic']} by the star-stranger")
+    return out
 
 
 def adjacent(world, character_id: str) -> List[str]:
@@ -174,6 +233,48 @@ def compose_letter(world, from_cid: str, to_cid: str, text: str):
     world.letters.append(entry)
     del world.letters[:-30]
     return entry
+
+
+def _norm(name: str) -> str:
+    return "".join(ch for ch in (name or "").lower() if ch.isalnum())
+
+
+def canon_bond(world, a: str, b: str) -> bool:
+    """Do these two Heirs share a bond in the canon registry? (read-only —
+    the static registry itself is never modified.)"""
+    try:
+        from src.core.relationships import HEIR_RELATIONSHIPS
+    except Exception:
+        return False
+    na, nb = _norm(world.name_of(a)), _norm(world.name_of(b))
+    for e in HEIR_RELATIONSHIPS.get(a, []):
+        if _norm(e.get("name")) == nb:
+            return True
+    for e in HEIR_RELATIONSHIPS.get(b, []):
+        if _norm(e.get("name")) == na:
+            return True
+    return False
+
+
+_LETTER_TEMPLATES = [
+    "{sender} writes: I think of you often. The road is long and the world is wide, but your words are company.",
+    "{sender} writes: There is a quiet I have been keeping to myself. I wanted you to hear it, so I write.",
+    "{sender} writes: My long work goes on — {project}. I thought you should know it is still alive, and so am I.",
+    "{sender} writes: They say the distance between us is only a road. I would walk it, if the day allowed. Until then, this letter.",
+    "{sender} writes: I found myself thinking of you in {city}. Some things survive the miles. Write back when you can.",
+]
+
+
+def letter_text(world, from_cid: str, to_cid: str) -> str:
+    """A short letter in the sender's voice (varied, canon-flavored)."""
+    p = PROJECTS.get(from_cid, {})
+    key = sum(ord(c) for c in from_cid + to_cid)
+    tpl = _LETTER_TEMPLATES[key % len(_LETTER_TEMPLATES)]
+    return tpl.format(
+        sender=world.name_of(from_cid),
+        project=p.get("title", "the work I carry"),
+        city=world.location_name(from_cid),
+    )
 
 
 # --------------------------------------------------------------------- #
