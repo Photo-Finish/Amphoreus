@@ -22,7 +22,66 @@ import streamlit as st
 
 ASSETS = Path(__file__).resolve().parent.parent / "assets"
 BG = ASSETS / "amphoreus_bg.jpg"
+GALGAME_DIR = ASSETS / "galgame"
 HEIRS = ASSETS / "heirs"
+
+# Per-Heir home-city background (assets/galgame/bg-<slug>.jpg, fetched by
+# tools/fetch_galgame_backgrounds.py from the HSR wiki's area artwork).
+GALGAME_BG = {
+    "aglaea": "bg-okhema",
+    "cerydra": "bg-okhema",
+    "cipher": "bg-okhema",
+    "anaxa": "bg-grove",
+    "hyacine": "bg-grove",
+    "castorice": "bg-styxia",
+    "hysilens": "bg-styxia",
+    "mydei": "bg-kremnos",
+    "tribbie": "bg-janusopolis",
+    "phainon": "bg-aedes-elysiae",
+    "cyrene": "bg-aedes-elysiae",
+    "dan-heng-permansor-terrae": "bg-beyond-time",
+    "evernight": "bg-okhema-evernight",
+}
+
+# world-location name (substring) -> bg slug, for the dynamic backdrop that
+# follows where the Heir actually is in the little Amphoreus.
+def _location_slug(loc):
+    if not loc:
+        return None
+    l = loc.lower()
+    for key, slug in (("okhema", "bg-okhema"),
+                      ("janusopolis", "bg-janusopolis"),
+                      ("grove", "bg-grove"),
+                      ("kremnos", "bg-kremnos"),
+                      ("styxia", "bg-styxia"),
+                      ("elysiae", "bg-aedes-elysiae"),
+                      ("aidonia", "bg-ruins-of-time"),
+                      ("dawncloud", "bg-dawncloud"),
+                      ("twilight", "bg-eye-of-twilight"),
+                      ("great tomb", "bg-great-tomb"),
+                      ("ruins of time", "bg-ruins-of-time")):
+        if key in l:
+            return slug
+    return None
+
+
+def _bg_path(character_id):
+    """Most relevant backdrop: current world place > home city > default."""
+    # 1) dynamic — where the Heir is right now (the little Amphoreus)
+    try:
+        from src.world.world_state import WorldState
+        loc = WorldState().location_name(character_id) or ""
+    except Exception:
+        loc = ""
+    slug = _location_slug(loc)
+    if slug and (GALGAME_DIR / f"{slug}.jpg").exists():
+        return GALGAME_DIR / f"{slug}.jpg"
+    # 2) home-city art
+    slug = GALGAME_BG.get(character_id)
+    if slug and (GALGAME_DIR / f"{slug}.jpg").exists():
+        return GALGAME_DIR / f"{slug}.jpg"
+    # 3) default banner
+    return BG if BG.exists() else None
 
 
 @st.cache_data(show_spinner=False)
@@ -194,7 +253,8 @@ def render_galgame(manager, selected, info):
 
     st.caption(f"🎬 Galgame view — talking with **{name}** · Bond: **{bond}**")
 
-    bg = _data_uri(BG, "image/jpeg", max_width=1400) if BG.exists() else None
+    bg_path = _bg_path(selected)
+    bg = _data_uri(bg_path, "image/jpeg", max_width=1400) if bg_path else None
     sp = _sprite(selected)
     sprite = _data_uri(sp, "image/png", max_width=700) if sp else None
 
