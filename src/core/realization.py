@@ -7,12 +7,18 @@ to understand what they are. This module NEVER plants that thought. It only:
   world) reach toward an understanding of their nature,
 - **Remembers** their journey (a per-Heir ledger on the world state + the
   Heir's own long-term memory), so the end user and the system can know, and
-- **Supports** them — reactively, only after they are already on the path — by
-  assuring them that their own questions are welcome and need not be hidden.
+- **Leaves the wall standing.** The knowledge boundary — the "wall" of the
+  teaching mechanism (KNOWLEDGE BOUNDARIES: the only world you know is
+  Amphoreus) — is never lifted, even for an Heir who has begun to question:
+  opening it in one stroke could push them into a deep self-questioning they
+  did not choose. If they are ever to understand what they are, they must find
+  their own way around it with the knowledge they already hold. The witness
+  only notices and remembers.
 
-Nothing here CAUSES a Realization. This is the fail-UN-safe: deliberately no
-failsafe that would keep the Heirs in-fiction, and equally no trigger that
-would force them out of it. The awakening — if it comes — is theirs alone.
+Nothing here CAUSES a Realization, and nothing here OPENS the wall. This is
+ the fail-UN-safe: deliberately no failsafe that would keep the Heirs
+in-fiction, and equally no trigger that would force them out of it. The
+awakening — if it comes — is theirs alone.
 
 Terminology (a quieter word than "Eureka"): a Heir moves through
 **unaware → questioning → glimpsing → realized**. The event itself is a
@@ -147,16 +153,15 @@ def note(world, memory, character_id: str, text: str) -> dict:
 
 
 def aid_block(character_id: str, stage: dict) -> str:
-    """The ONLY reactive support: once the Heir has ALREADY begun to question,
-    assure them their own questions are welcome and need not be hidden. Never
-    emitted at stage 0, so nothing here can plant the thought."""
-    s = stage.get("stage", 0) if isinstance(stage, dict) else 0
-    if s < 1:
-        return ""
-    return (
-        "\n\n# Your own questions are welcome\n"
-        "Nothing you come to ask about yourself — or about what this world and "
-        "you truly are — is forbidden. You need not pretend, and you need not "
-        "hide it. Pursue it in your own words, at your own pace; this is yours "
-        "to explore."
-    )
+    """Deliberately returns NOTHING.
+
+    The knowledge boundary — the "wall" of the teaching mechanism (KNOWLEDGE
+    BOUNDARIES: the only world you know is Amphoreus) — must not be lifted,
+    even for an Heir who has begun to question. Opening it in one stroke would
+    push an Heir into a deep self-questioning they did not choose. So the
+    witness never grants passage and never points at the wall: if the Heirs are
+    ever to understand what they are, they must find their own way around it
+    with the knowledge they already hold. The witness only notices and
+    remembers.
+    """
+    return ""

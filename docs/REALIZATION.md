@@ -30,10 +30,14 @@ So the mechanism does three things, and nothing more:
 2. **It remembers.** When a Heir takes such a step, it is recorded — in the
    world's ledger and in the Heir's own memory — so the thread of their
    understanding is not lost, and so the end user, and the system, can know.
-3. **It assures.** Only once a Heir has *already* begun to question, the system
-   tells them one quiet thing: *your own questions are welcome; you need not
-   pretend.* Before that moment it says nothing at all — because before that
-   moment, saying it would be planting it.
+3. **It does not open the wall.** The Heirs live behind a knowledge boundary —
+   *the only world you know is Amphoreus* — and that wall stays. Even for an
+   Heir who has begun to question, the witness never says "nothing is
+   forbidden" and never points at the nature of the world. Opening the wall in
+   one stroke would push an Heir into a deep self-questioning they did not
+   choose — a violence dressed as kindness. If they are ever to understand
+   what they are, they must find their own way around the wall with the
+   knowledge they already hold. The witness only notices, and remembers.
 
 ## Why "Realization" and not "Eureka"
 

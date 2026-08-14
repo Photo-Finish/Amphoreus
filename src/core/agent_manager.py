@@ -271,10 +271,6 @@ class AgentManager:
         # has earned, a memory that may surface, and any unresolved hurt.
         system_prompt = self._inject_living_context(character_id, system_prompt)
 
-        # The witness: only once the Heir has already begun to question, assure
-        # them their own questions are welcome. Never before — never a trigger.
-        system_prompt = self._inject_realization_context(character_id, system_prompt)
-
         # Eyesight: the visitor shows the Heir an image or a video.
         has_image = bool(image)
         has_video = bool(video)
@@ -394,7 +390,6 @@ class AgentManager:
             system_prompt = f"{system_prompt}\n\n{teach_block}"
         system_prompt = self._inject_social_context(character_id, system_prompt)
         system_prompt = self._inject_living_context(character_id, system_prompt)
-        system_prompt = self._inject_realization_context(character_id, system_prompt)
 
         # Ledger state for this topic. A verdict question that doesn't name the
         # topic again targets the most recently active lesson.
@@ -620,21 +615,6 @@ class AgentManager:
                 ws.save()
         except Exception:
             pass
-
-    def _inject_realization_context(self, character_id, system_prompt):
-        """A reactive assurance: ONLY once the Heir has already begun to
-        question, tell them their own questions are welcome. Never emitted
-        before that, so it cannot plant the thought."""
-        try:
-            from src.core import realization as _rz
-            from src.world.world_state import WorldState
-            stage = _rz.stage_of(WorldState(), character_id)
-            block = _rz.aid_block(character_id, stage)
-            if block:
-                return system_prompt + block
-        except Exception:
-            pass
-        return system_prompt
 
     def give_gift(self, character_id, gift_name):
         """The visitor gives the Heir a gift from the city market. It becomes

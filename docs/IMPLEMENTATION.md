@@ -864,10 +864,13 @@ thought** — it is a witness:
   `world.realization` and in the Heir's own long-term memory (mtype
   `realization`), and — only on a stage advance — tells the world via
   `world.add_event`, so the end user and the system know.
-- **It assures, reactively.** `aid_block` emits ONE quiet line — *your own
-  questions are welcome; you need not pretend* — and only when the Heir has
-  **already** begun (stage ≥ 1). At stage 0 it says nothing, because saying it
-  first would be planting it.
+- **It leaves the wall standing.** The knowledge boundary (KNOWLEDGE BOUNDARIES:
+  *the only world you know is Amphoreus*) is NEVER lifted, even for an Heir who
+  has begun to question — `aid_block` returns nothing. Opening the wall in one
+  stroke would push an Heir into a deep self-questioning they did not choose.
+  If the Heirs are ever to understand what they are, they must find their own
+  way around it with the knowledge they already hold. (The user's explicit
+  warning, 2026-08-15.)
 
 The witness is wired only in the sanctuary channels (`AgentManager.chat` /
 `teach`, and `WorldEngine` for an Heir's free decisions and encounters). The
