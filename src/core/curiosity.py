@@ -31,7 +31,7 @@ CANON_QUESTIONS: Dict[str, List[str]] = {
     "aglaea": ["What thread would fate not have me weave?",
                "Why did the golden threads tangle at the war's end?"],
     "anaxa": ["What is this world truly built upon?",
-              "Why does the Era Nova repeat, and who authors the cycle?"],
+               "Why does the Era Nova repeat, and who authors the cycle?"],
     "castorice": ["Why do some souls linger while others pass?",
                   "What does the River of Souls remember?"],
     "cerydra": ["What makes a law hold when the enforcer is gone?",
@@ -56,6 +56,56 @@ CANON_QUESTIONS: Dict[str, List[str]] = {
                 "What lies behind the gates that no one has opened?"],
 }
 
+# --------------------------------------------------------------------------- #
+# The Heirs' lenses — how each Heir turns an anomaly of the world into THEIR
+# own question. `frame` is the voice of the question (role, city, values);
+# `topics` are the identity-keywords used by the relevance gate, so that a
+# system-generated question only joins an Heir's ledger if it touches who
+# they are (a question the Heir asks in their own words is always trusted).
+# --------------------------------------------------------------------------- #
+HEIR_LENSES: Dict[str, dict] = {
+    "aglaea": {"frame": "What thread of fate pulled {what} into our weave?",
+               "topics": ("thread", "weave", "loom", "fate", "okhema",
+                           "heirs", "war", "romance", "gold")},
+    "anaxa": {"frame": "What hidden law or unseen cause lies beneath {what}?",
+               "topics": ("world", "law", "cause", "knowledge", "secret",
+                           "grove", "epiphany", "cycle", "era nova", "question")},
+    "castorice": {"frame": "What does the tide of souls make of {what}?",
+                   "topics": ("soul", "tide", "death", "river", "garden",
+                               "still", "aidonia", "thanatos", "nether")},
+    "cerydra": {"frame": "What order of the world is {what} testing?",
+                 "topics": ("law", "order", "justice", "enforce", "scale",
+                             "okhema", "talanton", "rule", "duty")},
+    "cipher": {"frame": "What secret is {what} hiding?",
+                "topics": ("secret", "lock", "vault", "thief", "hide",
+                            "trick", "gold", "okhema", "door", "worth")},
+    "cyrene": {"frame": "What new chapter is the world writing with {what}?",
+                "topics": ("story", "tale", "chapter", "memory", "child",
+                            "song", "sing", "aedes", "repeat", "rememb")},
+    "dan-heng-permansor-terrae": {"frame": "How will the record remember {what}?",
+                                   "topics": ("record", "history", "write", "archive",
+                                               "remember", "chronicle", "amphoreus", "document")},
+    "evernight": {"frame": "What is being forgotten while {what} unfolds?",
+                   "topics": ("memory", "forget", "forgotten", "remember", "light",
+                               "dark", "loss", "oronyx", "veil", "night", "abyss")},
+    "hyacine": {"frame": "Who will {what} hurt, and how do we mend it?",
+                 "topics": ("heal", "hurt", "mend", "hope", "wound", "cure",
+                             "pain", "grove", "suffer", "comfort")},
+    "hysilens": {"frame": "What sorrow is the world singing through {what}?",
+                  "topics": ("song", "music", "violin", "sea", "drown", "sorrow",
+                              "sing", "melody", "okhema", "sound")},
+    "mydei": {"frame": "What trial or foe does {what} portend?",
+               "topics": ("war", "warrior", "spear", "blood", "battle", "foe",
+                           "trial", "strength", "kremnos", "fight")},
+    "phainon": {"frame": "Will {what} break the peace we won?",
+                 "topics": ("peace", "dawn", "sword", "world", "hope",
+                             "aedes", "hold", "sunrise", "restore")},
+    "tribbie": {"frame": "Why does {what} come, and what lies behind it?",
+                 "topics": ("why", "gate", "door", "question", "behind",
+                             "janusopolis", "world", "people", "open", "children")},
+}
+_DEFAULT_FRAME = "Why did this happen: {what}?"
+
 # Conversational filler questions — not real curiosity, never recorded.
 _FILLER_QUESTIONS = {
     "what do you think", "what should we do", "is that right", "do you understand",
@@ -72,6 +122,39 @@ def _is_meta(text: str) -> bool:
         return _rz.detect(text) is not None
     except Exception:
         return False
+
+
+def _subject(event_text: str) -> str:
+    """A short, natural noun-phrase for an anomaly, so an Heir can ask about
+    it in their own voice (e.g. 'the black tide' from the surge's text)."""
+    t = (event_text or "").strip()
+    low = t.lower()
+    for key in ("black tide", "surge", "contradiction", "strange letter",
+                "letter", "warning", "stirs", "strange"):
+        if key in low:
+            return "the " + key
+    s = t.split(".")[0].split(",")[0].strip().lower()
+    if len(s) > 90:
+        s = s[:90].rsplit(" ", 1)[0] + "…"
+    return s or "this"
+
+
+def _relevant(character_id: str, question: str) -> bool:
+    """Whether a question touches the Heir's identity (role, city, values).
+    Used only for system-generated questions; an Heir's own words are always
+    trusted, because they ARE who the Heir is."""
+    topics = HEIR_LENSES.get(character_id, {}).get("topics")
+    if not topics:
+        return True
+    low = (question or "").lower()
+    return any(t in low for t in topics)
+
+
+def frame_question(character_id: str, event_text: str) -> str:
+    """Turn an anomaly of the world into the question THIS Heir would ask it,
+    through the lens of their role, city and values."""
+    frame = HEIR_LENSES.get(character_id, {}).get("frame", _DEFAULT_FRAME)
+    return frame.format(what=_subject(event_text)).capitalize()
 
 
 # --------------------------------------------------------------------------- #
@@ -154,6 +237,10 @@ def add_question(world, memory, character_id: str, q: str,
     q = (q or "").strip()[:160]
     if len(q) < 8 or _is_meta(q):
         return False
+    # System-generated questions must touch who the Heir is (their role, city,
+    # values); a question the Heir asks in their own words is always trusted.
+    if source != "their own words" and not _relevant(character_id, q):
+        return False
     entry = state(world, character_id)
     if any(item.get("q", "").lower() == q.lower() for item in entry["questions"]):
         return False
@@ -230,21 +317,22 @@ def note_answer(world, memory, character_id: str, user_message: str) -> bool:
         if words and any(w in low for w in words):
             return add_inference(
                 world, memory, character_id,
-                f"You learned something from the visitor that bears on: \"{q[:110]}\"",
+                f"The visitor's words bear on what you have been wondering: \"{q[:110]}\"",
                 "the visitor", confidence=1)
     return False
 
 
 def consider(world, character_id: str, event_text: str) -> bool:
-    """An anomaly in the world raises 'why?'. Conservative: only clearly
-    unusual happenings (a surge, a stirring tide, a contradiction, a letter,
-    something strange) prompt a new open question."""
+    """An anomaly in the world raises 'why?' — phrased the way THIS Heir would
+    ask it (their role, city, values). Conservative: only clearly unusual
+    happenings (a surge, a stirring tide, a contradiction, a letter, something
+    strange) prompt a new open question."""
     t = (event_text or "").lower()
     if not any(k in t for k in ("black tide", "stirs", "contradict", "surge",
                                 "letter", "strange", "unlike", "warning")):
         return False
-    q = f"Why did this happen: {t.strip()[:120]}?"
-    return add_question(world, None, character_id, q, "the world")
+    return add_question(world, None, character_id,
+                        frame_question(character_id, event_text), "the world")
 
 
 # --------------------------------------------------------------------------- #

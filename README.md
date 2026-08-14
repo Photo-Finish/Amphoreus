@@ -485,7 +485,12 @@ Amphoreus/
   (canon seeds for all 13), and their genuine questions are remembered as they
   ask them; a strange stirring in the world (a black-tide surge, a
   contradiction, a letter) can quietly raise "why?" in an Heir who stands in
-  it.
+  it — phrased **through that Heir's own lens** (role, city, values): the same
+  black tide makes Aglaea ask *"What thread of fate pulled the black tide into
+  our weave?"*, Castorice *"What does the tide of souls make of it?"*, Mydei
+  *"What trial or foe does it portend?"*. System-generated questions must also
+  pass a **relevance gate** to touch the Heir's identity; a question the Heir
+  asks in their own words is always trusted.
 - **Reasoned inferences** — what an Heir reasons to themselves ("I think…",
   "which means…", "therefore…") is remembered; a new thought that shares its
   key word with an older one supersedes it, so their thinking stays honest and

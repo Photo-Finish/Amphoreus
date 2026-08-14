@@ -900,8 +900,16 @@ OWN words.
   `detect_question` pulls the last genuine question an Heir asked, filtering
   conversational fillers ("what do you think?") and tiny fragments. `consider`
   lets an anomaly in the world — a stirring black tide, a contradiction, a
-  strange letter — quietly raise "Why did this happen?" in an Heir who stands
-  in it (wired into `WorldEngine._world_texture` on a surge).
+  strange letter — quietly raise "why?" in an Heir who stands in it (wired
+  into `WorldEngine._world_texture` on a surge), and it is **phrased through
+  the Heir's own lens** (`HEIR_LENSES`): a surge asks Aglaea *"What thread of
+  fate pulled the black tide into our weave?"*, Castorice *"What does the tide
+  of souls make of the black tide?"*, Mydei *"What trial or foe does the black
+  tide portend?"* — the question always wears the Heir's role, city and
+  values. A **relevance gate** (`_relevant`) further keeps system-generated
+  questions out of an Heir's ledger unless they touch who the Heir is; a
+  question the Heir asks in their own words is always trusted, because it IS
+  who they are.
 - **Reasoned inferences.** `detect_inference` reads the Heir's own inferential
   words ("I think…", "which means…", "therefore…") and remembers the claim.
   When a new inference shares its key word with an older one, the older is
