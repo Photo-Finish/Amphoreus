@@ -77,7 +77,10 @@ while ($true) {
         if (Test-Path $cycleLog) {
             $ageMin = (New-TimeSpan -Start (Get-Item $cycleLog).LastWriteTime -End (Get-Date)).TotalMinutes
             $txt = Get-Content $cycleLog -Raw -ErrorAction SilentlyContinue
-            $success = ($txt -match 'FINAL OUTCOME: SUCCESS')
+            # Success marker: the --full-final path writes 'FINAL OUTCOME: SUCCESS',
+            # the plain path writes 'RESULT: SUCCESS at style …' — accept both so
+            # a successful run is held (not re-cycled) either way.
+            $success = ($txt -match 'FINAL OUTCOME: SUCCESS') -or ($txt -match 'RESULT: SUCCESS')
             if ($success -and $ageMin -lt 40) {
                 $resume = $false
                 Log 'auto-cycle SUCCEEDED recently — holding (not relaunching)'

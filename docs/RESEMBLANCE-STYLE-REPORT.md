@@ -8,10 +8,10 @@ Criteria: **STYLE & INTONATION ≥ 85** (word choice, sentence length, rhythm, e
 
 | Heir | cases | pass | avg style | avg content | pass rate |
 |---|---:|---:|---:|---:|---:|
-| Castorice (castorice) | 8 | 4 | 80 | 63 | 50% |
+| Castorice (castorice) | 8 | 2 | 65 | 64 | 25% |
 
 **Castorice** — failed cases (style/content):
-- style 78 / content 62 → canon ref *An abrupt ending to an epic that has barely begun * → act *Oh… it feels wrong, this stillness...*
-- style 78 / content 65 → canon ref *Is everything in order? If so, we need to meet up * → act *They need help... seriously...?*
-- style 78 / content 65 → canon ref *...* → act *Kindly keep five paces distance… oh… it feels colder now.*
-- style 48 / content 35 → canon ref *Of course. What is it?* → act *...*
+- style 78 / content 62 → canon ref *An abrupt ending to an epic that has barely begun * → act *Oh… it feels colder now...*
+- style 78 / content 82 → canon ref *Is everything in order? If so, we need to meet up * → act *Oh... they need help, it feels wrong…*
+- style 45 / content 25 → canon ref *But I know this runs counter to your wishes. So lo* → act *...*
+- style 38 / content 70 → canon ref *Even though Thanatos has been missing for a thousa* → act *Kindly keep five paces distance... oh… it feels wrong here.*

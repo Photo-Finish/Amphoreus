@@ -32,3 +32,10 @@
 | Castorice | 4/8 | 50% | 80 | 63 | FAIL |
 
 - castorice: refined (6 rules: Begin each line with "DO".; DO preface questions with a conditional statement like “Are you…” or “Is everything…”.; DO follow direct address (Lord Phainon, Lady Trianne) with “…and” before continuing the thought.…)
+## Cycle 5 (best-of 9; bars style≥85, content≥60)
+| Heir | pass | rate | avg style | avg content | status |
+|---|---:|---:|---:|---:|---|
+| Castorice | 2/8 | 25% | 65 | 64 | FAIL |
+
+- castorice: refined from BEST-cycle failures (current 25% < best 50%)
+- castorice: refined (5 rules: Use 'and...' to begin welcoming statements.; Frame questions with introductory phrases like “Are you…?” or "Is everything...?"; Include a self-directed qualifier ("I need to...") when expressing continued existence/effort.…)
