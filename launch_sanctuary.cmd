@@ -23,7 +23,7 @@ set PYTHON=%ROOT%.venv\Scripts\python.exe
 if not exist "%PYTHON%" set PYTHON=%ROOT%..\.venv\Scripts\python.exe
 
 if not exist "%PYTHON%" (
-    echo [ERROR] Python venv not found at %ROOT%.venv  (nor ..\.venv)
+    echo [ERROR] Python venv not found at %ROOT%.venv  or %ROOT%..\.venv
     echo         Create it:  python -m venv .venv
     echo         then:       .venv\Scripts\python -m pip install -r requirements.txt
     pause
@@ -42,21 +42,42 @@ if %errorlevel% equ 1 (
     echo       Ollama server already running.
 )
 
-echo [2/3] Opening the interface in your browser...
-start "" http://localhost:8501
-
 rem --- Senses model mode (unified | quality) --------------------------------
 rem   unified : ONE model (gemma3n, 8B E2B) hears music AND sees pictures
-rem   quality : qwen3-vl:8b (vision) + gemma3n (audio) — best per channel
+rem   quality : qwen3-vl:8b (vision) + gemma3n (audio) - best per channel
 rem   (verified 2026-08-11: qwen3-omni is NOT on Ollama; gemma3n = "gemma3n")
 rem   The model mapping is resolved by src/core/senses.py from SENSES_MODE /
-rem   .env — this variable just picks the option.
+rem   .env - this variable just picks the option.
 set SENSES_MODE=unified
 
-echo [3/3] Running the interface (keep this window open)...
-echo       Senses mode: %SENSES_MODE%  (mapping in .env; unified=gemma3n, quality=qwen3-vl:8b+gemma3n)
-echo       Close this window to stop the interface.
+echo [2/3] Starting the interface in the background...
+powershell -NoProfile -Command "$p = Start-Process -FilePath '%PYTHON%' -ArgumentList '-m','streamlit','run','%ROOT%src\ui_app.py','--server.headless','true','--server.port','8501' -WorkingDirectory '%ROOT%' -WindowStyle Minimized -RedirectStandardOutput '%ROOT%world_runtime\ui.log' -RedirectStandardError '%ROOT%world_runtime\ui.log.err' -PassThru; $p.Id | Out-File -FilePath '%ROOT%world_runtime\ui.pid' -Encoding ascii"
+
+echo [3/3] Waiting for the interface, then opening it in your browser...
+set /a _n=0
+:wait_ui
+timeout /t 1 /nobreak >nul
+powershell -NoProfile -Command "if (Get-NetTCPConnection -LocalPort 8501 -State Listen -ErrorAction SilentlyContinue) { exit 0 } else { exit 1 }"
+if not errorlevel 1 goto ui_ready
+set /a _n+=1
+if %_n% geq 60 goto ui_open
+goto wait_ui
+
+:ui_ready
+echo       The Sanctuary is ready.
+:ui_open
+start "" http://localhost:8501
+
 echo ============================================================
-"%PYTHON%" -m streamlit run "%ROOT%src\ui_app.py" --server.headless true --server.port 8501
+echo   The Sanctuary is open in your browser:
+echo       http://localhost:8501
+echo   Senses mode: %SENSES_MODE%
+echo   Leave this window open to keep the interface running.
+echo   Press any key (or close this window) to stop the interface.
+echo ============================================================
+pause >nul
+
+rem --- closing this window stops the interface ---
+powershell -NoProfile -Command "$id = $null; if (Test-Path '%ROOT%world_runtime\ui.pid') { $id = Get-Content '%ROOT%world_runtime\ui.pid' -ErrorAction SilentlyContinue }; if ($id) { Stop-Process -Id $id -Force -ErrorAction SilentlyContinue }; $owner = (Get-NetTCPConnection -LocalPort 8501 -State Listen -ErrorAction SilentlyContinue).OwningProcess; if ($owner) { Stop-Process -Id $owner -Force -ErrorAction SilentlyContinue }"
 
 endlocal

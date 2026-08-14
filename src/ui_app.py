@@ -339,13 +339,22 @@ st.sidebar.caption("*Databank: Complete ✅*")
 st.sidebar.caption("*See PHILOSOPHY.md for the charter*")
 
 # Main Area
-main_tab, chronicle_tab, map_tab, admin_tab, game_tab = st.tabs([
+main_tab, chronicle_tab, map_tab, admin_tab, game_tab, guide_tab = st.tabs([
     "💬 Visit an Heir",
     "📖 A Chronicle of Amphoreus",
     "🗺️ Map of Amphoreus",
     "🛠️ Admin Console",
     "🎬 Galgame",
+    "❓ How to use",
 ])
+
+with guide_tab:
+    # ❓ How to use — a friendly guide to the Sanctuary and its living world.
+    try:
+        from src.ui_guide import render_guide
+        render_guide(manager, characters)
+    except Exception as e:
+        st.error(f"Could not render the guide: {e}")
 
 with game_tab:
     # 🎬 Galgame view — an OPTIONAL visual-novel rendering of the same
