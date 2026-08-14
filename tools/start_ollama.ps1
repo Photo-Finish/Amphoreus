@@ -27,6 +27,12 @@ $env:OLLAMA_HOST = '127.0.0.1:11434'
 # music-audio and big canon prompts got truncated). 8192 doubles the headroom;
 # raise further if RAM allows (each token of context costs KV-cache memory).
 $env:OLLAMA_CONTEXT_LENGTH = '8192'
+# 2026-08-14: with only ~11 GB free RAM, gemma3:27b failed to load at 8192 ctx
+# ("failed to allocate CUDA_Host buffer of size ~11.1 GB" -> HTTP 500 from every
+# call). Flash attention + a quantized (q8_0) KV cache cut the KV-cache memory
+# drastically, letting the 27B model load at 8192 on this machine again.
+$env:OLLAMA_FLASH_ATTENTION = '1'
+$env:OLLAMA_KV_CACHE_TYPE = 'q8_0'
 
 # 1. Stop any stale ollama processes (tray app may serve the wrong models dir).
 #    Also kill orphaned llama-server children: when the server is force-killed,
