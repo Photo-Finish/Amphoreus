@@ -79,8 +79,14 @@ while ($true) {
             $txt = Get-Content $cycleLog -Raw -ErrorAction SilentlyContinue
             # Success marker: the --full-final path writes 'FINAL OUTCOME: SUCCESS',
             # the plain path writes 'RESULT: SUCCESS at style …' — accept both so
-            # a successful run is held (not re-cycled) either way.
-            $success = ($txt -match 'FINAL OUTCOME: SUCCESS') -or ($txt -match 'RESULT: SUCCESS')
+            # a successful run is held (not re-cycled) either way. BUT a 'FINAL
+            # OUTCOME: FAILED' (written AFTER the cycle's RESULT line when the
+            # cheat-free re-test falls below the gate) must win over the in-cycle
+            # SUCCESS marker — otherwise the run is held and never re-cycled
+            # (the 2026-08-15 trap).
+            $success = if ($txt -match 'FINAL OUTCOME: FAILED') { $false }
+                       elseif ($txt -match 'FINAL OUTCOME: SUCCESS') { $true }
+                       else { $txt -match 'RESULT: SUCCESS' }
             if ($success -and $ageMin -lt 40) {
                 $resume = $false
                 Log 'auto-cycle SUCCEEDED recently — holding (not relaunching)'

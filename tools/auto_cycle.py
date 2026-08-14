@@ -537,6 +537,20 @@ def main():
                 log.append(f"## FINAL CHEAT-FREE RE-TEST RESULT (all Heirs · {mode_txt})")
                 log.append(ftable)
                 log.append("")
+                # The cheat-free re-test is the authoritative deployment
+                # measurement and overrides the in-cycle outcome. A run whose
+                # cycle phase passed but whose re-test falls below the gate must
+                # end FAILED so the watchdog resumes cycling — a false SUCCESS
+                # here would stop the loop with the Heir still under the gate
+                # (the 2026-08-15 trap).
+                if fpass_all:
+                    final_outcome = "SUCCESS"
+                    final_reason = (f"all targets above the gate on the cheat-free re-test "
+                                    f"(style ≥ {args.style_bar}, content ≥ {args.content_bar})")
+                else:
+                    final_outcome = "FAILED"
+                    final_reason = (f"cheat-free re-test below the gate "
+                                    f"(pass ≥ {args.pass_target}%)")
                 log.append(f"**FINAL OUTCOME: {final_outcome}** — {final_reason}")
                 print("\n" + ftable)
                 print(f"\nFinal outcome: {final_outcome} — {final_reason}")
