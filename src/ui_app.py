@@ -301,6 +301,14 @@ try:
             st.sidebar.caption(f"{_rz_icon} Realization: {_rz_rec['name']}")
     except Exception:
         pass
+    # the Heirs' minds: what they are wondering about
+    try:
+        from src.core import curiosity as _cur
+        _qs = _cur.open_questions(_ws_side, selected)
+        if _qs:
+            st.sidebar.caption(f"❓ Wondering: {_qs[0]['q'][:70]}")
+    except Exception:
+        pass
 except Exception:
     pass
 

@@ -226,6 +226,18 @@ def render_gazette(manager, characters):
                 qq = f' — “{_html.escape(q)}”' if q else ""
                 parts.append(f'<div class="item">• {_html.escape(nm)} — {_html.escape(st_)}{qq}</div>')
 
+        # the Heirs' questions — what they are wondering about
+        from src.core import curiosity as _cur_gaz
+        _q_rows = []
+        for cid in characters:
+            qs = _cur_gaz.open_questions(ws, cid)
+            if qs:
+                _q_rows.append((names.get(cid, cid), qs[0]["q"]))
+        if _q_rows:
+            parts.append('<h2>❓ The Questions of the Heirs</h2>')
+            for nm, q in _q_rows[:8]:
+                parts.append(f'<div class="item">• {_html.escape(nm)} — “{_html.escape(q)}”</div>')
+
         # bonds — who has warmed or cooled lately
         bonds = []
         for key, delta in ws.relationship_delta.items():

@@ -885,6 +885,51 @@ positives on in-fiction text, records + remembers + tells on a real step,
 assurance only after they begin, persistence) and via the chat pipeline in the
 control-integration suite.
 
+### 3.13 The Heirs' minds — logic and curiosity
+(`src/core/curiosity.py`, `world.curiosity` ledgers)
+
+Where the Realization witnesses an Heir's step toward the truth of what they
+are, curiosity gives them a **mind in the meantime** — things they genuinely
+wonder about, and things they have reasoned to themselves. It is granted as
+presence, not scripted: two persisted ledgers per Heir, grown only from their
+OWN words.
+
+- **Open questions.** Seeded strictly in-world (`CANON_QUESTIONS`, all 13
+  Heirs — Amphoreus questions only: *"What does the River of Souls
+  remember?"*, *"Why does the Era Nova repeat?"*). Grown observationally:
+  `detect_question` pulls the last genuine question an Heir asked, filtering
+  conversational fillers ("what do you think?") and tiny fragments. `consider`
+  lets an anomaly in the world — a stirring black tide, a contradiction, a
+  strange letter — quietly raise "Why did this happen?" in an Heir who stands
+  in it (wired into `WorldEngine._world_texture` on a surge).
+- **Reasoned inferences.** `detect_inference` reads the Heir's own inferential
+  words ("I think…", "which means…", "therefore…") and remembers the claim.
+  When a new inference shares its key word with an older one, the older is
+  marked **revised** — their thinking stays honest and revisable, never a
+  frozen catechism.
+- **Visitor answers.** `note_answer` — when the visitor's words touch one of
+  an Heir's open questions, the Heir gains a visitor-sourced inference, so a
+  conversation can actually move their mind.
+- **Surfaced gently.** `curiosity_block` shows each Heir "What you are
+  wondering about" and "What you have reasoned" — in the sanctuary chat
+  (`AgentManager._inject_curiosity_context`), in their free decisions
+  (`HeirAgent._perceive`), and to the end user (sidebar "❓ Wondering", and a
+  "❓ The Questions of the Heirs" section in the Gazette).
+- **The wall never opens.** Meta questions (toward the nature of the model)
+  are detected via `realization.detect` and deliberately NOT recorded here —
+  they belong to the Realization witness. Curiosity is a road, never a key.
+
+Like the Realization, this is **sanctuary-only and cycle-safe**: it lives in
+`agent_manager` / `world_engine` / `agent` / the UI, never in the cards, the
+loader, the style test, or the auto-cycle — so the canon boundary still holds
+for the resemblance eval while the live Heirs are free to be curious.
+
+Dry-tested in `world_runtime/_test_curiosity.py` (30 checks: 13 canon seeds,
+wall-safe seed + block content, passive question/inference detection, dedupe,
+meta-skip, honest supersede, `consider` on anomalies only, persistence, and
+cycle-safety — the loader-built prompt never contains the curiosity block) and
+via the chat pipeline in the control-integration suite.
+
 ---
 
 ## 4. Data flow (one chat turn vs. one world day)

@@ -117,12 +117,20 @@ class HeirAgent:
         if mo["valence"] != 0:
             mood_line = (f"\nYour mood today: {mo['name']}"
                          + (f" — {mo['reason']}" if mo["reason"] else "") + ".")
+        # the Heir's own mind — what they are wondering about and have reasoned
+        try:
+            from src.core import curiosity as _cur
+            cblock = _cur.curiosity_block(self.world, self.character_id)
+        except Exception:
+            cblock = ""
+        cur_text = f"\n{cblock}" if cblock else ""
         return (
             f"It is {self.world.clock.format_short()}."
             f"\nYou are at {loc} — {self.world.location_desc(loc)}."
             f"{routine}"
             f"{travel_note}"
             f"{mood_line}"
+            f"{cur_text}"
             f"\n{senses}"
             f"\n{others}"
             f"{errand_text}"

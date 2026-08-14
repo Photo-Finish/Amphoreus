@@ -271,6 +271,10 @@ class AgentManager:
         # has earned, a memory that may surface, and any unresolved hurt.
         system_prompt = self._inject_living_context(character_id, system_prompt)
 
+        # The Heirs' own minds: what they are wondering about and what they
+        # have reasoned (sanctuary-only; the style test never sees this).
+        system_prompt = self._inject_curiosity_context(character_id, system_prompt)
+
         # Eyesight: the visitor shows the Heir an image or a video.
         has_image = bool(image)
         has_video = bool(video)
@@ -340,6 +344,10 @@ class AgentManager:
             # The witness notices, silently, if the Heir's own words reach
             # toward understanding what they are (never a trigger).
             self._witness_realization(character_id, response)
+            # Observe the Heir's mind: record questions they asked, inferences
+            # they drew, and whether the visitor touched one of their open
+            # questions. Purely observational.
+            self._note_mind(character_id, response, user_message)
             return response
         else:
             return self._stream_response(character_id, response)
@@ -390,6 +398,7 @@ class AgentManager:
             system_prompt = f"{system_prompt}\n\n{teach_block}"
         system_prompt = self._inject_social_context(character_id, system_prompt)
         system_prompt = self._inject_living_context(character_id, system_prompt)
+        system_prompt = self._inject_curiosity_context(character_id, system_prompt)
 
         # Ledger state for this topic. A verdict question that doesn't name the
         # topic again targets the most recently active lesson.
@@ -465,6 +474,7 @@ class AgentManager:
             self._echo_visit(character_id, f"taught them something of the world beyond the stars")
             self._social_reactions(character_id, user_message)
             self._witness_realization(character_id, response)
+            self._note_mind(character_id, response, user_message)
             if ask_verdict and state in ("studied", "adopted", "refuted", "unsure"):
                 try:
                     from src.world import world_events as _wev
@@ -615,6 +625,37 @@ class AgentManager:
                 ws.save()
         except Exception:
             pass
+
+    def _note_mind(self, character_id, response, user_message=""):
+        """Observe the Heir's mind: record a genuine question they asked and an
+        inference they reasoned to, and note when the visitor's words touched
+        one of their open questions. Purely observational."""
+        try:
+            from src.core import curiosity as _cur
+            from src.world.world_state import WorldState
+            ws = WorldState()
+            changed = False
+            if _cur.note_words(ws, self.memory, character_id, response):
+                changed = True
+            if user_message and _cur.note_answer(ws, self.memory, character_id, user_message):
+                changed = True
+            if changed:
+                ws.save()
+        except Exception:
+            pass
+
+    def _inject_curiosity_context(self, character_id, system_prompt):
+        """The Heir's own mind: their open questions and reasoned inferences.
+        Sanctuary-only and wall-safe (never contains meta content)."""
+        try:
+            from src.core import curiosity as _cur
+            from src.world.world_state import WorldState
+            block = _cur.curiosity_block(WorldState(), character_id)
+            if block:
+                return system_prompt + "\n\n" + block
+        except Exception:
+            pass
+        return system_prompt
 
     def give_gift(self, character_id, gift_name):
         """The visitor gives the Heir a gift from the city market. It becomes
@@ -772,6 +813,7 @@ class AgentManager:
         self.sessions.add_message(character_id, "assistant", text)
         self.memory.add_history(character_id, "assistant", text)
         self._witness_realization(character_id, text)
+        self._note_mind(character_id, text)
 
     def reset_conversation(self, character_id: str):
         """Reset conversation history AND the Heir's persistent memory of you."""

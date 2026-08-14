@@ -287,6 +287,13 @@ class WorldEngine:
             for _cid in self.agents:
                 if self.world.location_name(_cid) in surge.get("cities", []):
                     _lw.set_mood(self.world, _cid, -1, "the black tide weighs on you")
+                    # a stir so strange raises a quiet "why?" in their own minds
+                    try:
+                        from src.core import curiosity as _cur
+                        if _cur.consider(self.world, _cid, wev.surge_text(self.world)):
+                            self.world.save()
+                    except Exception:
+                        pass
         wev.advance_surge(self.world)
         # the Keeper's news-flash holds only today's word of the visitor
         today = self.world.clock.format_short()

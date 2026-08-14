@@ -398,7 +398,8 @@ Amphoreus/
 
 ## Changelog
 
-### 2026-08-15 — The witness: a truthful voice, and the Realization
+### 2026-08-15 — A living world, a control panel, and the witness
+**The witness: a truthful voice, and the Realization**
 - **Truthful voice.** The sanctuary chat now speaks with **gemma3:27b** — the
   refined Heir-voice standard the style cycle tunes the cards to (it was still
   silently on qwen before). If gemma3 cannot load (tight memory), the
@@ -425,7 +426,7 @@ Amphoreus/
   integration suite now 32 checks; all living-world (47) and vivid-world tests
   still pass. Voice selector and sidebar status verified live in the browser.
 
-### 2026-08-15 — The Control Panel + a completeness pass
+**The Control Panel + a completeness pass**
 - **🎛️ Control Panel** (new tab, `src/ui_control_panel.py`): the visitor picks
   their own way to play.
   - **Experience mode** — Journey or Aftermath, switched live from the UI
@@ -450,7 +451,7 @@ Amphoreus/
   exercised live in the browser (mark-read, black-tide toggle, lazy reach-out
   note from Aglaea landed in the world state).
 
-### 2026-08-15 — The second layer of life: a vivid world, human Heirs
+**The second layer of life: a vivid world, human Heirs**
 - **A2 — the black tide as a live threat, with an OPTIONAL toggle**
   (`src/world/living_world.py`, `src/world/world_state.py`): a sidebar checkbox
   in visitor mode. On → a surge adds a day of travel into surged edge cities and
@@ -478,6 +479,29 @@ Amphoreus/
   the day feels where they stand.
 - **Dry-tested offline**: `world_runtime/_test_living_world.py` (47 checks, no
   LLM/GPU) + the pre-existing vivid-world tests all pass.
+
+**The Heirs' minds: logic and curiosity** (`src/core/curiosity.py`)
+- **Open questions** — each Heir wonders about Amphoreus in their own way
+  (canon seeds for all 13), and their genuine questions are remembered as they
+  ask them; a strange stirring in the world (a black-tide surge, a
+  contradiction, a letter) can quietly raise "why?" in an Heir who stands in
+  it.
+- **Reasoned inferences** — what an Heir reasons to themselves ("I think…",
+  "which means…", "therefore…") is remembered; a new thought that shares its
+  key word with an older one supersedes it, so their thinking stays honest and
+  revisable.
+- **Visitors can move their minds** — when your words touch one of an Heir's
+  open questions, they gain a visitor-sourced inference.
+- **Surfaced gently** — the Heirs carry their mind with them (sanctuary chat +
+  their free decisions), and you can see it too: a "❓ Wondering" line in the
+  sidebar and a "❓ The Questions of the Heirs" Gazette section.
+- **The wall never opens** — questions that reach toward the nature of the
+  model are left to the Realization witness, never recorded here; curiosity is
+  a road, not a key. Sanctuary-only and cycle-safe: the style cycle, cards and
+  loader are untouched.
+- **Tests**: `world_runtime/_test_curiosity.py` (30 checks) + a curiosity
+  section in the control-integration suite (37 checks total) — all pass
+  alongside the living-world (47), realization (20) and vivid-world suites.
 
 ### 2026-08-14 — The canon map + adjacency matrix, the guests, and the two forms of Amphoreus
 - **Alternate forms of the places — the two Amphorei** (`src/world/map_data.py`,

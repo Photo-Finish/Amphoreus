@@ -265,6 +265,7 @@ class WorldState:
         self.play_mode: Optional[str] = None   # the visitor's UI-chosen experience (journey/aftermath); None = env default
         self.heir_voice: Optional[str] = None  # the visitor's chosen Heir voice model; None = the app default (gemma3:27b)
         self.realization: Dict[str, dict] = {}  # the witness ledger: cid -> {stage, quotes, since} (see src/core/realization.py)
+        self.curiosity: Dict[str, dict] = {}    # the Heirs' minds: cid -> {questions, inferences} (see src/core/curiosity.py)
         self._load()
 
     # ------------------------------------------------------------------ #
@@ -300,6 +301,7 @@ class WorldState:
                 _hv = data.get("heir_voice")
                 self.heir_voice = _hv if isinstance(_hv, str) and _hv else None
                 self.realization = data.get("realization", {}) or {}
+                self.curiosity = data.get("curiosity", {}) or {}
         except Exception:
             pass
 
@@ -329,6 +331,7 @@ class WorldState:
                         "play_mode": self.play_mode,
                         "heir_voice": self.heir_voice,
                         "realization": self.realization,
+                        "curiosity": self.curiosity,
                     },
                     f,
                     ensure_ascii=False,
