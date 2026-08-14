@@ -45,11 +45,13 @@ def render_guide(manager, characters):
     ))
 
     _section("🕳️ The black tide (optional — a live threat)", (
-        "In the **sidebar** there is a switch: **“🕳️ Live black tide”**.\n\n"
+        "In the **🎛️ Control Panel** there is a switch: **“Live black tide”** (it "
+        "used to live in the sidebar; it lives in the panel now).\n\n"
         "- **On** — the tide can stir along the edge cities. Travel into a "
         "surged city takes an extra day, and the Heirs who live there grow "
         "weary. You will see the warning in the Gazette and on the Map.\n"
-        "- **Off** — Amphoreus rests at peace, and the tide never stirs.\n\n"
+        "- **Off** — Amphoreus rests at peace, and the tide never stirs "
+        "(an active surge winds down, clearing the darkened skies).\n\n"
         "It is a toggle, not a difficulty setting — switch it whenever you like."
     ))
 
@@ -96,6 +98,18 @@ def render_guide(manager, characters):
         "may surface again later, re-told in the present.\n"
         "- **They are grounded in place.** The sky, the hour, and their mood "
         "shape how the day feels where they stand.\n"
+    ))
+
+    _section("🎛️ The Control Panel — your way to play", (
+        "The **🎛️ Control Panel** tab is where you steer the experience:\n\n"
+        "- **Experience mode** — Journey (new arrival) or Aftermath "
+        "(war-companion). Switching reseeds every Heir's bond and campaign "
+        "memories.\n"
+        "- **Live black tide** — on or off, any time.\n"
+        "- **World engine** — start it so Amphoreus keeps living while you are "
+        "away, or stop it to hold the world still.\n"
+        "- **Your mailbox** — see how many notes wait for you, read them, and "
+        "mark them read.\n"
     ))
 
     _section("A gentle path to begin", (

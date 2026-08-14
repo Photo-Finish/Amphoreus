@@ -538,8 +538,8 @@ class AgentManager:
 
     def _social_reactions(self, character_id, user_message):
         """After the Heir's reply, the visitor's words may cross a value
-        (hurt), mend one (reconcile), or speak of another Heir (gossip travels
-        through the social web)."""
+        (hurt), mend one (reconcile), speak of another Heir (gossip travels
+        through the social web), or simply warm the Heir's mood."""
         try:
             from src.world import living_world as _lw
             from src.world.world_state import WorldState
@@ -553,6 +553,7 @@ class AgentManager:
                 _lw.hurt(ws, self.memory, character_id, value, user_message)
                 ws.save()
                 return
+            mentioned = False
             for cid in self.loader.list_characters():
                 if cid == character_id:
                     continue
@@ -562,10 +563,28 @@ class AgentManager:
                     continue
                 if nm and nm.lower() in (user_message or "").lower():
                     _lw.gossip(ws, character_id, cid, user_message[:140])
-                    ws.save()
-                    return
+                    mentioned = True
+                    break
+            if not mentioned and len((user_message or "").strip()) >= 24:
+                _lw.warm_on_visit(ws, character_id)
+            ws.save()
         except Exception:
             pass
+
+    def switch_mode(self, mode):
+        """Switch the whole experience (journey/aftermath) live: persist the
+        choice on the world state and reseed every Heir's bond + campaign
+        memories (the same implementation the CLI uses)."""
+        mode = mode if mode in ("journey", "aftermath") else "journey"
+        try:
+            from src.core.visitor_mode import reseed_for_mode
+            from src.world.world_state import WorldState
+            ws = WorldState()
+            ws.set_play_mode(mode)
+            summary = reseed_for_mode(mode, self.memory, self.loader)
+            return {"switched": True, "mode": mode, "heirs": len(summary)}
+        except Exception as e:
+            return {"switched": False, "error": str(e)}
 
     def give_gift(self, character_id, gift_name):
         """The visitor gives the Heir a gift from the city market. It becomes

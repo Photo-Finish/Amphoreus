@@ -90,6 +90,23 @@ def surge_travel_penalty(world, destination: str) -> int:
     return 1 if destination in world.surge.get("cities", []) else 0
 
 
+def wind_down_surge(world):
+    """Turning the live black tide OFF clears any active surge and the darkened
+    skies it left in the Keeper's weather, so the world visibly returns to
+    peace (not just a flag flip)."""
+    world.surge = {"active": False, "remaining": 0, "cities": []}
+    try:
+        weather = world.ambient.setdefault("weather", {})
+        for city in list(weather):
+            sky = str(weather.get(city) or "")
+            if "black tide" in sky:
+                cleaned = sky.split(", and the black tide")[0].strip()
+                weather[city] = cleaned or "clear"
+        world.ambient["weather"] = weather
+    except Exception:
+        pass
+
+
 # --------------------------------------------------------------------------- #
 # A3 — Market & gift economy
 # --------------------------------------------------------------------------- #
@@ -421,6 +438,25 @@ def reach_out(world, character_id: str) -> Optional[dict]:
             return None  # already left a note today
     return post(world, "visitor", name, reach_out_text(world, character_id),
                 kind="reach-out")
+
+
+def materialize_reach_outs(world) -> List[str]:
+    """Post today's deterministic reach-outs into the mailbox (deduped per Heir
+    per day). Idempotent, so the UI can call it on any load and the mailbox
+    stays alive even when the world engine is not running."""
+    posted: List[str] = []
+    for cid in list(world.present_locations()):
+        try:
+            if reach_out(world, cid):
+                posted.append(cid)
+        except Exception:
+            continue
+    return posted
+
+
+def warm_on_visit(world, character_id: str):
+    """A warm, substantive visit lifts the Heir's mood a little."""
+    set_mood(world, character_id, 1, "a warm visit from the star-stranger")
 
 
 # --------------------------------------------------------------------------- #

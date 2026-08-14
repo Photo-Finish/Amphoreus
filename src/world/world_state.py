@@ -12,6 +12,7 @@ import json
 import os
 import threading
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, List, Optional
 
 from .map_data import travel_days as _travel_days
@@ -228,7 +229,18 @@ class WorldClock:
 class WorldState:
     """Persistent state of the little Amphoreus."""
 
-    def __init__(self, state_path: str = "world_runtime/world_state.json"):
+    def __init__(self, state_path: Optional[str] = None):
+        # A test / tool may redirect every WorldState() to a temp file via
+        # AMPHOREUS_STATE_PATH (production never sets it).
+        if state_path is None:
+            state_path = os.environ.get(
+                "AMPHOREUS_STATE_PATH", "world_runtime/world_state.json")
+            # The default must be project-absolute: a relative path would
+            # silently resolve against the process's working directory, so the
+            # UI launched from elsewhere would read/write a DIFFERENT file than
+            # the world engine (a real, subtle split-brain we hit on 2026-08-15).
+            if not os.path.isabs(state_path):
+                state_path = str(Path(__file__).resolve().parents[2] / state_path)
         self.state_path = state_path
         self._lock = threading.Lock()
         self.clock = WorldClock()
@@ -250,6 +262,7 @@ class WorldState:
         self.mailbox: List[dict] = []          # A4 — letters & notices to/from the visitor
         self.npc_states: Dict[str, dict] = {}  # A5 — the residents' small arcs
         self.mood: Dict[str, dict] = {}        # B1 — each Heir's emotional weather
+        self.play_mode: Optional[str] = None   # the visitor's UI-chosen experience (journey/aftermath); None = env default
         self._load()
 
     # ------------------------------------------------------------------ #
@@ -280,6 +293,8 @@ class WorldState:
                 self.mailbox = data.get("mailbox", []) or []
                 self.npc_states = data.get("npc_states", {}) or {}
                 self.mood = data.get("mood", {}) or {}
+                _pm = data.get("play_mode")
+                self.play_mode = _pm if _pm in ("journey", "aftermath") else None
         except Exception:
             pass
 
@@ -306,6 +321,7 @@ class WorldState:
                         "mailbox": self.mailbox,
                         "npc_states": self.npc_states,
                         "mood": self.mood,
+                        "play_mode": self.play_mode,
                     },
                     f,
                     ensure_ascii=False,
@@ -533,6 +549,22 @@ class WorldState:
     def set_black_tide(self, enabled: bool):
         with self._lock:
             self.black_tide_enabled = bool(enabled)
+            if not enabled:
+                # winding the tide down also clears any active surge and the
+                # darkened skies it left, so the world visibly returns to peace.
+                try:
+                    from .living_world import wind_down_surge
+                    wind_down_surge(self)
+                except Exception:
+                    pass
+        self.save()
+
+    def set_play_mode(self, mode: Optional[str]):
+        """Persist the visitor's chosen experience (journey/aftermath). None
+        restores the env-var default."""
+        mode = mode if mode in ("journey", "aftermath") else None
+        with self._lock:
+            self.play_mode = mode
         self.save()
 
     # ------------------------------------------------------------------ #

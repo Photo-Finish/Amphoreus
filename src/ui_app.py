@@ -261,21 +261,6 @@ try:
         st.sidebar.caption("🗺️ Mode: **Journey** — you are newly arrived; the Heirs do not know you yet.")
 except Exception:
     pass
-# A2 — the live black tide is an OPTIONAL toggle (visitor mode). When off,
-# Amphoreus rests at peace; when on, the tide may stir and the world reacts.
-try:
-    from src.world.world_state import WorldState as _WS_BT
-    _ws_bt = _WS_BT()
-    _bt_on = st.sidebar.checkbox(
-        "🕳️ Live black tide",
-        value=bool(_ws_bt.black_tide_enabled),
-        help="When on, the black tide can stir: travel into the edge cities "
-             "slows, and the Heirs there grow weary. When off, the world is at peace.",
-    )
-    if _bt_on != bool(_ws_bt.black_tide_enabled):
-        _ws_bt.set_black_tide(_bt_on)
-except Exception:
-    pass
 try:
     bond = manager.get_bond_info(selected)
     level = bond.get("friendship_level", "stranger")
@@ -339,14 +324,23 @@ st.sidebar.caption("*Databank: Complete ✅*")
 st.sidebar.caption("*See PHILOSOPHY.md for the charter*")
 
 # Main Area
-main_tab, chronicle_tab, map_tab, admin_tab, game_tab, guide_tab = st.tabs([
+main_tab, chronicle_tab, map_tab, admin_tab, game_tab, guide_tab, control_tab = st.tabs([
     "💬 Visit an Heir",
     "📖 A Chronicle of Amphoreus",
     "🗺️ Map of Amphoreus",
     "🛠️ Admin Console",
     "🎬 Galgame",
     "❓ How to use",
+    "🎛️ Control Panel",
 ])
+
+with control_tab:
+    # 🎛️ The Control Panel — the visitor picks their own way to play.
+    try:
+        from src.ui_control_panel import render_control_panel
+        render_control_panel(manager, characters)
+    except Exception as e:
+        st.error(f"Could not render the control panel: {e}")
 
 with guide_tab:
     # ❓ How to use — a friendly guide to the Sanctuary and its living world.
@@ -859,6 +853,16 @@ with main_tab:
                         })
                     else:
                         st.info(_res.get("reason", "No gift given."))
+                # the Heir keeps every gift they were given
+                try:
+                    from src.world import living_world as _lw_g
+                    _kept = _lw_g.gifts_given(manager.memory, selected, limit=6)
+                    if _kept:
+                        _clean = [g.replace("The visitor gave you ", "").strip(" .")
+                                  for g in _kept]
+                        st.caption("🎁 They keep: " + " · ".join(_clean))
+                except Exception:
+                    pass
     except Exception:
         pass
 

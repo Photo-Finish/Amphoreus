@@ -1,19 +1,19 @@
 """
 visitor_mode.py — two versions of the experience, selected by the environment
-variable `SANCTUARY_MODE`:
+variable `SANCTUARY_MODE` (or, when set, by the visitor's own choice in the
+Control Panel, persisted on the world state as `play_mode`):
 
-  SANCTUARY_MODE=journey    (default) — the visitor is the Trailblazer, newly
-                            arrived in Amphoreus, NOT familiar with the Chrysos
-                            Heirs. First meetings; bonds grow from stranger.
+  journey    (default) — the visitor is the Trailblazer, newly arrived in
+                         Amphoreus, NOT familiar with the Chrysos Heirs. First
+                         meetings; bonds grow from stranger.
 
-  SANCTUARY_MODE=aftermath  — the visitor is the Trailblazer who conquered the
-                            Iron Tomb together with all the Chrysos Heirs, and
-                            therefore has COMPLETE memory of the Flame-Chase
-                            Journey. The Heirs know them as a war-companion;
-                            bonds are pre-seeded at "best friend".
+  aftermath  — the visitor is the Trailblazer who conquered the Iron Tomb
+               together with all the Chrysos Heirs, and therefore has COMPLETE
+               memory of the Flame-Chase Journey. The Heirs know them as a
+               war-companion; bonds are pre-seeded at "best friend".
 
-Run `python tools/seed_mode.py aftermath|journey` to seed/switch the bonds and
-memories of all 13 Heirs for the chosen experience.
+Run `python tools/seed_mode.py aftermath|journey`, or switch it live from the
+in-app Control Panel (both call `reseed_for_mode` below).
 """
 
 import os
@@ -23,6 +23,15 @@ DEFAULT_MODE = "journey"
 
 
 def current_mode() -> str:
+    """The active experience. The visitor's choice in the Control Panel
+    (persisted on the world state) wins; SANCTUARY_MODE is the env fallback."""
+    try:
+        from src.world.world_state import WorldState
+        pm = getattr(WorldState(), "play_mode", None)
+        if pm in ("journey", "aftermath"):
+            return pm
+    except Exception:
+        pass
     return os.getenv("SANCTUARY_MODE", DEFAULT_MODE)
 
 
@@ -222,3 +231,87 @@ AFTERMATH_SUMMARY = (
 
 def aftermath_greeting(character_id: str, fallback: str) -> str:
     return AFTERMATH_GREETINGS.get(character_id, fallback)
+
+
+# --------------------------------------------------------------------------- #
+# Reseeding bonds & memories for the chosen experience
+# --------------------------------------------------------------------------- #
+MARKER = "aftermath:iron-tomb"
+
+
+def reseed_for_mode(mode: str, memory=None, loader=None) -> dict:
+    """Re-seed every Heir's bond + campaign memories for the chosen experience.
+
+    journey   -> every bond reset to stranger, seeded campaign memories removed.
+    aftermath -> every bond set to "best friend" with the campaign memories.
+
+    `memory` is a MemoryStore whose root holds the per-Heir folders; `loader` a
+    CharacterLoader. Both default to the project defaults. This is the single
+    implementation used by the CLI (tools/seed_mode.py) AND by the in-app
+    Control Panel, so a live switch and a CLI switch behave identically.
+    """
+    import json
+    from datetime import datetime
+
+    from src.core.heir_folders import HEIR_FOLDERS
+    from src.core.memory_store import MemoryStore
+    from src.core.character_loader import CharacterLoader
+
+    memory = memory or MemoryStore(".")
+    loader = loader or CharacterLoader("src/characters")
+    mode = mode if mode in ("aftermath", "journey") else "journey"
+    now = datetime.now().isoformat(timespec="seconds")
+    summary = {}
+    for cid in HEIR_FOLDERS:
+        folder = memory._folder(cid)
+        path = folder / "memories.jsonl"
+        # keep the Heir's own memories; drop any previously seeded campaign ones
+        mems = []
+        if path.exists():
+            for ln in path.read_text(encoding="utf-8").splitlines():
+                if not ln.strip():
+                    continue
+                try:
+                    m = json.loads(ln)
+                except Exception:
+                    continue
+                if MARKER not in (m.get("content") or ""):
+                    mems.append(m)
+        try:
+            name = loader.load(cid)["meta"]["name"]
+        except Exception:
+            name = cid
+        if mode == "aftermath":
+            bond = {
+                "character_id": cid,
+                "first_met": "2025-08-11T10:00:00",
+                "visits": 64,
+                "friendship_level": "best friend",
+                "user_summary": AFTERMATH_SUMMARY,
+                "last_seen": now,
+            }
+            for seed in AFTERMATH_MEMORY_SEEDS.get(cid, []):
+                mems.append({
+                    "mtype": "moment",
+                    "content": f"[{MARKER}] {seed}",
+                    "importance": 3,
+                    "ts": "2025-08-11T10:00:00",
+                })
+            summary[cid] = {"name": name, "level": "best friend",
+                            "memories": len(AFTERMATH_MEMORY_SEEDS.get(cid, []))}
+        else:
+            bond = {
+                "character_id": cid,
+                "first_met": now,
+                "visits": 0,
+                "friendship_level": "stranger",
+                "user_summary": "",
+                "last_seen": now,
+            }
+            summary[cid] = {"name": name, "level": "stranger", "memories": 0}
+        (folder / "bond.json").write_text(
+            json.dumps(bond, ensure_ascii=False, indent=2), encoding="utf-8")
+        with open(path, "w", encoding="utf-8") as f:
+            for m in mems:
+                f.write(json.dumps(m, ensure_ascii=False) + "\n")
+    return summary

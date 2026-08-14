@@ -398,6 +398,31 @@ Amphoreus/
 
 ## Changelog
 
+### 2026-08-15 — The Control Panel + a completeness pass
+- **🎛️ Control Panel** (new tab, `src/ui_control_panel.py`): the visitor picks
+  their own way to play.
+  - **Experience mode** — Journey or Aftermath, switched live from the UI
+    (persisted as `world.play_mode`; `current_mode()` prefers it over the env
+    var). Switching reseeds every Heir's bond + campaign memories via the same
+    `reseed_for_mode` the CLI uses, behind a warning + confirm.
+  - **Live black tide** — on/off (moved here from the sidebar); turning it off
+    winds down any active surge AND clears the darkened skies.
+  - **World engine** — status + Start/Stop (detached daemon; stop.flag).
+  - **Mailbox** — unread count, show notes, mark-all-read.
+- **Completeness pass** — reach-outs now materialize without the engine
+  (Control Panel + Gazette call the idempotent `materialize_reach_outs`); a
+  warm substantive visit lifts the Heir's mood; the Heir's kept gifts are shown
+  in the Visit tab; the mailbox is interactive everywhere.
+- **Robustness** — `WorldState`'s default state path is now project-absolute,
+  so the UI and the world engine can never silently disagree about which file
+  is the world (a real split-brain we hit when the UI was launched from a
+  different working directory).
+- **Verified** — new `world_runtime/_test_control_integration.py` (25 checks,
+  drives the real chat manager with a stubbed LLM) plus the 47 living-world
+  dry tests and the vivid-world tests all pass; the Control Panel was
+  exercised live in the browser (mark-read, black-tide toggle, lazy reach-out
+  note from Aglaea landed in the world state).
+
 ### 2026-08-15 — The second layer of life: a vivid world, human Heirs
 - **A2 — the black tide as a live threat, with an OPTIONAL toggle**
   (`src/world/living_world.py`, `src/world/world_state.py`): a sidebar checkbox

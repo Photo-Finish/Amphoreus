@@ -795,6 +795,50 @@ style gate's prompts (the cycle's cards/loader/test are unchanged).
 Dry-tested offline (`world_runtime/_test_living_world.py`, 47 checks — no LLM,
 no GPU): every mechanic plus persistence round-trips through `world_state.json`.
 
+#### 3.11.1 The Control Panel — the visitor picks their own way to play
+(`src/ui_control_panel.py`, a dedicated tab; mode machinery in
+`src/core/visitor_mode.reseed_for_mode` + `WorldState.play_mode`)
+
+- **Experience mode** — Journey (new arrival) or Aftermath (war-companion).
+  `current_mode()` now prefers the persisted `world.play_mode` over the
+  `SANCTUARY_MODE` env var, so the choice survives restarts and is made in the
+  UI. Switching calls `reseed_for_mode` (the SAME implementation the CLI
+  `tools/seed_mode.py` uses — one code path, identical behaviour): Aftermath
+  writes every bond to `best friend` + the campaign memories; Journey resets
+  every bond to `stranger` and removes the campaign memories. The panel shows
+  a warning and a confirm button, because this is deliberately world-changing.
+- **Live black tide** — the toggle now lives here (removed from the sidebar).
+  Turning it OFF **winds the tide down completely**: any active surge is
+  cleared AND the darkened skies are removed from the Keeper's weather, so the
+  world visibly returns to peace (not just a flag flip).
+- **World engine** — status (running/not) + Start/Stop. Start launches the
+  daemon fully detached (survives Streamlit restarts); Stop writes the
+  `stop.flag` the engine polls. A warning notes it uses GPU/RAM.
+- **Mailbox** — unread count, show-notes, and Mark-all-read.
+
+#### 3.11.2 Completeness pass (making the mechanisms concrete, not parameters)
+
+- **Reach-outs without the engine** — `materialize_reach_outs` is idempotent
+  and is called by the Control Panel and the Gazette on every load, so the
+  visitor's mailbox fills with today's deterministic notes even while the
+  world engine sleeps.
+- **Mood from real contact** — a substantive warm visit (no insult, no
+  gossip) lifts the Heir's mood (`warm_on_visit`), so mood is driven by both
+  the world and the relationship, and decays back toward calm.
+- **Gift history visible** — the Heir keeps every gift; the Visit tab shows
+  “🎁 They keep: …”, and gifts surface in conversation through B6 recall.
+- **Mailbox is interactive** — mark-all-read buttons in the Control Panel and
+  the Gazette; unread counts surface in both.
+- **Robust state path** — `WorldState`'s default path is now project-absolute
+  (`AMPHOREUS_STATE_PATH` overrides for tests), so the UI and the world engine
+  can never silently disagree because one was launched from a different
+  working directory.
+
+Integration dry-test: `world_runtime/_test_control_integration.py` (25 checks)
+drives the REAL `AgentManager` with the LLM stubbed — gossip, hurt/reconcile,
+gift, mood-warm, arc unlock, wind-down, lazy reach-outs, live mode switch, and
+`current_mode` precedence all pass against an isolated temp state.
+
 ---
 
 ## 4. Data flow (one chat turn vs. one world day)
@@ -870,6 +914,12 @@ flowchart LR
     open grievance is closed by appending a *newer* “forgiven” memory; scanning
     oldest-first returns the stale hurt. `open_grievance` reads the newest
     `grievance` entry and treats a “forgiven” one as resolved.
+13. **A relative default state path silently splits the brain.** `WorldState()`
+    used to default to `world_runtime/world_state.json` relative to the
+    process's cwd — launched from the repo it was fine, launched from anywhere
+    else it read/wrote a DIFFERENT file than the world engine. The default is
+    now project-absolute (derived from the module location; `AMPHOREUS_STATE_PATH`
+    overrides for tests), so cwd never matters.
 
 ---
 

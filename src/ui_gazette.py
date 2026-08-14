@@ -49,6 +49,13 @@ def render_gazette(manager, characters):
     """Render the end-user Chronicle as a comprehensive gazette."""
     from src.world.world_state import GUEST_HEIRS
     ws, ch, wev = _load()
+    # the visitor's mailbox fills lazily even without the world engine
+    try:
+        from src.world import living_world as _lw_mz
+        _lw_mz.materialize_reach_outs(ws)
+        ws.save()
+    except Exception:
+        pass
     names = {}
     for c in characters:
         try:
@@ -239,6 +246,23 @@ def render_gazette(manager, characters):
 
         parts.append('</div>')
         st.markdown("".join(parts), unsafe_allow_html=True)
+
+        # mailbox controls (Streamlit-native, so the reader can act on it)
+        from src.world import living_world as _lw_ctl
+        _unread = _lw_ctl.unread_count(ws, "visitor")
+        _m1, _m2 = st.columns([1, 3])
+        with _m1:
+            if st.button("📬 Mark mailbox read", disabled=(_unread == 0),
+                         key="gaz_mail"):
+                _lw_ctl.mark_all_read(ws, "visitor")
+                ws.save()
+                st.rerun()
+        with _m2:
+            if _unread:
+                st.caption(f"{_unread} unread note(s) in your mailbox — "
+                           "also managed in the Control Panel.")
+            else:
+                st.caption("Your mailbox is up to date.")
 
     if not entries:
         st.info("Start the world with `python -m src.world.world_engine --interval 900` to fill the "
