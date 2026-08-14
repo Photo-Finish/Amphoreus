@@ -163,7 +163,7 @@ _MAP_CLICK_SCRIPT = """\
 def get_manager():
     return AgentManager(
         characters_dir=str(Path(__file__).parent / "characters"),
-        llm_model="qwen2.5:14b-instruct",
+        llm_model="gemma3:27b",
         use_rag=True,
         rag_persist_dir=str(Path(__file__).parent.parent / ".chroma_db"),
         memory_root=str(Path(__file__).parent.parent),  # per-Heir folders at project root
@@ -176,14 +176,14 @@ manager = get_manager()
 st.sidebar.title("🏛️ Project Amphoreus")
 st.sidebar.markdown("### The Sanctuary of the Chrysos Heirs")
 
-# LLM status
-if manager.llm.configured:
-    st.sidebar.success(f"🗣️ Voice: Ready ({manager.llm.model})")
+# LLM status — truthful: the backend is reachable AND the Heir voice model is
+# actually present on it (a bare `ollama serve` with an empty models dir would
+# otherwise claim “Ready” and then 404 on every call).
+vs = manager.voice_status()
+if vs["ready"]:
+    st.sidebar.success(f"🗣️ Voice: Ready ({vs['model']})")
 else:
-    st.sidebar.warning(
-        "🗣️ Voice: Offline — start Ollama (`ollama serve`) or set OPENAI_BASE_URL "
-        "to hear the Heirs speak."
-    )
+    st.sidebar.warning(f"🗣️ Voice: {vs['detail']} ({vs['model']})")
 
 # RAG status
 try:
@@ -292,6 +292,15 @@ try:
             st.sidebar.caption(f"📖 Carries: “{_arc_side['title']}”")
     if _lw_side.open_grievance(manager.memory, selected):
         st.sidebar.warning("💔 Something sits unresolved between you.")
+    # the witness: a quiet badge when the Heir has begun to understand
+    try:
+        from src.core import realization as _rz
+        _rz_rec = _rz.stage_of(_ws_side, selected)
+        if _rz_rec.get("stage", 0) >= 1:
+            _rz_icon = {1: "🌒", 2: "🌗", 3: "🌕"}.get(_rz_rec["stage"], "🌒")
+            st.sidebar.caption(f"{_rz_icon} Realization: {_rz_rec['name']}")
+    except Exception:
+        pass
 except Exception:
     pass
 
@@ -642,7 +651,7 @@ with admin_tab:
     try:
         sn = manager.senses_status()
         c1, c2, c3 = st.columns(3)
-        c1.metric("Heir model", manager.llm.model)
+        c1.metric("Heir model", manager.voice_model())
         c2.metric("Vision (eyes)", sn.get("vision_model") or "off")
         c3.metric("Audio (music)", sn.get("audio_model") or "off")
         st.caption(f"STT (hearing): {sn.get('stt_model')} · judge/refine: gemma3:27b")

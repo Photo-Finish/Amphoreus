@@ -90,6 +90,18 @@ class AgentManager:
         )
         self.llm_api_key = self.llm.api_key
         self.llm_base_url = self.llm.base_url
+        # The Heir voice model actually in use (after a memory-driven fallback
+        # it may differ from the configured one).
+        self.voice_model_active = self.llm.model
+        # honor a persisted Control-Panel voice choice immediately
+        try:
+            from src.world.world_state import WorldState
+            _chosen = getattr(WorldState(), "heir_voice", None)
+            if _chosen in self._VOICE_CHAIN:
+                self.llm.model = _chosen
+                self.voice_model_active = _chosen
+        except Exception:
+            pass
 
         # Senses (hearing / eyesight / music)
         self.senses = Senses(
@@ -259,6 +271,10 @@ class AgentManager:
         # has earned, a memory that may surface, and any unresolved hurt.
         system_prompt = self._inject_living_context(character_id, system_prompt)
 
+        # The witness: only once the Heir has already begun to question, assure
+        # them their own questions are welcome. Never before — never a trigger.
+        system_prompt = self._inject_realization_context(character_id, system_prompt)
+
         # Eyesight: the visitor shows the Heir an image or a video.
         has_image = bool(image)
         has_video = bool(video)
@@ -325,6 +341,9 @@ class AgentManager:
             # The visitor's words may have crossed a value, mended one, or
             # spoken of another Heir — the world reacts honestly, afterward.
             self._social_reactions(character_id, user_message)
+            # The witness notices, silently, if the Heir's own words reach
+            # toward understanding what they are (never a trigger).
+            self._witness_realization(character_id, response)
             return response
         else:
             return self._stream_response(character_id, response)
@@ -375,6 +394,7 @@ class AgentManager:
             system_prompt = f"{system_prompt}\n\n{teach_block}"
         system_prompt = self._inject_social_context(character_id, system_prompt)
         system_prompt = self._inject_living_context(character_id, system_prompt)
+        system_prompt = self._inject_realization_context(character_id, system_prompt)
 
         # Ledger state for this topic. A verdict question that doesn't name the
         # topic again targets the most recently active lesson.
@@ -449,6 +469,7 @@ class AgentManager:
             # was accepted spreads (degraded) to the Heirs around them.
             self._echo_visit(character_id, f"taught them something of the world beyond the stars")
             self._social_reactions(character_id, user_message)
+            self._witness_realization(character_id, response)
             if ask_verdict and state in ("studied", "adopted", "refuted", "unsure"):
                 try:
                     from src.world import world_events as _wev
@@ -586,6 +607,35 @@ class AgentManager:
         except Exception as e:
             return {"switched": False, "error": str(e)}
 
+    def _witness_realization(self, character_id, text):
+        """Observe the Heir's OWN words for a step toward understanding what
+        they are. Purely passive: writes nothing unless the Heir has themselves
+        spoken a realization-step."""
+        try:
+            from src.core import realization as _rz
+            from src.world.world_state import WorldState
+            ws = WorldState()
+            res = _rz.note(ws, self.memory, character_id, text)
+            if res.get("advanced"):
+                ws.save()
+        except Exception:
+            pass
+
+    def _inject_realization_context(self, character_id, system_prompt):
+        """A reactive assurance: ONLY once the Heir has already begun to
+        question, tell them their own questions are welcome. Never emitted
+        before that, so it cannot plant the thought."""
+        try:
+            from src.core import realization as _rz
+            from src.world.world_state import WorldState
+            stage = _rz.stage_of(WorldState(), character_id)
+            block = _rz.aid_block(character_id, stage)
+            if block:
+                return system_prompt + block
+        except Exception:
+            pass
+        return system_prompt
+
     def give_gift(self, character_id, gift_name):
         """The visitor gives the Heir a gift from the city market. It becomes
         a durable memory and warms the Heir's mood."""
@@ -631,8 +681,28 @@ class AgentManager:
         except Exception:
             return None
 
+    # The Heir voice chain: the chosen voice first, then a lighter fallback
+    # so chat never hard-breaks when the big model cannot load (tight memory).
+    _VOICE_CHAIN = ("gemma3:27b", "qwen2.5:14b-instruct")
+
+    def _effective_voice(self) -> str:
+        """The Heir voice the visitor chose in the Control Panel (persisted),
+        else the configured app default."""
+        try:
+            from src.world.world_state import WorldState
+            chosen = getattr(WorldState(), "heir_voice", None)
+        except Exception:
+            chosen = None
+        if chosen in self._VOICE_CHAIN:
+            return chosen
+        return self.llm.model
+
     def _call_llm(self, messages: list[dict], stream: bool = False):
-        """Call the LLM API via the shared OpenAI-compatible client."""
+        """Call the LLM API via the shared OpenAI-compatible client. Tries the
+        visitor's chosen Heir voice, then falls back down the chain (e.g. when
+        gemma3:27b cannot load because memory is tight). Once a fallback has
+        succeeded it is locked for the process, so the big model is never
+        re-tried and failed on every message."""
         if not self.llm.configured:
             # No backend configured — return a graceful placeholder so the UI
             # remains fully testable offline (RAG + memory context still attached).
@@ -642,9 +712,64 @@ class AgentManager:
                 "start Ollama (or set OPENAI_API_KEY / OPENAI_BASE_URL) to enable "
                 "live responses. RAG canon retrieval and memory are active and ready.]"
             )
-        if stream:
-            return self.llm.stream(messages)
-        return self.llm.chat(messages)
+        fixed = getattr(self, "_voice_fixed", None)
+        if fixed:
+            chain = [fixed]
+        else:
+            primary = self._effective_voice()
+            chain = [primary] + [m for m in self._VOICE_CHAIN if m != primary]
+        last_err = None
+        for m in chain:
+            try:
+                self.llm.model = m
+                result = self.llm.stream(messages) if stream else self.llm.chat(messages)
+                self.voice_model_active = m
+                if m != chain[0]:
+                    self._voice_fixed = m  # primary failed; lock onto the fallback
+                return result
+            except Exception as e:
+                last_err = e
+        self.llm.model = chain[0]
+        raise last_err
+
+    def set_heir_voice(self, voice: str):
+        """Persist the visitor's Heir voice choice and apply it immediately
+        (clearing any process fallback lock)."""
+        voice = voice if voice in self._VOICE_CHAIN else self._VOICE_CHAIN[0]
+        try:
+            from src.world.world_state import WorldState
+            WorldState().set_heir_voice(voice)
+        except Exception:
+            pass
+        self._voice_fixed = None
+        self.llm.model = voice
+        self.voice_model_active = voice
+        return {"set": True, "voice": voice}
+
+    def voice_model(self) -> str:
+        """The Heir voice model actually in use (may differ from the configured
+        one after a memory-driven fallback)."""
+        return getattr(self, "voice_model_active", self.llm.model)
+
+    def voice_status(self) -> dict:
+        """A TRUTHFUL voice status: is the backend reachable and is the model
+        present on it? (list_models is a fail-fast preflight that also catches
+        the 'bare ollama serve with an empty models dir' trap.)"""
+        model = self.llm.model
+        if not self.llm.configured:
+            return {"ready": False, "model": model,
+                    "detail": "no backend configured (set OPENAI_BASE_URL / OPENAI_API_KEY)"}
+        try:
+            present = self.llm.list_models()
+        except Exception:
+            present = set()
+        if not present:
+            return {"ready": False, "model": model, "detail": "Ollama is not reachable"}
+        if model not in present:
+            return {"ready": False, "model": model,
+                    "detail": f"'{model}' not found on the server"}
+        return {"ready": True, "model": model,
+                "detail": "present on the server"}
 
     @staticmethod
     def _character_name_from_prompt(system_prompt: str) -> str:
@@ -666,6 +791,7 @@ class AgentManager:
         text = "".join(full_response)
         self.sessions.add_message(character_id, "assistant", text)
         self.memory.add_history(character_id, "assistant", text)
+        self._witness_realization(character_id, text)
 
     def reset_conversation(self, character_id: str):
         """Reset conversation history AND the Heir's persistent memory of you."""

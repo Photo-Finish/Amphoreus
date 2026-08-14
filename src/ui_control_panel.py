@@ -78,6 +78,7 @@ def render_control_panel(manager, characters):
     from src.world.world_state import WorldState
     from src.world import living_world as lw
     from src.core.visitor_mode import current_mode
+    from src.core.agent_manager import AgentManager
 
     ws = WorldState()
     # Today's reach-outs materialize here (idempotent, deduped per Heir per day)
@@ -131,6 +132,32 @@ def render_control_panel(manager, characters):
                    help="Turning it off also clears any active surge and its darkened skies.")
     if bt != bool(ws.black_tide_enabled):
         ws.set_black_tide(bt)
+        st.rerun()
+
+    st.markdown("---")
+
+    # ---------------- Heir voice ----------------
+    st.markdown("### 🗣️ Heir voice")
+    _voices = list(AgentManager._VOICE_CHAIN)
+    _current_voice = manager.voice_model()
+    st.caption(
+        "The model that speaks for the Heirs. **gemma3:27b** is the refined "
+        "standard voice (the one the style cycle tunes the cards to), but it is "
+        "slower on this machine (~1–2 min for a long reply). **qwen2.5:14b-instruct** "
+        "is faster and lighter. If the big model cannot load (tight memory), the "
+        "other one takes over automatically."
+    )
+    _voice = st.radio(
+        "Who speaks for the Heirs?",
+        _voices,
+        index=_voices.index(_current_voice) if _current_voice in _voices else 0,
+        format_func=lambda v: ("✨ gemma3:27b — the standard voice (slower)"
+                               if v == "gemma3:27b" else "⚡ qwen2.5:14b-instruct — fast"),
+        key="ctl_voice",
+    )
+    if _voice != _current_voice:
+        _res = manager.set_heir_voice(_voice)
+        st.success(f"The Heirs will now speak in {_res['voice']}.")
         st.rerun()
 
     st.markdown("---")

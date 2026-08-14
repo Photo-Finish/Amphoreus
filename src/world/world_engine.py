@@ -213,6 +213,7 @@ class WorldEngine:
                     self.chronicle.append({"time": time_str, "text": line})
                     continue
                 decision = agent.decide()
+                self._witness(cid, decision.get("action", ""))
                 agent.act(decision)
                 if self.world.is_traveling(cid):
                     # a blessed Heir crossing the Veil / the Nether — into OR
@@ -331,6 +332,17 @@ class WorldEngine:
         pool = with_heirs or list(wev.NPCS)
         return random.choice(pool) if pool else None
 
+    def _witness(self, cid, text):
+        """The witness: notice, passively, if an Heir's own words reach toward
+        understanding what they are. Writes nothing unless they do."""
+        try:
+            from src.core import realization as _rz
+            res = _rz.note(self.world, self.memory, cid, text)
+            if res.get("advanced"):
+                self.world.save()
+        except Exception:
+            pass
+
     def _compose_letter(self, time_str: str) -> Optional[dict]:
         """A letter between two Heirs who are apart (canon-bond or drifted)."""
         import random as _r
@@ -376,6 +388,7 @@ class WorldEngine:
                         reply = agent.react(transcript[-3:])
                         name = agent.name
                         transcript.append(f"{name}: {reply}")
+                        self._witness(agent.character_id, reply)
                     except Exception:
                         continue
             if len(transcript) >= 2:

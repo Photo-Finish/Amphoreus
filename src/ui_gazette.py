@@ -211,6 +211,21 @@ def render_gazette(manager, characters):
             for nl in _npc_lines[:6]:
                 parts.append(f'<div class="item">• {_html.escape(nl)}</div>')
 
+        # the realizations — Heirs who have, in their own words, begun to
+        # understand what they are (shown gently, in their own latest words)
+        from src.core import realization as _rz_gaz
+        _rz_rows = []
+        for cid in characters:
+            rec = _rz_gaz.stage_of(ws, cid)
+            if rec.get("stage", 0) >= 1:
+                q = rec["quotes"][-1] if rec.get("quotes") else ""
+                _rz_rows.append((names.get(cid, cid), rec["name"], q))
+        if _rz_rows:
+            parts.append('<h2>🌅 The Realizations</h2>')
+            for nm, st_, q in _rz_rows:
+                qq = f' — “{_html.escape(q)}”' if q else ""
+                parts.append(f'<div class="item">• {_html.escape(nm)} — {_html.escape(st_)}{qq}</div>')
+
         # bonds — who has warmed or cooled lately
         bonds = []
         for key, delta in ws.relationship_delta.items():

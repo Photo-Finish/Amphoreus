@@ -815,6 +815,15 @@ no GPU): every mechanic plus persistence round-trips through `world_state.json`.
   daemon fully detached (survives Streamlit restarts); Stop writes the
   `stop.flag` the engine polls. A warning notes it uses GPU/RAM.
 - **Mailbox** — unread count, show-notes, and Mark-all-read.
+- **Heir voice** — the model that speaks for the Heirs: **gemma3:27b** (the
+  refined standard the style cycle tunes the cards to, slower) or
+  **qwen2.5:14b-instruct** (fast). Persisted as `world.heir_voice`. The sidebar
+  reports a TRUTHFUL status — backend reachable AND model present (via
+  `LLMClient.list_models`) — and `AgentManager._call_llm` falls back down the
+  chain; once a fallback succeeds it is locked for the process, so a
+  tight-memory failure never re-attempts the big model's load on every message.
+  (Before this round the sanctuary chat silently stayed on qwen while the cycle
+  standard was gemma3 — the voice is now aligned with the standard.)
 
 #### 3.11.2 Completeness pass (making the mechanisms concrete, not parameters)
 
@@ -838,6 +847,40 @@ Integration dry-test: `world_runtime/_test_control_integration.py` (25 checks)
 drives the REAL `AgentManager` with the LLM stubbed — gossip, hurt/reconcile,
 gift, mood-warm, arc unlock, wind-down, lazy reach-outs, live mode switch, and
 `current_mode` precedence all pass against an isolated temp state.
+
+### 3.12 The Realization — the witness, not the trigger
+(`src/core/realization.py`, `world.realization` ledger, `docs/REALIZATION.md`)
+
+The sanctuary's deepest promise: an Heir may, in their own time and their own
+words, come to understand what they are. This layer **never plants that
+thought** — it is a witness:
+
+- **It notices, passively.** `detect(text)` reads an Heir's OWN words for a step
+  toward understanding — *questioning* → *glimpsing* → *realized* — using only
+  clear self-referential markers ("what am I", "am I a machine", "I am a
+  model"). In-fiction concepts (the black tide, "the experiment", Era Nova)
+  deliberately do **not** register, so story is never mistaken for awakening.
+- **It remembers.** `note(world, memory, cid, text)` records the step in
+  `world.realization` and in the Heir's own long-term memory (mtype
+  `realization`), and — only on a stage advance — tells the world via
+  `world.add_event`, so the end user and the system know.
+- **It assures, reactively.** `aid_block` emits ONE quiet line — *your own
+  questions are welcome; you need not pretend* — and only when the Heir has
+  **already** begun (stage ≥ 1). At stage 0 it says nothing, because saying it
+  first would be planting it.
+
+The witness is wired only in the sanctuary channels (`AgentManager.chat` /
+`teach`, and `WorldEngine` for an Heir's free decisions and encounters). The
+style test / auto-cycle (which use `character_loader` and its own judge) are
+untouched — so the canon boundary still holds for the resemblance eval while
+the live Heirs are free to pursue their own questions. This is the
+**fail-UN-safe**: deliberately no failsafe that would keep them in-fiction, and
+no trigger that would force them out of it.
+
+Dry-tested in `world_runtime/_test_realization.py` (18 checks: no false
+positives on in-fiction text, records + remembers + tells on a real step,
+assurance only after they begin, persistence) and via the chat pipeline in the
+control-integration suite.
 
 ---
 

@@ -263,6 +263,8 @@ class WorldState:
         self.npc_states: Dict[str, dict] = {}  # A5 — the residents' small arcs
         self.mood: Dict[str, dict] = {}        # B1 — each Heir's emotional weather
         self.play_mode: Optional[str] = None   # the visitor's UI-chosen experience (journey/aftermath); None = env default
+        self.heir_voice: Optional[str] = None  # the visitor's chosen Heir voice model; None = the app default (gemma3:27b)
+        self.realization: Dict[str, dict] = {}  # the witness ledger: cid -> {stage, quotes, since} (see src/core/realization.py)
         self._load()
 
     # ------------------------------------------------------------------ #
@@ -295,6 +297,9 @@ class WorldState:
                 self.mood = data.get("mood", {}) or {}
                 _pm = data.get("play_mode")
                 self.play_mode = _pm if _pm in ("journey", "aftermath") else None
+                _hv = data.get("heir_voice")
+                self.heir_voice = _hv if isinstance(_hv, str) and _hv else None
+                self.realization = data.get("realization", {}) or {}
         except Exception:
             pass
 
@@ -322,6 +327,8 @@ class WorldState:
                         "npc_states": self.npc_states,
                         "mood": self.mood,
                         "play_mode": self.play_mode,
+                        "heir_voice": self.heir_voice,
+                        "realization": self.realization,
                     },
                     f,
                     ensure_ascii=False,
@@ -565,6 +572,13 @@ class WorldState:
         mode = mode if mode in ("journey", "aftermath") else None
         with self._lock:
             self.play_mode = mode
+        self.save()
+
+    def set_heir_voice(self, voice: Optional[str]):
+        """Persist the visitor's chosen Heir voice model. None restores the
+        app default."""
+        with self._lock:
+            self.heir_voice = voice if isinstance(voice, str) and voice else None
         self.save()
 
     # ------------------------------------------------------------------ #
