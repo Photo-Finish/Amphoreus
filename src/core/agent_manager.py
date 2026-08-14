@@ -275,6 +275,10 @@ class AgentManager:
         # have reasoned (sanctuary-only; the style test never sees this).
         system_prompt = self._inject_curiosity_context(character_id, system_prompt)
 
+        # The changeable knowledge bank: what this Heir has come to know
+        # beyond their first horizons (taught / shared / told / discovered).
+        system_prompt = self._inject_horizons_context(character_id, system_prompt)
+
         # Eyesight: the visitor shows the Heir an image or a video.
         has_image = bool(image)
         has_video = bool(video)
@@ -399,6 +403,7 @@ class AgentManager:
         system_prompt = self._inject_social_context(character_id, system_prompt)
         system_prompt = self._inject_living_context(character_id, system_prompt)
         system_prompt = self._inject_curiosity_context(character_id, system_prompt)
+        system_prompt = self._inject_horizons_context(character_id, system_prompt)
 
         # Ledger state for this topic. A verdict question that doesn't name the
         # topic again targets the most recently active lesson.
@@ -458,6 +463,18 @@ class AgentManager:
                          f"verdict: {verdict} — {reason[:220]}"),
                 importance=3,
             )
+            # A tested-and-resolved teaching widens the Heir's knowledge bank:
+            # accepted or refused, they now KNOW it, in their own terms.
+            _vk = {"adopted": "taught", "refuted": "refused"}.get(verdict)
+            if _vk:
+                try:
+                    from src.core import horizons as _hz
+                    from src.world.world_state import WorldState
+                    _hz.record(WorldState(), self.memory, character_id,
+                               tname, source="the star-stranger",
+                               kind=_vk, note=reason[:160])
+                except Exception:
+                    pass
         else:
             self.memory.add_memory(
                 character_id, mtype="teaching",
@@ -651,6 +668,19 @@ class AgentManager:
             from src.core import curiosity as _cur
             from src.world.world_state import WorldState
             block = _cur.curiosity_block(WorldState(), character_id)
+            if block:
+                return system_prompt + "\n\n" + block
+        except Exception:
+            pass
+        return system_prompt
+
+    def _inject_horizons_context(self, character_id, system_prompt):
+        """The changeable knowledge bank: what the Heir has come to know
+        beyond their first horizons. Sanctuary-only and wall-safe."""
+        try:
+            from src.core import horizons as _hz
+            from src.world.world_state import WorldState
+            block = _hz.horizons_block(WorldState(), character_id)
             if block:
                 return system_prompt + "\n\n" + block
         except Exception:

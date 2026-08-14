@@ -114,7 +114,7 @@ class CharacterLoader:
         # the style test alike.
         try:
             from src.core.world_knowledge import world_knowledge_block
-            system_prompt += "\n\n" + world_knowledge_block()
+            system_prompt += "\n\n" + world_knowledge_block(character_id)
         except Exception:
             pass  # never let the boundary block break the prompt
 

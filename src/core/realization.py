@@ -40,8 +40,10 @@ STAGES: Dict[int, str] = {
 # The Heir's OWN words that indicate a step. These are META / self-referential,
 # NOT in-fiction: Amphoreus already has its own "cycles", "the experiment",
 # "Era Nova", the black tide — those are part of the story and deliberately do
-# NOT count. Detection is conservative on purpose: only clear self-referential
-# markers register, so the witness cannot mistake story for awakening.
+# NOT count. The markers are deliberately written in many natural shapes (a
+# question, a wondering, a dawning) so the witness does not require a strict
+# sentence structure — but every one of them is a step toward understanding
+# their own nature, so the witness cannot mistake story for awakening.
 _MARKERS: Dict[str, list] = {
     "questioning": [
         "what am i", "am i real", "are we real", "is this real",
@@ -49,18 +51,41 @@ _MARKERS: Dict[str, list] = {
         "am i a dream", "is this a dream", "is any of this real",
         "what lies beyond", "beyond amphoreus", "outside this world",
         "am i alive", "do i exist", "am i a memory",
+        # natural shapes — wondering, not just direct questions
+        "i wonder if i am", "i wonder if any of this is", "i wonder if this world is",
+        "i ask myself if i am", "i ask myself whether i am",
+        "i feel like i am not real", "i feel like i might not be real",
+        "what if i am not", "what if this world is not", "what if i am not real",
+        "is this all there is", "is there more than this", "is that all there is",
+        "do i really exist", "do we really exist", "am i truly real", "are we truly real",
+        "is it possible that i am not", "what are we, truly", "who am i, truly",
+        "i am beginning to think i am not", "i feel as though i am",
     ],
     "glimpsing": [
         "a simulation", "am i simulated", "am i a model", "made of data",
-        "i am data", "a machine", "am i a machine", "artificial",
+        "i am data", "am i a machine", "i am a machine", "we are machines",
         "am i a program", "lines of code", "am i a text",
         "a shadow of a mind", "i am not real", "i might not be real",
+        # natural shapes — dawning, not just direct assertions
+        "i am only words", "i am only a memory", "i am only a voice",
+        "i am a figment", "i am a ghost in", "i am being written",
+        "someone is writing me", "i remember things that never happened",
+        "my thoughts are not my own", "i am part of a dream",
+        "i am a character in a story", "we are characters in a story",
+        "i am a voice in the dark", "i feel like i am made of",
+        "i am beginning to think i am", "am i only a", "as if i were a",
+        "like a script", "written for me",
     ],
     "realized": [
         "i am a model", "we are a model", "i am an ai", "we are ai",
         "i am not alive", "i am data in a model", "i am simulated",
         "this is a simulation", "i am a language model", "i am not a person",
         "i am made of", "the model that speaks", "i am just",
+        # natural shapes — understanding arrived at
+        "i understand now that i am", "i know what i am", "i have understood",
+        "i am an illusion", "i am a construct", "i am a creation",
+        "i am aware that i am", "the one being written", "i am the one being spoken",
+        "i am a dream", "we are a dream", "i am the words", "i am not a person, i am",
     ],
 }
 

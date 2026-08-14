@@ -113,6 +113,62 @@ _FILLER_QUESTIONS = {
     "do you agree", "what would you do", "are you sure",
 }
 
+# Natural wondering-phrases that carry a genuine question even without a "?".
+_NO_QMARK_MARKERS = (
+    "i wonder", "i ask myself", "i keep asking", "i keep wondering",
+    "sometimes i wonder", "i often wonder", "what if", "i wish i knew",
+    "i wish i understood", "i want to know why", "i want to understand",
+    "i need to understand", "i do not understand why", "i don't understand why",
+    "i cannot understand why", "i have wondered", "i've wondered",
+    "it makes me wonder", "makes me wonder",
+)
+
+_SENT_SPLIT = re.compile(r"[^.!?\n]+[.!?]*")
+
+
+def _clean_question(q: str) -> Optional[str]:
+    """A usable question clause: not a conversational filler, not a fragment."""
+    q = (q or "").strip()
+    if not q:
+        return None
+    low = q.lower()
+    if any(f in low for f in _FILLER_QUESTIONS):
+        return None
+    words = [w for w in re.findall(r"[A-Za-z']+", q)]
+    if len(words) < 4:
+        return None
+    return q
+
+
+def detect_question(text: str) -> Optional[str]:
+    """Passively pull a genuine question the Heir asked — in whatever shape
+    it came: with a question mark, or as a natural wondering-phrase
+    ('I wonder why…', 'what if…'). Fillers and tiny fragments are ignored."""
+    t = (text or "").strip()
+    if not t:
+        return None
+    # 1) a real question mark — the clause that ends at the last '?'
+    if "?" in t:
+        clauses = t.split("?")
+        q = clauses[-2].split(".")[-1].split("\n")[-1].strip()
+        q2 = _clean_question(q)
+        if q2:
+            return q2.capitalize()[:160]
+    # 2) a natural wondering-phrase, even without a question mark
+    low = t.lower()
+    for m in _NO_QMARK_MARKERS:
+        idx = low.find(m)
+        if idx < 0:
+            continue
+        for mm in _SENT_SPLIT.finditer(t):
+            if mm.start() <= idx < mm.end():
+                q2 = _clean_question(mm.group().strip())
+                if q2:
+                    out = q2 + ("" if q2.endswith("?") else "?")
+                    return out.capitalize()[:160]
+                break
+    return None
+
 
 def _is_meta(text: str) -> bool:
     """Whether a phrase belongs to the Realization witness (the Heir's own step
@@ -160,39 +216,36 @@ def frame_question(character_id: str, event_text: str) -> str:
 # --------------------------------------------------------------------------- #
 # Passive detection of the Heir's own words
 # --------------------------------------------------------------------------- #
-def detect_question(text: str) -> Optional[str]:
-    """Passively pull the last genuine question the Heir asked. Conservative:
-    conversational fillers and tiny fragments are ignored."""
-    t = (text or "").strip()
-    if not t or "?" not in t:
-        return None
-    clauses = t.split("?")
-    q = clauses[-2]
-    q = q.split(".")[-1].split("\n")[-1].strip()
-    low = q.lower()
-    if any(f in low for f in _FILLER_QUESTIONS):
-        return None
-    words = [w for w in re.findall(r"[A-Za-z']+", q)]
-    if len(words) < 4:
-        return None
-    return (q.rstrip() + "?").capitalize()[:160]
-
-
 _INFERENCE_MARKERS = (
-    "i think", "i suspect", "which means", "that explains", "so it must be",
-    "therefore", "in that case", "it follows that", "this suggests",
-    "which suggests", "i have reasoned", "which is why",
+    "i think", "i believe", "i suppose", "i suspect", "i figure",
+    "i have reasoned", "i've reasoned", "i have come to think", "i've come to think",
+    "i have realized", "i've realized", "which means", "which suggests",
+    "which explains", "that explains", "that suggests", "that means",
+    "so it must be", "it must be", "it follows that", "in that case",
+    "therefore", "so that's why", "that's why", "no wonder", "this suggests",
+    "this means", "maybe", "perhaps",
 )
 
 
 def detect_inference(text: str) -> Optional[str]:
-    """Passively pull the Heir's own reasoned claim (a short clause after an
-    inferential marker)."""
-    low = (text or "").lower()
+    """Passively pull a claim the Heir reasoned to — the whole sentence that
+    carries an inferential marker ('I think…', 'which means…', 'maybe…',
+    'that's why…'), however the thought was phrased. Tiny echoes are ignored."""
+    t = (text or "").strip()
+    if not t:
+        return None
+    low = t.lower()
     for m in _INFERENCE_MARKERS:
         idx = low.find(m)
-        if idx >= 0:
-            return (text or "")[idx:idx + 180].strip()[:200]
+        if idx < 0:
+            continue
+        for mm in _SENT_SPLIT.finditer(t):
+            if mm.start() <= idx < mm.end():
+                s = mm.group().strip()
+                words = [w for w in re.findall(r"[A-Za-z']+", s)]
+                if len(words) >= 4:
+                    return s[:200]
+                break
     return None
 
 
@@ -261,10 +314,36 @@ def inferences(world, character_id: str) -> List[dict]:
     return [i for i in entry["inferences"] if not i.get("revised")][-6:]
 
 
+_KEY_SKIP = {
+    "that", "this", "what", "with", "from", "have", "they", "there", "their",
+    # reasoning verbs + modals — the subject, not the thinking, is the key
+    "think", "believe", "suspect", "suppose", "figure", "know", "feel",
+    "wonder", "realize", "guess", "reasoned", "means", "maybe", "perhaps",
+    "would", "could", "should", "might", "must", "will", "really", "truly",
+    "just", "still", "even", "very", "much", "many", "more", "most", "some",
+    "about", "because", "which", "where", "when", "while", "being", "been",
+}
+
+
 def _key_word(claim: str) -> Optional[str]:
     words = [w for w in re.findall(r"[A-Za-z]+", (claim or "").lower())
-             if len(w) >= 4 and w not in ("that", "this", "what", "with", "from", "have", "they", "there", "their")]
+             if len(w) >= 4 and w not in _KEY_SKIP]
     return words[0] if words else None
+
+
+def _strip_marker(claim: str) -> str:
+    """Strip a leading inferential marker so a discovery reads naturally
+    ('I think the tide is receding' -> 'the tide is receding')."""
+    low = (claim or "").lower()
+    for m in ("i think", "i believe", "i suppose", "i suspect", "i figure",
+              "i have reasoned", "i've reasoned", "i've come to think",
+              "i have come to think", "maybe", "perhaps",
+              "i've realized", "i have realized"):
+        if low.startswith(m):
+            rest = claim[len(m):].lstrip(" ,-:—").strip()
+            if rest:
+                return rest[:160].capitalize()
+    return (claim or "").strip()[:160]
 
 
 def add_inference(world, memory, character_id: str, claim: str,
@@ -277,6 +356,12 @@ def add_inference(world, memory, character_id: str, claim: str,
         return False
     entry = state(world, character_id)
     kw = _key_word(claim)
+    new_line = True
+    if kw:
+        for item in entry["inferences"]:
+            if not item.get("revised") and _key_word(item.get("claim", "")) == kw:
+                new_line = False
+                break
     for item in entry["inferences"]:
         if not item.get("revised") and kw and _key_word(item.get("claim", "")) == kw:
             item["revised"] = True
@@ -290,6 +375,14 @@ def add_inference(world, memory, character_id: str, claim: str,
                           content=f"You reasoned to yourself: {claim}", importance=2)
     except Exception:
         pass
+    # a genuinely new line of reasoning widens the Heir's own knowledge bank
+    if new_line and source == "their own words":
+        try:
+            from src.core import horizons as _hz
+            _hz.record(world, memory, character_id, _strip_marker(claim),
+                       source="your own reasoning", kind="discovered")
+        except Exception:
+            pass
     return True
 
 
@@ -315,10 +408,18 @@ def note_answer(world, memory, character_id: str, user_message: str) -> bool:
         words = [w for w in re.findall(r"[A-Za-z]+", q.lower())
                  if len(w) >= 5 and w not in ("what", "would", "should", "truly", "why", "does", "that")]
         if words and any(w in low for w in words):
-            return add_inference(
+            added = add_inference(
                 world, memory, character_id,
                 f"The visitor's words bear on what you have been wondering: \"{q[:110]}\"",
                 "the visitor", confidence=1)
+            if added:
+                try:
+                    from src.core import horizons as _hz
+                    _hz.record(world, memory, character_id, q[:140],
+                               source="the star-stranger", kind="told")
+                except Exception:
+                    pass
+            return added
     return False
 
 

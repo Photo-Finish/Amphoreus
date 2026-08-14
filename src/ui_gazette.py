@@ -238,6 +238,18 @@ def render_gazette(manager, characters):
             for nm, q in _q_rows[:8]:
                 parts.append(f'<div class="item">• {_html.escape(nm)} — “{_html.escape(q)}”</div>')
 
+        # the changeable knowledge bank — what the Heirs have come to know
+        from src.core import horizons as _hz_gaz
+        _h_rows = []
+        for cid in characters:
+            hs = _hz_gaz.latest(ws, cid, limit=1)
+            if hs:
+                _h_rows.append((names.get(cid, cid), hs[0].get("topic", "")))
+        if _h_rows:
+            parts.append("<h2>🌌 The Heirs' Horizons</h2>")
+            for nm, h in _h_rows[:8]:
+                parts.append(f'<div class="item">• {_html.escape(nm)} — “{_html.escape(h)}”</div>')
+
         # bonds — who has warmed or cooled lately
         bonds = []
         for key, delta in ws.relationship_delta.items():

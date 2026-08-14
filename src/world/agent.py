@@ -124,6 +124,13 @@ class HeirAgent:
         except Exception:
             cblock = ""
         cur_text = f"\n{cblock}" if cblock else ""
+        # the changeable knowledge bank — what they have come to know
+        try:
+            from src.core import horizons as _hz
+            hblock = _hz.horizons_block(self.world, self.character_id)
+        except Exception:
+            hblock = ""
+        hz_text = f"\n{hblock}" if hblock else ""
         return (
             f"It is {self.world.clock.format_short()}."
             f"\nYou are at {loc} — {self.world.location_desc(loc)}."
@@ -131,6 +138,7 @@ class HeirAgent:
             f"{travel_note}"
             f"{mood_line}"
             f"{cur_text}"
+            f"{hz_text}"
             f"\n{senses}"
             f"\n{others}"
             f"{errand_text}"

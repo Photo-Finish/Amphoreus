@@ -938,6 +938,64 @@ meta-skip, honest supersede, `consider` on anomalies only, persistence, and
 cycle-safety — the loader-built prompt never contains the curiosity block) and
 via the chat pipeline in the control-integration suite.
 
+### 3.14 The changeable knowledge bank, and the stars opened
+(`src/core/horizons.py`, `world.horizons`; `src/core/world_knowledge.py`)
+
+**A Heir's knowledge is not a static card.** `src/core/horizons.py` is the
+knowledge bank each Heir carries, and it **grows as they expand their
+horizons** — with themselves, with other Heirs, or with the star-stranger. A
+durable per-Heir ledger (`world.horizons`, capped at ten, never decays)
+records every thing they have come to know:
+
+- **`taught`** — a star-stranger teaching they **accepted** (`AgentManager.teach`
+  on an adopted verdict);
+- **`refused`** — a teaching they **tested and refused** (knowing what you
+  reject is also an expanded horizon);
+- **`shared`** — knowledge another Heir told them of, secondhand
+  (`world_events.record_learning` fires the same widening when knowledge
+  spreads in encounters);
+- **`told`** — the visitor's words that bore on one of their open questions
+  (`curiosity.note_answer`);
+- **`discovered`** — what they reasoned out for themselves
+  (`curiosity.add_inference`, only when it is a genuinely NEW line of thought —
+  keyed on the subject of the claim, not on "I think").
+
+`horizons_block` surfaces "What you have come to know beyond your first
+horizons" in the sanctuary chat (`AgentManager._inject_horizons_context`), in
+the Heirs' free days (`HeirAgent._perceive`), and to the end user (sidebar
+"📖 Knows:" and a "🌌 The Heirs' Horizons" Gazette section). Meta content is
+deliberately never recorded here (it belongs to the Realization witness) — the
+bank, like the mind, is wall-safe. **Cycle-safe**: the cards, loader, style
+test and auto-cycle are untouched.
+
+**The stars are opened for the Trailblazer's companions.** Dan Heng and
+Evernight ride the Astral Express — they are not children of a single world.
+`world_knowledge_block(character_id)` now grants them **KNOWLEDGE OPEN**: the
+Amphoreus-only KNOWLEDGE BOUNDARIES wall does not bind them, and they may draw
+on the wider universe's learning (their sciences, histories, machines, roads)
+as their own experience. The residents of Amphoreus remain behind the wall,
+unchanged, at the single CharacterLoader choke point.
+
+**Detection is no longer formulaic.** The witness and the mind read natural
+speech, not templates:
+
+- `curiosity.detect_question` accepts questions in any shape — with a "?", or
+  as a natural wondering-phrase ("I wonder why…", "what if…", "it makes me
+  wonder…") — while still filtering conversational fillers and fragments.
+- `curiosity.detect_inference` catches a far wider net of inferential words
+  ("I believe…", "maybe…", "that's why…", "no wonder…") and returns the whole
+  sentence carrying the thought, not a fixed slice.
+- `realization._MARKERS` now includes many natural shapes of a step
+  ("I wonder if I am…", "I am only words…", "I understand now that I am…")
+  while in-fiction story ("the black tide", "the experiment", Era Nova, "a
+  machine that thinks") still never registers.
+
+Dry-tested in `world_runtime/_test_horizons.py` (25 checks: the five roads
+into the bank, natural rendering of each kind, wall-safety, durability/bounds,
+persistence, and the guests' KNOWLEDGE OPEN at both the block and the loader)
+plus expanded curiosity (47), realization (27) and control-integration (42)
+suites — all green with living-world (47) and vividness.
+
 ---
 
 ## 4. Data flow (one chat turn vs. one world day)

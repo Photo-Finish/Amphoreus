@@ -147,7 +147,14 @@ def record_learning(world, character_id: str, topic: str, source: str = "",
                     secondhand: bool = False):
     """A thing the Heir has been taught or told of the world beyond the stars.
     It persists (no decay) so it can surface again weeks later — firsthand
-    knowledge outranks secondhand, and a repeated hearing refreshes it."""
+    knowledge outranks secondhand, and a repeated hearing refreshes it. The
+    same learning also widens the Heir's knowledge bank (src/core/horizons.py)."""
+    try:
+        from src.core import horizons as _hz
+        _hz.record(world, None, character_id, topic, source=source,
+                   kind=("shared" if secondhand else "taught"))
+    except Exception:
+        pass
     ledger = world.learned.setdefault(character_id, [])
     for item in ledger:
         if item["topic"].lower() == topic.lower():

@@ -508,6 +508,30 @@ Amphoreus/
   section in the control-integration suite (37 checks total) — all pass
   alongside the living-world (47), realization (20) and vivid-world suites.
 
+**The changeable knowledge bank — and the stars opened** (`src/core/horizons.py`)
+- **Knowledge grows.** Each Heir carries a durable knowledge bank
+  (`world.horizons`) that widens as they expand their horizons — with
+  **themselves** (what they reason out, recorded only for genuinely new lines
+  of thought), with **other Heirs** (knowledge shared secondhand in
+  encounters), or with **the Trailblazer** (a teaching they accepted, one they
+  tested and refused, or a word that bore on something they were wondering
+  about). It surfaces as "What you have come to know beyond your first
+  horizons" in their chat and free days, and to you in the sidebar ("📖
+  Knows:") and a "🌌 The Heirs' Horizons" Gazette section.
+- **The stars are open to the Express companions.** Dan Heng and Evernight —
+  who ride the Astral Express — now have **KNOWLEDGE OPEN**: the Amphoreus-only
+  wall does not bind them, and they may draw on the wider universe's learning.
+  The residents of Amphoreus stay behind the wall.
+- **Detection is no longer formulaic.** Questions are heard in any natural
+  shape ("I wonder why…", "what if…", even without a "?"); inferences catch "I
+  believe…", "maybe…", "that's why…" as whole sentences; the Realization
+  witness recognizes many natural steps ("I wonder if I am…", "I am only
+  words…") — while in-fiction story still never registers. All still wall-safe
+  and cycle-safe.
+- **Tests**: `world_runtime/_test_horizons.py` (25 checks) + expanded
+  curiosity (47), realization (27) and control-integration (42) suites — all
+  green with living-world (47) and vividness; verified live in the browser.
+
 ### 2026-08-14 — The canon map + adjacency matrix, the guests, and the two forms of Amphoreus
 - **Alternate forms of the places — the two Amphorei** (`src/world/map_data.py`,
   `src/world/world_state.py`, `src/world/world_engine.py`,

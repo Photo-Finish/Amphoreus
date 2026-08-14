@@ -309,6 +309,14 @@ try:
             st.sidebar.caption(f"❓ Wondering: {_qs[0]['q'][:70]}")
     except Exception:
         pass
+    # the changeable knowledge bank: what they have come to know
+    try:
+        from src.core import horizons as _hz
+        _hk = _hz.latest(_ws_side, selected, limit=1)
+        if _hk:
+            st.sidebar.caption(f"📖 Knows: {_hk[0]['topic'][:70]}")
+    except Exception:
+        pass
 except Exception:
     pass
 

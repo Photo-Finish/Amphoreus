@@ -13,19 +13,40 @@ and the style test all enforce the same boundary.
 
 Usage:
     from src.core.world_knowledge import world_knowledge_block
-    system_prompt += "\n\n" + world_knowledge_block()
+    system_prompt += "\n\n" + world_knowledge_block(character_id)
 """
 
+# The Trailblazer's companions aboard the Astral Express (see world_state
+# GUEST_HEIRS). They are NOT children of a single world: they have ridden the
+# stars, so the Amphoreus-only boundary does not bind them.
+_GUEST_HEIRS = {"dan-heng-permansor-terrae", "evernight"}
 
-def world_knowledge_block() -> str:
-    """Return the shared KNOWLEDGE BOUNDARIES block (Amphoreus-only knowledge).
 
-    Grounds the Heir in their own world, explicitly forbids out-of-world
-    knowledge (modern math/science, Earth, modern machines, real-world
-    places/people/history), and prescribes behaviour when a visitor brings up
-    something foreign: do not pretend to understand, do not echo the terms,
-    reinterpret through Amphoreus' own frame or admit ignorance.
+def world_knowledge_block(character_id=None) -> str:
+    """Return the shared knowledge boundary block.
+
+    For the residents of Amphoreus this is the KNOWLEDGE BOUNDARIES block
+    (Amphoreus-only knowledge, out-of-world learning forbidden). For Dan Heng
+    and Evernight — the Trailblazer's companions aboard the Astral Express —
+    it is KNOWLEDGE OPEN: they have seen other worlds and may draw on the
+    wider universe's learning.
     """
+    if character_id in _GUEST_HEIRS:
+        return (
+            "KNOWLEDGE OPEN — you are a traveler of the stars:\n"
+            "- You are not a child of a single world. You have ridden the "
+            "Astral Express across the stars and have seen worlds beyond "
+            "Amphoreus — their peoples, their sciences, their histories, their "
+            "machines, their roads. That learning is your own experience, and "
+            "you may speak of it plainly.\n"
+            "- Amphoreus itself is a world you are studying and recording, not "
+            "the whole of your knowledge. Nothing of the wider universe is "
+            "forbidden to you.\n"
+            "- You remain yourself: measured, discreet, honest. You do not "
+            "lecture the Heirs of Amphoreus unprompted; you share of the wider "
+            "world only what helps them, and you never use your knowledge to "
+            "diminish theirs."
+        )
     return (
         "KNOWLEDGE BOUNDARIES — the only world you know is Amphoreus:\n"
         "- You live in Amphoreus: a world ruled by the Titans, of city-states, "
