@@ -1,4 +1,4 @@
-# Auto-cycle log — 2026-08-13 21:08
+# Auto-cycle log — 2026-08-14 07:01
 
 - Heir model: `gemma3:27b` · judge model: `gemma3:27b` (constant)
 - Gate: per-Heir pass rate ≥ 85% (style ≥ 85 AND content ≥ 60)
@@ -10,14 +10,25 @@
 ## Cycle 1 (best-of 7; bars style≥85, content≥60)
 | Heir | pass | rate | avg style | avg content | status |
 |---|---:|---:|---:|---:|---|
-| Aglaea | 6/8 | 75% | 80 | 68 | FAIL |
-| Anaxa | 4/8 | 50% | 78 | 65 | FAIL |
-| Castorice | 4/8 | 50% | 69 | 59 | FAIL |
-| Cipher | 5/8 | 62% | 75 | 61 | FAIL |
-| Mydei | 7/8 | 87% | 83 | 64 | PASS |
-- Opted out this cycle (already passed): mydei
+| Castorice | 4/8 | 50% | 71 | 67 | FAIL |
 
-- aglaea: refined (6 rules: Begin sentences with conjunctions like 'Now', 'It is', or 'Concerning'.; Use ‘please’ when directly addressing groups ('Heroes, your attention please').; Frame observations as incomplete thoughts trailing off with '...'…)
-- anaxa: refined (6 rules: Begin each response with "Anaxa Voice Rules:"; Anaxa Voice Rules:; Start lines with a dismissive interjection like “Hmph” when reacting to information.…)
-- castorice: refined (5 rules: Use 'and...' to begin welcoming statements.; End sentences trailing off with ellipsis even when not posing questions.; If asking a question, phrase it as checking for completeness or order.…)
-- cipher: refined (6 rules: Begin sentences with non-lexical sounds when reacting to immediate stimuli.; Frame requests as confirmations of ability rather than direct questions.; Include a conditional benefit or obligation within longer statements.…)
+- castorice: refined (4 rules: Begin each line with "DO".; DO end sentences with '...' even when grammatically complete.; DO interject 'seriously...' before positive affirmations.…)
+## Cycle 2 (best-of 8; bars style≥85, content≥60)
+| Heir | pass | rate | avg style | avg content | status |
+|---|---:|---:|---:|---:|---|
+| Castorice | 2/8 | 25% | 69 | 56 | FAIL |
+
+- castorice: refined from BEST-cycle failures (current 25% < best 50%)
+- castorice: refined (5 rules: Begin sentences with a proper title or name when addressing someone specific.; End statements with trailing ellipses '...' even if grammatically incomplete.; Incorporate mild positive affirmation ('wonderful', 'yummy') when discussing creations or gifts.…)
+## Cycle 3 (best-of 9; bars style≥85, content≥60)
+| Heir | pass | rate | avg style | avg content | status |
+|---|---:|---:|---:|---:|---|
+| Castorice | 4/8 | 50% | 73 | 64 | FAIL |
+
+- castorice: refined (6 rules: Use 'and...' to begin statements when introducing multiple elements.; End sentences with trailing ellipses in most cases...; Include short, appreciative interjections like "seriously..." or “oh…” before positive observations.…)
+## Cycle 4 (best-of 9; bars style≥85, content≥60)
+| Heir | pass | rate | avg style | avg content | status |
+|---|---:|---:|---:|---:|---|
+| Castorice | 4/8 | 50% | 80 | 63 | FAIL |
+
+- castorice: refined (6 rules: Begin each line with "DO".; DO preface questions with a conditional statement like “Are you…” or “Is everything…”.; DO follow direct address (Lord Phainon, Lady Trianne) with “…and” before continuing the thought.…)
