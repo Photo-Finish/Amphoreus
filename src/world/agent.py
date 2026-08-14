@@ -111,11 +111,18 @@ class HeirAgent:
                            f"\"{latest['text'][:120]}\"")
 
         senses = self.world.sensory_text(loc)
+        from . import living_world as _lw
+        mo = _lw.mood_of(self.world, self.character_id)
+        mood_line = ""
+        if mo["valence"] != 0:
+            mood_line = (f"\nYour mood today: {mo['name']}"
+                         + (f" — {mo['reason']}" if mo["reason"] else "") + ".")
         return (
             f"It is {self.world.clock.format_short()}."
             f"\nYou are at {loc} — {self.world.location_desc(loc)}."
             f"{routine}"
             f"{travel_note}"
+            f"{mood_line}"
             f"\n{senses}"
             f"\n{others}"
             f"{errand_text}"

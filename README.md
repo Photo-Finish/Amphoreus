@@ -398,6 +398,35 @@ Amphoreus/
 
 ## Changelog
 
+### 2026-08-15 — The second layer of life: a vivid world, human Heirs
+- **A2 — the black tide as a live threat, with an OPTIONAL toggle**
+  (`src/world/living_world.py`, `src/world/world_state.py`): a sidebar checkbox
+  in visitor mode. On → a surge adds a day of travel into surged edge cities and
+  the Heirs there grow weary; off → the world rests at peace.
+- **A3 — market & gift economy**: each city's market offers region-flavored
+  wares (🗺️ Visit tab → “Give a gift”); a gift becomes a durable memory and
+  warms the Heir's mood.
+- **A4 — mailbox / bulletin board**: notes to/from the visitor persist on the
+  world state and appear in the gazette (“Your Mailbox”).
+- **A5 — living named NPCs**: each canon-checked resident has a small arc that
+  advances across the days.
+- **B1 — persistent mood**: each Heir's emotional weather (−3…+3, with a reason),
+  decaying toward calm; it colours — not commands — their voice.
+- **B2 — proactive reach-out**: Heirs sometimes leave a note for the visitor
+  unprompted (~1 in 9 days each).
+- **B4 — slow-burn personal arcs**: three bond-gated layers of each Heir's canon
+  story, revealed only as friendship deepens.
+- **B5 — value-based hurt & reconcile**: words that cross an Heir's values sting
+  and are remembered; an honest apology mends it.
+- **B6 — story-beat recall**: a shared moment may surface, re-phrased in the
+  present.
+- **B7 — gossip & relationship deltas**: telling one Heir about another travels
+  through the social web and shifts the bond between them.
+- **B8 — sensory grounding**: the sky, the hour and the Heir's mood colour how
+  the day feels where they stand.
+- **Dry-tested offline**: `world_runtime/_test_living_world.py` (47 checks, no
+  LLM/GPU) + the pre-existing vivid-world tests all pass.
+
 ### 2026-08-14 — The canon map + adjacency matrix, the guests, and the two forms of Amphoreus
 - **Alternate forms of the places — the two Amphorei** (`src/world/map_data.py`,
   `src/world/world_state.py`, `src/world/world_engine.py`,

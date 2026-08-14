@@ -746,6 +746,55 @@ The model:
   so nothing overlaps; verified in the browser with `getBBox` — **0 overlapping
   labels** across all 21 nodes, the Veil tags, and the Heir markers.
 
+### 3.11 The second layer of life — a vivid world, human Heirs
+(`src/world/living_world.py`, with fields persisted on `WorldState` and wired
+through `AgentManager`, `HeirAgent`, `WorldEngine`, `ui_app` and `ui_gazette`)
+
+A second, chat-and-engine layer on top of `world_events.py`. All of it is pure
+data + logic — nothing here authors an Heir's action, and nothing touches the
+style gate's prompts (the cycle's cards/loader/test are unchanged).
+
+- **A2 — the black tide as a live threat, with an OPTIONAL toggle.**
+  `world.black_tide_enabled` (persisted; default on) is exposed as a visitor-mode
+  checkbox. When on, a surge adds **one extra day of travel** into a surged edge
+  city (`surge_travel_penalty`, applied in `begin_travel`), and Heirs standing in
+  a surged city carry a weariness (`surge_consequence_line` + a mood hit set by
+  the engine). When off, the world rests at peace and `maybe_surge` never rolls.
+- **A3 — market & gift economy.** `MARKETS` gives each city region-flavored
+  wares; `market_for` + `give_gift` turn a gift into a durable memory (mtype
+  `gift`, importance 3) and warm the Heir's mood. Surfaced in the Visit tab as a
+  “Give a gift” picker at the Heir's current city.
+- **A4 — mailbox / bulletin board.** `world.mailbox` persists notes to and from
+  the visitor; the gazette shows “Your Mailbox” (unread notes included).
+- **A5 — living named NPCs.** `NPC_ARCS` gives each canon-checked resident a
+  small multi-stage arc; `advance_npcs` moves one forward now and then (a finished
+  arc rests and begins again), logged to the Chronicle.
+- **B1 — persistent mood.** `world.mood` stores each Heir's valence (−3…+3) with
+  a reason; `advance_moods` decays it toward calm daily; `mood_block` lets it
+  colour — not command — their voice (chat + world agents).
+- **B2 — proactive reach-out.** `should_reach_out` is a deterministic ~1-in-9-days
+  chance per Heir; the engine (or a UI pass) materializes a note into the
+  mailbox, deduped per Heir per day.
+- **B4 — slow-burn personal arcs.** `ARCS` holds three bond-gated layers of each
+  Heir's canon story; `arc_stage(friendship_level)` unlocks them (friend → close
+  friend → best friend) and `arc_block` reveals only what the bond has earned.
+- **B5 — value-based hurt & reconcile.** `HEIR_VALUES` maps each Heir's values to
+  crossing keywords; `detect_violation` + `hurt` record a grievance (mtype
+  `grievance`) and lower the mood, `is_apology` + `reconcile` close it (mood up).
+  `AgentManager._social_reactions` runs after each reply so the reaction is honest,
+  not pre-scripted; `grievance_block` surfaces an unresolved hurt on later turns.
+- **B6 — story-beat recall.** `recall` picks a high-importance shared moment
+  (moment/gift/preference/teaching) and re-phrases it in the present, varied by
+  day; injected as “A memory that may surface” — optional, never forced.
+- **B7 — gossip & relationship deltas.** `gossip` travels the visitor's words
+  about one Heir to the one spoken of (a rumor) and shifts the bond between the
+  two Heirs (`relationship_delta`).
+- **B8 — sensory grounding.** `sensory_block` folds the city's sky, the hour, and
+  the Heir's mood into how the day feels where they stand.
+
+Dry-tested offline (`world_runtime/_test_living_world.py`, 47 checks — no LLM,
+no GPU): every mechanic plus persistence round-trips through `world_state.json`.
+
 ---
 
 ## 4. Data flow (one chat turn vs. one world day)
@@ -817,6 +866,10 @@ flowchart LR
     Heir carried into the Dawn era can return on their own (1 period), so no
     resident is ever trapped in the past. Gated edges are direction-aware
     (`_edge_allowed`), not symmetric.
+12. **Reconciliation is stateful — check the newest entry, not the first.** An
+    open grievance is closed by appending a *newer* “forgiven” memory; scanning
+    oldest-first returns the stale hurt. `open_grievance` reads the newest
+    `grievance` entry and treats a “forgiven” one as resolved.
 
 ---
 
@@ -828,6 +881,11 @@ flowchart LR
   adjust `rag_threshold` / `rag_k` in `AgentManager`.
 - **Deepen the world:** extend `HOME_LOCATIONS` / `LOCATIONS` in `world_state.py`;
   add seasonal weather; adjust `--interval` for tempo.
+- **Extend the living world** (`src/world/living_world.py`): add wares to
+  `MARKETS`, stages to `NPC_ARCS`, layers to `ARCS`, values to `HEIR_VALUES`;
+  toggle the live black tide via `world.set_black_tide(bool)` or the sidebar
+  checkbox. New persisted fields belong on `WorldState` (add to `__init__`,
+  `_load`, and `save`).
 - **Add another two-form place:** add the `present → "Dawn-era name"` pair to
   `TIME_FORMS` in `map_data.py`, a position in `PAST_POS` + `AREA_ICONS`, and a
   description in `world_state.LOCATIONS` — the Dawn-layer roads, the Veil edge,

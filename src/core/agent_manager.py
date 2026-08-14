@@ -255,6 +255,10 @@ class AgentManager:
         # style gate's system prompts are untouched.
         system_prompt = self._inject_social_context(character_id, system_prompt)
 
+        # The second layer of life — mood, senses, the deeper story the bond
+        # has earned, a memory that may surface, and any unresolved hurt.
+        system_prompt = self._inject_living_context(character_id, system_prompt)
+
         # Eyesight: the visitor shows the Heir an image or a video.
         has_image = bool(image)
         has_video = bool(video)
@@ -318,6 +322,9 @@ class AgentManager:
             self.memory.add_history(character_id, "assistant", response)
             # The world notices the star-stranger's visit (rumor + Keeper flash).
             self._echo_visit(character_id, user_message)
+            # The visitor's words may have crossed a value, mended one, or
+            # spoken of another Heir — the world reacts honestly, afterward.
+            self._social_reactions(character_id, user_message)
             return response
         else:
             return self._stream_response(character_id, response)
@@ -367,6 +374,7 @@ class AgentManager:
         if teach_block:
             system_prompt = f"{system_prompt}\n\n{teach_block}"
         system_prompt = self._inject_social_context(character_id, system_prompt)
+        system_prompt = self._inject_living_context(character_id, system_prompt)
 
         # Ledger state for this topic. A verdict question that doesn't name the
         # topic again targets the most recently active lesson.
@@ -440,6 +448,7 @@ class AgentManager:
             # The world notices: the star-stranger taught this Heir, and what
             # was accepted spreads (degraded) to the Heirs around them.
             self._echo_visit(character_id, f"taught them something of the world beyond the stars")
+            self._social_reactions(character_id, user_message)
             if ask_verdict and state in ("studied", "adopted", "refuted", "unsure"):
                 try:
                     from src.world import world_events as _wev
@@ -496,6 +505,91 @@ class AgentManager:
             _wev.visitor_echo(WorldState(), character_id, note[:160])
         except Exception:
             pass
+
+    def _inject_living_context(self, character_id, system_prompt):
+        """The second layer of life (see src/world/living_world.py): mood,
+        sensory grounding, the bond-gated deeper story, a memory that may
+        surface, and any unresolved hurt. Chat-only."""
+        try:
+            from src.world import living_world as _lw
+            from src.world.world_state import WorldState
+            ws = WorldState()
+            parts = []
+            mood = _lw.mood_block(ws, character_id)
+            if mood:
+                parts.append(mood.strip())
+            sensory = _lw.sensory_block(ws, character_id)
+            if sensory:
+                parts.append("# How the day feels here\n" + sensory)
+            arc = _lw.arc_block(ws, self.memory, character_id)
+            if arc:
+                parts.append(arc.strip())
+            recall = _lw.recall_block(ws, self.memory, character_id)
+            if recall:
+                parts.append(recall.strip())
+            grief = _lw.grievance_block(ws, self.memory, character_id)
+            if grief:
+                parts.append(grief.strip())
+            if parts:
+                return system_prompt + "\n\n" + "\n\n".join(parts)
+        except Exception:
+            pass
+        return system_prompt
+
+    def _social_reactions(self, character_id, user_message):
+        """After the Heir's reply, the visitor's words may cross a value
+        (hurt), mend one (reconcile), or speak of another Heir (gossip travels
+        through the social web)."""
+        try:
+            from src.world import living_world as _lw
+            from src.world.world_state import WorldState
+            ws = WorldState()
+            if _lw.is_apology(user_message):
+                if _lw.reconcile(ws, self.memory, character_id):
+                    ws.save()
+                return
+            value = _lw.detect_violation(character_id, user_message)
+            if value:
+                _lw.hurt(ws, self.memory, character_id, value, user_message)
+                ws.save()
+                return
+            for cid in self.loader.list_characters():
+                if cid == character_id:
+                    continue
+                try:
+                    nm = self.loader.load(cid)["meta"]["name"]
+                except Exception:
+                    continue
+                if nm and nm.lower() in (user_message or "").lower():
+                    _lw.gossip(ws, character_id, cid, user_message[:140])
+                    ws.save()
+                    return
+        except Exception:
+            pass
+
+    def give_gift(self, character_id, gift_name):
+        """The visitor gives the Heir a gift from the city market. It becomes
+        a durable memory and warms the Heir's mood."""
+        try:
+            from src.world import living_world as _lw
+            from src.world.world_state import WorldState
+            ws = WorldState()
+            result = _lw.give_gift(ws, self.memory, character_id, gift_name)
+            ws.save()
+            return result
+        except Exception as e:
+            return {"given": False, "reason": str(e)}
+
+    def market_at(self, character_id):
+        """(location, wares) — the market of the city the Heir is in right now."""
+        try:
+            from src.world import living_world as _lw
+            from src.world.world_state import WorldState
+            ws = WorldState()
+            loc = ws.location_name(character_id)
+            return loc, _lw.market_for(ws, loc)
+        except Exception:
+            return "", []
 
     def travel_with(self, character_id, destination):
         """The star-stranger accompanies an Heir on the road together. If the

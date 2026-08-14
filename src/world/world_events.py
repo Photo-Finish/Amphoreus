@@ -328,8 +328,11 @@ def surges_enabled() -> bool:
 
 
 def maybe_surge(world, chance: float = 0.12) -> Optional[Dict]:
-    """Roll whether the black tide stirs today (journey mode only)."""
+    """Roll whether the black tide stirs today (journey mode only, and only
+    when the visitor-mode toggle for the live tide is switched on)."""
     if not surges_enabled():
+        return None
+    if not getattr(world, "black_tide_enabled", True):  # A2 — optional toggle
         return None
     if surge_active(world):
         return world.surge

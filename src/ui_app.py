@@ -261,6 +261,21 @@ try:
         st.sidebar.caption("🗺️ Mode: **Journey** — you are newly arrived; the Heirs do not know you yet.")
 except Exception:
     pass
+# A2 — the live black tide is an OPTIONAL toggle (visitor mode). When off,
+# Amphoreus rests at peace; when on, the tide may stir and the world reacts.
+try:
+    from src.world.world_state import WorldState as _WS_BT
+    _ws_bt = _WS_BT()
+    _bt_on = st.sidebar.checkbox(
+        "🕳️ Live black tide",
+        value=bool(_ws_bt.black_tide_enabled),
+        help="When on, the black tide can stir: travel into the edge cities "
+             "slows, and the Heirs there grow weary. When off, the world is at peace.",
+    )
+    if _bt_on != bool(_ws_bt.black_tide_enabled):
+        _ws_bt.set_black_tide(_bt_on)
+except Exception:
+    pass
 try:
     bond = manager.get_bond_info(selected)
     level = bond.get("friendship_level", "stranger")
@@ -271,6 +286,27 @@ try:
     )
     if bond.get("first_met"):
         st.sidebar.caption(f"First met: {bond.get('first_met')[:16].replace('T', ' ')}")
+except Exception:
+    pass
+
+# B1 — mood · B4 — the deeper story · B5 — an unresolved hurt
+# (see src/world/living_world.py)
+try:
+    from src.world import living_world as _lw_side
+    from src.world.world_state import WorldState as _WS_side
+    _ws_side = _WS_side()
+    _mo_side = _lw_side.mood_of(_ws_side, selected)
+    if _mo_side["valence"] != 0:
+        _emoji = {3: "✨", 2: "☀️", 1: "🌤️", -1: "🌧️", -2: "⛈️", -3: "🕯️"}.get(_mo_side["valence"], "🌫️")
+        st.sidebar.caption(f"{_emoji} {_mo_side['name'].capitalize()} today"
+                           + (f" — {_mo_side['reason']}" if _mo_side['reason'] else ""))
+    _arc_side = _lw_side.ARCS.get(selected)
+    if _arc_side:
+        _stg_side = _lw_side.arc_stage(bond.get("friendship_level", "stranger"))
+        if _stg_side >= 0:
+            st.sidebar.caption(f"📖 Carries: “{_arc_side['title']}”")
+    if _lw_side.open_grievance(manager.memory, selected):
+        st.sidebar.warning("💔 Something sits unresolved between you.")
 except Exception:
     pass
 
@@ -789,6 +825,31 @@ with main_tab:
                         st.rerun()
                     else:
                         st.error("The road could not be taken just now.")
+    except Exception:
+        pass
+
+    # A3 — the market & gift economy: a gift from the Heir's own city becomes
+    # a durable memory and warms their mood.
+    try:
+        _mkt_loc, _wares = manager.market_at(selected)
+        if _wares:
+            with st.expander("🎁 Give a gift"):
+                st.caption(f"The market at **{_mkt_loc}** offers:")
+                _labels = [f"{w['name']} — {w['note']}" for w in _wares]
+                _choice = st.selectbox("Choose something for them", _labels,
+                                       key=f"gift_sel_{selected}")
+                if st.button(f"Give this to {info['name']}", key=f"gift_btn_{selected}"):
+                    _gift_name = _choice.split(" — ")[0].strip()
+                    _res = manager.give_gift(selected, _gift_name)
+                    if _res.get("given"):
+                        st.success(f"{info['name']} accepts {_gift_name}. "
+                                   f"(They feel {_res.get('mood', 'warm')}.)")
+                        st.session_state.messages[selected].append({
+                            "role": "user",
+                            "content": f"*(you give them {_gift_name})*",
+                        })
+                    else:
+                        st.info(_res.get("reason", "No gift given."))
     except Exception:
         pass
 

@@ -245,6 +245,11 @@ class WorldState:
         self.companions: Dict[str, bool] = {}  # cid -> the star-stranger travels with them
         self.learned: Dict[str, list] = {}     # cid -> [things taught/told of beyond the stars]
         self.visitor_echo_ts: Dict[str, str] = {}  # cid -> last day the world gossiped of a visit
+        # --- the second layer of life (see src/world/living_world.py) ---
+        self.black_tide_enabled: bool = True   # A2 — the live tide is an OPTIONAL toggle
+        self.mailbox: List[dict] = []          # A4 — letters & notices to/from the visitor
+        self.npc_states: Dict[str, dict] = {}  # A5 — the residents' small arcs
+        self.mood: Dict[str, dict] = {}        # B1 — each Heir's emotional weather
         self._load()
 
     # ------------------------------------------------------------------ #
@@ -271,6 +276,10 @@ class WorldState:
                 self.companions = data.get("companions", {}) or {}
                 self.learned = data.get("learned", {}) or {}
                 self.visitor_echo_ts = data.get("visitor_echo_ts", {}) or {}
+                self.black_tide_enabled = data.get("black_tide_enabled", True)
+                self.mailbox = data.get("mailbox", []) or []
+                self.npc_states = data.get("npc_states", {}) or {}
+                self.mood = data.get("mood", {}) or {}
         except Exception:
             pass
 
@@ -293,6 +302,10 @@ class WorldState:
                         "companions": self.companions,
                         "learned": self.learned,
                         "visitor_echo_ts": self.visitor_echo_ts,
+                        "black_tide_enabled": self.black_tide_enabled,
+                        "mailbox": self.mailbox,
+                        "npc_states": self.npc_states,
+                        "mood": self.mood,
                     },
                     f,
                     ensure_ascii=False,
@@ -362,6 +375,13 @@ class WorldState:
         days = _travel_days_for(current, destination, traveler)
         if days >= 999:
             return  # the border does not open for this traveler
+        if 0 < days:
+            # A live black tide makes the road into a surged city one day longer.
+            try:
+                from .living_world import surge_travel_penalty
+                days += surge_travel_penalty(self, destination)
+            except Exception:
+                pass
         if days <= 0:
             self.set_location(character_id, destination)
             return
@@ -506,6 +526,14 @@ class WorldState:
             return (self.ambient.get("news") or "").strip()
         except Exception:
             return ""
+
+    # ------------------------------------------------------------------ #
+    # The live black tide — an OPTIONAL toggle (A2, visitor mode)
+    # ------------------------------------------------------------------ #
+    def set_black_tide(self, enabled: bool):
+        with self._lock:
+            self.black_tide_enabled = bool(enabled)
+        self.save()
 
     # ------------------------------------------------------------------ #
     # Senses — what the Heirs see and hear in the world right now

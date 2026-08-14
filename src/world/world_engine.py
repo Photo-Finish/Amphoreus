@@ -41,6 +41,7 @@ from src.world.world_state import (
 )
 from src.world import map_data as _md
 from src.world import world_events as wev
+from src.world import living_world as _lw
 from src.world.agent import HeirAgent
 from src.world.ambient import AmbientDirector
 from src.world.chronicle import Chronicle
@@ -281,6 +282,10 @@ class WorldEngine:
                 cur = weather.get(city) or "clear"
                 if "black tide" not in cur:
                     weather[city] = cur + ", and the black tide darkens the sky"
+            # and it weighs on the Heirs who stand in the surged cities.
+            for _cid in self.agents:
+                if self.world.location_name(_cid) in surge.get("cities", []):
+                    _lw.set_mood(self.world, _cid, -1, "the black tide weighs on you")
         wev.advance_surge(self.world)
         # the Keeper's news-flash holds only today's word of the visitor
         today = self.world.clock.format_short()
@@ -304,6 +309,20 @@ class WorldEngine:
                 lines.append(lline)
                 self.chronicle.append({"time": time_str, "text": lline, "kind": "letter"})
                 self.world.add_event(lline)
+
+        # 4) The second layer of life: an Heir may leave a note for the visitor
+        #    unprompted; the residents' small arcs advance; moods settle a little.
+        for cid in self.agents:
+            if _lw.reach_out(self.world, cid):
+                note = (f"{time_str} — {self._name_of(cid)} leaves a note for the "
+                        f"visitor, unprompted.")
+                lines.append(note)
+                self.chronicle.append({"time": time_str, "text": note, "kind": "reach-out"})
+        for ml in _lw.advance_npcs(self.world):
+            mline = f"{time_str} — {ml}"
+            lines.append(mline)
+            self.chronicle.append({"time": time_str, "text": mline, "kind": "flavor"})
+        _lw.advance_moods(self.world)
         return lines
 
     def _pick_npc(self):

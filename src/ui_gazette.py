@@ -170,6 +170,40 @@ def render_gazette(manager, characters):
                              f'“{_html.escape(str(l.get("text", ""))[:110])}”</div>')
         else:
             parts.append('<div class="muted">No letters are in the post.</div>')
+
+        # the visitor's mailbox — notes left for them, and Heirs reaching out
+        from src.world import living_world as _lw_gaz
+        _box = _lw_gaz.mailbox_for(ws, "visitor")
+        parts.append('<h2>📬 Your Mailbox</h2>')
+        if _box:
+            for m in _box[-8:][::-1]:
+                parts.append(f'<div class="item">• <b>{_html.escape(m.get("from", "?"))}</b> — '
+                             f'“{_html.escape(str(m.get("text", ""))[:160])}” '
+                             f'<span class="muted">({_html.escape(str(m.get("ts", "")))})</span></div>')
+        else:
+            parts.append('<div class="muted">Your mailbox is empty. The Heirs will write when they '
+                         'have something to say.</div>')
+
+        # the Heirs' moods
+        _moods = []
+        for cid in characters:
+            mo = _lw_gaz.mood_of(ws, cid)
+            if mo["valence"] != 0:
+                _moods.append(f"{names.get(cid, cid)} is {mo['name']}"
+                              + (f" — {mo['reason']}" if mo["reason"] else ""))
+        if _moods:
+            parts.append('<h2>🌥️ The Heirs\' Moods</h2>')
+            for mm in _moods[:8]:
+                parts.append(f'<div class="item">• {_html.escape(mm)}</div>')
+
+        # the residents of Amphoreus — their small arcs
+        _npc_lines = [f"{_npc} — {_lw_gaz.npc_line(ws, _npc)}"
+                      for _npc in _lw_gaz.NPC_ARCS]
+        if _npc_lines:
+            parts.append('<h2>🏘️ The Residents of Amphoreus</h2>')
+            for nl in _npc_lines[:6]:
+                parts.append(f'<div class="item">• {_html.escape(nl)}</div>')
+
         # bonds — who has warmed or cooled lately
         bonds = []
         for key, delta in ws.relationship_delta.items():
