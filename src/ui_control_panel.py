@@ -184,6 +184,10 @@ def render_control_panel(manager, characters):
     if vp["kind"] == "traveling":
         st.info(f"🚶 You are on the road to **{vp['to']}** — **{vp['remaining']}** day(s) left.")
         _here = vp["from"]
+        if st.button(f"↩️ Cancel journey (return to {vp['from']})", key="ctl_cancel"):
+            ws.visitor_cancel_travel()
+            st.success(f"You turn back and return to {vp['from']}.")
+            st.rerun()
     else:
         st.success(f"📍 You are in **{vp['at']}**.")
         _here = vp["at"]
@@ -196,10 +200,23 @@ def render_control_panel(manager, characters):
     if _dests:
         _dest = st.selectbox("Where will you set out for?", _dests, key="ctl_dest")
         _days = _md.travel_days(_here, _dest)
-        st.caption(f"The road takes **{_days}** in-game day(s).")
+        try:
+            from src.world.living_world import surge_travel_penalty as _stp
+            _surge_days = _stp(ws, _dest)
+        except Exception:
+            _surge_days = 0
+        if _surge_days:
+            _days += _surge_days
+            st.caption(f"The road takes **{_days}** in-game day(s) — the black tide "
+                       f"adds **{_surge_days}** onto the way into {_dest}.")
+        else:
+            st.caption(f"The road takes **{_days}** in-game day(s).")
         if st.button("🚶 Set out", key="ctl_setout"):
             ws.visitor_set_out(_dest, _days)
-            st.success(f"You set out for {_dest} — {_days} day(s) on the road.")
+            if _days == 0:
+                st.success(f"You are already there — welcome to {_dest}.")
+            else:
+                st.success(f"You set out for {_dest} — {_days} day(s) on the road.")
             st.rerun()
 
     st.markdown("---")

@@ -626,10 +626,26 @@ class WorldState:
 
     def visitor_set_out(self, dest: str, days: int):
         """The star-stranger sets out for a city; the journey advances as the
-        world runs (one in-game day per engine day)."""
-        self.visitor_travel = {"to": dest,
-                               "from": self.visitor_location or "Okhema",
-                               "remaining": max(0, int(days))}
+        world runs (one in-game day per engine day). A same-city / instant move
+        (0 days) arrives at once — no waiting for a tick."""
+        days = max(0, int(days))
+        if days == 0:
+            self.visitor_location = dest
+            self.visitor_travel = {}
+        else:
+            self.visitor_travel = {"to": dest,
+                                   "from": self.visitor_location or "Okhema",
+                                   "remaining": days}
+        self.save()
+
+    def visitor_cancel_travel(self):
+        """Abort the journey and return to the city you set out from — you are
+        never stranded on the road (the world may be paused, but your feet are
+        not)."""
+        t = self.visitor_travel or {}
+        if t.get("to"):
+            self.visitor_location = t.get("from") or self.visitor_location or "Okhema"
+        self.visitor_travel = {}
         self.save()
 
     def advance_visitor_travel(self) -> str:

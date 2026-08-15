@@ -165,10 +165,6 @@ def market_for(world, city: str) -> List[dict]:
     return MARKETS.get(city, _GENERIC_WARES)
 
 
-def gift_note(gift: dict) -> str:
-    return f"{gift['name']} ({gift['note']})"
-
-
 def give_gift(world, memory, character_id: str, gift_name: str) -> dict:
     """The visitor gives an Heir a gift. It becomes a durable memory and
     warms the Heir's mood. Returns a summary for the UI/chat."""
