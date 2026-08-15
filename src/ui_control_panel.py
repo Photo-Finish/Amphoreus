@@ -44,16 +44,19 @@ def _engine_running() -> bool:
 
 def _engine_start() -> bool:
     """Launch the world engine fully detached (survives Streamlit restarts).
-    Refuses to double-start: if an engine is already alive, nothing is spawned."""
+    Refuses to double-start: if an engine is already alive, nothing is spawned.
+    The base interval is one real day (1x); the Control Panel's time flow
+    multiplies it linearly."""
     if _engine_running():
         return False
     try:
         log = PROJECT_ROOT / "world_runtime" / "engine.log"
         err = PROJECT_ROOT / "world_runtime" / "engine.log.err"
+        from src.world.world_engine import REAL_DAY_SECONDS
         subprocess.Popen(
             ["powershell", "-NoProfile", "-WindowStyle", "Hidden", "-Command",
              f"Start-Process -FilePath '{sys.executable}' "
-             f"-ArgumentList '-m','src.world.world_engine','--interval','900' "
+             f"-ArgumentList '-m','src.world.world_engine','--interval','{REAL_DAY_SECONDS}' "
              f"-WorkingDirectory '{PROJECT_ROOT}' -WindowStyle Hidden "
              f"-RedirectStandardOutput '{log}' -RedirectStandardError '{err}'"],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -250,9 +253,9 @@ def render_control_panel(manager, characters):
 
     st.markdown("### ⏱️ Time flow")
     st.caption(
-        "How fast the world elapses while the engine runs, measured against real "
-        "time. **1x** ≈ one in-game day every 15 real minutes; **60x** ≈ days "
-        "flow as fast as the machine allows (each day still takes a little while "
+        "How fast the world elapses while the engine runs, measured linearly "
+        "against real time: **1x** = one in-game day per real day; **60x** = "
+        "24 real minutes per in-game day (each day still needs a little time "
         "to be lived — every Heir decides for themselves)."
     )
     _scales = [("1x", 1), ("2x", 2), ("5x", 5), ("10x", 10), ("30x", 30), ("60x", 60)]

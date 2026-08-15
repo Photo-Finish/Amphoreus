@@ -135,8 +135,9 @@ def render_guide(manager, characters):
     _section("⏱️ Time flow", (
         "The world does not run at a fixed speed. In the **🎛️ Control Panel → "
         "“⏱️ Time flow”** you choose how fast the world elapses, measured "
-        "against real time: **1x** ≈ one in-game day every 15 real minutes, up "
-        "to **60x**, where days flow as fast as the machine allows. Change it "
+        "linearly against real time: **1x** = one in-game day per real day, "
+        "and every step up is proportional — **5x** ≈ 4.8 real hours per "
+        "in-game day, **60x** = 24 real minutes per in-game day. Change it "
         "any time — it takes effect immediately, no restart."
     ))
 

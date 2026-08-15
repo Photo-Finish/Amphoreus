@@ -46,6 +46,11 @@ from src.world.agent import HeirAgent
 from src.world.ambient import AmbientDirector
 from src.world.chronicle import Chronicle
 
+# The base pace of the world: at 1x, one in-game day passes per real day.
+# The speed multiplier (world.time_scale) divides this linearly, so 60x = a
+# whole in-game day every 24 real minutes.
+REAL_DAY_SECONDS = 86400
+
 
 class WorldEngine:
     """Hosts the little Amphoreus."""
@@ -556,8 +561,8 @@ class WorldEngine:
 
 def main():
     parser = argparse.ArgumentParser(description="Run the little Amphoreus.")
-    parser.add_argument("--interval", type=int, default=900,
-                        help="real seconds between in-game days (default 900)")
+    parser.add_argument("--interval", type=int, default=REAL_DAY_SECONDS,
+                        help="real seconds between in-game days at 1x (default = one real day)")
     parser.add_argument("--once", action="store_true", help="run a single day then exit")
     parser.add_argument("--stop", action="store_true", help="request the engine to stop")
     parser.add_argument("--status", action="store_true", help="show world status")

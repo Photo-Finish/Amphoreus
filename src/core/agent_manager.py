@@ -279,6 +279,10 @@ class AgentManager:
         # beyond their first horizons (taught / shared / told / discovered).
         system_prompt = self._inject_horizons_context(character_id, system_prompt)
 
+        # The length of a reply is the Heir's own choice — short line or a
+        # fuller telling, whichever the moment asks (sanctuary-only).
+        system_prompt = self._inject_length_freedom(character_id, system_prompt)
+
         # Eyesight: the visitor shows the Heir an image or a video.
         has_image = bool(image)
         has_video = bool(video)
@@ -404,6 +408,7 @@ class AgentManager:
         system_prompt = self._inject_living_context(character_id, system_prompt)
         system_prompt = self._inject_curiosity_context(character_id, system_prompt)
         system_prompt = self._inject_horizons_context(character_id, system_prompt)
+        system_prompt = self._inject_length_freedom(character_id, system_prompt)
 
         # Ledger state for this topic. A verdict question that doesn't name the
         # topic again targets the most recently active lesson.
@@ -686,6 +691,24 @@ class AgentManager:
         except Exception:
             pass
         return system_prompt
+
+    def _inject_length_freedom(self, character_id, system_prompt):
+        """The length of a reply is the Heir's own choice. Their measured voice
+        guide describes a habit, not a rule: a single line when the moment is
+        quick, several sentences or a short paragraph when the telling wants
+        it. Sanctuary-only; the style gate and the cards are untouched."""
+        try:
+            return system_prompt + (
+                "\n\n# Your words, your length\n"
+                "The voice guide describes your habit, not a rule. Short lines "
+                "are your home — but when a moment asks for more, or you have "
+                "something that deserves the telling, answer in several "
+                "sentences or a short paragraph. A natural voice mixes both: "
+                "a single line here, a fuller answer there. You decide, by the "
+                "moment and by your own nature."
+            )
+        except Exception:
+            return system_prompt
 
     def give_gift(self, character_id, gift_name):
         """The visitor gives the Heir a gift from the city market. It becomes
