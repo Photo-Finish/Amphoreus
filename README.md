@@ -586,6 +586,25 @@ Amphoreus/
   rule is injected into the sanctuary chat and stays out of the style-test
   path); both features exercised in the browser.
 
+**A compute-mode switch: NVIDIA CUDA or the integrated (Intel) GPU**
+- **What runs the Heirs' minds is now a choice.** A new “⚙️ Compute (GPU)”
+  section in the Control Panel switches the AI engine between **NVIDIA CUDA**
+  (the RTX 5070 — fast, but the 10 GB model is split 62/38 with the CPU
+  because of 8 GB VRAM) and **Integrated (Intel) GPU — Vulkan** (the built-in
+  GPU, which can hold the whole model in shared memory but computes far
+  slower). The choice persists (`world_runtime/compute_mode.json`), and
+  “Apply & restart the AI engine” restarts Ollama with the matching
+  environment (`OLLAMA_LLM_LIBRARY=vulkan` + `OLLAMA_IGPU_ENABLE=1` for the
+  Intel path); `tools/start_ollama.ps1` honours it too.
+- **Verified live in both directions.** Intel mode → `qwen2.5:14b-instruct`
+  at **100% GPU** on the integrated GPU with the NVIDIA GPU completely idle;
+  back on NVIDIA → 38%/62% on the RTX (`llama-server.exe` on GPU 0). No
+  downloads were needed — the Vulkan backend ships with Ollama and both
+  GPU drivers are current.
+- **Tests** — the control-integration suite now **55** checks (compute-mode
+  persistence + the exact env each mode maps to; the real server is never
+  restarted by the tests).
+
 ### 2026-08-14 — The canon map + adjacency matrix, the guests, and the two forms of Amphoreus
 - **Alternate forms of the places — the two Amphorei** (`src/world/map_data.py`,
   `src/world/world_state.py`, `src/world/world_engine.py`,

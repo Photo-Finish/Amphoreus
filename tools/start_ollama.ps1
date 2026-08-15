@@ -34,6 +34,29 @@ $env:OLLAMA_CONTEXT_LENGTH = '8192'
 $env:OLLAMA_FLASH_ATTENTION = '1'
 $env:OLLAMA_KV_CACHE_TYPE = 'q8_0'
 
+# 2026-08-15: respect the end user's compute-mode choice (Control Panel →
+# "⚙️ Compute (GPU)"). nvidia = CUDA autodetect (default); intel = Vulkan
+# backend + integrated GPUs enabled (the Intel iGPU computes instead).
+$computeModePath = Join-Path $root 'world_runtime\compute_mode.json'
+if (Test-Path $computeModePath) {
+    try {
+        $cm = Get-Content $computeModePath -Raw | ConvertFrom-Json
+        if ($cm.mode -eq 'intel') {
+            $env:OLLAMA_LLM_LIBRARY = 'vulkan'
+            $env:OLLAMA_IGPU_ENABLE = '1'
+            Write-Host "   compute mode: INTEGRATED (Intel) GPU — Vulkan"
+        } else {
+            Remove-Item Env:OLLAMA_LLM_LIBRARY -ErrorAction SilentlyContinue
+            Remove-Item Env:OLLAMA_IGPU_ENABLE -ErrorAction SilentlyContinue
+            Write-Host "   compute mode: NVIDIA CUDA"
+        }
+    } catch {
+        Write-Host "WARN  compute_mode.json unreadable — defaulting to NVIDIA CUDA"
+    }
+} else {
+    Write-Host "   compute mode: NVIDIA CUDA (default)"
+}
+
 # 1. Stop any stale ollama processes (tray app may serve the wrong models dir).
 #    Also kill orphaned llama-server children: when the server is force-killed,
 #    its model-loading child keeps the loaded model's VRAM forever, which makes

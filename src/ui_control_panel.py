@@ -269,6 +269,49 @@ def render_control_panel(manager, characters):
 
     st.markdown("---")
 
+    # ---------------- 3c. Compute (GPU) ----------------
+    st.markdown("### ⚙️ Compute (GPU)")
+    st.caption(
+        "Which processor carries the Heirs' minds. **NVIDIA CUDA** uses the "
+        "RTX GPU — fast, but the 10 GB model is split 62/38 with the CPU "
+        "because of 8 GB VRAM. **Integrated (Intel) GPU** uses the built-in "
+        "GPU through Vulkan — it can hold the whole model in shared memory, "
+        "but computes far slower. Changing this restarts the AI engine for "
+        "a few seconds."
+    )
+    try:
+        from src.core import compute_mode as _cm
+        _cur_cm = _cm.get_compute_mode()
+        _cm_choice = st.radio(
+            "Which processor for the Heirs?",
+            ["nvidia", "intel"],
+            index=0 if _cur_cm == "nvidia" else 1,
+            format_func=lambda m: _cm.MODES[m]["label"],
+            key="ctl_compute",
+        )
+        _cm_changed = _cm_choice != _cur_cm
+        if st.button("♻️ Apply & restart the AI engine",
+                     disabled=not _cm_changed, key="ctl_compute_apply"):
+            with st.spinner("Restarting the AI engine with the new compute mode…"):
+                _r = _cm.restart_ollama(_cm_choice)
+                _cm.set_compute_mode(_cm_choice)
+            if _r.get("up"):
+                st.success(f"The AI engine is back on **{_r['label']}**.")
+            else:
+                st.error(f"Could not confirm the server on {_r['label']} — "
+                         "check it manually (tools/start_ollama.ps1).")
+            st.rerun()
+        if _cm_changed:
+            st.info(f"Active now: **{_cm.MODES[_cur_cm]['label']}** — "
+                    f"pending: **{_cm.MODES[_cm_choice]['label']}** "
+                    "(restart above to apply).")
+        else:
+            st.success(f"Active: **{_cm.MODES[_cur_cm]['label']}**.")
+    except Exception as _e:
+        st.caption(f"Compute settings unavailable: {_e}")
+
+    st.markdown("---")
+
     # ---------------- 4. Mailbox ----------------
     st.markdown("### 📬 Your mailbox")
     unread = lw.unread_count(ws, "visitor")
