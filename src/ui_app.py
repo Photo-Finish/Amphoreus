@@ -50,6 +50,16 @@ def avatar_for(character_id: str):
     return portrait_for(character_id)
 
 
+# The visitor's own face — a persistent avatar beside their chat messages.
+# Stored under world_runtime/ (runtime data, gitignored).
+USER_AVATAR_PATH = PROJECT_ROOT / "world_runtime" / "user_avatar.png"
+
+
+def user_avatar_path():
+    """Path to the visitor's chat avatar, or None until one is set."""
+    return str(USER_AVATAR_PATH) if USER_AVATAR_PATH.exists() else None
+
+
 # Ethereal Amphoreus theme (dark gold, no heavy base64 in the page)
 st.markdown(
     """
@@ -357,6 +367,39 @@ except Exception:
 if st.sidebar.button("🗑️ Forget me (reset)"):
     manager.reset_conversation(selected)
     st.rerun()
+
+# Your own face — the avatar that appears beside your messages
+st.sidebar.markdown("---")
+st.sidebar.caption("🪞 **Your avatar** — the face that travels with you.")
+try:
+    _uav = user_avatar_path()
+    if _uav:
+        st.sidebar.image(_uav, width=64)
+    _upl = st.sidebar.file_uploader(
+        "Set your avatar", type=["png", "jpg", "jpeg", "webp"],
+        key="user_avatar_upload", label_visibility="collapsed",
+    )
+    # NOTE: never st.rerun() after saving — the file_uploader re-sends its
+    # file from the frontend on every rerun, which would loop forever. Saving
+    # is keyed to the uploaded file's identity (name:size) so it happens once
+    # per upload, and "Remove my avatar" works even while a file is still
+    # attached to the uploader (the same file will not re-save).
+    if _upl is not None:
+        _ident = "%s:%s" % (_upl.name, _upl.size)
+        if st.session_state.get("_uav_saved_ident") != _ident:
+            from PIL import Image
+            import io as _io
+            _im = Image.open(_io.BytesIO(_upl.getvalue())).convert("RGB")
+            _im.thumbnail((256, 256))
+            USER_AVATAR_PATH.parent.mkdir(parents=True, exist_ok=True)
+            _im.save(str(USER_AVATAR_PATH), "PNG")
+            st.session_state["_uav_saved_ident"] = _ident
+            st.sidebar.success("Your face is set — it now appears beside your messages.")
+    if _uav and st.sidebar.button("🗑️ Remove my avatar", key="user_avatar_remove"):
+        USER_AVATAR_PATH.unlink()
+        st.rerun()
+except Exception:
+    pass
 
 # Senses status (hearing / eyesight / music)
 try:
@@ -981,8 +1024,9 @@ with main_tab:
 
     # Display chat history (the Heir's own square avatar — never a generic bot)
     _assistant_avatar = str(avatar_for(selected)) if avatar_for(selected) else None
+    _user_avatar = user_avatar_path()
     for msg in st.session_state.messages[selected]:
-        with st.chat_message(msg["role"], avatar=_assistant_avatar if msg["role"] == "assistant" else None):
+        with st.chat_message(msg["role"], avatar=_assistant_avatar if msg["role"] == "assistant" else _user_avatar):
             st.markdown(msg["content"])
 
     # Senses: eyesight (picture / video) and hearing (speak)
@@ -1028,7 +1072,7 @@ with main_tab:
             st.session_state.messages[selected].append({
                 "role": "user", "content": f"*(shares music: {music_file.name})*",
             })
-            with st.chat_message("user"):
+            with st.chat_message("user", avatar=_user_avatar):
                 st.markdown(f"*(shares music: {music_file.name})*")
             with st.chat_message("assistant", avatar=_assistant_avatar):
                 st.markdown(result["response"])
@@ -1052,7 +1096,7 @@ with main_tab:
             st.session_state.messages[selected].append({
                 "role": "user", "content": f"*(spoken)* {result['transcript']}",
             })
-            with st.chat_message("user"):
+            with st.chat_message("user", avatar=_user_avatar):
                 st.markdown(f"*(spoken)* {result['transcript']}")
             with st.chat_message("assistant", avatar=_assistant_avatar):
                 st.markdown(result["response"])
@@ -1087,7 +1131,7 @@ with main_tab:
                 "role": "user",
                 "content": f"*(shows a video: {pending_video['name']})* {prompt}",
             })
-            with st.chat_message("user"):
+            with st.chat_message("user", avatar=_user_avatar):
                 st.markdown(f"*(shows a video: {pending_video['name']})* {prompt}")
         elif pending:
             import base64
@@ -1099,7 +1143,7 @@ with main_tab:
                 "role": "user",
                 "content": f"*(shows an image: {pending['name']})* {prompt}",
             })
-            with st.chat_message("user"):
+            with st.chat_message("user", avatar=_user_avatar):
                 st.markdown(f"*(shows an image: {pending['name']})* {prompt}")
         else:
             # Display user message
@@ -1107,7 +1151,7 @@ with main_tab:
                 "role": "user",
                 "content": prompt,
             })
-            with st.chat_message("user"):
+            with st.chat_message("user", avatar=_user_avatar):
                 st.markdown(prompt)
 
         # Get response

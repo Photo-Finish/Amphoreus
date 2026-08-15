@@ -711,7 +711,16 @@ class AgentManager:
                 "actions or expressions (\"I reply with a nod\", \"I smile\", "
                 "\"I pause\"), and do not describe your own tone (\"my tone "
                 "remains analytical\", \"I say warmly\"). Let the words "
-                "themselves carry how you feel."
+                "themselves carry how you feel.\n\n"
+                "# Questions are not a reflex\n"
+                "Ending every reply on a question is a machine habit, not yours. "
+                "Most replies simply end — a statement, a thought left to rest, "
+                "a silence the other can fill. When a question is real, ask it, "
+                "and let it grow out of what you just said; never tack one onto "
+                "the end just to keep the conversation going, and never close "
+                "with a polite prompt like \"Anything else?\" or \"Is there "
+                "something on your mind?\" — let the words end when the thought "
+                "ends."
             )
         except Exception:
             return system_prompt

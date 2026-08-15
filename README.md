@@ -569,6 +569,23 @@ Amphoreus/
   “set out” bubble + Aglaea's reaction; ROAMING status bar; the arrival
   bubble triggers when the engine advances the day).
 
+**Your face, and questions that are not a reflex**
+- **A face of your own.** The visitor can now set their own avatar in the
+  sidebar (“🪞 Your avatar”): upload a picture and it appears beside every one
+  of your chat messages (persisted under `world_runtime/`, removed with one
+  click). Verified live with an uploaded test face, then removed cleanly.
+- **Questions are not a reflex.** The Heirs' replies were ending on a question
+  almost every time — the machine habit of keeping a conversation going. The
+  sanctuary now tells them: most replies simply end; when a question is real,
+  let it grow out of what you just said, and never close with a polite prompt
+  (“Anything else?”, “Is there something on your mind?”). Question endings are
+  not banned — they are made natural. Verified live: a reply now ends with a
+  complete statement, and the question that follows grows from the topic
+  itself.
+- **Tests** — the control-integration suite grew to **49** checks (the new
+  rule is injected into the sanctuary chat and stays out of the style-test
+  path); both features exercised in the browser.
+
 ### 2026-08-14 — The canon map + adjacency matrix, the guests, and the two forms of Amphoreus
 - **Alternate forms of the places — the two Amphorei** (`src/world/map_data.py`,
   `src/world/world_state.py`, `src/world/world_engine.py`,
