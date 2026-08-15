@@ -536,10 +536,10 @@ with map_tab:
         with col_t:
             st.markdown("**On the road**")
             if _ws.agent_travel:
-                for cid, info in _ws.agent_travel.items():
+                for cid, _trav in _ws.agent_travel.items():
                     st.markdown(
-                        f"- {_names.get(cid, cid)} → {info['to']} "
-                        f"({info['remaining_days']} day(s) left)"
+                        f"- {_names.get(cid, cid)} → {_trav['to']} "
+                        f"({_trav['remaining_days']} day(s) left)"
                     )
             else:
                 st.markdown("*No one is travelling right now.*")
