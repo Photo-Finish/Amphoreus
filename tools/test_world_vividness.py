@@ -169,4 +169,24 @@ _gws, _gch, _gwev = _gaz_load()
 assert _gwev is not None and _gch is not None
 print("gazette data load OK")
 
+# --- weather classifier: word-aware (a harvest sky is NOT rain) ---
+from src.ui_weather import classify as _wx_classify
+_WX_CASES = [
+    ("golden and quiet, full of memory and ripe grain", "clear"),
+    ("a cold drizzle over the harbour", "rain"),
+    ("it is raining softly", "rain"),
+    ("dark clouds and a rising wind", "cloud"),
+    ("heavy cloud cover, grey", "cloud"),
+    ("snow is falling on the rooftops", "snow"),
+    ("thunder rolling, lightning over the walls", "storm"),
+    ("dusk settles, the sky turning violet", "twilight"),
+    ("the black tide stirs along the shore", "blacktide"),
+    ("warm and bright, a clear sky", "clear"),
+    ("still air, the mist curling", "cloud"),
+    ("a mild breeze carrying the scent of the looms", "none"),
+]
+_bad = [(s, e, _wx_classify(s)) for s, e in _WX_CASES if _wx_classify(s) != e]
+assert not _bad, _bad
+print("weather classifier OK —", len(_WX_CASES), "sky descriptions classified")
+
 print("\nALL VIVID-WORLD TESTS PASSED (incl. refinements)")
