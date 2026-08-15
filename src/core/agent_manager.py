@@ -693,10 +693,9 @@ class AgentManager:
         return system_prompt
 
     def _inject_length_freedom(self, character_id, system_prompt):
-        """The length of a reply is the Heir's own choice. Their measured voice
-        guide describes a habit, not a rule: a single line when the moment is
-        quick, several sentences or a short paragraph when the telling wants
-        it. Sanctuary-only; the style gate and the cards are untouched."""
+        """How an Heir speaks is their own: the length of a reply is their
+        choice, and the reply is ONLY their spoken words. Sanctuary-only; the
+        style gate and the cards are untouched."""
         try:
             return system_prompt + (
                 "\n\n# Your words, your length\n"
@@ -705,7 +704,14 @@ class AgentManager:
                 "something that deserves the telling, answer in several "
                 "sentences or a short paragraph. A natural voice mixes both: "
                 "a single line here, a fuller answer there. You decide, by the "
-                "moment and by your own nature."
+                "moment and by your own nature.\n\n"
+                "# Speak only your words\n"
+                "Reply as yourself, speaking directly. Say only the words you "
+                "would actually say — nothing more. Do not narrate your own "
+                "actions or expressions (\"I reply with a nod\", \"I smile\", "
+                "\"I pause\"), and do not describe your own tone (\"my tone "
+                "remains analytical\", \"I say warmly\"). Let the words "
+                "themselves carry how you feel."
             )
         except Exception:
             return system_prompt
