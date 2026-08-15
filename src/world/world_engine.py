@@ -124,6 +124,13 @@ class WorldEngine:
         time_str = clock.format_short()
         lines: List[str] = []
 
+        # A stop may be requested at any moment (Control Panel) — the engine
+        # checks between every step so it rests within seconds, not after the
+        # whole day's work.
+        if self._stop_requested():
+            self.world.save()
+            return lines
+
         # Travellers advance one day on the road; arrivals are logged. A shared
         # journey with the star-stranger ends at the destination.
         for cid, dest, accompanied in self.world.advance_travel():
@@ -136,6 +143,22 @@ class WorldEngine:
             self.agents[cid].remember(
                 f"{time_str} — I arrived in {dest} after a long journey.", importance=2
             )
+
+        # The star-stranger's own road advances with the world: one in-game
+        # day per day, until they arrive at the city they set out for.
+        try:
+            _arrived = self.world.advance_visitor_travel()
+            if _arrived:
+                _vnote = f"{time_str} — the star-stranger arrives in {_arrived}."
+                lines.append(_vnote)
+                self.chronicle.append({"time": time_str, "text": _vnote})
+                self.world.add_event(_vnote)
+        except Exception:
+            pass
+
+        if self._stop_requested():
+            self.world.save()
+            return lines
 
         # The Keeper sets the day's stage — weather, errands, news (cached by
         # date, so this is one LLM call per in-game day at most).
@@ -193,6 +216,8 @@ class WorldEngine:
         order = list(self.agents.keys())
         random.shuffle(order)
         for cid in order:
+            if self._stop_requested():
+                break
             agent = self.agents[cid]
             try:
                 if cid in GUEST_HEIRS and not guest_is_present(cid, clock) \
@@ -254,6 +279,9 @@ class WorldEngine:
                 lines.append(f"{time_str} — {agent.name} (the world paused for a moment: {e})")
 
         # Encounters: Heirs who chose to be together may speak — freely.
+        if self._stop_requested():
+            self.world.save()
+            return lines
         lines.extend(self._run_encounters(time_str))
 
         # Long-term work: the Heirs' life projects advance, milestones logged.
@@ -438,6 +466,17 @@ class WorldEngine:
     # ------------------------------------------------------------------ #
     # Daemon loop
     # ------------------------------------------------------------------ #
+    def _current_interval(self, base_interval: int) -> int:
+        """The engine's current pace: the base interval divided by the Control
+        Panel's time_scale (1x = base, 60x = as fast as the machine allows).
+        Read fresh each loop so a change takes effect without a restart."""
+        try:
+            from src.world.world_state import WorldState as _WS
+            scale = float(getattr(_WS(), "time_scale", 1.0) or 1.0)
+        except Exception:
+            scale = 1.0
+        return max(10, int(base_interval / max(1.0, scale)))
+
     def run_loop(self, interval_seconds: int = 900, once: bool = False):
         """Run the world continuously (or a single day with once=True)."""
         if not self.llm.configured:
@@ -457,7 +496,7 @@ class WorldEngine:
                 break
             if self.world.visitor_present():
                 # The visitor is here — yield the hearth to them.
-                time.sleep(min(interval_seconds, 60))
+                time.sleep(min(self._current_interval(interval_seconds), 60))
                 continue
             try:
                 lines = self.run_day()
@@ -484,7 +523,7 @@ class WorldEngine:
                     failed_days = 0
             if once:
                 break
-            time.sleep(interval_seconds)
+            time.sleep(self._current_interval(interval_seconds))
 
     # ------------------------------------------------------------------ #
     # Stop / status

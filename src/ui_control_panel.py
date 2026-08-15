@@ -43,7 +43,10 @@ def _engine_running() -> bool:
 
 
 def _engine_start() -> bool:
-    """Launch the world engine fully detached (survives Streamlit restarts)."""
+    """Launch the world engine fully detached (survives Streamlit restarts).
+    Refuses to double-start: if an engine is already alive, nothing is spawned."""
+    if _engine_running():
+        return False
     try:
         log = PROJECT_ROOT / "world_runtime" / "engine.log"
         err = PROJECT_ROOT / "world_runtime" / "engine.log.err"
@@ -60,10 +63,18 @@ def _engine_start() -> bool:
 
 
 def _engine_stop() -> bool:
-    """Ask the engine to rest after its current day (it clears the flag on start)."""
+    """Ask the engine to rest (it notices the flag within seconds now)."""
     try:
         (PROJECT_ROOT / "world_runtime" / "stop.flag").write_text("stop", encoding="ascii")
         return True
+    except Exception:
+        return False
+
+
+def _engine_stopping() -> bool:
+    """A stop has been requested but the engine is still finishing up."""
+    try:
+        return (PROJECT_ROOT / "world_runtime" / "stop.flag").exists()
     except Exception:
         return False
 
@@ -162,10 +173,45 @@ def render_control_panel(manager, characters):
 
     st.markdown("---")
 
-    # ---------------- 3. World engine ----------------
+    # ---------------- 3. Your whereabouts (physical movement) ----------------
+    st.markdown("### 📍 Your whereabouts")
+    st.caption(
+        "You are physically in Amphoreus. Move from city to city — the road "
+        "takes whole in-game days, and it advances while the world runs "
+        "(pausing only while you are mid-conversation with an Heir)."
+    )
+    vp = ws.visitor_place()
+    if vp["kind"] == "traveling":
+        st.info(f"🚶 You are on the road to **{vp['to']}** — **{vp['remaining']}** day(s) left.")
+        _here = vp["from"]
+    else:
+        st.success(f"📍 You are in **{vp['at']}**.")
+        _here = vp["at"]
+    try:
+        from src.world import map_data as _md
+        _dests = [l for l in _md.ALL_POS
+                  if l != _here and _md.travel_time_for(_here, l, "trailblazer") < 999]
+    except Exception:
+        _dests = []
+    if _dests:
+        _dest = st.selectbox("Where will you set out for?", _dests, key="ctl_dest")
+        _days = _md.travel_days(_here, _dest)
+        st.caption(f"The road takes **{_days}** in-game day(s).")
+        if st.button("🚶 Set out", key="ctl_setout"):
+            ws.visitor_set_out(_dest, _days)
+            st.success(f"You set out for {_dest} — {_days} day(s) on the road.")
+            st.rerun()
+
+    st.markdown("---")
+
+    # ---------------- 4. World engine + time flow ----------------
     st.markdown("### 🌍 World engine")
     running = _engine_running()
-    if running:
+    stopping = _engine_stopping()
+    if running and stopping:
+        st.warning("⏹ A stop is in progress — the engine rests as soon as its current "
+                   "moment's work allows (a few seconds now).")
+    elif running:
         st.success("The world engine is running — Amphoreus lives while you are away.")
     else:
         st.info("The world engine is not running — the Heirs wait for you. Start it to "
@@ -182,8 +228,24 @@ def render_control_panel(manager, characters):
     with c2:
         if st.button("⏹ Stop the world", disabled=not running, key="ctl_eng_stop"):
             _engine_stop()
-            st.success("A stop is requested — the engine will rest after its current day.")
+            st.success("A stop is requested — the engine will rest within seconds.")
             st.rerun()
+
+    st.markdown("### ⏱️ Time flow")
+    st.caption(
+        "How fast the world elapses while the engine runs, measured against real "
+        "time. **1x** ≈ one in-game day every 15 real minutes; **60x** ≈ days "
+        "flow as fast as the machine allows (each day still takes a little while "
+        "to be lived — every Heir decides for themselves)."
+    )
+    _scales = [("1x", 1), ("2x", 2), ("5x", 5), ("10x", 10), ("30x", 30), ("60x", 60)]
+    _cur_scale = float(ws.time_scale or 1.0)
+    _cur_idx = min(range(len(_scales)), key=lambda i: abs(_scales[i][1] - _cur_scale))
+    _chosen = st.radio("How fast should the world move?", _scales, index=_cur_idx,
+                       format_func=lambda s: s[0], key="ctl_time")
+    if float(_chosen[1]) != _cur_scale:
+        ws.set_time_scale(_chosen[1])
+        st.rerun()
 
     st.markdown("---")
 

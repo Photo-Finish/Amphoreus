@@ -261,6 +261,16 @@ try:
         st.sidebar.caption("🗺️ Mode: **Journey** — you are newly arrived; the Heirs do not know you yet.")
 except Exception:
     pass
+# Where you physically stand in Amphoreus (set in the Control Panel).
+try:
+    from src.world.world_state import WorldState as _WSV
+    _vp = _WSV().visitor_place()
+    if _vp["kind"] == "traveling":
+        st.sidebar.caption(f"🚶 On the road to **{_vp['to']}** — {_vp['remaining']} day(s) left")
+    else:
+        st.sidebar.caption(f"📍 You are in **{_vp['at']}**")
+except Exception:
+    pass
 try:
     bond = manager.get_bond_info(selected)
     level = bond.get("friendship_level", "stranger")

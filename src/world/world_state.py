@@ -267,6 +267,9 @@ class WorldState:
         self.realization: Dict[str, dict] = {}  # the witness ledger: cid -> {stage, quotes, since} (see src/core/realization.py)
         self.curiosity: Dict[str, dict] = {}    # the Heirs' minds: cid -> {questions, inferences} (see src/core/curiosity.py)
         self.horizons: Dict[str, list] = {}     # the changeable knowledge bank: cid -> [what they have come to know] (see src/core/horizons.py)
+        self.time_scale: float = 1.0            # how fast the world elapses: 1x = one in-game day per engine interval (Control Panel)
+        self.visitor_location: str = "Okhema"   # where the star-stranger (you) currently stands
+        self.visitor_travel: dict = {}          # your journey: {"to", "from", "remaining"} while on the road
         self._load()
 
     # ------------------------------------------------------------------ #
@@ -304,6 +307,12 @@ class WorldState:
                 self.realization = data.get("realization", {}) or {}
                 self.curiosity = data.get("curiosity", {}) or {}
                 self.horizons = data.get("horizons", {}) or {}
+                try:
+                    self.time_scale = float(data.get("time_scale", 1.0) or 1.0)
+                except Exception:
+                    self.time_scale = 1.0
+                self.visitor_location = data.get("visitor_location", "Okhema") or "Okhema"
+                self.visitor_travel = data.get("visitor_travel", {}) or {}
         except Exception:
             pass
 
@@ -335,6 +344,9 @@ class WorldState:
                         "realization": self.realization,
                         "curiosity": self.curiosity,
                         "horizons": self.horizons,
+                        "time_scale": float(self.time_scale or 1.0),
+                        "visitor_location": self.visitor_location or "Okhema",
+                        "visitor_travel": self.visitor_travel or {},
                     },
                     f,
                     ensure_ascii=False,
@@ -586,6 +598,53 @@ class WorldState:
         with self._lock:
             self.heir_voice = voice if isinstance(voice, str) and voice else None
         self.save()
+
+    # ------------------------------------------------------------------ #
+    # Time flow — how fast the world elapses (Control Panel)
+    # ------------------------------------------------------------------ #
+    def set_time_scale(self, scale: float):
+        """Persist the world's pace: 1x = one in-game day per engine interval."""
+        try:
+            scale = float(scale)
+        except Exception:
+            scale = 1.0
+        with self._lock:
+            self.time_scale = max(1.0, scale)
+        self.save()
+
+    # ------------------------------------------------------------------ #
+    # The star-stranger's own road — physically moving about Amphoreus
+    # ------------------------------------------------------------------ #
+    def visitor_place(self) -> dict:
+        """Where you are: at a city, or on the road to one."""
+        t = self.visitor_travel or {}
+        if t.get("to"):
+            return {"kind": "traveling", "to": t["to"],
+                    "from": t.get("from") or self.visitor_location or "Okhema",
+                    "remaining": int(t.get("remaining", 0))}
+        return {"kind": "at", "at": self.visitor_location or "Okhema"}
+
+    def visitor_set_out(self, dest: str, days: int):
+        """The star-stranger sets out for a city; the journey advances as the
+        world runs (one in-game day per engine day)."""
+        self.visitor_travel = {"to": dest,
+                               "from": self.visitor_location or "Okhema",
+                               "remaining": max(0, int(days))}
+        self.save()
+
+    def advance_visitor_travel(self) -> str:
+        """One in-game day passes on your road. Returns the destination when
+        you arrive (and moves you there), else ''."""
+        t = self.visitor_travel or {}
+        if not t.get("to"):
+            return ""
+        t["remaining"] = int(t.get("remaining", 0)) - 1
+        if t["remaining"] > 0:
+            return ""
+        dest = t["to"]
+        self.visitor_location = dest
+        self.visitor_travel = {}
+        return dest
 
     # ------------------------------------------------------------------ #
     # Senses — what the Heirs see and hear in the world right now

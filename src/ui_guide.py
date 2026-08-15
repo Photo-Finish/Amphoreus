@@ -110,9 +110,41 @@ def render_guide(manager, characters):
         "qwen2.5:14b-instruct (fast); the other takes over automatically if the "
         "big model cannot load.\n"
         "- **World engine** — start it so Amphoreus keeps living while you are "
-        "away, or stop it to hold the world still.\n"
+        "away, or stop it to hold the world still (it rests within seconds of "
+        "your request).\n"
+        "- **⏱️ Time flow** — how fast the world elapses (1x ≈ 15 real minutes "
+        "per in-game day, up to 60x).\n"
+        "- **📍 Your whereabouts** — physically move from city to city; the "
+        "journey takes in-game days that advance while the world runs.\n"
         "- **Your mailbox** — see how many notes wait for you, read them, and "
         "mark them read.\n"
+    ))
+
+    _section("📍 Moving around Amphoreus (physically)", (
+        "You are not a disembodied voice — you stand in a city, and you can "
+        "**travel** to another. Open the **🎛️ Control Panel → “📍 Your "
+        "whereabouts”**, pick a destination and press **🚶 Set out**. The road "
+        "takes whole in-game days; your journey advances while the world engine "
+        "runs (it pauses only while you are mid-conversation with an Heir). "
+        "Your sidebar shows where you are, or the road ahead: **📍 You are in "
+        "…** / **🚶 On the road to … (N day(s) left)**. You can even cross the "
+        "Veil of Evernight into the Dawn era, or descend to the Nether — the "
+        "Trailblazer is Oronyx-blessed."
+    ))
+
+    _section("⏱️ Time flow", (
+        "The world does not run at a fixed speed. In the **🎛️ Control Panel → "
+        "“⏱️ Time flow”** you choose how fast the world elapses, measured "
+        "against real time: **1x** ≈ one in-game day every 15 real minutes, up "
+        "to **60x**, where days flow as fast as the machine allows. Change it "
+        "any time — it takes effect immediately, no restart."
+    ))
+
+    _section("🖥️ Closing the tab does NOT stop the world", (
+        "The world engine is a separate little daemon. Closing the browser tab "
+        "only ends your view — Amphoreus keeps living while the engine runs. "
+        "To truly hold the world still, use **🎛️ Control Panel → ⏹ Stop the "
+        "world** (or just close the whole app)."
     ))
 
     _section("A gentle path to begin", (
