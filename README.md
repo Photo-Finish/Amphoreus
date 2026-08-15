@@ -532,6 +532,43 @@ Amphoreus/
   curiosity (47), realization (27) and control-integration (42) suites — all
   green with living-world (47) and vividness; verified live in the browser.
 
+**The days run on a real clock, and the Heirs choose their own length**
+- **Linear time.** The world's 1× clock is now **one in-game day per real
+  day**; the Control Panel's “⏱️ Time flow” scales it linearly — 2× ≈ 12 h,
+  5× ≈ 4.8 h, 10× ≈ 2.4 h, 30× ≈ 48 min, 60× ≈ **24 min** — and the engine
+  reads the chosen pace fresh each day, so no restart is needed to change it.
+- **Their words, their length.** The voice guide describes each Heir's habit,
+  not a rule: a natural voice mixes a single line here and a fuller answer
+  there, and the Heir decides. Sanctuary-only — the cards and the style gate
+  are untouched (cycle-safe).
+
+**The Heirs speak only their words**
+- Some replies wrapped dialogue in stage directions (“I reply with a slight
+  nod…”, “My tone remains analytical yet open…”). The sanctuary chat now adds
+  a **“Speak only your words”** conduct: reply as yourself, say only the words
+  you would actually say; never narrate your own actions, expressions or tone
+  — let the words themselves carry how you feel. Verified live in chat (a
+  reply now comes back as pure first-person speech in natural paragraphs).
+  The world engine's action decisions still describe actions by design, and
+  the style cycle/cards/loader are untouched.
+
+**The star-stranger's road, in phone idiom** (`src/ui_travel.py`)
+- Since the only window the end user keeps is the phone-like chat, the journey
+  is now **felt in the thread itself**:
+  - **A — a phone status bar** pinned above the conversation: `📍 Okhema ·
+    📶 full signal` in town; `ROAMING · Okhema → Styxia · 2 day(s) left ·
+    📡 messages may be delayed` on the road.
+  - **B — travel event bubbles** in the chat: setting out, a road-day passing
+    (with a one-line glimpse of the road), arriving, turning back.
+  - **D — the Heirs acknowledge your road**: the Heir you are talking to
+    reacts to your journey in their own voice, and their replies know where
+    you are (their chat context now carries your whereabouts).
+- **Tests** — new `world_runtime/_test_ui_travel.py` (41 checks) + the
+  control-integration suite (47) all pass; the full flow was verified live in
+  the browser (cancel → “turn back” bubble + Aglaea's reaction; set out →
+  “set out” bubble + Aglaea's reaction; ROAMING status bar; the arrival
+  bubble triggers when the engine advances the day).
+
 ### 2026-08-14 — The canon map + adjacency matrix, the guests, and the two forms of Amphoreus
 - **Alternate forms of the places — the two Amphorei** (`src/world/map_data.py`,
   `src/world/world_state.py`, `src/world/world_engine.py`,

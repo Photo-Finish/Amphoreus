@@ -72,6 +72,29 @@ st.markdown(
         border-radius: 12px;
         padding: .4rem .8rem;
     }
+    /* The star-stranger's road, in phone idiom (src/ui_travel.py): a status
+       bar with signal bars, and centred carrier-notice travel bubbles. */
+    .amp-travelbar{display:flex;align-items:center;gap:.55rem;padding:.5rem .85rem;
+      border-radius:10px;border:1px solid rgba(232,213,163,.16);
+      background:rgba(20,18,38,.78);font:600 12px/1 'Segoe UI',Arial,sans-serif;
+      letter-spacing:.4px;color:#cfc49b;margin:.2rem 0 .8rem;}
+    .amp-travelbar .amp-signal{display:flex;align-items:flex-end;gap:2px;height:12px;}
+    .amp-travelbar .amp-signal i{display:block;width:3px;background:#7fd68a;border-radius:1px;}
+    .amp-travelbar .amp-txt{flex:1;}
+    .amp-travelbar .amp-sub{color:#8d84a8;font-weight:500;}
+    .amp-travelbar.roaming{color:#ffd9a8;border-color:rgba(255,180,94,.4);
+      background:rgba(28,20,16,.8);}
+    .amp-travelbar.roaming .amp-signal i{background:#ffb45e;}
+    .amp-travelbar .amp-dot{width:7px;height:7px;border-radius:50%;background:#ffb45e;
+      animation:ampPulse 1.6s infinite;}
+    @keyframes ampPulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,180,94,.5);}
+      50%{opacity:.5;box-shadow:0 0 0 5px rgba(255,180,94,0);}}
+    .amp-travelnote{text-align:center;font:italic 12px/1.5 'Segoe UI',Arial,sans-serif;
+      color:#9c92bd;background:rgba(255,255,255,.02);
+      border:1px dashed rgba(232,213,163,.14);border-radius:8px;
+      padding:.35rem .7rem;margin:.3rem 0;animation:ampFade .5s ease;}
+    @keyframes ampFade{from{opacity:0;transform:translateY(3px);}
+      to{opacity:1;transform:none;}}
     .stTabs [data-baseweb="tab-list"] { gap: .6rem; }
     .stTabs [data-baseweb="tab"][aria-selected="true"] { color: #e8d5a3; }
     </style>
@@ -824,6 +847,16 @@ with main_tab:
         st.caption(f"Coreflame: **{info['coreflame']}**")
     st.markdown("---")
 
+    # A — the star-stranger's own road, in phone idiom: a status bar above
+    # the conversation so the journey is felt even when you only read the chat.
+    try:
+        from src.ui_travel import travel_status, travel_status_html
+        from src.world.world_state import WorldState as _WST
+        _tstatus = travel_status(_WST())
+        st.markdown(travel_status_html(_tstatus), unsafe_allow_html=True)
+    except Exception:
+        pass
+
     # Catch-up: what this Heir has lived through since you were last here
     try:
         world_mem = manager.memory.get_world_memories(selected, limit=3)
@@ -913,6 +946,38 @@ with main_tab:
             "role": "assistant",
             "content": greeting,
         })
+
+    # B + D — travel events as phone messages: when you set out, a road-day
+    # passes, or you arrive, a carrier-notice bubble joins the thread, and the
+    # Heir you are talking to reacts to your journey in their own voice.
+    try:
+        from src.ui_travel import (travel_status, diff_travel, travel_event_text,
+                                   travel_note_html, heir_travel_reaction)
+        from src.world.world_state import WorldState as _WST2
+        if "travel_log" not in st.session_state:
+            st.session_state.travel_log = []
+        _tcur = travel_status(_WST2())
+        if "_travel_snap" not in st.session_state:
+            st.session_state["_travel_snap"] = _tcur
+        _tsnap = st.session_state["_travel_snap"]
+        for _tev in diff_travel(_tsnap, _tcur):
+            _evrec = dict(_tev)
+            _evrec["text"] = travel_event_text(_tev)
+            st.session_state.travel_log.append(_evrec)
+            _react = heir_travel_reaction(selected, _tev.get("kind"), _tev)
+            if _react:
+                st.session_state.messages[selected].append({
+                    "role": "assistant",
+                    "content": _react,
+                })
+        st.session_state["_travel_snap"] = _tcur
+        if len(st.session_state.travel_log) > 60:
+            st.session_state.travel_log = st.session_state.travel_log[-60:]
+        for _tl in st.session_state.travel_log[-20:]:
+            st.markdown(travel_note_html(_tl.get("text", "")),
+                        unsafe_allow_html=True)
+    except Exception:
+        pass
 
     # Display chat history (the Heir's own square avatar — never a generic bot)
     _assistant_avatar = str(avatar_for(selected)) if avatar_for(selected) else None

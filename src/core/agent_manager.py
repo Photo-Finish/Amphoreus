@@ -1008,6 +1008,21 @@ class AgentManager:
                     lines.append(note)
             except Exception:
                 pass
+            # Where the star-stranger is right now — so the Heir's replies can
+            # acknowledge the visitor's own road (in town, or away on one).
+            try:
+                _vp = ws.visitor_place()
+                if _vp.get("kind") == "traveling":
+                    lines.append(
+                        "- The visitor is on the road from "
+                        f"{_vp.get('from')} to {_vp.get('to')} — "
+                        f"{int(_vp.get('remaining', 0))} day(s) of travel left; "
+                        "their messages reach you when they pass a town."
+                    )
+                else:
+                    lines.append(f"- The visitor is currently in {_vp.get('at')}.")
+            except Exception:
+                pass
             return system_prompt + "\n".join(lines)
         except Exception:
             return system_prompt  # never let the world block break the chat
