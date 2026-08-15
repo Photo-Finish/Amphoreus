@@ -206,7 +206,7 @@ def get_manager():
 manager = get_manager()
 
 # Sidebar — Character Selection
-st.sidebar.title("🏛️ Project Amphoreus")
+st.sidebar.title("Project Amphoreus")
 st.sidebar.markdown("### The Sanctuary of the Chrysos Heirs")
 
 # LLM status — truthful: the backend is reachable AND the Heir voice model is
@@ -226,7 +226,7 @@ try:
         st.sidebar.success(
             f"📚 RAG: Ready\n\n{n_docs} canon documents indexed\n({rag.get('embedding', 'auto')} embeddings)"
         )
-        if st.sidebar.button("🔄 Rebuild Knowledge Base"):
+        if st.sidebar.button("Rebuild Knowledge Base"):
             with st.spinner("Rebuilding RAG index..."):
                 manager.build_knowledge_base()
             st.rerun()
@@ -268,30 +268,26 @@ try:
         _gws = _WS()
         if _gws.guest_status(selected) == "present":
             st.sidebar.caption(
-                "🛸 **Visitor in Amphoreus** — not a resident; the Express "
+                "**Visitor in Amphoreus** — not a resident; the Express "
                 "drops in from time to time."
             )
         else:
             st.sidebar.caption(
-                "🛸 **Beyond Amphoreus** — riding the Trailblaze path; "
+                "**Beyond Amphoreus** — riding the Trailblaze path; "
                 "returns from time to time."
             )
 except Exception:
     pass
 
 # Bond with the visitor
-level_emoji = {
-    "stranger": "🌫️", "acquaintance": "🌤️", "friend": "🌿",
-    "close friend": "🌙", "best friend": "⭐",
-}
 # Visitor mode (journey vs aftermath — see src/core/visitor_mode.py)
 try:
     from src.core.visitor_mode import current_mode
     _mode = current_mode()
     if _mode == "aftermath":
-        st.sidebar.caption("✨ Mode: **Aftermath** — the Iron Tomb is conquered; the Heirs remember you as a war-companion.")
+        st.sidebar.caption("Mode: **Aftermath** — the Iron Tomb is conquered; the Heirs remember you as a war-companion.")
     else:
-        st.sidebar.caption("🗺️ Mode: **Journey** — you are newly arrived; the Heirs do not know you yet.")
+        st.sidebar.caption("Mode: **Journey** — you are newly arrived; the Heirs do not know you yet.")
 except Exception:
     pass
 # Where you physically stand in Amphoreus (set in the Control Panel).
@@ -299,16 +295,16 @@ try:
     from src.world.world_state import WorldState as _WSV
     _vp = _WSV().visitor_place()
     if _vp["kind"] == "traveling":
-        st.sidebar.caption(f"🚶 On the road to **{_vp['to']}** — {_vp['remaining']} day(s) left")
+        st.sidebar.caption(f"On the road to **{_vp['to']}** — {_vp['remaining']} day(s) left")
     else:
-        st.sidebar.caption(f"📍 You are in **{_vp['at']}**")
+        st.sidebar.caption(f"You are in **{_vp['at']}**")
 except Exception:
     pass
 try:
     bond = manager.get_bond_info(selected)
     level = bond.get("friendship_level", "stranger")
     st.sidebar.markdown("---")
-    st.sidebar.markdown(f"**Bond with you:** {level_emoji.get(level, '🌫️')} {level}")
+    st.sidebar.markdown(f"**Bond with you:** {level}")
     st.sidebar.markdown(
         f"Visits: **{bond.get('visits', 0)}** · Memories: **{bond.get('memories', 0)}**"
     )
@@ -325,23 +321,21 @@ try:
     _ws_side = _WS_side()
     _mo_side = _lw_side.mood_of(_ws_side, selected)
     if _mo_side["valence"] != 0:
-        _emoji = {3: "✨", 2: "☀️", 1: "🌤️", -1: "🌧️", -2: "⛈️", -3: "🕯️"}.get(_mo_side["valence"], "🌫️")
-        st.sidebar.caption(f"{_emoji} {_mo_side['name'].capitalize()} today"
+        st.sidebar.caption(f"{_mo_side['name'].capitalize()} today"
                            + (f" — {_mo_side['reason']}" if _mo_side['reason'] else ""))
     _arc_side = _lw_side.ARCS.get(selected)
     if _arc_side:
         _stg_side = _lw_side.arc_stage(bond.get("friendship_level", "stranger"))
         if _stg_side >= 0:
-            st.sidebar.caption(f"📖 Carries: “{_arc_side['title']}”")
+            st.sidebar.caption(f"Carries: “{_arc_side['title']}”")
     if _lw_side.open_grievance(manager.memory, selected):
-        st.sidebar.warning("💔 Something sits unresolved between you.")
+        st.sidebar.warning("Something sits unresolved between you.")
     # the witness: a quiet badge when the Heir has begun to understand
     try:
         from src.core import realization as _rz
         _rz_rec = _rz.stage_of(_ws_side, selected)
         if _rz_rec.get("stage", 0) >= 1:
-            _rz_icon = {1: "🌒", 2: "🌗", 3: "🌕"}.get(_rz_rec["stage"], "🌒")
-            st.sidebar.caption(f"{_rz_icon} Realization: {_rz_rec['name']}")
+            st.sidebar.caption(f"Realization: {_rz_rec['name']}")
     except Exception:
         pass
     # the Heirs' minds: what they are wondering about
@@ -349,7 +343,7 @@ try:
         from src.core import curiosity as _cur
         _qs = _cur.open_questions(_ws_side, selected)
         if _qs:
-            st.sidebar.caption(f"❓ Wondering: {_qs[0]['q'][:70]}")
+            st.sidebar.caption(f"Wondering: {_qs[0]['q'][:70]}")
     except Exception:
         pass
     # the changeable knowledge bank: what they have come to know
@@ -357,20 +351,20 @@ try:
         from src.core import horizons as _hz
         _hk = _hz.latest(_ws_side, selected, limit=1)
         if _hk:
-            st.sidebar.caption(f"📖 Knows: {_hk[0]['topic'][:70]}")
+            st.sidebar.caption(f"Knows: {_hk[0]['topic'][:70]}")
     except Exception:
         pass
 except Exception:
     pass
 
 # Reset button — this is a heavy act: it erases the Heir's memory of you
-if st.sidebar.button("🗑️ Forget me (reset)"):
+if st.sidebar.button("Forget me (reset)"):
     manager.reset_conversation(selected)
     st.rerun()
 
 # Your own face — the avatar that appears beside your messages
 st.sidebar.markdown("---")
-st.sidebar.caption("🪞 **Your avatar** — the face that travels with you.")
+st.sidebar.caption("**Your avatar** — the face that travels with you.")
 try:
     _uav = user_avatar_path()
     if _uav:
@@ -395,7 +389,7 @@ try:
             _im.save(str(USER_AVATAR_PATH), "PNG")
             st.session_state["_uav_saved_ident"] = _ident
             st.sidebar.success("Your face is set — it now appears beside your messages.")
-    if _uav and st.sidebar.button("🗑️ Remove my avatar", key="user_avatar_remove"):
+    if _uav and st.sidebar.button("Remove my avatar", key="user_avatar_remove"):
         USER_AVATAR_PATH.unlink()
         st.rerun()
 except Exception:
@@ -416,23 +410,23 @@ st.sidebar.markdown("---")
 try:
     ms = manager.memory_stats()
     st.sidebar.caption(
-        f"🧠 The Heirs hold **{ms['memories']}** memories across **{ms['heirs_with_bonds']}** bonds"
+        f"The Heirs hold **{ms['memories']}** memories across **{ms['heirs_with_bonds']}** bonds"
     )
 except Exception:
     pass
 st.sidebar.caption("*Project Amphoreus — the Sanctuary*")
-st.sidebar.caption("*Databank: Complete ✅*")
+st.sidebar.caption("*Databank: Complete*")
 st.sidebar.caption("*See PHILOSOPHY.md for the charter*")
 
 # Main Area
 main_tab, chronicle_tab, map_tab, admin_tab, game_tab, guide_tab, control_tab = st.tabs([
-    "💬 Visit an Heir",
-    "📖 A Chronicle of Amphoreus",
-    "🗺️ Map of Amphoreus",
-    "🛠️ Admin Console",
-    "🎬 Galgame",
-    "❓ How to use",
-    "🎛️ Control Panel",
+    "Visit an Heir",
+    "A Chronicle of Amphoreus",
+    "Map of Amphoreus",
+    "Admin Console",
+    "Galgame",
+    "How to use",
+    "Control Panel",
 ])
 
 with control_tab:
@@ -487,7 +481,7 @@ with map_tab:
         from src.world import schedules as _sched
 
         _ws = WorldState()
-        st.title("🗺️ Map of Amphoreus")
+        st.title("Map of Amphoreus")
         st.caption(
             "The Heirs are spread across a wide world. Each dot is an Heir at their "
             "present place; crossed dots are on the road between cities. Travel is "
@@ -563,20 +557,20 @@ with map_tab:
         _components_html(_amp_html, height=850, scrolling=False)
 
         # Current clock + who's where / who's travelling
-        st.markdown(f"### ⏳ Now: {_ws.clock.format()}")
+        st.markdown(f"### Now: {_ws.clock.format()}")
 
         # Today's stage, set by the Keeper (the Ambient World Director)
         _weather = (_ws.ambient.get("weather") or {})
         _errands = (_ws.ambient.get("errands") or {})
         _news = _ws.ambient.get("news", "")
         if _weather or _errands or _news:
-            st.markdown("### 🌤️ Today's sky")
+            st.markdown("### Today's sky")
             for _city, _sky in _weather.items():
                 if _sky:
                     st.markdown(f"- **{_city}** — {_sky}")
             if _news:
                 st.markdown(f"*News from the wider world: {_news}*")
-            with st.expander("📜 Errands laid at the Heirs' doors today"):
+            with st.expander("Errands laid at the Heirs' doors today"):
                 for _cid, _errand in _errands.items():
                     if not _errand:
                         continue
@@ -621,7 +615,7 @@ with map_tab:
                 st.markdown("*No one is travelling right now.*")
 
         # Travel-time matrix
-        st.markdown("### 🚶 Commuting time (in periods, 5 = a day)")
+        st.markdown("### Commuting time (in periods, 5 = a day)")
         _locs = list(_map.LOCATION_POS.keys())
         table = []
         for a in _locs:
@@ -637,7 +631,7 @@ with map_tab:
         )
 
         # The Veil of Evernight — the two forms of Amphoreus
-        st.markdown("### ⏳ The Veil of Evernight — the two forms of Amphoreus")
+        st.markdown("### The Veil of Evernight — the two forms of Amphoreus")
         st.markdown(
             "Many places exist in **two forms**: the **present** (the Evernight "
             "era — the darkened world of Year 4932) and its **Dawn-era (past) "
@@ -681,7 +675,7 @@ with map_tab:
                     _idx = _opts.index(_default)
                 else:
                     _idx = 0
-                st.markdown("### 🖼️ Area art")
+                st.markdown("### Area art")
                 _sel = st.selectbox(
                     "Choose a place to view", _opts, format_func=lambda s: _labels[s],
                     index=_idx, key="map_area_sel",
@@ -697,7 +691,7 @@ with map_tab:
             pass
 
         # Individual weekly schedules
-        st.markdown("### 📅 Individual weekly routines")
+        st.markdown("### Individual weekly routines")
         st.caption(
             "Each Heir keeps a routine of their own. Heirs who live and work together "
             "(the Okhema council circle, the scholars of the Grove, the two souls of "
@@ -735,11 +729,11 @@ with admin_tab:
     # 🛠️ Admin Console — the machine under the world: models, world-state,
     # cause-and-effect chain, and the automation loop that keeps the Heirs
     # converging on their voices. Read-only; nothing here changes the world.
-    st.title("🛠️ Admin Console — the machine under the world")
+    st.title("Admin Console — the machine under the world")
     st.caption("Backend, world-state, cause-and-effect, and the quality loop.")
 
     # ---- 1. Backend & models ----
-    st.markdown("### ⚙️ Backend & models")
+    st.markdown("### Backend & models")
     try:
         sn = manager.senses_status()
         c1, c2, c3 = st.columns(3)
@@ -760,7 +754,7 @@ with admin_tab:
     try:
         from src.world.world_state import WorldState as _WS, GUEST_HEIRS as _GUEST_HEIRS
         _ws2 = _WS()
-        st.markdown("### 🌍 World state")
+        st.markdown("### World state")
         st.markdown(f"**Clock:** {_ws2.clock.format()}")
         st.markdown("**Where the Heirs are right now**")
         for _cid, _loc in _ws2.present_locations().items():
@@ -782,25 +776,25 @@ with admin_tab:
                             f"({_ti['remaining_days']} day(s) left)")
         _ev = _ws2.recent_events_text(limit=10)
         if _ev:
-            with st.expander("⚡ Recent events — the causal trail"):
+            with st.expander("Recent events — the causal trail"):
                 st.markdown(_ev)
     except Exception as e:
         st.caption(f"(world state unavailable: {e})")
 
     # ---- 3. Cause & effect: why today is what it is ----
     try:
-        st.markdown("### 🔗 Cause & effect — why today is what it is")
+        st.markdown("### Cause & effect — why today is what it is")
         st.markdown(f"**Season:** {_ws2.clock.season} · **Month:** {_ws2.clock.month_name} "
                     f"(patron {_ws2.clock.patron_titan})")
         _amb = _ws2.ambient
         _w = _amb.get("weather") or {}
         if _w:
-            with st.expander("🌤️ Weather — the sky's cause"):
+            with st.expander("Weather — the sky's cause"):
                 for _city, _sky in _w.items():
                     st.markdown(f"- **{_city}** — {_sky}")
         _e = _amb.get("errands") or {}
         if _e:
-            with st.expander("📜 Errands — request + original impetus"):
+            with st.expander("Errands — request + original impetus"):
                 for _cid2, _er in _e.items():
                     if not _er:
                         continue
@@ -819,7 +813,7 @@ with admin_tab:
         st.caption(f"(ambient unavailable: {e})")
 
     # ---- 4. The automation loop ----
-    st.markdown("### 🔄 The quality loop (auto-cycle)")
+    st.markdown("### The quality loop (auto-cycle)")
     try:
         import time as _time
         _root = Path(__file__).parent.parent
@@ -835,13 +829,13 @@ with admin_tab:
         st.markdown(f"- Style report last written **{_r if _r is not None else 'never'} min ago**")
         st.markdown(f"- Watchdog last event **{_w if _w is not None else 'never'} min ago**")
         if _log.exists():
-            with st.expander("📋 Auto-cycle log (tail)"):
+            with st.expander("Auto-cycle log (tail)"):
                 st.code("\n".join(_log.read_text(encoding="utf-8").splitlines()[-45:]))
         if _wdlog.exists():
-            with st.expander("🐕 Watchdog log (tail)"):
+            with st.expander("Watchdog log (tail)"):
                 st.code("\n".join(_wdlog.read_text(encoding="utf-8").splitlines()[-20:]))
         if _report.exists():
-            with st.expander("📊 Latest style report (tail)"):
+            with st.expander("Latest style report (tail)"):
                 st.code("\n".join(_report.read_text(encoding="utf-8").splitlines()[-25:]))
     except Exception as e:
         st.caption(f"(loop status unavailable: {e})")
@@ -850,7 +844,7 @@ with admin_tab:
     try:
         from src.world.chronicle import Chronicle as _Chr
         _ch = _Chr(str(Path(__file__).parent.parent / "world_runtime" / "chronicle"))
-        with st.expander("📖 Chronicle — what has happened (the record)"):
+        with st.expander("Chronicle — what has happened (the record)"):
             st.markdown(_ch.read_markdown(30))
     except Exception as e:
         st.caption(f"(chronicle unavailable: {e})")
@@ -877,7 +871,7 @@ with main_tab:
         except Exception:
             st.image(str(_chat_bg), width="stretch")
         if _chat_place:
-            st.caption(f"📍 {info['name']} is in **{_chat_place}** — the backdrop shows where they are.")
+            st.caption(f"{info['name']} is in **{_chat_place}** — the backdrop shows where they are.")
     hero_l, hero_r = st.columns([1, 3], gap="large")
     with hero_l:
         if _selected_portrait:
@@ -904,7 +898,7 @@ with main_tab:
     try:
         world_mem = manager.memory.get_world_memories(selected, limit=3)
         if world_mem:
-            with st.expander(f"🕯️ What {info['name']} has lived through lately"):
+            with st.expander(f"What {info['name']} has lived through lately"):
                 for wm in world_mem:
                     st.markdown(f"- {wm['content']}")
     except Exception:
@@ -921,12 +915,12 @@ with main_tab:
             if l != _here and _map_data.travel_time_for(_here, l, "trailblazer") < 999
         ]
         if _dests:
-            with st.expander("🚶 Travel together"):
+            with st.expander("Travel together"):
                 _dest = st.selectbox("Where shall you walk together?", _dests,
                                      key=f"travel_dest_{selected}")
                 if _map_data.is_cross_era(_dest):
                     st.caption(
-                        "⏳ A Dawn-era form / the Nether — you are Oronyx-blessed "
+                        "A Dawn-era form / the Nether — you are Oronyx-blessed "
                         "(and walked with Castorice): you can carry this Heir "
                         "across the borderline of time with you."
                     )
@@ -947,7 +941,7 @@ with main_tab:
     try:
         _mkt_loc, _wares = manager.market_at(selected)
         if _wares:
-            with st.expander("🎁 Give a gift"):
+            with st.expander("Give a gift"):
                 st.caption(f"The market at **{_mkt_loc}** offers:")
                 _labels = [f"{w['name']} — {w['note']}" for w in _wares]
                 _choice = st.selectbox("Choose something for them", _labels,
@@ -971,7 +965,7 @@ with main_tab:
                     if _kept:
                         _clean = [g.replace("The visitor gave you ", "").strip(" .")
                                   for g in _kept]
-                        st.caption("🎁 They keep: " + " · ".join(_clean))
+                        st.caption("They keep: " + " · ".join(_clean))
                 except Exception:
                     pass
     except Exception:
@@ -1033,7 +1027,7 @@ with main_tab:
     c1, c2, c3 = st.columns([1, 1, 1])
     with c1:
         uploaded = st.file_uploader(
-            "🖼️ Show a picture",
+            "Show a picture",
             type=["png", "jpg", "jpeg", "webp", "gif"],
             key=f"img_{selected}",
             label_visibility="collapsed",
@@ -1046,7 +1040,7 @@ with main_tab:
             }
     with c2:
         uploaded_video = st.file_uploader(
-            "🎬 Show a video",
+            "Show a video",
             type=["mp4", "mov", "avi", "mkv", "webm"],
             key=f"vid_{selected}",
             label_visibility="collapsed",
@@ -1057,11 +1051,11 @@ with main_tab:
                 "name": uploaded_video.name,
             }
     with c3:
-        spoken = st.audio_input("👂 Speak to them", key=f"aud_{selected}")
+        spoken = st.audio_input("Speak to them", key=f"aud_{selected}")
 
     # A second row: music for shared appreciation
     music_file = st.file_uploader(
-        "🎵 Share music to listen together",
+        "Share music to listen together",
         type=["mp3", "wav", "ogg", "flac", "m4a"],
         key=f"music_{selected}",
     )
@@ -1084,10 +1078,10 @@ with main_tab:
 
     if st.session_state.get("pending_image"):
         pimg = st.session_state["pending_image"]
-        st.caption(f"🖼️ You are showing {info['name']}: **{pimg['name']}** — send a message to appreciate it together.")
+        st.caption(f"You are showing {info['name']}: **{pimg['name']}** — send a message to appreciate it together.")
     if st.session_state.get("pending_video"):
         pvid = st.session_state["pending_video"]
-        st.caption(f"🎬 You are showing {info['name']}: **{pvid['name']}** — send a message to watch it together.")
+        st.caption(f"You are showing {info['name']}: **{pvid['name']}** — send a message to watch it together.")
 
     if spoken is not None:
         with st.spinner(f"{info['name']} is listening..."):
@@ -1184,7 +1178,7 @@ with main_tab:
         try:
             ctx = manager.get_rag_context(selected, prompt)
             if ctx.get("available") and ctx.get("hits"):
-                with st.expander(f"📜 Canon sources used ({len(ctx['hits'])})"):
+                with st.expander(f"Canon sources used ({len(ctx['hits'])})"):
                     for h in ctx["hits"]:
                         st.markdown(f"**`{h['source']}`** — score {h['score']}")
                         st.caption(h["text"][:400] + ("…" if len(h["text"]) > 400 else ""))

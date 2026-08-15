@@ -86,7 +86,7 @@ def _engine_stopping() -> bool:
 # The panel
 # --------------------------------------------------------------------------- #
 def render_control_panel(manager, characters):
-    st.title("🎛️ Control Panel")
+    st.title("Control Panel")
     st.caption("Choose how you play Amphoreus. Changes take effect immediately and persist.")
 
     from src.world.world_state import WorldState
@@ -104,19 +104,19 @@ def render_control_panel(manager, characters):
         pass
 
     # ---------------- 1. Experience mode ----------------
-    st.markdown("### 🗺️ Experience mode")
+    st.markdown("### Experience mode")
     mode = current_mode()
     st.caption(
-        ("✨ **Aftermath** — the Heirs remember you as a war-companion."
+        ("**Aftermath** — the Heirs remember you as a war-companion."
          if mode == "aftermath" else
-         "🗺️ **Journey** — you are newly arrived; the Heirs do not know you yet.")
+         "**Journey** — you are newly arrived; the Heirs do not know you yet.")
     )
     choice = st.radio(
         "Choose how the Heirs know you",
         ["journey", "aftermath"],
         index=0 if mode == "journey" else 1,
-        format_func=lambda m: ("🗺️ Journey — a new arrival"
-                               if m == "journey" else "✨ Aftermath — a war-companion"),
+        format_func=lambda m: ("Journey — a new arrival"
+                               if m == "journey" else "Aftermath — a war-companion"),
         key="ctl_mode",
     )
     if choice != mode:
@@ -136,7 +136,7 @@ def render_control_panel(manager, characters):
     st.markdown("---")
 
     # ---------------- 2. Live black tide ----------------
-    st.markdown("### 🕳️ Live black tide")
+    st.markdown("### Live black tide")
     st.caption(
         "**On** — the tide can stir along the edge cities: travel into a surged "
         "city takes an extra day, and the Heirs there grow weary. **Off** — the "
@@ -151,7 +151,7 @@ def render_control_panel(manager, characters):
     st.markdown("---")
 
     # ---------------- Heir voice ----------------
-    st.markdown("### 🗣️ Heir voice")
+    st.markdown("### Heir voice")
     _voices = list(AgentManager._VOICE_CHAIN)
     _current_voice = manager.voice_model()
     st.caption(
@@ -165,8 +165,8 @@ def render_control_panel(manager, characters):
         "Who speaks for the Heirs?",
         _voices,
         index=_voices.index(_current_voice) if _current_voice in _voices else 0,
-        format_func=lambda v: ("✨ gemma3:27b — the standard voice (slower)"
-                               if v == "gemma3:27b" else "⚡ qwen2.5:14b-instruct — fast"),
+        format_func=lambda v: ("gemma3:27b — the standard voice (slower)"
+                               if v == "gemma3:27b" else "qwen2.5:14b-instruct — fast"),
         key="ctl_voice",
     )
     if _voice != _current_voice:
@@ -177,7 +177,7 @@ def render_control_panel(manager, characters):
     st.markdown("---")
 
     # ---------------- 3. Your whereabouts (physical movement) ----------------
-    st.markdown("### 📍 Your whereabouts")
+    st.markdown("### Your whereabouts")
     st.caption(
         "You are physically in Amphoreus. Move from city to city — the road "
         "takes whole in-game days, and it advances while the world runs "
@@ -185,14 +185,14 @@ def render_control_panel(manager, characters):
     )
     vp = ws.visitor_place()
     if vp["kind"] == "traveling":
-        st.info(f"🚶 You are on the road to **{vp['to']}** — **{vp['remaining']}** day(s) left.")
+        st.info(f"You are on the road to **{vp['to']}** — **{vp['remaining']}** day(s) left.")
         _here = vp["from"]
-        if st.button(f"↩️ Cancel journey (return to {vp['from']})", key="ctl_cancel"):
+        if st.button(f"Cancel journey (return to {vp['from']})", key="ctl_cancel"):
             ws.visitor_cancel_travel()
             st.success(f"You turn back and return to {vp['from']}.")
             st.rerun()
     else:
-        st.success(f"📍 You are in **{vp['at']}**.")
+        st.success(f"You are in **{vp['at']}**.")
         _here = vp["at"]
     try:
         from src.world import map_data as _md
@@ -214,7 +214,7 @@ def render_control_panel(manager, characters):
                        f"adds **{_surge_days}** onto the way into {_dest}.")
         else:
             st.caption(f"The road takes **{_days}** in-game day(s).")
-        if st.button("🚶 Set out", key="ctl_setout"):
+        if st.button("Set out", key="ctl_setout"):
             ws.visitor_set_out(_dest, _days)
             if _days == 0:
                 st.success(f"You are already there — welcome to {_dest}.")
@@ -225,11 +225,11 @@ def render_control_panel(manager, characters):
     st.markdown("---")
 
     # ---------------- 4. World engine + time flow ----------------
-    st.markdown("### 🌍 World engine")
+    st.markdown("### World engine")
     running = _engine_running()
     stopping = _engine_stopping()
     if running and stopping:
-        st.warning("⏹ A stop is in progress — the engine rests as soon as its current "
+        st.warning("A stop is in progress — the engine rests as soon as its current "
                    "moment's work allows (a few seconds now).")
     elif running:
         st.success("The world engine is running — Amphoreus lives while you are away.")
@@ -239,19 +239,19 @@ def render_control_panel(manager, characters):
                 "Director and the Heirs' free days).")
     c1, c2 = st.columns(2)
     with c1:
-        if st.button("▶️ Start the world", disabled=running, key="ctl_eng_start"):
+        if st.button("Start the world", disabled=running, key="ctl_eng_start"):
             if _engine_start():
                 st.success("The world engine is starting… (give it a minute to load)")
                 st.rerun()
             else:
                 st.error("Could not start the engine.")
     with c2:
-        if st.button("⏹ Stop the world", disabled=not running, key="ctl_eng_stop"):
+        if st.button("Stop the world", disabled=not running, key="ctl_eng_stop"):
             _engine_stop()
             st.success("A stop is requested — the engine will rest within seconds.")
             st.rerun()
 
-    st.markdown("### ⏱️ Time flow")
+    st.markdown("### Time flow")
     st.caption(
         "How fast the world elapses while the engine runs, measured linearly "
         "against real time: **1x** = one in-game day per real day; **60x** = "
@@ -270,7 +270,7 @@ def render_control_panel(manager, characters):
     st.markdown("---")
 
     # ---------------- 3c. Compute (GPU) ----------------
-    st.markdown("### ⚙️ Compute (GPU)")
+    st.markdown("### Compute (GPU)")
     st.caption(
         "Which processor carries the Heirs' minds. **NVIDIA CUDA** uses the "
         "RTX GPU — fast, but the 10 GB model is split 62/38 with the CPU "
@@ -290,7 +290,7 @@ def render_control_panel(manager, characters):
             key="ctl_compute",
         )
         _cm_changed = _cm_choice != _cur_cm
-        if st.button("♻️ Apply & restart the AI engine",
+        if st.button("Apply & restart the AI engine",
                      disabled=not _cm_changed, key="ctl_compute_apply"):
             with st.spinner("Restarting the AI engine with the new compute mode…"):
                 _r = _cm.restart_ollama(_cm_choice)
@@ -313,7 +313,7 @@ def render_control_panel(manager, characters):
     st.markdown("---")
 
     # ---------------- 4. Mailbox ----------------
-    st.markdown("### 📬 Your mailbox")
+    st.markdown("### Your mailbox")
     unread = lw.unread_count(ws, "visitor")
     notes = lw.mailbox_for(ws, "visitor")
     st.caption(f"{len(notes)} note(s), **{unread} unread** — also shown in the Gazette.")

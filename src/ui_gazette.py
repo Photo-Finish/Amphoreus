@@ -118,19 +118,19 @@ def render_gazette(manager, characters):
                     parts.append(f'<div class="item">• <b>{_html.escape(str(city))}</b> — '
                                  f'{_html.escape(str(sky))}</div>')
             if news:
-                parts.append(f'<div class="item" style="margin-top:6px;">📯 News from the '
+                parts.append(f'<div class="item" style="margin-top:6px;">News from the '
                              f'wider world: <i>{_html.escape(news)}</i></div>')
 
         # the visitor's calls — today's word of the star-stranger
         flash = ws.ambient.get("news_flash") or []
         if flash:
-            parts.append('<h2>🌟 The Visitor\'s Calls</h2>')
+            parts.append('<h2>The Visitor\'s Calls</h2>')
             for f in flash:
                 parts.append(f'<div class="item">• {_html.escape(str(f.get("text", "")))}</div>')
 
         # front page
         if headline:
-            parts.append('<h2>📰 On the Front Page</h2>')
+            parts.append('<h2>On the Front Page</h2>')
             parts.append(f'<div class="headline">{_html.escape(headline)}</div>')
 
         # black tide
@@ -138,7 +138,7 @@ def render_gazette(manager, characters):
             parts.append(f'<div class="warn">🕳️ {_html.escape(wev.surge_text(ws))}</div>')
 
         # where the Heirs are
-        parts.append('<h2>🗺️ The Heirs Abroad</h2>')
+        parts.append('<h2>The Heirs Abroad</h2>')
         for cid, loc in ws.present_locations().items():
             if cid in ws.agent_travel:
                 ti = ws.agent_travel[cid]
@@ -161,7 +161,7 @@ def render_gazette(manager, characters):
                              f'(drops in from time to time)</div>')
 
         # whispers
-        parts.append('<h2>🌫️ Whispers on the Wind</h2>')
+        parts.append('<h2>Whispers on the Wind</h2>')
         if rumor_lines:
             for r in rumor_lines:
                 parts.append(f'<div class="item">• {_html.escape(r)}</div>')
@@ -169,7 +169,7 @@ def render_gazette(manager, characters):
             parts.append('<div class="muted">The streets are quiet; nothing is being whispered yet.</div>')
 
         # letters
-        parts.append('<h2>✉️ Letters in the Post</h2>')
+        parts.append('<h2>Letters in the Post</h2>')
         if letters:
             for l in letters:
                 parts.append(f'<div class="item">• From <b>{_html.escape(l.get("from_name", "?"))}</b> '
@@ -181,7 +181,7 @@ def render_gazette(manager, characters):
         # the visitor's mailbox — notes left for them, and Heirs reaching out
         from src.world import living_world as _lw_gaz
         _box = _lw_gaz.mailbox_for(ws, "visitor")
-        parts.append('<h2>📬 Your Mailbox</h2>')
+        parts.append('<h2>Your Mailbox</h2>')
         if _box:
             for m in _box[-8:][::-1]:
                 parts.append(f'<div class="item">• <b>{_html.escape(m.get("from", "?"))}</b> — '
@@ -199,7 +199,7 @@ def render_gazette(manager, characters):
                 _moods.append(f"{names.get(cid, cid)} is {mo['name']}"
                               + (f" — {mo['reason']}" if mo["reason"] else ""))
         if _moods:
-            parts.append('<h2>🌥️ The Heirs\' Moods</h2>')
+            parts.append('<h2>The Heirs\' Moods</h2>')
             for mm in _moods[:8]:
                 parts.append(f'<div class="item">• {_html.escape(mm)}</div>')
 
@@ -207,7 +207,7 @@ def render_gazette(manager, characters):
         _npc_lines = [f"{_npc} — {_lw_gaz.npc_line(ws, _npc)}"
                       for _npc in _lw_gaz.NPC_ARCS]
         if _npc_lines:
-            parts.append('<h2>🏘️ The Residents of Amphoreus</h2>')
+            parts.append('<h2>The Residents of Amphoreus</h2>')
             for nl in _npc_lines[:6]:
                 parts.append(f'<div class="item">• {_html.escape(nl)}</div>')
 
@@ -221,7 +221,7 @@ def render_gazette(manager, characters):
                 q = rec["quotes"][-1] if rec.get("quotes") else ""
                 _rz_rows.append((names.get(cid, cid), rec["name"], q))
         if _rz_rows:
-            parts.append('<h2>🌅 The Realizations</h2>')
+            parts.append('<h2>The Realizations</h2>')
             for nm, st_, q in _rz_rows:
                 qq = f' — “{_html.escape(q)}”' if q else ""
                 parts.append(f'<div class="item">• {_html.escape(nm)} — {_html.escape(st_)}{qq}</div>')
@@ -234,7 +234,7 @@ def render_gazette(manager, characters):
             if qs:
                 _q_rows.append((names.get(cid, cid), qs[0]["q"]))
         if _q_rows:
-            parts.append('<h2>❓ The Questions of the Heirs</h2>')
+            parts.append('<h2>The Questions of the Heirs</h2>')
             for nm, q in _q_rows[:8]:
                 parts.append(f'<div class="item">• {_html.escape(nm)} — “{_html.escape(q)}”</div>')
 
@@ -246,7 +246,7 @@ def render_gazette(manager, characters):
             if hs:
                 _h_rows.append((names.get(cid, cid), hs[0].get("topic", "")))
         if _h_rows:
-            parts.append("<h2>🌌 The Heirs' Horizons</h2>")
+            parts.append("<h2>The Heirs' Horizons</h2>")
             for nm, h in _h_rows[:8]:
                 parts.append(f'<div class="item">• {_html.escape(nm)} — “{_html.escape(h)}”</div>')
 
@@ -262,11 +262,11 @@ def render_gazette(manager, characters):
             else:
                 bonds.append(f"{na} and {nb} have drifted apart of late ({delta})")
         if bonds:
-            parts.append('<h2>🕸️ The Bonds of the Heirs</h2>')
+            parts.append('<h2>The Bonds of the Heirs</h2>')
             for bd in bonds[:8]:
                 parts.append(f'<div class="item">• {_html.escape(bd)}</div>')
         # long works
-        parts.append('<h2>🔨 The Heirs\' Long Works</h2>')
+        parts.append('<h2>The Heirs\' Long Works</h2>')
         if proj_rows:
             for r in proj_rows:
                 parts.append(f'<div class="item">• {_html.escape(r)}</div>')
@@ -274,7 +274,7 @@ def render_gazette(manager, characters):
             parts.append('<div class="muted">No long work has been begun.</div>')
 
         # the written record
-        parts.append('<h2>📜 The Written Record</h2>')
+        parts.append('<h2>The Written Record</h2>')
         if entries:
             for e in entries[:60]:
                 parts.append(f'<div class="item"><span class="muted">{_html.escape(e.get("time", ""))}</span> '
@@ -291,7 +291,7 @@ def render_gazette(manager, characters):
         _unread = _lw_ctl.unread_count(ws, "visitor")
         _m1, _m2 = st.columns([1, 3])
         with _m1:
-            if st.button("📬 Mark mailbox read", disabled=(_unread == 0),
+            if st.button("Mark mailbox read", disabled=(_unread == 0),
                          key="gaz_mail"):
                 _lw_ctl.mark_all_read(ws, "visitor")
                 ws.save()

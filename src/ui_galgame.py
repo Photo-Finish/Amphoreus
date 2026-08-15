@@ -194,16 +194,16 @@ def render_galgame(manager, selected, info):
     except Exception:
         pass
 
-    with st.expander("📜 Conversation log"):
+    with st.expander("Conversation log"):
         for m in msgs:
             who = name if m["role"] == "assistant" else "You"
             st.markdown(f"**{who}:** {m['content']}")
 
-    st.caption(f"🎬 Galgame view — talking with **{name}** · Bond: **{bond}**")
+    st.caption(f"Galgame view — talking with **{name}** · Bond: **{bond}**")
     try:
         from src.world.world_state import WorldState as _WState
         if _WState().is_accompanied(selected):
-            st.caption("🚶 The star-stranger walks beside them on the road.")
+            st.caption("The star-stranger walks beside them on the road.")
     except Exception:
         pass
 

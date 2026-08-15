@@ -605,6 +605,16 @@ Amphoreus/
   persistence + the exact env each mode maps to; the real server is never
   restarted by the tests).
 
+**Minimal emoji in the UI**
+- The interface now uses only a **minimal set of functional emojis**. Status
+  indicators stay (🗣️ Voice, 📚 RAG, 👁️👂🎵 senses), as do the weather icons
+  and the travel phone-idiom (📶 📡 📍 🧭). Everything decorative is gone:
+  tabs, buttons, captions and section headings are plain text across the
+  sidebar, Visit tab, Control Panel, Guide, Gazette and Galgame (e.g. tabs
+  are now just “Visit an Heir”, “Control Panel”, …). Verified live in the
+  browser on every tab; all suites still green (55 control-integration + 41
+  travel + 47 living-world).
+
 ### 2026-08-14 — The canon map + adjacency matrix, the guests, and the two forms of Amphoreus
 - **Alternate forms of the places — the two Amphorei** (`src/world/map_data.py`,
   `src/world/world_state.py`, `src/world/world_engine.py`,
