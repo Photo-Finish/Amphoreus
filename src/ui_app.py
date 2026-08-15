@@ -1111,7 +1111,7 @@ with main_tab:
                 st.markdown(prompt)
 
         # Get response
-        with st.chat_message("assistant"):
+        with st.chat_message("assistant", avatar=_assistant_avatar):
             with st.spinner(f"{info['name']} is thinking..."):
                 try:
                     response = manager.chat(
