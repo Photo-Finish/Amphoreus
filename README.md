@@ -440,7 +440,8 @@ Amphoreus/
   Two accounts: the **operator** (full control) and a **visitor** account
   that is strictly **read-only** — visitors can look around the whole
   Sanctuary (conversations, map, gazette, galgame) but cannot speak, gift,
-  travel, or touch the Control Panel.
+  travel, or touch the Control Panel. The sign-in screen also offers a
+  one-click **“Visit as a guest (read-only)”** button.
 - **An eternal front door.** `https://photo-finish.github.io/` is a permanent
   address (a GitHub Pages repo, `Photo-Finish/photo-finish.github.io`). It
   does **not** redirect to the ephemeral tunnel: its primary **“this network”**
@@ -448,7 +449,9 @@ Amphoreus/
   `:8501`), which never changes with network settings, and it lists the
   current public status + Sanctuary addresses under “From the Internet” (the
   tunnel URLs are ephemeral; the guard rewrites and pushes the page whenever
-  they change). Template: `tools/frontdoor_template.html`.
+  they change). **Constant redirect subpages** — `…/status/` and `…/sanctuary/`
+  — always open the live world wherever it is (they read the current address
+  from `config.js`, cache-busted on every update). Templates: `tools/frontdoor_*.html`.
 - **The visitor's road now reaches the Heirs' own words.** The environmental
   cross-check found the visitor's whereabouts was injected but never surfaced
   in the model's replies. Now the world-context carries a titled directive

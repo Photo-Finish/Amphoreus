@@ -67,6 +67,13 @@ if (_UI_USER and _UI_PASS) and not st.session_state.get("ui_authed"):
             st.rerun()
         else:
             st.error("Incorrect username or password.")
+    if _VISITOR_USER and _VISITOR_PASS:
+        st.divider()
+        st.caption("No key? You may look around in read-only mode:")
+        if st.button("Visit as a guest (read-only)"):
+            st.session_state.ui_authed = True
+            st.session_state.ui_role = "visitor"
+            st.rerun()
     st.stop()
 
 from src.ui_role import is_visitor, is_operator  # noqa: E402

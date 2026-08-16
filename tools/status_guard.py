@@ -239,6 +239,12 @@ class FrontDoor:
         self.last = key
         threading.Thread(target=self._push, args=key, daemon=True).start()
 
+    def _render(self, text):
+        """Bust the config.js cache: every push rewrites the pages with a
+        fresh query stamp so the constant subpages never serve a stale
+        redirect target."""
+        return text.replace("__V__", str(int(time.time())))
+
     def _push(self, status_url, ui_url, lan_status, lan_ui):
         try:
             if not self.ensure_clone():
@@ -252,7 +258,18 @@ class FrontDoor:
                 encoding="utf-8")
             if FRONTDOOR_TPL.exists():
                 (GHIO_DIR / "index.html").write_text(
-                    FRONTDOOR_TPL.read_text(encoding="utf-8"), encoding="utf-8")
+                    self._render(FRONTDOOR_TPL.read_text(encoding="utf-8")),
+                    encoding="utf-8")
+            # constant redirect subpages: /status and /sanctuary never change;
+            # they redirect to the live address read from config.js.
+            for _sub, _tpl in (("status", ROOT / "tools" / "frontdoor_status_template.html"),
+                               ("sanctuary", ROOT / "tools" / "frontdoor_sanctuary_template.html")):
+                if _tpl.exists():
+                    _out = GHIO_DIR / _sub / "index.html"
+                    _out.parent.mkdir(parents=True, exist_ok=True)
+                    _out.write_text(
+                        self._render(_tpl.read_text(encoding="utf-8")),
+                        encoding="utf-8")
             subprocess.run(["git", "add", "-A"], cwd=str(GHIO_DIR),
                            capture_output=True, text=True, timeout=60)
             subprocess.run(["git", "-c", "user.email=guard@amphoreus.local",

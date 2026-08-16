@@ -13,7 +13,9 @@ Two websites live on this computer:
 
 | What | Address | Reachable from |
 |---|---|---|
-| **Eternal front door** (always valid) | **`https://photo-finish.github.io/`** | anywhere with Internet — **never changes**; its “this network” buttons lead to the constant LAN address, and it lists the current Internet address |
+| **Eternal front door** (always valid) | **`https://photo-finish.github.io/`** | anywhere with Internet — **never changes**; its “this network” buttons lead to the constant LAN address, and it lists the constant redirects |
+| **Constant redirect — world status** | **`https://photo-finish.github.io/status/`** | anywhere with Internet — **never changes**; always opens the current world-status page |
+| **Constant redirect — the Sanctuary** | **`https://photo-finish.github.io/sanctuary/`** | anywhere with Internet — **never changes**; always opens the current Sanctuary (sign-in required) |
 | **World-status page** (read-only) | published to `world_runtime/status_urls.txt` — a public `https://….trycloudflare.com` URL | anywhere with Internet |
 | **The full Sanctuary UI** (all 7 tabs, can change the dialogue) | published to `world_runtime/status_urls.txt` and `world_runtime/ui_url.txt` — a **private** `https://….trycloudflare.com` URL, **behind a sign-in** | anywhere with Internet, **only with the key** (it is deliberately kept out of the GitHub repository) |
 | Status page → full UI | same status page, path **`/app`** (embedded) | anywhere the status page is reachable |
@@ -80,15 +82,13 @@ and the URL files. It does **not** start or stop the Sanctuary UI itself.
 
 ## 3. How to use it
 
-1. **Bookmark the eternal address** — `https://photo-finish.github.io/`. It
-   never changes: use its **“this network”** buttons (the constant LAN
-   address) or the **“From the Internet”** links (current public address,
-   auto-updated).
-2. **From any device with Internet** — open the eternal address; it links to
-   the current status page and to the Sanctuary (sign-in required), and
-   auto-redirects to the status page after a few seconds. Or open the public
-   status URL directly, then click **“Enter the Sanctuary — the full
-   interface”** (or go to `/app`) and sign in.
+1. **Bookmark the constant addresses** — `https://photo-finish.github.io/`
+   (the hub), plus its **`/status/`** and **`/sanctuary/`** subpages — constant
+   redirects that always open the live world wherever it is.
+2. **From any device with Internet** — open `https://photo-finish.github.io/status/`
+   (world status) or `https://photo-finish.github.io/sanctuary/` (the
+   Sanctuary; sign in or press **“Visit as a guest (read-only)”**). The hub
+   page also offers the constant **“this network”** buttons (LAN).
 3. **From a device on the same Wi-Fi, without the Internet** — open
    `http://Lambda.local:8765` (status) or `http://Lambda.local:8501` (full UI)
    and sign in to the UI.
