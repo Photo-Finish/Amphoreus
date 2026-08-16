@@ -403,11 +403,18 @@ Amphoreus/
   clean, phone-friendly status page on port 8765 — `/` (HTML, auto-refreshes),
   `/api/status` (JSON), `/healthz` — showing the clock, season, time scale,
   engine status, the black tide, per-city weather, every Heir's location +
-  mood, the mailbox, and the latest events. `--tunnel` opens a Cloudflare
-  quick tunnel, so the page is reachable over the Internet at a public
-  `https://…trycloudflare.com` URL (saved to `world_runtime/status_url.txt`).
-  Read-only: nothing is exposed except the world's status. Verified live over
-  the public URL from the browser.
+  mood, the mailbox, and the latest events. Read-only: nothing is exposed
+  except the world's status. Verified live over the public URL from the
+  browser.
+- **No-VPN reach, kept alive by a guard.** `tools/status_guard.py` supervises
+  the server + a Cloudflare quick tunnel and self-heals (restart on death),
+  writing the live URLs every 15 s to `world_runtime/status_urls.txt` — the
+  public `https://…trycloudflare.com` URL first, then the LAN URL
+  (`http://<lan-ip>:8765`, reachable with **no Internet and no VPN** on the
+  same network). Free SSH tunnels (serveo, localhost.run) were tested and
+  dropped as unreliable on this network. Where Cloudflare is blocked, forward
+  port 8765 on the router (direct access) or point any tunnel at
+  `http://127.0.0.1:8765`.
 - **The visitor's road now reaches the Heirs' own words.** The environmental
   cross-check found the visitor's whereabouts was injected but never surfaced
   in the model's replies. Now the world-context carries a titled directive
@@ -422,6 +429,10 @@ Amphoreus/
   `_crosscheck_visitorroad`, `_crosscheck_hyacine`) — isolated A/B pairs against
   the real AgentManager + LLM for weather, mood, curiosity, horizons, the
   visitor's road, letters, voice conduct and the Realization negative control.
+- **Maturity assessment.** `docs/ASSESSMENT-2026-08-16.md` — the honest
+  "how done is the whole project" report: every phase and layer that is
+  complete and tested, and the one real remaining gap (the voice-fidelity
+  gate).
 
 ### 2026-08-15 — A living world, a control panel, and the witness
 **The witness: a truthful voice, and the Realization**
