@@ -13,7 +13,7 @@ Two websites live on this computer:
 
 | What | Address | Reachable from |
 |---|---|---|
-| **Eternal front door** (always valid) | **`https://photo-finish.github.io/`** | anywhere with Internet — **never changes**; its “this network” buttons lead to the constant LAN address, and it lists the constant redirects |
+| **Eternal front door** (always valid) | **`https://photo-finish.github.io/`** | anywhere with Internet — **never changes**; its primary buttons lead to the constant online subpages (below), with LAN links underneath |
 | **Constant redirect — world status** | **`https://photo-finish.github.io/status/`** | anywhere with Internet — **never changes**; always opens the current world-status page |
 | **Constant redirect — the Sanctuary** | **`https://photo-finish.github.io/sanctuary/`** | anywhere with Internet — **never changes**; always opens the current Sanctuary (sign-in required) |
 | **World-status page** (read-only) | published to `world_runtime/status_urls.txt` — a public `https://….trycloudflare.com` URL | anywhere with Internet |
