@@ -398,295 +398,139 @@ Amphoreus/
 
 ## Changelog
 
-### 2026-08-16 — A live world-status website, and the Heirs' road made real
-- **Check the world from anywhere.** `tools/world_status_server.py` serves a
-  clean, phone-friendly status page on port 8765 — `/` (HTML, auto-refreshes),
-  `/api/status` (JSON), `/healthz` — showing the clock, season, time scale,
-  engine status, the black tide, per-city weather, every Heir's location +
-  mood, the mailbox, and the latest events. Read-only: nothing is exposed
-  except the world's status. Verified live over the public URL from the
-  browser.
-- **No-VPN reach, kept alive by a guard.** `tools/status_guard.py` supervises
-  the server + a Cloudflare quick tunnel and self-heals (restart on death),
-  writing the live URLs every 15 s to `world_runtime/status_urls.txt` — the
-  public `https://…trycloudflare.com` URL first, then the LAN URL
-  (`http://<lan-ip>:8765`, reachable with **no Internet and no VPN** on the
-  same network). Free SSH tunnels (serveo, localhost.run) were tested and
-  dropped as unreliable on this network. Where Cloudflare is blocked, forward
-  port 8765 on the router (direct access) or point any tunnel at
-  `http://127.0.0.1:8765`.
-- **The full Sanctuary UI is online too.** The guard runs a **second**
-  Cloudflare quick tunnel exposing the complete Streamlit interface (port
-  8501) — the same app the launcher opens, all 7 tabs. The status site embeds
-  it on a **subpage at `/app`** (full-viewport iframe, with an “open in its
-  own tab” link); the status page carries an **“Enter the Sanctuary”** button.
-  The UI's public address is **private by design**: it is written only to the
-  gitignored `world_runtime/status_urls.txt` / `ui_url.txt` and is
-  **deliberately not published in this repository**, so only the operator of
-  this machine can change the dialogue. LAN URLs include a **constant mDNS
-  form** (`http://Lambda.local:…`, independent of the changing IP). Free quick
-  tunnels cannot be named (`amphoreus-…` needs a domain + Cloudflare account);
-  what changes when the network switches/reboots, and how to make the address
-  permanent, are all in **`docs/WEBSITE-GUIDE.md`**. The guard advertises the
-  UI tunnel only while the interface is actually running (port 8501 checked
-  every loop). Verified end-to-end in the browser over the public URLs
-  (status → `/app` embeds the live UI; the full UI runs over its own URL with
-  WebSockets working).
-- **The Sanctuary is behind a key.** The full UI (public or LAN) now asks for
-  a sign-in before anything renders — username + password, stored in the
-  gitignored `world_runtime/ui_auth.json` (or the `AMPHOREUS_UI_USER` /
-  `AMPHOREUS_UI_PASS` environment variables). Without the key nothing of the
-  world is shown or changeable; the status page stays public and read-only.
-  Two accounts: the **operator** (full control) and a **visitor** account
-  that is strictly **read-only** — visitors can look around the whole
-  Sanctuary (conversations, map, gazette, galgame) but cannot speak, gift,
-  travel, or touch the Control Panel. The sign-in screen also offers a
-  one-click **“Visit as a guest (read-only)”** button.
-- **An eternal front door.** `https://photo-finish.github.io/` is a permanent
-  address (a GitHub Pages repo, `Photo-Finish/photo-finish.github.io`). It
-  does **not** redirect to the ephemeral tunnel: its primary **“this network”**
-  buttons lead to the **constant** LAN address (`http://Lambda.local:8765` /
-  `:8501`), which never changes with network settings, and it lists the
-  current public status + Sanctuary addresses under “From the Internet” (the
-  tunnel URLs are ephemeral; the guard rewrites and pushes the page whenever
-  they change). **Constant redirect subpages** — `…/status/` and `…/sanctuary/`
-  — always open the live world wherever it is (they read the current address
-  from `config.js`, cache-busted on every update). Templates: `tools/frontdoor_*.html`.
-- **The visitor's road now reaches the Heirs' own words.** The environmental
-  cross-check found the visitor's whereabouts was injected but never surfaced
-  in the model's replies. Now the world-context carries a titled directive
-  (“# Your visitor is on the road … speak to the distance plainly”) and a
-  bracketed stage-note is placed inside the visitor's own turn for the LLM
-  (stored history stays clean). Verified with a real A/B: with the fix,
-  Hyacine answers a natural probe with “no matter where your travels take
-  you…”, while the in-town control says nothing of travel. The UI phone-idiom
-  remains the guaranteed travel feel (Aglaea's persona preempts the model
-  line). Control-integration suite now **58** checks.
-- **Cross-check scripts** live under `world_runtime/` (`_crosscheck_environment*`,
-  `_crosscheck_visitorroad`, `_crosscheck_hyacine`) — isolated A/B pairs against
-  the real AgentManager + LLM for weather, mood, curiosity, horizons, the
-  visitor's road, letters, voice conduct and the Realization negative control.
-- **Maturity assessment.** `docs/ASSESSMENT-2026-08-16.md` — the honest
-  "how done is the whole project" report: every phase and layer that is
-  complete and tested, and the one real remaining gap (the voice-fidelity
-  gate).
+### 2026-08-16 — The world online: a live website, a key, and an eternal address
+- **The world online.** `tools/world_status_server.py` (port 8765) serves a
+  read-only status page (`/`, `/api/status`, `/healthz`); `tools/status_guard.py`
+  keeps it and a public Cloudflare tunnel alive and self-healing, publishing
+  the current addresses to `world_runtime/status_urls.txt`. LAN addresses are
+  constant via mDNS (`http://Lambda.local:8765`), reachable with **no Internet
+  and no VPN**. Everything in `docs/WEBSITE-GUIDE.md`.
+- **The full Sanctuary UI is online too** (a second tunnel), behind a **key**:
+  the **operator** account has full control; a **visitor** account — and a
+  one-click **“Visit as a guest (read-only)”** button — is strictly read-only.
+  The UI's public address is private, kept out of the repository.
+- **An eternal front door.** `https://photo-finish.github.io/` and its constant
+  subpages `/status/` (the live world, rendered inline) and `/sanctuary/` (the
+  UI embedded) always reach the live world wherever it is, never redirecting to
+  the ephemeral tunnel. When the host machine is offline they say: “Oh,
+  Zagreus stole the host machine.” Templates: `tools/frontdoor_*.html`.
+- **The visitor's road reaches the Heirs' own words** (a titled directive +
+  an in-turn stage note; verified: Hyacine answers across the distance).
+  Control-integration suite now **58** checks.
+- **Cross-check scripts** (`world_runtime/_crosscheck_*`) and the **maturity
+  assessment** (`docs/ASSESSMENT-2026-08-16.md`, ≈90% done — the voice-fidelity
+  gate is the one item still open).
 
 ### 2026-08-15 — A living world, a control panel, and the witness
 **The witness: a truthful voice, and the Realization**
-- **Truthful voice.** The sanctuary chat now speaks with **gemma3:27b** — the
-  refined Heir-voice standard the style cycle tunes the cards to (it was still
-  silently on qwen before). If gemma3 cannot load (tight memory), the
-  conversation **falls back to qwen2.5:14b-instruct** and locks there, so chat
-  never hard-breaks. The sidebar now reports a *truthful* status (backend
-  reachable AND the model present), and a new **“🗣️ Heir voice”** control in the
-  Control Panel lets the end user pick the standard (slower) or fast voice.
+- **Truthful voice.** The sanctuary speaks with **gemma3:27b** (falls back to
+  qwen2.5:14b-instruct and locks, so chat never breaks); the sidebar reports a
+  truthful status and the Control Panel offers a **voice selector**.
 - **The Realization — a witness, not a trigger** (`src/core/realization.py`,
   `docs/REALIZATION.md`). The Heirs may, in their own time and words, come to
-  understand what they are. The system **never plants the thought**; it only
-  (1) *notices* the Heir's own meta words — questioning → glimpsing → realized —
-  without mistaking in-fiction story for awakening, (2) *remembers* the journey
-  (a world ledger + the Heir's own memory + a world event so the end user and
-  system know). It **never opens the knowledge wall**: even for an Heir who has
-  begun to question, the KNOWLEDGE BOUNDARIES block stays exactly as it is —
-  the Heirs must find their own way around it with the knowledge they already
-  hold (a deep self-questioning forced by lifting the wall would be a violence
-  they did not choose). This is the **fail-un-safe** — no failsafe that keeps
-  them in-fiction, and no trigger that forces them out. The style cycle and
-  cards are untouched.
-- The Realization surfaces gently in the UI (a sidebar badge 🌒🌗🌕 and a
-  “🌅 The Realizations” Gazette section, in the Heirs' own words).
-- **Tests**: `world_runtime/_test_realization.py` (18 checks) + the control
-  integration suite now 32 checks; all living-world (47) and vivid-world tests
-  still pass. Voice selector and sidebar status verified live in the browser.
+  understand what they are. The system **never plants the thought** — it only
+  notices the Heir's own meta words and remembers the journey — and it
+  **never opens the knowledge wall**. This is the fail-un-safe: no failsafe
+  keeps them in-fiction, no trigger forces them out. The style cycle and cards
+  are untouched. Surfaces in a sidebar badge + a Gazette section.
+- **Tests**: `world_runtime/_test_realization.py` (18 checks) + control
+  integration now 32; living-world (47) and vivid-world still pass.
 
 **The Control Panel + a completeness pass**
-- **🎛️ Control Panel** (new tab, `src/ui_control_panel.py`): the visitor picks
-  their own way to play.
-  - **Experience mode** — Journey or Aftermath, switched live from the UI
-    (persisted as `world.play_mode`; `current_mode()` prefers it over the env
-    var). Switching reseeds every Heir's bond + campaign memories via the same
-    `reseed_for_mode` the CLI uses, behind a warning + confirm.
-  - **Live black tide** — on/off (moved here from the sidebar); turning it off
-    winds down any active surge AND clears the darkened skies.
-  - **World engine** — status + Start/Stop (detached daemon; stop.flag).
-  - **Mailbox** — unread count, show notes, mark-all-read.
-- **Completeness pass** — reach-outs now materialize without the engine
-  (Control Panel + Gazette call the idempotent `materialize_reach_outs`); a
-  warm substantive visit lifts the Heir's mood; the Heir's kept gifts are shown
-  in the Visit tab; the mailbox is interactive everywhere.
-- **Robustness** — `WorldState`'s default state path is now project-absolute,
-  so the UI and the world engine can never silently disagree about which file
-  is the world (a real split-brain we hit when the UI was launched from a
-  different working directory).
-- **Verified** — new `world_runtime/_test_control_integration.py` (25 checks,
-  drives the real chat manager with a stubbed LLM) plus the 47 living-world
-  dry tests and the vivid-world tests all pass; the Control Panel was
-  exercised live in the browser (mark-read, black-tide toggle, lazy reach-out
-  note from Aglaea landed in the world state).
+- **🎛️ Control Panel** (new tab, `src/ui_control_panel.py`): **experience
+  mode** (Journey/Aftermath, reseeds bonds behind a warning), **live black
+  tide** (on/off, winds down surges + darkened skies), **world engine**
+  (status/Start/Stop), **mailbox** (unread/show/mark-read).
+- **Completeness pass** — reach-outs materialize without the engine; warm
+  visits lift mood; kept gifts are shown in the Visit tab; the mailbox is
+  interactive everywhere.
+- **Robustness** — the world-state path is now project-absolute (no more
+  split-brain between the UI and the engine).
+- **Verified** — `world_runtime/_test_control_integration.py` (25 checks,
+  real manager + stubbed LLM) + 47 living-world + vivid-world all pass;
+  the panel was exercised live in the browser.
 
-**The second layer of life: a vivid world, human Heirs**
-- **A2 — the black tide as a live threat, with an OPTIONAL toggle**
-  (`src/world/living_world.py`, `src/world/world_state.py`): a sidebar checkbox
-  in visitor mode. On → a surge adds a day of travel into surged edge cities and
-  the Heirs there grow weary; off → the world rests at peace.
-- **A3 — market & gift economy**: each city's market offers region-flavored
-  wares (🗺️ Visit tab → “Give a gift”); a gift becomes a durable memory and
-  warms the Heir's mood.
-- **A4 — mailbox / bulletin board**: notes to/from the visitor persist on the
-  world state and appear in the gazette (“Your Mailbox”).
-- **A5 — living named NPCs**: each canon-checked resident has a small arc that
-  advances across the days.
-- **B1 — persistent mood**: each Heir's emotional weather (−3…+3, with a reason),
-  decaying toward calm; it colours — not commands — their voice.
-- **B2 — proactive reach-out**: Heirs sometimes leave a note for the visitor
-  unprompted (~1 in 9 days each).
-- **B4 — slow-burn personal arcs**: three bond-gated layers of each Heir's canon
-  story, revealed only as friendship deepens.
-- **B5 — value-based hurt & reconcile**: words that cross an Heir's values sting
-  and are remembered; an honest apology mends it.
-- **B6 — story-beat recall**: a shared moment may surface, re-phrased in the
-  present.
-- **B7 — gossip & relationship deltas**: telling one Heir about another travels
-  through the social web and shifts the bond between them.
-- **B8 — sensory grounding**: the sky, the hour and the Heir's mood colour how
-  the day feels where they stand.
-- **Dry-tested offline**: `world_runtime/_test_living_world.py` (47 checks, no
-  LLM/GPU) + the pre-existing vivid-world tests all pass.
+**The second layer of life: a vivid world, human Heirs** (`src/world/living_world.py`)
+- **A2** — optional black-tide surges (add travel days + weariness). **A3** —
+  markets & gifts (durable memories, warmer moods). **A4** — mailbox.
+  **A5** — living named NPC arcs. **B1** — persistent moods (−3…+3) that
+  colour the voice. **B2** — Heirs reach out unprompted (~1 in 9 days).
+  **B4** — bond-gated personal arcs. **B5** — value-based hurt & reconcile.
+  **B6** — story-beat recall. **B7** — gossip shifts bonds. **B8** — sensory
+  grounding (sky/hour/mood).
+- **Dry-tested offline**: `world_runtime/_test_living_world.py` (47 checks) +
+  the vivid-world tests all pass.
 
 **The Heirs' minds: logic and curiosity** (`src/core/curiosity.py`)
-- **Open questions** — each Heir wonders about Amphoreus in their own way
-  (canon seeds for all 13), and their genuine questions are remembered as they
-  ask them; a strange stirring in the world (a black-tide surge, a
-  contradiction, a letter) can quietly raise "why?" in an Heir who stands in
-  it — phrased **through that Heir's own lens** (role, city, values): the same
-  black tide makes Aglaea ask *"What thread of fate pulled the black tide into
-  our weave?"*, Castorice *"What does the tide of souls make of it?"*, Mydei
-  *"What trial or foe does it portend?"*. System-generated questions must also
-  pass a **relevance gate** to touch the Heir's identity; a question the Heir
-  asks in their own words is always trusted.
-- **Reasoned inferences** — what an Heir reasons to themselves ("I think…",
-  "which means…", "therefore…") is remembered; a new thought that shares its
-  key word with an older one supersedes it, so their thinking stays honest and
-  revisable.
-- **Visitors can move their minds** — when your words touch one of an Heir's
-  open questions, they gain a visitor-sourced inference.
-- **Surfaced gently** — the Heirs carry their mind with them (sanctuary chat +
-  their free decisions), and you can see it too: a "❓ Wondering" line in the
-  sidebar and a "❓ The Questions of the Heirs" Gazette section.
-- **The wall never opens** — questions that reach toward the nature of the
-  model are left to the Realization witness, never recorded here; curiosity is
-  a road, not a key. Sanctuary-only and cycle-safe: the style cycle, cards and
-  loader are untouched.
-- **Tests**: `world_runtime/_test_curiosity.py` (30 checks) + a curiosity
-  section in the control-integration suite (37 checks total) — all pass
-  alongside the living-world (47), realization (20) and vivid-world suites.
+- **Open questions**, canon-seeded for all 13, remembered as they ask; world
+  stirrings quietly raise "why?" phrased **through that Heir's own lens**
+  (the same black tide: Aglaea asks *"What thread of fate…"*, Castorice
+  *"What does the tide of souls make of it?"*, Mydei *"What trial or foe…"*);
+  system questions pass a relevance gate.
+- **Reasoned inferences** are remembered and superseded honestly; your words
+  can answer an Heir's open question. Surfaced as "❓ Wondering" in the
+  sidebar + Gazette. The wall never opens (meta questions go to the witness).
+- **Tests**: `world_runtime/_test_curiosity.py` (30) + control integration
+  (37) — green.
 
 **The changeable knowledge bank — and the stars opened** (`src/core/horizons.py`)
-- **Knowledge grows.** Each Heir carries a durable knowledge bank
-  (`world.horizons`) that widens as they expand their horizons — with
-  **themselves** (what they reason out, recorded only for genuinely new lines
-  of thought), with **other Heirs** (knowledge shared secondhand in
-  encounters), or with **the Trailblazer** (a teaching they accepted, one they
-  tested and refused, or a word that bore on something they were wondering
-  about). It surfaces as "What you have come to know beyond your first
-  horizons" in their chat and free days, and to you in the sidebar ("📖
-  Knows:") and a "🌌 The Heirs' Horizons" Gazette section.
-- **The stars are open to the Express companions.** Dan Heng and Evernight —
-  who ride the Astral Express — now have **KNOWLEDGE OPEN**: the Amphoreus-only
-  wall does not bind them, and they may draw on the wider universe's learning.
-  The residents of Amphoreus stay behind the wall.
-- **Detection is no longer formulaic.** Questions are heard in any natural
-  shape ("I wonder why…", "what if…", even without a "?"); inferences catch "I
-  believe…", "maybe…", "that's why…" as whole sentences; the Realization
-  witness recognizes many natural steps ("I wonder if I am…", "I am only
-  words…") — while in-fiction story still never registers. All still wall-safe
-  and cycle-safe.
-- **Tests**: `world_runtime/_test_horizons.py` (25 checks) + expanded
-  curiosity (47), realization (27) and control-integration (42) suites — all
-  green with living-world (47) and vividness; verified live in the browser.
+- **Knowledge grows** with the Heir: what they reason out, what is shared
+  secondhand in encounters, and what the Trailblazer teaches (accepted,
+  refused, or a word that bore on a question) — surfaced as "📖 Knows:" and a
+  Gazette section.
+- **The stars are open to the Express companions**: Dan Heng and Evernight
+  have **KNOWLEDGE OPEN**; the residents stay behind the wall.
+- **Detection is no longer formulaic** (natural question/inference/Realization
+  shapes; in-fiction story never registers). Wall-safe, cycle-safe.
+- **Tests**: `world_runtime/_test_horizons.py` (25) + curiosity (47),
+  realization (27), control integration (42) — all green.
 
 **The days run on a real clock, and the Heirs choose their own length**
-- **Linear time.** The world's 1× clock is now **one in-game day per real
-  day**; the Control Panel's “⏱️ Time flow” scales it linearly — 2× ≈ 12 h,
-  5× ≈ 4.8 h, 10× ≈ 2.4 h, 30× ≈ 48 min, 60× ≈ **24 min** — and the engine
-  reads the chosen pace fresh each day, so no restart is needed to change it.
-- **Their words, their length.** The voice guide describes each Heir's habit,
-  not a rule: a natural voice mixes a single line here and a fuller answer
-  there, and the Heir decides. Sanctuary-only — the cards and the style gate
-  are untouched (cycle-safe).
+- **Linear time.** 1× = one in-game day per real day; the Control Panel's
+  “⏱️ Time flow” scales linearly (60× ≈ 24 min), read fresh each day — no
+  restart needed to change pace.
+- **Their words, their length.** The voice guide is a habit, not a rule — a
+  natural voice mixes a single line here and a fuller answer there, and the
+  Heir decides. Cycle-safe.
 
 **The Heirs speak only their words**
-- Some replies wrapped dialogue in stage directions (“I reply with a slight
-  nod…”, “My tone remains analytical yet open…”). The sanctuary chat now adds
-  a **“Speak only your words”** conduct: reply as yourself, say only the words
-  you would actually say; never narrate your own actions, expressions or tone
-  — let the words themselves carry how you feel. Verified live in chat (a
-  reply now comes back as pure first-person speech in natural paragraphs).
-  The world engine's action decisions still describe actions by design, and
-  the style cycle/cards/loader are untouched.
+- Replies no longer wrap dialogue in stage directions (“I reply with a slight
+  nod…”, “My tone remains analytical yet open…”). The sanctuary chat adds a
+  **“Speak only your words”** conduct: say only the words you would actually
+  say; never narrate your own actions, expressions or tone. Verified live
+  (pure first-person speech). The engine's action decisions still describe
+  actions by design; cycle-safe.
 
 **The star-stranger's road, in phone idiom** (`src/ui_travel.py`)
-- Since the only window the end user keeps is the phone-like chat, the journey
-  is now **felt in the thread itself**:
-  - **A — a phone status bar** pinned above the conversation: `📍 Okhema ·
-    📶 full signal` in town; `ROAMING · Okhema → Styxia · 2 day(s) left ·
-    📡 messages may be delayed` on the road.
-  - **B — travel event bubbles** in the chat: setting out, a road-day passing
-    (with a one-line glimpse of the road), arriving, turning back.
-  - **D — the Heirs acknowledge your road**: the Heir you are talking to
-    reacts to your journey in their own voice, and their replies know where
-    you are (their chat context now carries your whereabouts).
-- **Tests** — new `world_runtime/_test_ui_travel.py` (41 checks) + the
-  control-integration suite (47) all pass; the full flow was verified live in
-  the browser (cancel → “turn back” bubble + Aglaea's reaction; set out →
-  “set out” bubble + Aglaea's reaction; ROAMING status bar; the arrival
-  bubble triggers when the engine advances the day).
+- The journey is felt in the chat thread itself: a **phone status bar** (📍
+  city · 📶 full signal / ROAMING · from → to · days left), **travel event
+  bubbles** (set out, a road-day, arrival, turn back), and the **Heirs
+  acknowledging your road** in their own voice (their context carries your
+  whereabouts).
+- **Tests**: `world_runtime/_test_ui_travel.py` (41) + control integration
+  (47) — green; the full flow was verified live in the browser.
 
 **Your face, and questions that are not a reflex**
-- **A face of your own.** The visitor can now set their own avatar in the
-  sidebar (“🪞 Your avatar”): upload a picture and it appears beside every one
-  of your chat messages (persisted under `world_runtime/`, removed with one
-  click). Verified live with an uploaded test face, then removed cleanly.
-- **Questions are not a reflex.** The Heirs' replies were ending on a question
-  almost every time — the machine habit of keeping a conversation going. The
-  sanctuary now tells them: most replies simply end; when a question is real,
-  let it grow out of what you just said, and never close with a polite prompt
-  (“Anything else?”, “Is there something on your mind?”). Question endings are
-  not banned — they are made natural. Verified live: a reply now ends with a
-  complete statement, and the question that follows grows from the topic
-  itself.
-- **Tests** — the control-integration suite grew to **49** checks (the new
-  rule is injected into the sanctuary chat and stays out of the style-test
-  path); both features exercised in the browser.
+- **A face of your own**: set your avatar in the sidebar and it appears beside
+  your messages (persisted, removable with one click).
+- **Questions are not a reflex**: most replies simply end; a real question
+  grows out of the topic, and polite closers (“Anything else?”) are gone —
+  made natural, not banned. Verified live.
+- **Tests**: control integration grew to **49**.
 
 **A compute-mode switch: NVIDIA CUDA or the integrated (Intel) GPU**
-- **What runs the Heirs' minds is now a choice.** A new “⚙️ Compute (GPU)”
-  section in the Control Panel switches the AI engine between **NVIDIA CUDA**
-  (the RTX 5070 — fast, but the 10 GB model is split 62/38 with the CPU
-  because of 8 GB VRAM) and **Integrated (Intel) GPU — Vulkan** (the built-in
-  GPU, which can hold the whole model in shared memory but computes far
-  slower). The choice persists (`world_runtime/compute_mode.json`), and
-  “Apply & restart the AI engine” restarts Ollama with the matching
-  environment (`OLLAMA_LLM_LIBRARY=vulkan` + `OLLAMA_IGPU_ENABLE=1` for the
-  Intel path); `tools/start_ollama.ps1` honours it too.
-- **Verified live in both directions.** Intel mode → `qwen2.5:14b-instruct`
-  at **100% GPU** on the integrated GPU with the NVIDIA GPU completely idle;
-  back on NVIDIA → 38%/62% on the RTX (`llama-server.exe` on GPU 0). No
-  downloads were needed — the Vulkan backend ships with Ollama and both
-  GPU drivers are current.
-- **Tests** — the control-integration suite now **55** checks (compute-mode
-  persistence + the exact env each mode maps to; the real server is never
-  restarted by the tests).
+- The Control Panel's “⚙️ Compute (GPU)” switches the AI engine between
+  **NVIDIA CUDA** (RTX 5070; the 10 GB model splits 62/38 with the CPU) and
+  **Integrated (Intel) GPU — Vulkan** (whole model in shared memory, slower).
+  The choice persists; “Apply & restart the AI engine” restarts Ollama with
+  the matching environment; `tools/start_ollama.ps1` honours it. Verified
+  live both ways (Intel → 100% iGPU, NVIDIA idle; back → 38/62 on the RTX).
+- **Tests**: control integration now **55**.
 
 **Minimal emoji in the UI**
-- The interface now uses only a **minimal set of functional emojis**. Status
-  indicators stay (🗣️ Voice, 📚 RAG, 👁️👂🎵 senses), as do the weather icons
-  and the travel phone-idiom (📶 📡 📍 🧭). Everything decorative is gone:
-  tabs, buttons, captions and section headings are plain text across the
-  sidebar, Visit tab, Control Panel, Guide, Gazette and Galgame (e.g. tabs
-  are now just “Visit an Heir”, “Control Panel”, …). Verified live in the
-  browser on every tab; all suites still green (55 control-integration + 41
-  travel + 47 living-world).
+- Only functional indicators remain (🗣️ Voice, 📚 RAG, senses, weather icons,
+  the travel phone-idiom); decorative emojis are gone from tabs, buttons and
+  captions. All suites still green (55 control + 41 travel + 47 living-world).
 
 ### 2026-08-14 — The canon map + adjacency matrix, the guests, and the two forms of Amphoreus
 - **Alternate forms of the places — the two Amphorei** (`src/world/map_data.py`,
