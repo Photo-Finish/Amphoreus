@@ -82,15 +82,23 @@ actively closing** — it is the standing quality loop, not a finished line.
 
 ## 4. Website / remote access (2026-08-16)
 
-- **Public (Internet):** a Cloudflare quick tunnel — the URL is published in
-  `world_runtime/status_urls.txt` (verified HTTP 200). Read-only status only.
-- **LAN (no Internet, no VPN):** `http://192.168.1.15:8765` — guaranteed for
-  same-network terminals.
-- **Self-healing:** `tools/status_guard.py` restarts the server and the tunnel
-  and rewrites the URL file every 15 s.
-- **Where Cloudflare is blocked (some regions):** port-forward 8765 on the
-  router for direct access, or point any tunnel service at
-  `http://127.0.0.1:8765` (the guard's tunnel list is one entry away).
+- **Public (Internet):** a Cloudflare quick tunnel for the status page, plus a
+  **second tunnel exposing the complete Sanctuary UI** (all 7 tabs) — the
+  status site embeds it on a subpage at `/app`. Both public URLs are published
+  in `world_runtime/status_urls.txt` (verified HTTP 200; the full UI verified
+  live in a browser over its public URL, WebSockets working).
+- **LAN (no Internet, no VPN):** `http://192.168.1.15:8765` (status) and
+  `http://192.168.1.15:8501` (full UI) — guaranteed for same-network terminals.
+- **Self-healing:** `tools/status_guard.py` restarts the servers and both
+  tunnels and rewrites the URL files every 15 s (the UI tunnel is advertised
+  only while the interface is actually running).
+- **Where Cloudflare is blocked (some regions):** port-forward the ports on
+  the router for direct access, or point any tunnel service at
+  `http://127.0.0.1:8765` / `:8501` (the guard's tunnel list is one entry away).
+- **Security note:** the status page is read-only, but the **full UI is not** —
+  anyone with its public URL can converse with the Heirs and use the Control
+  Panel. This exposure was requested by the operator; the URL is random and
+  not indexed, but it is not a secret.
 
 ---
 

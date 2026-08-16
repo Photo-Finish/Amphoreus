@@ -11,6 +11,19 @@ from datetime import datetime
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+UI_URL_FILE = PROJECT_ROOT / "world_runtime" / "ui_url.txt"
+
+
+def public_ui_url() -> str:
+    """The public URL of the full Sanctuary UI (written by status_guard)."""
+    try:
+        for ln in UI_URL_FILE.read_text(encoding="utf-8").splitlines():
+            ln = ln.strip()
+            if ln.startswith("http"):
+                return ln
+    except Exception:
+        pass
+    return ""
 
 
 def engine_running() -> bool:
@@ -170,9 +183,13 @@ def status_html(st: dict) -> str:
  ul{{margin:.2rem 0;padding-left:1.2rem;font-size:.9rem}}
  .badge{{display:inline-block;padding:1px 8px;border-radius:10px;font-size:.75rem;
         background:#1d1830;border:1px solid #3a3260}}
+ .enter{{display:inline-block;padding:9px 18px;border-radius:9px;
+        background:#1d4ed8;color:#fff;text-decoration:none;font-weight:600;
+        margin:10px 0}}
 </style></head><body><div class="wrap">
 <h1>Amphoreus — the little world, live</h1>
 <div class="muted">Updated {_esc(st['ts'])} · auto-refreshes every 30 s</div>
+<a class="enter" href="/app">Enter the Sanctuary — the full interface</a>
 <h2>{_esc(st['clock'])}</h2>
 <div><span class="badge">{_esc(st['season'])}</span>
 <span class="badge">{_esc(st['month'])}</span>
@@ -193,3 +210,42 @@ def status_html(st: dict) -> str:
 def status_json(st: dict) -> str:
     import json
     return json.dumps(st, ensure_ascii=False, indent=2)
+
+
+def ui_page(public_url: str = "", lan_url: str = "") -> str:
+    """The /app subpage: the full Sanctuary UI, embedded in a frame.
+
+    public_url is the public tunnel URL of the UI (port 8501), lan_url a
+    same-network URL derived from the request's Host header. The page also
+    offers a direct "open in its own tab" link (full-app browsing is better
+    in a real tab than in a frame).
+    """
+    src = public_url or lan_url or ""
+    if not src:
+        inner = ("<div style='padding:24px;color:#e8dfc8'>"
+                 "<p>The Sanctuary interface is not running right now "
+                 "(port 8501 is down). Start it, and this page comes alive.</p>"
+                 "<p><a href='/'>Back to the world status</a></p></div>")
+        direct = ""
+    else:
+        inner = (f'<iframe src="{_esc(src)}" title="Amphoreus Sanctuary" '
+                 'style="position:absolute;top:0;left:0;width:100%;height:100%;'
+                 'border:0"></iframe>')
+        direct = (f'<a href="{_esc(src)}" target="_blank" rel="noopener" '
+                  'style="color:#7fb0ff">open it in its own tab</a>')
+    return f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Amphoreus — the Sanctuary</title>
+<style>
+ body{{margin:0;background:#0b0a14;color:#e8dfc8;font-family:system-ui,Segoe UI,sans-serif}}
+ .bar{{padding:8px 14px;background:#141128;border-bottom:1px solid #2a2440;
+       font-size:.85rem;display:flex;gap:14px;align-items:center}}
+ a{{color:#7fb0ff;text-decoration:none}}
+</style></head><body>
+<div class="bar">
+  <span><a href="/">World status</a></span>
+  <span>The Sanctuary — full interface</span>
+  <span style="margin-left:auto">{direct}</span>
+</div>
+<div style="position:fixed;inset:37px 0 0 0">{inner}</div>
+</body></html>"""

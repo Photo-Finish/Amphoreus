@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-"""tools/status_guard.py — keep the world-status website online, no VPN needed.
+"""tools/status_guard.py — keep the world website online, no VPN needed.
 
 Supervises (self-healing, runs forever):
   1. the world-status server (tools/world_status_server.py) on 0.0.0.0:8765
-  2. a Cloudflare quick tunnel -> https://....trycloudflare.com (public URL)
+  2. a Cloudflare quick tunnel -> https://....trycloudflare.com (status page)
+  3. when the full Sanctuary UI (Streamlit, port 8501) is running, a second
+     Cloudflare quick tunnel -> public URL for the complete interface; it is
+     also embedded on the status site's /app subpage.
 
-Every few seconds it writes world_runtime/status_urls.txt (public URL first,
-then the LAN URL) and world_runtime/status_urls.json (structured), so any
-terminal can pick a reachable URL. Terminals on the same LAN can just use the
-LAN URL (no Internet, no VPN). For regions where Cloudflare is blocked, open
-port 8765 on the router for direct access, or point any tunnel service at
-http://127.0.0.1:8765 and add it to the `tunnels` list below.
+Every few seconds it writes world_runtime/status_urls.txt (status public,
+UI public, then LAN URLs), world_runtime/ui_url.txt (public UI URL for the
+/app iframe) and world_runtime/status_urls.json (structured), so any terminal
+can pick a reachable URL. Terminals on the same LAN can just use the LAN URLs
+(no Internet, no VPN). For regions where Cloudflare is blocked, open the ports
+on the router for direct access, or point any tunnel service at
+http://127.0.0.1:8765 / :8501 and add it to the tunnels below.
 
 Usage:  python tools/status_guard.py
 """
@@ -28,9 +32,11 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PORT = 8765
+PORT = 8765          # world-status website
+UI_PORT = 8501       # full Sanctuary UI (Streamlit)
 URLS_TXT = ROOT / "world_runtime" / "status_urls.txt"
 URLS_JSON = ROOT / "world_runtime" / "status_urls.json"
+UI_URL_TXT = ROOT / "world_runtime" / "ui_url.txt"
 CF = ROOT / "world_runtime" / "cloudflared.exe"
 
 CREATION_FLAGS = getattr(subprocess, "CREATE_NO_WINDOW", 0)
@@ -128,63 +134,81 @@ class Tunnel:
             self.proc = None
 
 
-def lan_urls():
+def lan_urls(port):
     out = []
     try:
-        import subprocess as sp
-        r = sp.run(["powershell", "-NoProfile", "-Command",
-                    "Get-NetIPAddress -AddressFamily IPv4 | "
-                    "Where-Object { $_.IPAddress -notmatch '^127|^169|^192\\.168\\.(60|254)\\.' } | "
-                    "Select-Object -ExpandProperty IPAddress"],
-                   capture_output=True, text=True, timeout=20)
+        r = subprocess.run(["powershell", "-NoProfile", "-Command",
+                            "Get-NetIPAddress -AddressFamily IPv4 | "
+                            "Where-Object { $_.IPAddress -notmatch '^127|^169|^192\\.168\\.(60|254)\\.' } | "
+                            "Select-Object -ExpandProperty IPAddress"],
+                           capture_output=True, text=True, timeout=20)
         for ip in (r.stdout or "").split():
             ip = ip.strip()
             if ip:
-                out.append(f"http://{ip}:{PORT}")
+                out.append(f"http://{ip}:{port}")
     except Exception:
         pass
-    return out or [f"http://127.0.0.1:{PORT}"]
+    return out or [f"http://127.0.0.1:{port}"]
 
 
-def write_urls(tunnels):
-    public = [t.url for t in tunnels if t.url]
+def write_urls(status_tunnels, ui_tunnels):
+    pub_status = [t.url for t in status_tunnels if t.url]
+    pub_ui = [t.url for t in ui_tunnels if t.url]
+    lan = lan_urls(PORT)
+    lan_ui = lan_urls(UI_PORT)
     data = {
         "updated": now(),
-        "port": PORT,
-        "server_up": port_open(PORT),
-        "public": public,
-        "lan": lan_urls(),
+        "status": {"port": PORT, "server_up": port_open(PORT),
+                   "public": pub_status, "lan": lan},
+        "ui": {"port": UI_PORT, "server_up": port_open(UI_PORT),
+               "public": pub_ui, "lan": lan_ui},
     }
     try:
-        URLS_TXT.write_text(
-            "\n".join(public + [f"(LAN: {u})" for u in data["lan"]]),
-            encoding="utf-8")
+        txt_lines = pub_status + pub_ui
+        txt_lines += [f"(LAN: {u})" for u in lan]
+        txt_lines += [f"(UI LAN: {u})" for u in lan_ui]
+        URLS_TXT.write_text("\n".join(txt_lines), encoding="utf-8")
+        UI_URL_TXT.write_text("\n".join(pub_ui), encoding="utf-8")
         URLS_JSON.write_text(json.dumps(data, ensure_ascii=False, indent=2),
                              encoding="utf-8")
     except Exception as e:
         print(f"[guard] {now()} write failed: {e}")
 
 
-def main():
-    print(f"[guard] {now()} world-status guard up (port {PORT})")
-    cf = ensure_cloudflared()
-    tunnels = []
-    if cf:
-        tunnels.append(Tunnel(
-            "cloudflared",
-            [str(cf), "tunnel", "--no-autoupdate", "--url",
-             f"http://127.0.0.1:{PORT}"],
-            re.compile(r"https://([a-z0-9-]+\.trycloudflare\.com)")))
+def make_cloudflare(cf, port, name):
+    return Tunnel(name,
+                  [str(cf), "tunnel", "--no-autoupdate", "--url",
+                   f"http://127.0.0.1:{port}"],
+                  re.compile(r"https://([a-z0-9-]+\.trycloudflare\.com)"))
 
-    for t in tunnels:
+
+def main():
+    print(f"[guard] {now()} world website guard up (status {PORT}, UI {UI_PORT})")
+    cf = ensure_cloudflared()
+    status_tunnels = []
+    ui_tunnels = []
+    if cf:
+        status_tunnels.append(make_cloudflare(cf, PORT, "cloudflared-status"))
+
+    for t in status_tunnels:
         t.ensure()
 
     try:
         while True:
             ensure_server()
-            for t in tunnels:
+            for t in status_tunnels:
                 t.ensure()
-            write_urls(tunnels)
+            if port_open(UI_PORT):
+                if cf and not ui_tunnels:
+                    print(f"[guard] {now()} UI (port {UI_PORT}) is up; "
+                          "opening a tunnel for it")
+                    ui_tunnels.append(make_cloudflare(cf, UI_PORT, "cloudflared-ui"))
+                for t in ui_tunnels:
+                    t.ensure()
+            elif ui_tunnels:
+                print(f"[guard] {now()} UI (port {UI_PORT}) is down; "
+                      "its tunnel stays but is not advertised")
+            write_urls(status_tunnels, ui_tunnels)
             time.sleep(15)
     except KeyboardInterrupt:
         print("[guard] stopping")

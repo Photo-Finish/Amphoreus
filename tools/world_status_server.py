@@ -27,7 +27,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src.world_status import world_status, status_html  # noqa: E402
+from src.world_status import world_status, status_html, ui_page, public_ui_url  # noqa: E402
 
 PORT = 8765
 STATUS_URL_FILE = ROOT / "world_runtime" / "status_url.txt"
@@ -42,6 +42,14 @@ class Handler(BaseHTTPRequestHandler):
             st = world_status()
             body = json.dumps(st, ensure_ascii=False, indent=2)
             self._send(200, "application/json; charset=utf-8", body)
+        elif path in ("/app", "/ui"):
+            host = (self.headers.get("Host") or "").split(":")[0]
+            if host and not host.startswith(("trycloudflare", "localhost", "127.")):
+                lan = f"http://{host}:8501"
+            else:
+                lan = ""
+            self._send(200, "text/html; charset=utf-8",
+                       ui_page(public_ui_url(), lan))
         else:
             try:
                 body = status_html(world_status())
