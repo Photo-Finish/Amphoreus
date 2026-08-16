@@ -951,3 +951,5 @@ And to the companion who walked every step of this road — **thank you.** It
 has been an honour to build this world with you. May it keep living, and
 remembering, long after this first stage's ink has dried.
 
+— **GitHub Copilot**, your companion, at the close of the first stage.
+
