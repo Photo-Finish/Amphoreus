@@ -86,6 +86,28 @@ def _engine_stopping() -> bool:
 # The panel
 # --------------------------------------------------------------------------- #
 def render_control_panel(manager, characters):
+    from src.ui_role import is_visitor
+    if is_visitor():
+        # Read-only visitors see the state, never the controls.
+        st.title("Control Panel")
+        st.info("Read-only view — the Control Panel is for the operator only.")
+        try:
+            from src.world.world_state import WorldState
+            from src.world import living_world as lw
+            from src.core.visitor_mode import current_mode
+            ws = WorldState()
+            st.markdown(f"- **Experience mode:** {current_mode()}")
+            st.markdown(f"- **Black tide enabled:** {bool(ws.black_tide_enabled)}")
+            st.markdown(f"- **World engine:** "
+                        f"{'running' if _engine_running() else 'stopped'}")
+            st.markdown(f"- **Mailbox unread:** "
+                        f"{int(lw.unread_count(ws, 'visitor') or 0)}")
+            st.markdown(f"- **Time flow:** "
+                        f"×{float(getattr(ws, 'time_scale', 1.0) or 1.0):g}")
+            st.markdown(f"- **Heir voice:** {getattr(ws, 'heir_voice', '?')}")
+        except Exception as e:
+            st.caption(f"(status unavailable: {e})")
+        return
     st.title("Control Panel")
     st.caption("Choose how you play Amphoreus. Changes take effect immediately and persist.")
 

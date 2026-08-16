@@ -437,6 +437,10 @@ Amphoreus/
   gitignored `world_runtime/ui_auth.json` (or the `AMPHOREUS_UI_USER` /
   `AMPHOREUS_UI_PASS` environment variables). Without the key nothing of the
   world is shown or changeable; the status page stays public and read-only.
+  Two accounts: the **operator** (full control) and a **visitor** account
+  that is strictly **read-only** — visitors can look around the whole
+  Sanctuary (conversations, map, gazette, galgame) but cannot speak, gift,
+  travel, or touch the Control Panel.
 - **An eternal front door.** `https://photo-finish.github.io/` is a permanent
   address (a GitHub Pages repo, `Photo-Finish/photo-finish.github.io`) that
   always points at the live world: it links to the current status page and to

@@ -225,18 +225,23 @@ def render_galgame(manager, selected, info):
     )
     st.components.v1.html(html, height=560)
 
-    prompt = st.chat_input(f"Speak to {name}...", key=f"gal_input_{selected}")
-    if prompt:
-        try:
-            from src.world.world_state import WorldState
-            WorldState().mark_visitor_present()
-        except Exception:
-            pass
-        msgs.append({"role": "user", "content": prompt})
-        with st.spinner(f"{name} is thinking..."):
+    from src.ui_role import is_visitor
+    if is_visitor():
+        st.caption("Read-only view — sign in as the operator to speak with "
+                   f"{name}.")
+    else:
+        prompt = st.chat_input(f"Speak to {name}...", key=f"gal_input_{selected}")
+        if prompt:
             try:
-                response = manager.chat(selected, prompt)
-                msgs.append({"role": "assistant", "content": response})
-            except Exception as e:
-                msgs.append({"role": "assistant", "content": f"*[Error: {str(e)}]*"})
-        st.rerun()
+                from src.world.world_state import WorldState
+                WorldState().mark_visitor_present()
+            except Exception:
+                pass
+            msgs.append({"role": "user", "content": prompt})
+            with st.spinner(f"{name} is thinking..."):
+                try:
+                    response = manager.chat(selected, prompt)
+                    msgs.append({"role": "assistant", "content": response})
+                except Exception as e:
+                    msgs.append({"role": "assistant", "content": f"*[Error: {str(e)}]*"})
+            st.rerun()

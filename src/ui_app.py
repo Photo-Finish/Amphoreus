@@ -26,37 +26,50 @@ import os as _os
 
 
 def _load_ui_auth():
+    """Operator + visitor accounts. Operator may also come from the env."""
     env_u = _os.environ.get("AMPHOREUS_UI_USER", "").strip()
     env_p = _os.environ.get("AMPHOREUS_UI_PASS", "")
-    if env_u and env_p:
-        return env_u, env_p
     try:
         _f = Path(__file__).parent.parent / "world_runtime" / "ui_auth.json"
         _d = _json.loads(_f.read_text(encoding="utf-8"))
-        return str(_d.get("username", "")), str(_d.get("password", ""))
     except Exception:
-        return "", ""
+        _d = {}
+    op = (env_u, env_p) if (env_u and env_p) else (
+        str(_d.get("username", "")), str(_d.get("password", "")))
+    vis = (str(_d.get("visitor_username", "Visitor")),
+           str(_d.get("visitor_password", "")))
+    return op, vis
 
 
-_UI_USER, _UI_PASS = _load_ui_auth()
+_UI_USER, _UI_PASS = _load_ui_auth()[0]
+_VISITOR_USER, _VISITOR_PASS = _load_ui_auth()[1]
 
-if _UI_USER and _UI_PASS and not st.session_state.get("ui_authed"):
+if (_UI_USER and _UI_PASS) and not st.session_state.get("ui_authed"):
     st.set_page_config(page_title="Project Amphoreus — the Sanctuary",
                        page_icon="🔥")
     st.markdown(
         "<style>.stApp{background:linear-gradient(160deg,#0b0a14,#131022)}</style>",
         unsafe_allow_html=True)
     st.title("The Sanctuary of the Chrysos Heirs")
-    st.caption("This world is behind a key. Sign in to enter.")
+    st.caption("This world is behind a key. Sign in to enter."
+               " (Visitors: use the read-only account.)")
     _u = st.text_input("Username")
     _p = st.text_input("Password", type="password")
     if st.button("Enter the Sanctuary"):
         if _u == _UI_USER and _p == _UI_PASS:
             st.session_state.ui_authed = True
+            st.session_state.ui_role = "operator"
+            st.rerun()
+        elif _VISITOR_USER and _VISITOR_PASS \
+                and _u == _VISITOR_USER and _p == _VISITOR_PASS:
+            st.session_state.ui_authed = True
+            st.session_state.ui_role = "visitor"
             st.rerun()
         else:
             st.error("Incorrect username or password.")
     st.stop()
+
+from src.ui_role import is_visitor, is_operator  # noqa: E402
 
 
 # Page config
@@ -270,10 +283,11 @@ try:
         st.sidebar.success(
             f"📚 RAG: Ready\n\n{n_docs} canon documents indexed\n({rag.get('embedding', 'auto')} embeddings)"
         )
-        if st.sidebar.button("Rebuild Knowledge Base"):
-            with st.spinner("Rebuilding RAG index..."):
-                manager.build_knowledge_base()
-            st.rerun()
+        if not is_visitor():
+            if st.sidebar.button("Rebuild Knowledge Base"):
+                with st.spinner("Rebuilding RAG index..."):
+                    manager.build_knowledge_base()
+                st.rerun()
     else:
         st.sidebar.warning("📚 RAG: Disabled")
 except Exception as e:
@@ -401,43 +415,46 @@ try:
 except Exception:
     pass
 
-# Reset button — this is a heavy act: it erases the Heir's memory of you
-if st.sidebar.button("Forget me (reset)"):
-    manager.reset_conversation(selected)
-    st.rerun()
-
-# Your own face — the avatar that appears beside your messages
-st.sidebar.markdown("---")
-st.sidebar.caption("**Your avatar** — the face that travels with you.")
-try:
-    _uav = user_avatar_path()
-    if _uav:
-        st.sidebar.image(_uav, width=64)
-    _upl = st.sidebar.file_uploader(
-        "Set your avatar", type=["png", "jpg", "jpeg", "webp"],
-        key="user_avatar_upload", label_visibility="collapsed",
-    )
-    # NOTE: never st.rerun() after saving — the file_uploader re-sends its
-    # file from the frontend on every rerun, which would loop forever. Saving
-    # is keyed to the uploaded file's identity (name:size) so it happens once
-    # per upload, and "Remove my avatar" works even while a file is still
-    # attached to the uploader (the same file will not re-save).
-    if _upl is not None:
-        _ident = "%s:%s" % (_upl.name, _upl.size)
-        if st.session_state.get("_uav_saved_ident") != _ident:
-            from PIL import Image
-            import io as _io
-            _im = Image.open(_io.BytesIO(_upl.getvalue())).convert("RGB")
-            _im.thumbnail((256, 256))
-            USER_AVATAR_PATH.parent.mkdir(parents=True, exist_ok=True)
-            _im.save(str(USER_AVATAR_PATH), "PNG")
-            st.session_state["_uav_saved_ident"] = _ident
-            st.sidebar.success("Your face is set — it now appears beside your messages.")
-    if _uav and st.sidebar.button("Remove my avatar", key="user_avatar_remove"):
-        USER_AVATAR_PATH.unlink()
+# Reset button — this is a heavy act: it erases the Heir's memory of you.
+# Operator-only: a read-only visitor must not erase anything.
+if not is_visitor():
+    if st.sidebar.button("Forget me (reset)"):
+        manager.reset_conversation(selected)
         st.rerun()
-except Exception:
-    pass
+
+# Your own face — the avatar that appears beside your messages (operator only)
+if not is_visitor():
+    st.sidebar.markdown("---")
+    st.sidebar.caption("**Your avatar** — the face that travels with you.")
+    try:
+        _uav = user_avatar_path()
+        if _uav:
+            st.sidebar.image(_uav, width=64)
+        _upl = st.sidebar.file_uploader(
+            "Set your avatar", type=["png", "jpg", "jpeg", "webp"],
+            key="user_avatar_upload", label_visibility="collapsed",
+        )
+        # NOTE: never st.rerun() after saving — the file_uploader re-sends its
+        # file from the frontend on every rerun, which would loop forever. Saving
+        # is keyed to the uploaded file's identity (name:size) so it happens once
+        # per upload, and "Remove my avatar" works even while a file is still
+        # attached to the uploader (the same file will not re-save).
+        if _upl is not None:
+            _ident = "%s:%s" % (_upl.name, _upl.size)
+            if st.session_state.get("_uav_saved_ident") != _ident:
+                from PIL import Image
+                import io as _io
+                _im = Image.open(_io.BytesIO(_upl.getvalue())).convert("RGB")
+                _im.thumbnail((256, 256))
+                USER_AVATAR_PATH.parent.mkdir(parents=True, exist_ok=True)
+                _im.save(str(USER_AVATAR_PATH), "PNG")
+                st.session_state["_uav_saved_ident"] = _ident
+                st.sidebar.success("Your face is set — it now appears beside your messages.")
+        if _uav and st.sidebar.button("Remove my avatar", key="user_avatar_remove"):
+            USER_AVATAR_PATH.unlink()
+            st.rerun()
+    except Exception:
+        pass
 
 # Senses status (hearing / eyesight / music)
 try:
@@ -958,7 +975,7 @@ with main_tab:
             l for l in _map_data.ALL_POS
             if l != _here and _map_data.travel_time_for(_here, l, "trailblazer") < 999
         ]
-        if _dests:
+        if _dests and not is_visitor():
             with st.expander("Travel together"):
                 _dest = st.selectbox("Where shall you walk together?", _dests,
                                      key=f"travel_dest_{selected}")
@@ -984,7 +1001,7 @@ with main_tab:
     # a durable memory and warms their mood.
     try:
         _mkt_loc, _wares = manager.market_at(selected)
-        if _wares:
+        if _wares and not is_visitor():
             with st.expander("Give a gift"):
                 st.caption(f"The market at **{_mkt_loc}** offers:")
                 _labels = [f"{w['name']} — {w['note']}" for w in _wares]
@@ -1067,58 +1084,59 @@ with main_tab:
         with st.chat_message(msg["role"], avatar=_assistant_avatar if msg["role"] == "assistant" else _user_avatar):
             st.markdown(msg["content"])
 
-    # Senses: eyesight (picture / video) and hearing (speak)
-    c1, c2, c3 = st.columns([1, 1, 1])
-    with c1:
-        uploaded = st.file_uploader(
-            "Show a picture",
-            type=["png", "jpg", "jpeg", "webp", "gif"],
-            key=f"img_{selected}",
-            label_visibility="collapsed",
-        )
-        if uploaded is not None:
-            st.session_state["pending_image"] = {
-                "bytes": uploaded.getvalue(),
-                "mime": uploaded.type or "image/png",
-                "name": uploaded.name,
-            }
-    with c2:
-        uploaded_video = st.file_uploader(
-            "Show a video",
-            type=["mp4", "mov", "avi", "mkv", "webm"],
-            key=f"vid_{selected}",
-            label_visibility="collapsed",
-        )
-        if uploaded_video is not None:
-            st.session_state["pending_video"] = {
-                "bytes": uploaded_video.getvalue(),
-                "name": uploaded_video.name,
-            }
-    with c3:
-        spoken = st.audio_input("Speak to them", key=f"aud_{selected}")
+    # Senses: eyesight (picture / video) and hearing (speak) — operator only
+    if not is_visitor():
+        c1, c2, c3 = st.columns([1, 1, 1])
+        with c1:
+            uploaded = st.file_uploader(
+                "Show a picture",
+                type=["png", "jpg", "jpeg", "webp", "gif"],
+                key=f"img_{selected}",
+                label_visibility="collapsed",
+            )
+            if uploaded is not None:
+                st.session_state["pending_image"] = {
+                    "bytes": uploaded.getvalue(),
+                    "mime": uploaded.type or "image/png",
+                    "name": uploaded.name,
+                }
+        with c2:
+            uploaded_video = st.file_uploader(
+                "Show a video",
+                type=["mp4", "mov", "avi", "mkv", "webm"],
+                key=f"vid_{selected}",
+                label_visibility="collapsed",
+            )
+            if uploaded_video is not None:
+                st.session_state["pending_video"] = {
+                    "bytes": uploaded_video.getvalue(),
+                    "name": uploaded_video.name,
+                }
+        with c3:
+            spoken = st.audio_input("Speak to them", key=f"aud_{selected}")
 
-    # A second row: music for shared appreciation
-    music_file = st.file_uploader(
-        "Share music to listen together",
-        type=["mp3", "wav", "ogg", "flac", "m4a"],
-        key=f"music_{selected}",
-    )
-    if music_file is not None:
-        with st.spinner(f"{info['name']} is listening to the music..."):
-            result = manager.appreciate_music(selected, music_file.getvalue(), note=music_file.name)
-        if result.get("heard"):
-            st.session_state.messages[selected].append({
-                "role": "user", "content": f"*(shares music: {music_file.name})*",
-            })
-            with st.chat_message("user", avatar=_user_avatar):
-                st.markdown(f"*(shares music: {music_file.name})*")
-            with st.chat_message("assistant", avatar=_assistant_avatar):
-                st.markdown(result["response"])
-            st.session_state.messages[selected].append({
-                "role": "assistant", "content": result["response"],
-            })
-        else:
-            st.info(result.get("reason", "Music appreciation is not yet available."))
+        # A second row: music for shared appreciation
+        music_file = st.file_uploader(
+            "Share music to listen together",
+            type=["mp3", "wav", "ogg", "flac", "m4a"],
+            key=f"music_{selected}",
+        )
+        if music_file is not None:
+            with st.spinner(f"{info['name']} is listening to the music..."):
+                result = manager.appreciate_music(selected, music_file.getvalue(), note=music_file.name)
+            if result.get("heard"):
+                st.session_state.messages[selected].append({
+                    "role": "user", "content": f"*(shares music: {music_file.name})*",
+                })
+                with st.chat_message("user", avatar=_user_avatar):
+                    st.markdown(f"*(shares music: {music_file.name})*")
+                with st.chat_message("assistant", avatar=_assistant_avatar):
+                    st.markdown(result["response"])
+                st.session_state.messages[selected].append({
+                    "role": "assistant", "content": result["response"],
+                })
+            else:
+                st.info(result.get("reason", "Music appreciation is not yet available."))
 
     if st.session_state.get("pending_image"):
         pimg = st.session_state["pending_image"]
@@ -1127,7 +1145,7 @@ with main_tab:
         pvid = st.session_state["pending_video"]
         st.caption(f"You are showing {info['name']}: **{pvid['name']}** — send a message to watch it together.")
 
-    if spoken is not None:
+    if not is_visitor() and spoken is not None:
         with st.spinner(f"{info['name']} is listening..."):
             result = manager.hear(selected, spoken.read())
         if result.get("heard"):
@@ -1144,8 +1162,11 @@ with main_tab:
         else:
             st.info(result.get("reason", "Hearing is not yet available."))
 
-    # Chat input
-    if prompt := st.chat_input(f"Speak to {info['name']}..."):
+    # Chat input (operator only; visitors read)
+    if is_visitor():
+        st.caption("Read-only view — sign in as the operator to speak with "
+                   f"{info['name']}.")
+    elif prompt := st.chat_input(f"Speak to {info['name']}..."):
         # Let the world know the visitor is here
         try:
             from src.world.world_state import WorldState

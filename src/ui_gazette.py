@@ -290,9 +290,12 @@ def render_gazette(manager, characters):
         from src.world import living_world as _lw_ctl
         _unread = _lw_ctl.unread_count(ws, "visitor")
         _m1, _m2 = st.columns([1, 3])
+        from src.ui_role import is_visitor as _is_vis
         with _m1:
-            if st.button("Mark mailbox read", disabled=(_unread == 0),
-                         key="gaz_mail"):
+            if _is_vis():
+                st.caption("Read-only")
+            elif st.button("Mark mailbox read", disabled=(_unread == 0),
+                           key="gaz_mail"):
                 _lw_ctl.mark_all_read(ws, "visitor")
                 ws.save()
                 st.rerun()

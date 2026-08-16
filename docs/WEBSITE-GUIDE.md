@@ -32,11 +32,18 @@ IP form instead (`http://192.168.1.15:8765` today).
 ### 1.1 Signing in
 
 The full Sanctuary is **behind a key**: anyone opening it (public or LAN) sees
-only a sign-in screen until they enter the correct username and password.
-The credentials live in the gitignored `world_runtime/ui_auth.json` (or the
-`AMPHOREUS_UI_USER` / `AMPHOREUS_UI_PASS` environment variables). Without
-them, nothing of the world is shown or changeable — only the operator can
-change the dialogue. The status page needs no sign-in (it is read-only).
+only a sign-in screen until they enter a valid account. Two accounts exist
+(both in the gitignored `world_runtime/ui_auth.json`; the operator may also
+come from the `AMPHOREUS_UI_USER` / `AMPHOREUS_UI_PASS` environment
+variables):
+
+- **Operator** — full control: speaks to the Heirs, gives gifts, travels,
+  uses the Control Panel, changes the avatar, rebuilds the knowledge base…
+- **Visitor** — **read-only**: can look around (conversations, map, gazette,
+  galgame) but cannot change anything — no chat, no gifts, no travel, no
+  Control Panel controls.
+
+The status page needs no sign-in (it is read-only).
 
 ## 2. What happens when the network changes or disconnects
 
