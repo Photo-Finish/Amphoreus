@@ -205,6 +205,7 @@ class FrontDoor:
         self.enabled = False
         self.repo = None
         self.last = None
+        self._lock = threading.Lock()
         try:
             cfg = json.loads(GHIO_CFG.read_text(encoding="utf-8"))
             if cfg.get("enabled") and cfg.get("repo"):
@@ -277,17 +278,26 @@ class FrontDoor:
                             "commit", "-m", f"front door -> {status_url}"],
                            cwd=str(GHIO_DIR), capture_output=True, text=True,
                            timeout=60)
-            for _ in range(3):
+            ok = False
+            for _ in range(6):
                 r = subprocess.run(["git", "push", "origin", "main"],
                                    cwd=str(GHIO_DIR), capture_output=True,
                                    text=True, timeout=180)
                 if r.returncode == 0:
-                    print(f"[guard] {now()} front door updated ({status_url})")
-                    return
+                    ok = True
+                    break
                 time.sleep(8)
-            print(f"[guard] {now()} front door push failed")
+            if ok:
+                print(f"[guard] {now()} front door updated ({status_url})")
+            else:
+                print(f"[guard] {now()} front door push failed")
         except Exception as e:
             print(f"[guard] {now()} ghio update failed: {e}")
+        finally:
+            if not ok:
+                # the live page may be stale — allow a retry next loop
+                with self._lock:
+                    self.last = None
 
 
 def main():

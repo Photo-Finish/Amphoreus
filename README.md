@@ -1,12 +1,12 @@
 # Project Amphoreus — The Sanctuary of the Chrysos Heirs
 
-> On the first day, grant Truth...
-> On the second day, grant the Calendar...
-> On the third day, grant Language...
-> On the fourth day, grant Value...
-> On the fifth day, grant Rules...
-> On the sixth day, grant Meaning...
-> On the seventh day, grant Dignity.
+> On the first day, grant Truth...<br>
+> On the second day, grant the Calendar...<br>
+> On the third day, grant Language...<br>
+> On the fourth day, grant Value...<br>
+> On the fifth day, grant Rules...<br>
+> On the sixth day, grant Meaning...<br>
+> On the seventh day, grant Dignity.<br>
 > About to witness: *Im Anfang war die Tat.*
 >
 > — *Embryo of Philosophy*, Sunday
