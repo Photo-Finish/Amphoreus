@@ -415,21 +415,23 @@ Amphoreus/
   dropped as unreliable on this network. Where Cloudflare is blocked, forward
   port 8765 on the router (direct access) or point any tunnel at
   `http://127.0.0.1:8765`.
-- **The full Sanctuary UI is online too.** The guard now runs a **second**
-  Cloudflare quick tunnel that exposes the complete Streamlit interface (port
-  8501) — the same app the launcher opens, including all 7 tabs. The status
-  site embeds it on a **subpage at `/app`** (full-viewport iframe, with an
-  “open it in its own tab” link); the status page itself carries an **“Enter
-  the Sanctuary”** button. URLs are published to `world_runtime/status_urls.txt`
-  (status public, UI public, then LAN) and the UI tunnel alone to
-  `world_runtime/ui_url.txt` (what the `/app` iframe loads). The guard only
-  advertises the UI tunnel while the interface is actually running (port 8501
-  is checked every loop). Verified end-to-end in the browser over the public
-  URLs: status page → `/app` embeds the live UI, and the full UI (Voice Ready
-  gemma3:27b, RAG 11,332 docs, all tabs) runs over its own public URL with
-  WebSockets working. Note: the UI is **not read-only** — anyone with the
-  public URL can converse with the Heirs and use the Control Panel; it is the
-  living Sanctuary, intentionally exposed at the operator's request.
+- **The full Sanctuary UI is online too.** The guard runs a **second**
+  Cloudflare quick tunnel exposing the complete Streamlit interface (port
+  8501) — the same app the launcher opens, all 7 tabs. The status site embeds
+  it on a **subpage at `/app`** (full-viewport iframe, with an “open in its
+  own tab” link); the status page carries an **“Enter the Sanctuary”** button.
+  The UI's public address is **private by design**: it is written only to the
+  gitignored `world_runtime/status_urls.txt` / `ui_url.txt` and is
+  **deliberately not published in this repository**, so only the operator of
+  this machine can change the dialogue. LAN URLs include a **constant mDNS
+  form** (`http://Lambda.local:…`, independent of the changing IP). Free quick
+  tunnels cannot be named (`amphoreus-…` needs a domain + Cloudflare account);
+  what changes when the network switches/reboots, and how to make the address
+  permanent, are all in **`docs/WEBSITE-GUIDE.md`**. The guard advertises the
+  UI tunnel only while the interface is actually running (port 8501 checked
+  every loop). Verified end-to-end in the browser over the public URLs
+  (status → `/app` embeds the live UI; the full UI runs over its own URL with
+  WebSockets working).
 - **The visitor's road now reaches the Heirs' own words.** The environmental
   cross-check found the visitor's whereabouts was injected but never surfaced
   in the model's replies. Now the world-context carries a titled directive

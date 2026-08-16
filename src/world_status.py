@@ -6,12 +6,14 @@ Pure read-only: nothing here mutates the world.
 """
 
 import html
+import json
 import subprocess
 from datetime import datetime
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 UI_URL_FILE = PROJECT_ROOT / "world_runtime" / "ui_url.txt"
+URLS_JSON = PROJECT_ROOT / "world_runtime" / "status_urls.json"
 
 
 def public_ui_url() -> str:
@@ -125,6 +127,14 @@ def _esc(s) -> str:
     return html.escape(str(s or ""))
 
 
+def _current_urls() -> dict:
+    """The live URL list the guard publishes (gitignored world_runtime/)."""
+    try:
+        return json.loads(URLS_JSON.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
 def status_html(st: dict) -> str:
     """A clean, phone-friendly, read-only page of the world's status."""
     if not st.get("ok"):
@@ -167,6 +177,22 @@ def status_html(st: dict) -> str:
                    + "".join(f"<li>{_esc(e)}</li>" for e in st["recent_events"])
                    + "</ul>" if st["recent_events"] else "")
 
+    urls = _current_urls()
+    rows = []
+    pub = (urls.get("status") or {}).get("public") or []
+    if pub:
+        rows.append("<li>Public (Internet): "
+                    f"<a href='{_esc(pub[0])}'>{_esc(pub[0])}</a>"
+                    " — this page; changes only if the machine restarts</li>")
+    for u in (urls.get("status") or {}).get("lan") or []:
+        rows.append("<li>LAN (same network, no Internet): "
+                    f"<a href='{_esc(u)}'>{_esc(u)}</a></li>")
+    for u in (urls.get("ui") or {}).get("lan") or []:
+        rows.append("<li>Full interface (LAN only): "
+                    f"<a href='{_esc(u)}'>{_esc(u)}</a></li>")
+    reach = (f"<h3>Reach this world</h3><ul>{''.join(rows)}</ul>"
+             if rows else "")
+
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="refresh" content="30">
@@ -202,6 +228,7 @@ def status_html(st: dict) -> str:
 {weather_html}
 {heirs_html}
 {events_html}
+{reach}
 <div class="muted" style="margin-top:1rem">Read-only status — the Sanctuary at
 {_esc(str(PROJECT_ROOT))} · API: /api/status</div>
 </div></body></html>"""

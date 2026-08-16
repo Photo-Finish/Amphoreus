@@ -82,13 +82,24 @@ actively closing** — it is the standing quality loop, not a finished line.
 
 ## 4. Website / remote access (2026-08-16)
 
-- **Public (Internet):** a Cloudflare quick tunnel for the status page, plus a
-  **second tunnel exposing the complete Sanctuary UI** (all 7 tabs) — the
-  status site embeds it on a subpage at `/app`. Both public URLs are published
-  in `world_runtime/status_urls.txt` (verified HTTP 200; the full UI verified
-  live in a browser over its public URL, WebSockets working).
-- **LAN (no Internet, no VPN):** `http://192.168.1.15:8765` (status) and
-  `http://192.168.1.15:8501` (full UI) — guaranteed for same-network terminals.
+- **Public (Internet):** a Cloudflare quick tunnel for the read-only status
+  page, plus a **second tunnel exposing the complete Sanctuary UI** (all 7
+  tabs), embedded on the status site at `/app`. The status page's public URL
+  is in `world_runtime/status_urls.txt` (gitignored). The **UI's public
+  address is private — it is deliberately kept out of this repository**, so
+  only the operator can change the dialogue. Verified live over the public
+  URLs (status 200, `/app` embeds the live UI, full UI renders with
+  WebSockets working).
+- **LAN (no Internet, no VPN):** constant mDNS form `http://Lambda.local:8765`
+  (status) and `http://Lambda.local:8501` (full UI), plus the IP forms
+  (`http://192.168.1.15:…` today) — guaranteed for same-network terminals.
+- **Behaviour across networks:** the public URL is stable while the tunnel
+  process lives (a Wi-Fi drop/switch does not change it — cloudflared
+  reconnects to the same URL); it changes only when cloudflared restarts
+  (reboot/crash), minting a new random name. The LAN IP form follows the
+  machine's IP; `Lambda.local` does not. Free quick tunnels cannot be named —
+  a permanent `amphoreus.<domain>` needs a Cloudflare account + a domain
+  (steps in `docs/WEBSITE-GUIDE.md`).
 - **Self-healing:** `tools/status_guard.py` restarts the servers and both
   tunnels and rewrites the URL files every 15 s (the UI tunnel is advertised
   only while the interface is actually running).
@@ -96,9 +107,9 @@ actively closing** — it is the standing quality loop, not a finished line.
   the router for direct access, or point any tunnel service at
   `http://127.0.0.1:8765` / `:8501` (the guard's tunnel list is one entry away).
 - **Security note:** the status page is read-only, but the **full UI is not** —
-  anyone with its public URL can converse with the Heirs and use the Control
-  Panel. This exposure was requested by the operator; the URL is random and
-  not indexed, but it is not a secret.
+  whoever has its address can converse with the Heirs and use the Control
+  Panel. Its address is random, unguessable and **not published here**; a hard
+  login can be added if the operator wants stronger protection.
 
 ---
 

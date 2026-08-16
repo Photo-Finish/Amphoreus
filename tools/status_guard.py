@@ -136,6 +136,14 @@ class Tunnel:
 
 def lan_urls(port):
     out = []
+    # mDNS form is CONSTANT across IP changes on the same LAN (e.g.
+    # http://Lambda.local:8765) — put it first so it is the preferred LAN URL.
+    try:
+        host = socket.gethostname()
+        if host:
+            out.append(f"http://{host}.local:{port}")
+    except Exception:
+        pass
     try:
         r = subprocess.run(["powershell", "-NoProfile", "-Command",
                             "Get-NetIPAddress -AddressFamily IPv4 | "
