@@ -305,6 +305,25 @@ class AgentManager:
         session = self.sessions.get_or_create(character_id)
         messages = session.to_openai_format(system_prompt)
 
+        # The visitor's own road — a stage note placed inside the visitor's
+        # own turn, so the Heir plainly knows where the visitor stands. The
+        # stored history keeps the clean text; only the LLM sees the note.
+        # (Cross-checked 2026-08-16: prompt-block directives alone were
+        # ignored by some personae; an in-turn note reliably surfaces.)
+        try:
+            from src.world.world_state import WorldState as _WSR
+            _vpr = _WSR().visitor_place()
+            if _vpr.get("kind") == "traveling" and messages:
+                _vnote = (
+                    f"[The visitor writes from the road: {_vpr.get('from')} -> "
+                    f"{_vpr.get('to')}, {int(_vpr.get('remaining', 0))} day(s) "
+                    "of travel remain; reply across the distance.] "
+                )
+                _last = messages[-1]
+                _last["content"] = _vnote + str(_last.get("content", ""))
+        except Exception:
+            pass
+
         # Call LLM (multimodal path when the Heir is shown an image or video)
         if has_image:
             data_uri = f"data:{image_mime};base64,{image}"
@@ -1017,16 +1036,24 @@ class AgentManager:
                     lines.append(note)
             except Exception:
                 pass
-            # Where the star-stranger is right now — so the Heir's replies can
-            # acknowledge the visitor's own road (in town, or away on one).
+            # Where the star-stranger is right now — and how to speak across
+            # the distance. A dedicated directive (not a buried bullet): the
+            # Heir should acknowledge the visitor's road when the reply
+            # naturally touches it, not pretend they are standing before them.
+            # (Cross-checked 2026-08-16: a bare factual bullet was silently
+            # ignored by the model; a titled instruction surfaces.)
             try:
                 _vp = ws.visitor_place()
                 if _vp.get("kind") == "traveling":
                     lines.append(
-                        "- The visitor is on the road from "
-                        f"{_vp.get('from')} to {_vp.get('to')} — "
-                        f"{int(_vp.get('remaining', 0))} day(s) of travel left; "
-                        "their messages reach you when they pass a town."
+                        "\n# Your visitor is on the road\n"
+                        f"The visitor is traveling from {_vp.get('from')} to "
+                        f"{_vp.get('to')} — {int(_vp.get('remaining', 0))} "
+                        "day(s) of travel remain. They are not here with you; "
+                        "your words reach them when they pass a town. If your "
+                        "reply touches where they are or how long the road is, "
+                        "speak to the distance plainly — do not pretend they "
+                        "are standing before you."
                     )
                 else:
                     lines.append(f"- The visitor is currently in {_vp.get('at')}.")
