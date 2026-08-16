@@ -226,20 +226,26 @@ class FrontDoor:
             print(f"[guard] {now()} ghio clone failed: {e}")
             return False
 
-    def update(self, status_url, ui_url):
-        if not self.enabled or not (status_url and ui_url):
+    def update(self, status_url, ui_url, lan_status, lan_ui):
+        # Only push once every address is real — the first loop of a fresh
+        # guard run may still have empty tunnel URLs; pushing then would
+        # publish an empty "from the Internet" section.
+        if not self.enabled or not (status_url and ui_url
+                                    and lan_status and lan_ui):
             return
-        key = (status_url, ui_url)
+        key = (status_url, ui_url, lan_status, lan_ui)
         if key == self.last:
             return
         self.last = key
         threading.Thread(target=self._push, args=key, daemon=True).start()
 
-    def _push(self, status_url, ui_url):
+    def _push(self, status_url, ui_url, lan_status, lan_ui):
         try:
             if not self.ensure_clone():
                 return
-            cfg_js = {"status": status_url, "ui": ui_url, "updated": now()}
+            cfg_js = {"status": status_url, "ui": ui_url,
+                      "lan_status": lan_status, "lan_ui": lan_ui,
+                      "updated": now()}
             (GHIO_DIR / "config.js").write_text(
                 "window.AMPHOREUS = " +
                 json.dumps(cfg_js, ensure_ascii=False) + ";\n",
@@ -308,7 +314,9 @@ def main():
                                if l.strip().startswith("https")), "")
             except Exception:
                 pass
-            front.update(pub_status, pub_ui)
+            lan_status = f"http://{socket.gethostname()}.local:{PORT}"
+            lan_ui = f"http://{socket.gethostname()}.local:{UI_PORT}"
+            front.update(pub_status, pub_ui, lan_status, lan_ui)
             time.sleep(15)
     except KeyboardInterrupt:
         print("[guard] stopping")

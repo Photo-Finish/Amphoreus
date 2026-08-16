@@ -13,7 +13,7 @@ Two websites live on this computer:
 
 | What | Address | Reachable from |
 |---|---|---|
-| **Eternal front door** (always valid) | **`https://photo-finish.github.io/`** | anywhere with Internet — **never changes**; always points at the live world |
+| **Eternal front door** (always valid) | **`https://photo-finish.github.io/`** | anywhere with Internet — **never changes**; its “this network” buttons lead to the constant LAN address, and it lists the current Internet address |
 | **World-status page** (read-only) | published to `world_runtime/status_urls.txt` — a public `https://….trycloudflare.com` URL | anywhere with Internet |
 | **The full Sanctuary UI** (all 7 tabs, can change the dialogue) | published to `world_runtime/status_urls.txt` and `world_runtime/ui_url.txt` — a **private** `https://….trycloudflare.com` URL, **behind a sign-in** | anywhere with Internet, **only with the key** (it is deliberately kept out of the GitHub repository) |
 | Status page → full UI | same status page, path **`/app`** (embedded) | anywhere the status page is reachable |
@@ -55,8 +55,11 @@ The status page needs no sign-in (it is read-only).
   crash, or a manual restart. Then a **new random** URL is minted.
 - Free quick tunnels always use random names (they cannot be named `amphoreus-…`).
 - **None of this matters for the eternal front door** — `photo-finish.github.io`
-  is a fixed address and the guard updates it automatically whenever the
-  tunnel URL changes. It is the one address you should bookmark.
+  is a fixed address. Its primary **“this network” buttons point at the
+  constant LAN address** (`Lambda.local`), which does not change when you
+  switch networks; the changing tunnel URL is only listed under “From the
+  Internet”. The guard updates it automatically. It is the one address you
+  should bookmark.
 
 ### 2.2 LAN URL (`http://Lambda.local:…` / `http://192.168.1.15:…`)
 - The **IP** form changes whenever the machine joins a different network
@@ -78,7 +81,9 @@ and the URL files. It does **not** start or stop the Sanctuary UI itself.
 ## 3. How to use it
 
 1. **Bookmark the eternal address** — `https://photo-finish.github.io/`. It
-   always points at the live world and is updated automatically by the guard.
+   never changes: use its **“this network”** buttons (the constant LAN
+   address) or the **“From the Internet”** links (current public address,
+   auto-updated).
 2. **From any device with Internet** — open the eternal address; it links to
    the current status page and to the Sanctuary (sign-in required), and
    auto-redirects to the status page after a few seconds. Or open the public
