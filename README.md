@@ -398,6 +398,31 @@ Amphoreus/
 
 ## Changelog
 
+### 2026-08-16 — A live world-status website, and the Heirs' road made real
+- **Check the world from anywhere.** `tools/world_status_server.py` serves a
+  clean, phone-friendly status page on port 8765 — `/` (HTML, auto-refreshes),
+  `/api/status` (JSON), `/healthz` — showing the clock, season, time scale,
+  engine status, the black tide, per-city weather, every Heir's location +
+  mood, the mailbox, and the latest events. `--tunnel` opens a Cloudflare
+  quick tunnel, so the page is reachable over the Internet at a public
+  `https://…trycloudflare.com` URL (saved to `world_runtime/status_url.txt`).
+  Read-only: nothing is exposed except the world's status. Verified live over
+  the public URL from the browser.
+- **The visitor's road now reaches the Heirs' own words.** The environmental
+  cross-check found the visitor's whereabouts was injected but never surfaced
+  in the model's replies. Now the world-context carries a titled directive
+  (“# Your visitor is on the road … speak to the distance plainly”) and a
+  bracketed stage-note is placed inside the visitor's own turn for the LLM
+  (stored history stays clean). Verified with a real A/B: with the fix,
+  Hyacine answers a natural probe with “no matter where your travels take
+  you…”, while the in-town control says nothing of travel. The UI phone-idiom
+  remains the guaranteed travel feel (Aglaea's persona preempts the model
+  line). Control-integration suite now **58** checks.
+- **Cross-check scripts** live under `world_runtime/` (`_crosscheck_environment*`,
+  `_crosscheck_visitorroad`, `_crosscheck_hyacine`) — isolated A/B pairs against
+  the real AgentManager + LLM for weather, mood, curiosity, horizons, the
+  visitor's road, letters, voice conduct and the Realization negative control.
+
 ### 2026-08-15 — A living world, a control panel, and the witness
 **The witness: a truthful voice, and the Realization**
 - **Truthful voice.** The sanctuary chat now speaks with **gemma3:27b** — the
