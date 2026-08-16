@@ -38,6 +38,9 @@ URLS_TXT = ROOT / "world_runtime" / "status_urls.txt"
 URLS_JSON = ROOT / "world_runtime" / "status_urls.json"
 UI_URL_TXT = ROOT / "world_runtime" / "ui_url.txt"
 CF = ROOT / "world_runtime" / "cloudflared.exe"
+GHIO_CFG = ROOT / "world_runtime" / "ghio_config.json"
+GHIO_DIR = ROOT / "world_runtime" / "ghio"
+FRONTDOOR_TPL = ROOT / "tools" / "frontdoor_template.html"
 
 CREATION_FLAGS = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 
@@ -190,6 +193,80 @@ def make_cloudflare(cf, port, name):
                   re.compile(r"https://([a-z0-9-]+\.trycloudflare\.com)"))
 
 
+class FrontDoor:
+    """Keeps the eternal github.io page pointing at the live tunnel.
+
+    Reads world_runtime/ghio_config.json (gitignored): {enabled, repo}.
+    When the public URLs change, it regenerates config.js + index.html in a
+    local clone of the github.io repo and pushes (in a background thread).
+    """
+
+    def __init__(self):
+        self.enabled = False
+        self.repo = None
+        self.last = None
+        try:
+            cfg = json.loads(GHIO_CFG.read_text(encoding="utf-8"))
+            if cfg.get("enabled") and cfg.get("repo"):
+                self.repo = cfg["repo"]
+                self.enabled = True
+        except Exception:
+            pass
+
+    def ensure_clone(self):
+        if (GHIO_DIR / ".git").exists():
+            return True
+        try:
+            GHIO_DIR.parent.mkdir(parents=True, exist_ok=True)
+            subprocess.run(["git", "clone", self.repo, str(GHIO_DIR)],
+                           capture_output=True, text=True, timeout=180,
+                           cwd=str(ROOT))
+            return (GHIO_DIR / ".git").exists()
+        except Exception as e:
+            print(f"[guard] {now()} ghio clone failed: {e}")
+            return False
+
+    def update(self, status_url, ui_url):
+        if not self.enabled or not (status_url and ui_url):
+            return
+        key = (status_url, ui_url)
+        if key == self.last:
+            return
+        self.last = key
+        threading.Thread(target=self._push, args=key, daemon=True).start()
+
+    def _push(self, status_url, ui_url):
+        try:
+            if not self.ensure_clone():
+                return
+            cfg_js = {"status": status_url, "ui": ui_url, "updated": now()}
+            (GHIO_DIR / "config.js").write_text(
+                "window.AMPHOREUS = " +
+                json.dumps(cfg_js, ensure_ascii=False) + ";\n",
+                encoding="utf-8")
+            if FRONTDOOR_TPL.exists():
+                (GHIO_DIR / "index.html").write_text(
+                    FRONTDOOR_TPL.read_text(encoding="utf-8"), encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=str(GHIO_DIR),
+                           capture_output=True, text=True, timeout=60)
+            subprocess.run(["git", "-c", "user.email=guard@amphoreus.local",
+                            "-c", "user.name=Amphoreus Guard",
+                            "commit", "-m", f"front door -> {status_url}"],
+                           cwd=str(GHIO_DIR), capture_output=True, text=True,
+                           timeout=60)
+            for _ in range(3):
+                r = subprocess.run(["git", "push", "origin", "main"],
+                                   cwd=str(GHIO_DIR), capture_output=True,
+                                   text=True, timeout=180)
+                if r.returncode == 0:
+                    print(f"[guard] {now()} front door updated ({status_url})")
+                    return
+                time.sleep(8)
+            print(f"[guard] {now()} front door push failed")
+        except Exception as e:
+            print(f"[guard] {now()} ghio update failed: {e}")
+
+
 def main():
     print(f"[guard] {now()} world website guard up (status {PORT}, UI {UI_PORT})")
     cf = ensure_cloudflared()
@@ -197,6 +274,9 @@ def main():
     ui_tunnels = []
     if cf:
         status_tunnels.append(make_cloudflare(cf, PORT, "cloudflared-status"))
+    front = FrontDoor()
+    if front.enabled:
+        print(f"[guard] {now()} eternal front door enabled ({front.repo})")
 
     for t in status_tunnels:
         t.ensure()
@@ -217,6 +297,18 @@ def main():
                 print(f"[guard] {now()} UI (port {UI_PORT}) is down; "
                       "its tunnel stays but is not advertised")
             write_urls(status_tunnels, ui_tunnels)
+            pub_status = ""
+            pub_ui = ""
+            try:
+                lines = URLS_TXT.read_text(encoding="utf-8").splitlines()
+                pub_status = next((l.strip() for l in lines
+                                   if l.strip().startswith("https")), "")
+                ui_lines = UI_URL_TXT.read_text(encoding="utf-8").splitlines()
+                pub_ui = next((l.strip() for l in ui_lines
+                               if l.strip().startswith("https")), "")
+            except Exception:
+                pass
+            front.update(pub_status, pub_ui)
             time.sleep(15)
     except KeyboardInterrupt:
         print("[guard] stopping")

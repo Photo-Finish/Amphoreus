@@ -13,8 +13,9 @@ Two websites live on this computer:
 
 | What | Address | Reachable from |
 |---|---|---|
+| **Eternal front door** (always valid) | **`https://photo-finish.github.io/`** | anywhere with Internet — **never changes**; always points at the live world |
 | **World-status page** (read-only) | published to `world_runtime/status_urls.txt` — a public `https://….trycloudflare.com` URL | anywhere with Internet |
-| **The full Sanctuary UI** (all 7 tabs, can change the dialogue) | published to `world_runtime/status_urls.txt` and `world_runtime/ui_url.txt` — a **private** `https://….trycloudflare.com` URL | anywhere with Internet, **but only the operator knows it** (it is deliberately kept out of the GitHub repository) |
+| **The full Sanctuary UI** (all 7 tabs, can change the dialogue) | published to `world_runtime/status_urls.txt` and `world_runtime/ui_url.txt` — a **private** `https://….trycloudflare.com` URL, **behind a sign-in** | anywhere with Internet, **only with the key** (it is deliberately kept out of the GitHub repository) |
 | Status page → full UI | same status page, path **`/app`** (embedded) | anywhere the status page is reachable |
 | **LAN — status page** | `http://Lambda.local:8765` (constant) or `http://<current-ip>:8765` | same network, **no Internet / no VPN needed** |
 | **LAN — full UI** | `http://Lambda.local:8501` (constant) or `http://<current-ip>:8501` | same network, no Internet / no VPN |
@@ -28,6 +29,15 @@ IP form instead (`http://192.168.1.15:8765` today).
 > (gitignored — never committed). The status page also shows a **“Reach this
 > world”** section listing the current public + LAN addresses.
 
+### 1.1 Signing in
+
+The full Sanctuary is **behind a key**: anyone opening it (public or LAN) sees
+only a sign-in screen until they enter the correct username and password.
+The credentials live in the gitignored `world_runtime/ui_auth.json` (or the
+`AMPHOREUS_UI_USER` / `AMPHOREUS_UI_PASS` environment variables). Without
+them, nothing of the world is shown or changeable — only the operator can
+change the dialogue. The status page needs no sign-in (it is read-only).
+
 ## 2. What happens when the network changes or disconnects
 
 ### 2.1 Public URL (`….trycloudflare.com`)
@@ -37,6 +47,9 @@ IP form instead (`http://192.168.1.15:8765` today).
 - **It changes only when `cloudflared` is restarted**: computer reboot, a
   crash, or a manual restart. Then a **new random** URL is minted.
 - Free quick tunnels always use random names (they cannot be named `amphoreus-…`).
+- **None of this matters for the eternal front door** — `photo-finish.github.io`
+  is a fixed address and the guard updates it automatically whenever the
+  tunnel URL changes. It is the one address you should bookmark.
 
 ### 2.2 LAN URL (`http://Lambda.local:…` / `http://192.168.1.15:…`)
 - The **IP** form changes whenever the machine joins a different network
@@ -57,22 +70,26 @@ and the URL files. It does **not** start or stop the Sanctuary UI itself.
 
 ## 3. How to use it
 
-1. **Find the current public address** — open `world_runtime/status_urls.txt`
-   on this computer (first line = status page, second = full UI), or open any
-   LAN URL to see the “Reach this world” section.
-2. **From any device with Internet** — open the public status URL. Click
-   **“Enter the Sanctuary — the full interface”** (or go to `/app`) to use the
-   complete UI embedded; or open the private UI URL directly in its own tab.
+1. **Bookmark the eternal address** — `https://photo-finish.github.io/`. It
+   always points at the live world and is updated automatically by the guard.
+2. **From any device with Internet** — open the eternal address; it links to
+   the current status page and to the Sanctuary (sign-in required), and
+   auto-redirects to the status page after a few seconds. Or open the public
+   status URL directly, then click **“Enter the Sanctuary — the full
+   interface”** (or go to `/app`) and sign in.
 3. **From a device on the same Wi-Fi, without the Internet** — open
-   `http://Lambda.local:8765` (status) or `http://Lambda.local:8501` (full UI).
+   `http://Lambda.local:8765` (status) or `http://Lambda.local:8501` (full UI)
+   and sign in to the UI.
 4. **Use the UI** — the same tabs as on this computer: Visit an Heir, the
    Chronicle, the Map, the Galgame, Admin, Control Panel. Voice and RAG
    status show in the sidebar.
 
 ## 4. How to make the address permanent (recommended for a public world)
 
-Free quick tunnels cannot keep a fixed name. To get a permanent, meaningful
-address such as `amphoreus.yourdomain.com`:
+This is **already done**: the eternal front door `https://photo-finish.github.io/`
+(a GitHub Pages repo, `Photo-Finish/photo-finish.github.io`) is a fixed,
+bookmarkable address that survives reboots and network changes. If you would
+also like a *meaningful* hostname such as `amphoreus.yourdomain.com`:
 
 1. Buy (or get free) any domain, and create a **free Cloudflare account** with
    that domain on it.
@@ -107,7 +124,8 @@ router — then `http://<your-public-ip>:8765` works directly.)
 
 | Symptom | What to do |
 |---|---|
-| The old public URL shows a Cloudflare error | Normal — the URL changed after a restart. Read the current one from `world_runtime/status_urls.txt`, or use the LAN URL. |
+| The UI asks for a sign-in | Expected — the Sanctuary is behind a key. Use the credentials in `world_runtime/ui_auth.json` (operator only). |
+| The old public URL shows a Cloudflare error | Normal — the URL changed after a restart. Use the eternal address `https://photo-finish.github.io/` or the LAN URL. |
 | `http://Lambda.local:…` does not load on a phone | The device lacks mDNS — use the IP form (`http://192.168.1.15:8765`). |
 | The full UI shows “interface not running” | The Streamlit app (port 8501) is down — start it (the launcher, or ask the assistant) and the guard re-opens its tunnel. |
 | The full UI loads but the chat won’t connect (WebSocket error) | Usually a first-load hiccup while the app boots — reload the page. |

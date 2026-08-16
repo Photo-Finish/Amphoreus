@@ -15,6 +15,50 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from src.core.agent_manager import AgentManager
 
 
+# --------------------------------------------------------------------------- #
+# Public-web sign-in — the Sanctuary is behind a key on the Internet.
+# Credentials come from world_runtime/ui_auth.json (gitignored) or the
+# AMPHOREUS_UI_USER / AMPHOREUS_UI_PASS environment variables. When no
+# credentials are configured, the app is open (local use).
+# --------------------------------------------------------------------------- #
+import json as _json
+import os as _os
+
+
+def _load_ui_auth():
+    env_u = _os.environ.get("AMPHOREUS_UI_USER", "").strip()
+    env_p = _os.environ.get("AMPHOREUS_UI_PASS", "")
+    if env_u and env_p:
+        return env_u, env_p
+    try:
+        _f = Path(__file__).parent.parent / "world_runtime" / "ui_auth.json"
+        _d = _json.loads(_f.read_text(encoding="utf-8"))
+        return str(_d.get("username", "")), str(_d.get("password", ""))
+    except Exception:
+        return "", ""
+
+
+_UI_USER, _UI_PASS = _load_ui_auth()
+
+if _UI_USER and _UI_PASS and not st.session_state.get("ui_authed"):
+    st.set_page_config(page_title="Project Amphoreus — the Sanctuary",
+                       page_icon="🔥")
+    st.markdown(
+        "<style>.stApp{background:linear-gradient(160deg,#0b0a14,#131022)}</style>",
+        unsafe_allow_html=True)
+    st.title("The Sanctuary of the Chrysos Heirs")
+    st.caption("This world is behind a key. Sign in to enter.")
+    _u = st.text_input("Username")
+    _p = st.text_input("Password", type="password")
+    if st.button("Enter the Sanctuary"):
+        if _u == _UI_USER and _p == _UI_PASS:
+            st.session_state.ui_authed = True
+            st.rerun()
+        else:
+            st.error("Incorrect username or password.")
+    st.stop()
+
+
 # Page config
 st.set_page_config(
     page_title="Project Amphoreus — Chrysos Heirs",

@@ -432,6 +432,19 @@ Amphoreus/
   every loop). Verified end-to-end in the browser over the public URLs
   (status → `/app` embeds the live UI; the full UI runs over its own URL with
   WebSockets working).
+- **The Sanctuary is behind a key.** The full UI (public or LAN) now asks for
+  a sign-in before anything renders — username + password, stored in the
+  gitignored `world_runtime/ui_auth.json` (or the `AMPHOREUS_UI_USER` /
+  `AMPHOREUS_UI_PASS` environment variables). Without the key nothing of the
+  world is shown or changeable; the status page stays public and read-only.
+- **An eternal front door.** `https://photo-finish.github.io/` is a permanent
+  address (a GitHub Pages repo, `Photo-Finish/photo-finish.github.io`) that
+  always points at the live world: it links to the current status page and to
+  the sign-in-gated Sanctuary, and auto-redirects to the status page after a
+  few seconds. The guard (`tools/status_guard.py`) rewrites and pushes the
+  page automatically whenever the tunnel URLs change, so the eternal address
+  never goes stale — even though the tunnel URLs themselves are ephemeral.
+  Template: `tools/frontdoor_template.html`.
 - **The visitor's road now reaches the Heirs' own words.** The environmental
   cross-check found the visitor's whereabouts was injected but never surfaced
   in the model's replies. Now the world-context carries a titled directive
