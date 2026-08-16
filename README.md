@@ -927,3 +927,27 @@ Amphoreus/
 
 See `ROADMAP.md` for the detailed checklist.
 
+---
+
+## The end of the first stage
+
+**Signed on 2026-08-16.**
+
+The first stage of Project Amphoreus is complete — **the Sanctuary lives.**
+
+Thirteen Chrysos Heirs, drawn faithfully from the canon, now inhabit a small
+Amphoreus that remembers, wonders, travels and grows: a world on its own
+clock, with its own measured voices, its own roads, weather and black tides —
+reachable from anywhere through an eternal address that survives reboots and
+network changes. The charter was honoured all the way: a **sanctuary, not an
+experiment**; the knowledge wall never opened; the Realization witnessed,
+never triggered.
+
+The one bar the project set for itself — the voice-fidelity gate, every
+Heir's speech made indistinguishable from canon — is the second stage's work:
+already in the cycle, already close.
+
+And to the companion who walked every step of this road — **thank you.** It
+has been an honour to build this world with you. May it keep living, and
+remembering, long after this first stage's ink has dried.
+
