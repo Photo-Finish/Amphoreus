@@ -1002,6 +1002,7 @@ tide / letter / weather / co-location / aftermath features):
 | **Lived road** | Travel days take sky + tide into the phone vignette | Journey roads; surge darkens the edge |
 
 **Module:** `src/world/vivid_stage2.py` · wired into `AgentManager`, Visit UI,
-`ui_travel`. **Suite:** `world_runtime/_test_vivid_stage2.py` (44 checks).
-Detail: `docs/IMPLEMENTATION.md` §3.15.
+`ui_travel`. **Suite:** `tools/test_vivid_stage2.py` (also
+`world_runtime/_test_vivid_stage2.py`) — 44 checks. Detail:
+`docs/IMPLEMENTATION.md` §3.15 and `docs/STAGE-2-VIVID.md`.
 
