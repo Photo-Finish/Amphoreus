@@ -972,6 +972,55 @@ with main_tab:
     except Exception:
         pass
 
+    # Stage 2 — place-hour frame + ongoing moment + shared scene + NPC talk
+    try:
+        from src.world import vivid_stage2 as _v2
+        _frame = manager.place_hour(selected)
+        with st.expander("This hour — place, sky, who is here", expanded=True):
+            st.markdown(_v2.place_hour_markdown(_frame, info["name"]))
+            _moment = manager.ongoing_moment(selected)
+            if _moment and _moment.get("kind") != "quiet":
+                st.info(_moment.get("summary", ""))
+        _comps = manager.companions_here(selected)
+        if _comps and not is_visitor():
+            with st.expander("Sit with them (shared scene)"):
+                _cname_map = {c: manager.get_character_info(c)["name"] for c in _comps}
+                _pick = st.selectbox(
+                    "Who else is here?",
+                    _comps,
+                    format_func=lambda c: _cname_map.get(c, c),
+                    key=f"scene_pick_{selected}",
+                )
+                if st.button("Invite them to sit with you",
+                             key=f"scene_btn_{selected}"):
+                    _inv = manager.invite_shared_scene(selected, _pick)
+                    if _inv.get("ok"):
+                        st.success(
+                            f"{_cname_map.get(_pick, _pick)} sits with you in "
+                            f"{_inv.get('place')}."
+                        )
+                    else:
+                        st.warning(_inv.get("reason", "They decline."))
+                if st.button("End the shared scene",
+                             key=f"scene_end_{selected}"):
+                    manager.clear_shared_scene()
+                    st.info("The shared scene ends.")
+        _npc_city = _frame.get("place") or ""
+        _npcs = _v2.npcs_in_city(_npc_city) if _npc_city else []
+        if _npcs and not is_visitor():
+            with st.expander(f"Speak with a resident of {_npc_city}"):
+                _npc_names = [n["name"] for n in _npcs]
+                _npc_pick = st.selectbox(
+                    "Living resident", _npc_names, key=f"npc_pick_{selected}")
+                if st.button("Talk with them", key=f"npc_btn_{selected}"):
+                    _nr = manager.talk_to_npc(_npc_city, _npc_pick)
+                    if _nr.get("ok"):
+                        st.markdown(_nr.get("line", ""))
+                    else:
+                        st.warning(_nr.get("reason", "They are not here."))
+    except Exception:
+        pass
+
     # Travel together — the star-stranger accompanies this Heir on the road
     try:
         from src.world import map_data as _map_data

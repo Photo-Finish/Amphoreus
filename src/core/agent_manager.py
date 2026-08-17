@@ -271,6 +271,10 @@ class AgentManager:
         # has earned, a memory that may surface, and any unresolved hurt.
         system_prompt = self._inject_living_context(character_id, system_prompt)
 
+        # Stage 2 — vivid society & natural world (place-hour, shared scene,
+        # continuity, overhear notice, tide-at-the-edge). Chat-only.
+        system_prompt = self._inject_vivid_context(character_id, system_prompt)
+
         # The Heirs' own minds: what they are wondering about and what they
         # have reasoned (sanctuary-only; the style test never sees this).
         system_prompt = self._inject_curiosity_context(character_id, system_prompt)
@@ -368,6 +372,8 @@ class AgentManager:
             # The visitor's words may have crossed a value, mended one, or
             # spoken of another Heir — the world reacts honestly, afterward.
             self._social_reactions(character_id, user_message)
+            # Stage 2: overhearing private words may be sensed (golden threads…).
+            self._note_overhear(character_id, user_message)
             # The witness notices, silently, if the Heir's own words reach
             # toward understanding what they are (never a trigger).
             self._witness_realization(character_id, response)
@@ -602,6 +608,104 @@ class AgentManager:
         except Exception:
             pass
         return system_prompt
+
+    def _inject_vivid_context(self, character_id, system_prompt):
+        """Stage 2 — society & natural world the visitor can enter."""
+        try:
+            from src.world import vivid_stage2 as _v2
+            from src.world.world_state import WorldState
+            ws = WorldState()
+
+            def _nm(cid):
+                try:
+                    return self.get_character_info(cid)["name"]
+                except Exception:
+                    return cid
+
+            parts = []
+            frame = _v2.place_hour_frame(ws, character_id, name_of=_nm)
+            block = _v2.place_hour_prompt_block(frame)
+            if block:
+                parts.append(block)
+            sc = _v2.shared_scene_prompt_block(ws, character_id, name_of=_nm)
+            if sc:
+                parts.append(sc)
+            cont = _v2.society_continuity_block(ws, character_id, name_of=_nm)
+            if cont:
+                parts.append(cont)
+            oh = _v2.overhear_prompt_block(ws, character_id)
+            if oh:
+                parts.append(oh)
+            tide = _v2.tide_edge_prompt(ws, character_id)
+            if tide:
+                parts.append(tide)
+            moment = _v2.ongoing_moment(ws, character_id)
+            om = _v2.ongoing_moment_prompt(moment)
+            if om:
+                parts.append(om)
+            if parts:
+                return system_prompt + "\n\n" + "\n\n".join(parts)
+        except Exception:
+            pass
+        return system_prompt
+
+    def _note_overhear(self, character_id, user_message):
+        """If the visitor admits overhearing, sensitive Heirs take note."""
+        try:
+            from src.world import vivid_stage2 as _v2
+            from src.world.world_state import WorldState
+            if not _v2.detect_overhear_intent(user_message):
+                return
+            ws = WorldState()
+            _v2.note_overhear(
+                ws, character_id, user_message[:160],
+                source=f"near {self.get_character_info(character_id)['name']}",
+            )
+            ws.save()
+        except Exception:
+            pass
+
+    def place_hour(self, character_id: str) -> dict:
+        from src.world import vivid_stage2 as _v2
+        from src.world.world_state import WorldState
+        return _v2.place_hour_frame(
+            WorldState(), character_id,
+            name_of=lambda c: self.get_character_info(c)["name"])
+
+    def invite_shared_scene(self, host_id: str, companion_id: str) -> dict:
+        from src.world import vivid_stage2 as _v2
+        from src.world.world_state import WorldState
+        ws = WorldState()
+        res = _v2.invite_shared_scene(
+            ws, host_id, companion_id,
+            name_of=lambda c: self.get_character_info(c)["name"])
+        ws.save()
+        return res
+
+    def clear_shared_scene(self):
+        from src.world import vivid_stage2 as _v2
+        from src.world.world_state import WorldState
+        ws = WorldState()
+        _v2.clear_shared_scene(ws)
+        ws.save()
+
+    def companions_here(self, host_id: str) -> list:
+        from src.world import vivid_stage2 as _v2
+        from src.world.world_state import WorldState
+        return _v2.companions_here(WorldState(), host_id)
+
+    def talk_to_npc(self, city: str, npc_name: str) -> dict:
+        from src.world import vivid_stage2 as _v2
+        from src.world.world_state import WorldState
+        ws = WorldState()
+        res = _v2.talk_to_npc(ws, city, npc_name)
+        ws.save()
+        return res
+
+    def ongoing_moment(self, character_id: str) -> dict:
+        from src.world import vivid_stage2 as _v2
+        from src.world.world_state import WorldState
+        return _v2.ongoing_moment(WorldState(), character_id)
 
     def _social_reactions(self, character_id, user_message):
         """After the Heir's reply, the visitor's words may cross a value

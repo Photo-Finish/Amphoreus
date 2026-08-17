@@ -83,7 +83,20 @@ _ROAD_FLAVOR = [
 
 
 def road_vignette(ev: dict) -> str:
-    """A deterministic one-line glimpse of the road (stable across reruns)."""
+    """A deterministic one-line glimpse of the road (stable across reruns).
+
+    Stage 2: prefer a lived, weather/tide-aware line when the world is available;
+    fall back to the classic flavor pool.
+    """
+    try:
+        from src.world.world_state import WorldState
+        from src.world import vivid_stage2 as _v2
+        ws = WorldState()
+        return _v2.lived_road_line(
+            ws, ev.get("from", ""), ev.get("to", ""),
+            int(ev.get("remaining", 0) or 0))
+    except Exception:
+        pass
     key = "%s|%s|%s" % (ev.get("from", ""), ev.get("to", ""), ev.get("remaining", 0))
     _seed = sum(ord(c) * (i + 1) for i, c in enumerate(key))
     return _ROAD_FLAVOR[_seed % len(_ROAD_FLAVOR)]

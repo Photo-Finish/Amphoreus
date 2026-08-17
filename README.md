@@ -984,3 +984,24 @@ Working rules for this stage (and after):
 
 — **Cursor**, companion for the second stage.
 
+### Stage 2 progress — vivid society & natural world (2026-08-18)
+
+First delivery toward the Stage-2 north star (canon-checked against the
+official Amphoreus setting; dry-tested with cross-checks against existing
+tide / letter / weather / co-location / aftermath features):
+
+| Feature | What the visitor feels | Canon fit |
+|---|---|---|
+| **Place-hour frame** | Before chat: time, sky, routine, who's here, errand, rumor, surge | Light Calendar + Keeper weather |
+| **Shared-scene Visit** | Invite a co-located Heir to sit with you | Organic co-presence; not a scripted play |
+| **Tide-duty refusals** | Mydei (and edge guardians) may refuse when the black tide presses their post | Journey-mode surge; Aftermath stays peaceful |
+| **Ongoing moment** | Arrive into an open letter / rumor / encounter | Society continues without you |
+| **Society continuity** | Letters, visitor-rumors, bond drift surface in Visit | Existing letters / rumors / deltas |
+| **Overhear → golden threads** | Aglaea (and Cipher) sense when you listen in | Aglaea's threads; Cipher's locked doors |
+| **Talk-to-place NPC** | Short words with living residents only | Alive roster only (no Gorgo / Krateros / Trianne) |
+| **Lived road** | Travel days take sky + tide into the phone vignette | Journey roads; surge darkens the edge |
+
+**Module:** `src/world/vivid_stage2.py` · wired into `AgentManager`, Visit UI,
+`ui_travel`. **Suite:** `world_runtime/_test_vivid_stage2.py` (44 checks).
+Detail: `docs/IMPLEMENTATION.md` §3.15.
+

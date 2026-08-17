@@ -270,6 +270,7 @@ class WorldState:
         self.time_scale: float = 1.0            # how fast the world elapses: 1x = one in-game day per engine interval (Control Panel)
         self.visitor_location: str = "Okhema"   # where the star-stranger (you) currently stands
         self.visitor_travel: dict = {}          # your journey: {"to", "from", "remaining"} while on the road
+        self.vivid: Dict = {}                   # Stage-2 society/world ledger (see vivid_stage2.py)
         self._load()
 
     # ------------------------------------------------------------------ #
@@ -313,6 +314,7 @@ class WorldState:
                     self.time_scale = 1.0
                 self.visitor_location = data.get("visitor_location", "Okhema") or "Okhema"
                 self.visitor_travel = data.get("visitor_travel", {}) or {}
+                self.vivid = data.get("vivid", {}) or {}
         except Exception:
             pass
 
@@ -347,6 +349,7 @@ class WorldState:
                         "time_scale": float(self.time_scale or 1.0),
                         "visitor_location": self.visitor_location or "Okhema",
                         "visitor_travel": self.visitor_travel or {},
+                        "vivid": self.vivid or {},
                     },
                     f,
                     ensure_ascii=False,

@@ -1110,6 +1110,39 @@ flowchart LR
   (personality fidelity, knowledge accuracy, consistency, relationship recall,
   speech pattern match).
 
+### 3.15 Stage 2 — vivid society & natural world
+(`src/world/vivid_stage2.py`, `WorldState.vivid`, Visit UI, `ui_travel`)
+
+Stage 1 already ran society and land *beside* the visitor (engine encounters,
+Gazette, weather, travel). Stage 2 makes them **enterable**. This layer is
+pure data + injectors — it never authors an Heir's spoken line, never opens
+the knowledge wall, and never scripts Realization.
+
+**Canon checks (official Amphoreus setting):**
+- Shared scenes = organic co-presence (PHILOSOPHY: host, never author).
+- Black tide = journey-mode edge pressure; Aftermath remains peaceful.
+- Mydei / Castorice / Hysilens may refuse a social invite when their edge city
+  is surged and they stand the watch (duty first).
+- Aglaea perceives overhearing through **golden threads**; Cipher through a
+  rattled lock — both get a Visit injector that cools courtesy, not a forced
+  accusation.
+- NPCs = the alive-only `world_events.NPCS` roster (Bartholos, Seliose, Noldus,
+  Eikura Shuu, Mem, Theodosia). Dead figures are rejected.
+
+**Surfaces:**
+- Visit expander *This hour* — `place_hour_frame` / markdown.
+- *Sit with them* — `invite_shared_scene` (MVP: host + one companion).
+- *Speak with a resident* — `talk_to_npc`.
+- Chat injectors via `AgentManager._inject_vivid_context` (place-hour, shared
+  scene, society continuity, overhear notice, tide-at-the-edge, ongoing moment).
+- `ui_travel.road_vignette` prefers `lived_road_line` (weather + surge aware).
+
+**Cross-checks (dry suite):** Mydei declines under a Kremnos surge but accepts
+when the tide is quiet; Aglaea's prompt after an overhear differs from
+Phainon's; Aftermath empties tide prompts; Styxia NPC lines tighten under
+surge; lived road mentions surged skies. See
+`world_runtime/_test_vivid_stage2.py`.
+
 ---
 
 *"Only through a worthy sacrifice can we gain a befitting victory."* — Cerydra.
