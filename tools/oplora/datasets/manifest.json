@@ -1,0 +1,25 @@
+{
+  "source_policy": "duplicates only; databank originals never modified",
+  "work_copies": "tools/oplora/work_copies",
+  "files_copied": 35,
+  "total_rows": 10190,
+  "per_heir": {
+    "Aglaea": 792,
+    "Anaxa": 681,
+    "Castorice": 1278,
+    "Cerydra": 338,
+    "Cipher": 414,
+    "Cyrene": 1114,
+    "Dan Heng": 1107,
+    "Hyacine": 608,
+    "Hysilens": 271,
+    "Mydei": 613,
+    "Phainon": 1930,
+    "Terravox": 56,
+    "Tribbie": 988
+  },
+  "kinds": {
+    "dialogue": 10150,
+    "quote": 40
+  }
+}

@@ -1,0 +1,49 @@
+# Default OPLoRA voice-stability config for Amphoreus (RTX 5070 Laptop 8GB).
+# Charter: optional PEFT beside RAG — never a replacement for Heir scripture.
+
+model_name_or_path: Qwen/Qwen2.5-7B-Instruct
+output_dir: tools/oplora/outputs/pilot
+dataset_path: tools/oplora/datasets/heir_phainon.jsonl
+
+# PEFT / LoRA
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+
+# OPLoRA (paper: protect top-k singular directions)
+oplora_enabled: true
+projection_rank: 64
+
+# QLoRA — required on 8GB for 7B
+load_in_4bit: true
+bnb_4bit_compute_dtype: bfloat16
+bnb_4bit_quant_type: nf4
+bnb_4bit_use_double_quant: true
+
+# Training (tight VRAM)
+num_train_epochs: 1
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
+learning_rate: 1.0e-4
+max_seq_length: 512
+logging_steps: 5
+save_steps: 50
+warmup_ratio: 0.03
+lr_scheduler_type: cosine
+optim: paged_adamw_8bit
+gradient_checkpointing: true
+bf16: true
+report_to: none
+seed: 42
+
+# Dataset filter — pilot Heir (expand later)
+heir_filter: Phainon
+max_samples: 200
