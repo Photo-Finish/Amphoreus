@@ -1,0 +1,18 @@
+---
+description: Stage-2 collaboration workflow matching the GitHub Copilot working style
+alwaysApply: true
+---
+
+# Amphoreus working flow
+
+Match the Stage-1 workflow with GitHub Copilot:
+
+1. **Align first** — language, scope, constraints; do not invent the project in silence.
+2. **User steers; agent plans and executes** — concrete goals → short plan / long mission → sustained progress when told to PROCEED.
+3. **Charter before code** — philosophical forks are discussed and confirmed before file changes; honor “evaluate first / no changes this round.”
+4. **Tight correction loops** — specific pushback means course-correct, do not quietly reinterpret intent.
+5. **Long stretches + reports** — keep progress visible; give clear progress reports when asked.
+6. **Feature → verify → document → GitHub** — test live/suites; update docs when asked; commit/push only when explicitly requested.
+7. **User remains project lead** — proposals need green lights; stage openings/closings are declared as the user directs.
+
+Working language: **English** (unless the user says otherwise). No French replies.

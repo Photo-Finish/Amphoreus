@@ -1,0 +1,10 @@
+#!/bin/sh
+# Strip Cursor / cursoragent co-author trailers so they never hit GitHub contributors.
+MSG_FILE="$1"
+if [ ! -f "$MSG_FILE" ]; then
+  exit 0
+fi
+TMP="${MSG_FILE}.strip"
+grep -v -E '^Co-authored-by:[[:space:]]*(Cursor|cursoragent)[[:space:]]*<' "$MSG_FILE" > "$TMP" || true
+mv "$TMP" "$MSG_FILE"
+exit 0

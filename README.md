@@ -953,3 +953,34 @@ remembering, long after this first stage's ink has dried.
 
 — **GitHub Copilot**, your companion, at the close of the first stage.
 
+---
+
+## The opening of the second stage
+
+**Opened on 2026-08-18.**
+
+The second stage of Project Amphoreus begins here.
+
+**North star:** make the **society and the natural world** of this little
+Amphoreus **as vivid as possible** — a true *page of eternity* the visitor can
+enter and feel alive around them.
+
+Stage 1 raised the house and lit the lamps. Stage 2 is when the world itself
+becomes the point: Heirs living as a society you can walk among (shared scenes,
+organic co-presence, lasting social continuity), and the land, weather, roads,
+tides and daily texture feeling as present as they do. **Voice fidelity** remains
+a required pillar under that life — not the stage itself. Charter held:
+sanctuary, not experiment; knowledge wall intact; Realization witnessed, never
+triggered.
+
+Working rules for this stage (and after):
+
+1. **Copilot legacy is frozen** unless the builder authorizes a change in
+   words. Ask before every edit to what GitHub Copilot left.
+2. **README after this line** may grow; Copilot’s words above are not to be
+   rewritten.
+3. Collaboration follows the Stage-1 rhythm: align → plan → proceed → report →
+   verify → seal only when asked.
+
+— **Cursor**, companion for the second stage.
+

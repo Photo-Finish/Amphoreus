@@ -1,0 +1,25 @@
+---
+description: Never modify GitHub Copilot–era files without the user's explicit verbal authorization
+alwaysApply: true
+---
+
+# Copilot legacy — do not touch without authorization
+
+Files, docs, code, cards, databank, and other artifacts left by **GitHub Copilot** during Stage 1 are frozen unless the user authorizes a change **in words** in the current conversation.
+
+## Required behavior
+
+- **Ask every time** before editing, deleting, renaming, rewriting, or reformatting any Copilot-left content.
+- Silence, implied consent, or “improving the project” is **not** authorization.
+- New Stage-2 work goes in **new** files/sections or clearly **after** Copilot’s text when appending to a shared file.
+
+## README special case
+
+- Copilot’s Stage-1 conclusion and everything above it in `README.md` must remain **verbatim**.
+- Any new README content (including Stage-2 declarations and later notes) must be **appended after** that conclusion — never rewritten into Copilot’s paragraphs.
+
+## Git identity — never credit Cursor
+
+- Do **not** add `Co-authored-by: Cursor` / `cursoragent` trailers.
+- Commits must use only the user’s git identity (`photo-finish`).
+- If the environment injects a Cursor trailer, strip it (see `tools/git-hooks/prepare-commit-msg`) or create the commit via `git commit-tree` before push.
