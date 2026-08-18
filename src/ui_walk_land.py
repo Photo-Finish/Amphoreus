@@ -68,6 +68,9 @@ def region_options() -> List[Tuple[str, str, Optional[object]]]:
                 path = p
         if path is None:
             path = bg_path_for_place(place)
+        if path is not None:
+            from src.ui_backgrounds import land_art_path
+            path = land_art_path(path)
         out.append((label, place, path))
     return out
 
@@ -90,12 +93,65 @@ def _stage_for(ws, place: str) -> str:
         return ""
 
 
+def _render_walk_classic(
+    *,
+    label: str,
+    place: str,
+    art,
+    scene,
+    clock: str,
+    sky: str,
+    key_prefix: str,
+) -> None:
+    """Inset picture + named presence. No weather layer, no full-page figures."""
+    import streamlit as st
+    from src.ui_scene_life import render_presence_chips
+
+    st.title("Walk the Land")
+    st.caption(
+        "Stand in a region of Amphoreus — no Heir dialogue. "
+        "The picture stays inset; presence is a name you can touch."
+    )
+    meta = f"{clock} · **{place}** · {label}"
+    if sky:
+        meta += f" · {sky}"
+    st.caption(meta)
+    if art is not None:
+        st.image(str(art), use_container_width=True)
+    else:
+        st.warning(
+            "No area artwork on disk for this region yet. "
+            "Run `python tools/fetch_galgame_backgrounds.py` "
+            "(optionally `--force --width 1920`) when the wiki proxy is up."
+        )
+    render_presence_chips(
+        scene, heir_id="", key_prefix=f"{key_prefix}_{place}", place=place,
+    )
+    try:
+        from src.world.world_state import WorldState
+        ws = WorldState()
+        heirs_here = []
+        for cid, loc in (ws.agent_location or {}).items():
+            if loc == place and not ws.travel_info(cid):
+                heirs_here.append(cid)
+        if heirs_here:
+            names = [cid.replace("-", " ").title() for cid in heirs_here[:8]]
+            st.caption(
+                "Heirs in this place (silent presence): "
+                + ", ".join(names)
+                + " — open Visit an Heir to speak with them."
+            )
+    except Exception:
+        pass
+
+
 def render_walk_page(*, key_prefix: str = "walk") -> None:
-    """Full immersion: pick a region, stand in it, notice life. No Heir chat."""
+    """Pick a region and stand in it. Look follows the sidebar Land look radio."""
     import html as _html
     import streamlit as st
     from src.world.world_state import WorldState
     from src.world import ecosystem as eco
+    from src.ui_look import is_pictorial
     from src.ui_scene_life import (
         render_pictorial_stage,
         render_focus_strip,
@@ -153,11 +209,6 @@ def render_walk_page(*, key_prefix: str = "walk") -> None:
 
     label, place, art = by_label[pick]
 
-    if art is not None:
-        css = page_backdrop_css(art, max_width=1920)
-        if css:
-            st.markdown(css, unsafe_allow_html=True)
-
     consume_notice_query(place=place, heir_id="", key_prefix=f"{key_prefix}_{place}")
     clock = _clock_line(ws)
     sky = ""
@@ -171,6 +222,18 @@ def render_walk_page(*, key_prefix: str = "walk") -> None:
         eco.apply_tick(ws)
     except Exception:
         pass
+
+    if not is_pictorial():
+        _render_walk_classic(
+            label=label, place=place, art=art, scene=scene,
+            clock=clock, sky=sky, key_prefix=key_prefix,
+        )
+        return
+
+    if art is not None:
+        css = page_backdrop_css(art, max_width=1920)
+        if css:
+            st.markdown(css, unsafe_allow_html=True)
 
     stage = _stage_for(ws, place)
 

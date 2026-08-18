@@ -3,9 +3,12 @@ fetch_galgame_backgrounds.py — download Amphoreus AREA background artwork from
 the English HSR wiki (honkai-star-rail.fandom.com) to decorate the Galgame UI.
 
 The Amphoreus page carries the in-game area art as `Area_*.png` files (e.g.
-Area_"Eternal_Holy_City"_Okhema.png). This tool picks a curated set of them
-(the six great cities + key areas, including the Evernight variants), resolves
-the CDN thumbnails, and saves them as JPEGs in `assets/galgame/bg-<slug>.jpg`.
+Area_"Eternal_Holy_City"_Okhema.png). Those files are cinematic establishing
+shots (sky / titan / tree-face). The wiki has no separate street-level plaza
+files (Marmoreal Market, Kephale Plaza, etc. are Space Anchor icons only).
+This tool saves the establishing JPEGs in `assets/galgame/bg-<slug>.jpg`.
+Visit / Walk then crop them onto pavement via `src/ui_ground.py`
+(`assets/galgame/ground/`).
 
 NETWORK RECIPE (same as fetch_wiki_amphoreus.py): fandom + the image CDN are
 DNS-poisoned and firewalled; works via the iKuuu proxy (127.0.0.1:12000) with
@@ -211,6 +214,11 @@ def main():
             sep = "&" if "?" in url else "?"
             raw = get(f"{url}{sep}cb=20260818230000")
             save_jpg(raw, dest, max_px=args.width)
+            try:
+                from src.ui_ground import write_ground_jpeg
+                write_ground_jpeg(dest)
+            except Exception as e:  # noqa: BLE001
+                print(f"  (ground crop skipped: {e})")
             print(f"  ✓ {slug} -> {dest.name} ({len(raw)//1024} KB)")
             ok += 1
         except Exception as e:  # noqa: BLE001

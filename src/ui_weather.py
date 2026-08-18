@@ -364,6 +364,29 @@ def backdrop_slug(image_path) -> str:
     return stem[3:] if stem.startswith("bg-") else stem
 
 
+def ground_css_position(image_path) -> str:
+    """Pin the backdrop onto pavement / path, not the sky."""
+    p = Path(image_path) if image_path else None
+    if p and p.parent.name == "ground":
+        return "center 62%"
+    slug = backdrop_slug(image_path)
+    return {
+        "okhema": "18% 88%",
+        "okhema-evernight": "18% 86%",
+        "aedes-elysiae": "center 68%",
+        "dawncloud": "center 78%",
+        "kremnos": "center 84%",
+        "kremnos-ruins": "center 82%",
+        "grove": "center 88%",
+        "murmuring-woods": "42% 48%",
+        "styxia": "22% 84%",
+        "dragonbone-city": "20% 82%",
+        "janusopolis": "center 88%",
+        "abyss-of-fate": "center 86%",
+        "memortis-shore": "18% 78%",
+    }.get(slug, "center 78%")
+
+
 def read_palette(image_path) -> dict:
     """Body/heading/glass/scrim for words over this backdrop."""
     slug = backdrop_slug(image_path)
@@ -410,13 +433,14 @@ def read_palette(image_path) -> dict:
 def page_backdrop_css(image_path, max_width=1920) -> str:
     """CSS that paints the region art behind the whole Streamlit page.
 
-    ``cover`` crops to the live viewport aspect (wide pages keep the street;
-    tall pages keep the sky). Text colour follows the sampled backdrop.
+    ``cover`` plus a ground-framed JPEG (``src.ui_ground``) keep pavement,
+    paths, and terraces in the viewport instead of the cinematic sky.
     """
     uri = _data_uri_jpeg(image_path, max_width=max_width)
     if not uri:
         return ""
     pal = read_palette(image_path)
+    pos = ground_css_position(image_path)
     return f"""
 <style>
 .stApp {{ background: transparent !important; }}
@@ -424,18 +448,18 @@ def page_backdrop_css(image_path, max_width=1920) -> str:
   background-image: url('{uri}') !important;
   background-size: cover !important;
   background-repeat: no-repeat !important;
-  background-position: center 42% !important;
+  background-position: {pos} !important;
   background-attachment: fixed !important;
   background-color: #0a0814 !important;
 }}
 @media (min-aspect-ratio: 16/9) {{
   [data-testid="stAppViewContainer"] {{
-    background-position: center 58% !important;
+    background-position: {pos} !important;
   }}
 }}
 @media (max-aspect-ratio: 3/4) {{
   [data-testid="stAppViewContainer"] {{
-    background-position: center 32% !important;
+    background-position: center 70% !important;
   }}
 }}
 [data-testid="stAppViewContainer"]::before {{
@@ -448,6 +472,35 @@ def page_backdrop_css(image_path, max_width=1920) -> str:
 }}
 [data-testid="stHeader"] {{
   background: rgba(10,8,20,.28) !important;
+  z-index: 60 !important;
+  pointer-events: auto !important;
+}}
+[data-testid="stToolbar"],
+[data-testid="stDecoration"],
+[data-testid="stAppToolbar"],
+[data-testid="stSidebarNav"],
+[data-testid="stSidebarNavItems"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stLogoSpacer"] {{
+  z-index: 60 !important;
+  pointer-events: auto !important;
+}}
+section[data-testid="stSidebar"] {{
+  z-index: 50 !important;
+  pointer-events: auto !important;
+}}
+[data-testid="stTabs"],
+[data-testid="stTab"],
+[role="tablist"],
+[role="tab"],
+[data-baseweb="tab-list"],
+[data-baseweb="tab"] {{
+  position: relative !important;
+  z-index: 80 !important;
+  pointer-events: auto !important;
+}}
+[role="tablist"] {{
+  isolation: isolate;
 }}
 [data-testid="stAppViewContainer"] > .main {{
   background: transparent !important;
@@ -477,13 +530,19 @@ def page_backdrop_css(image_path, max_width=1920) -> str:
 .block-container [data-testid="stTooltipHoverTarget"],
 .block-container [data-testid="stTabs"],
 .block-container .amp-read,
-.block-container .stMarkdown:has(.amp-read),
+.block-container .stMarkdown:has(.amp-read) {{
+  position: relative !important;
+  z-index: 10 !important;
+  pointer-events: auto !important;
+}}
 [data-testid="stBottomBlockContainer"],
 [data-testid="stHeader"],
 [data-testid="stToolbar"],
 [data-testid="stTabs"],
 [data-baseweb="tab-list"],
 [data-baseweb="tab"],
+[data-testid="stSidebarNav"],
+[data-testid="stSidebarNavLink"],
 section[data-testid="stSidebar"] {{
   pointer-events: auto !important;
 }}
@@ -493,9 +552,9 @@ section[data-testid="stSidebar"] {{
 }}
 [data-amp-land-wrap="1"] {{
   position: fixed !important;
-  inset: 0 !important;
+  inset: 5.75rem 0 0 0 !important;
   width: 100vw !important;
-  height: 100vh !important;
+  height: calc(100vh - 5.75rem) !important;
   margin: 0 !important;
   padding: 0 !important;
   overflow: visible !important;
@@ -506,15 +565,22 @@ section[data-testid="stSidebar"] {{
 }}
 iframe[data-amp-land="1"] {{
   position: fixed !important;
-  inset: 0 !important;
+  inset: 5.75rem 0 0 0 !important;
   width: 100vw !important;
-  height: 100vh !important;
+  height: calc(100vh - 5.75rem) !important;
+  min-width: 100% !important;
+  min-height: calc(100vh - 5.75rem) !important;
   max-width: none !important;
   max-height: none !important;
   border: none !important;
   z-index: 0 !important;
   background: transparent !important;
   pointer-events: auto !important;
+}}
+[data-testid="stTabPanel"][hidden] iframe[data-amp-land="1"],
+[data-testid="stTabPanel"][hidden] [data-amp-land-wrap="1"] {{
+  display: none !important;
+  pointer-events: none !important;
 }}
 .amp-read {{
   background: {pal["glass"]};
@@ -570,6 +636,22 @@ section[data-testid="stSidebar"] {{
 .stCaption, .stAlert {{
   text-shadow: {pal["shadow"]};
 }}
+html.amp-land-off [data-testid="stAppViewContainer"] {{
+  background-image: none !important;
+  background-color: #0b0a14 !important;
+}}
+html.amp-land-off [data-testid="stAppViewContainer"]::before {{
+  display: none !important;
+}}
+html.amp-land-off iframe[data-amp-land="1"],
+html.amp-land-off [data-amp-land-wrap="1"] {{
+  display: none !important;
+  pointer-events: none !important;
+}}
+html.amp-land-off [data-testid="stAppViewContainer"] > .main,
+html.amp-land-off .block-container {{
+  pointer-events: auto !important;
+}}
 </style>
 """
 
@@ -595,7 +677,7 @@ def scene_html(image_path, place, effect, sky, height=300, rounded=True,
         f"<div style=\"position:relative;height:{height}px;{radius}{border}"
         f"overflow:hidden;\">"
         f"<div style=\"position:absolute;inset:0;{bg_css}background-size:cover;"
-        f"background-position:center;\"></div>"
+        f"background-position:{ground_css_position(image_path)};\"></div>"
         f"{_overlay_html(effect, sky, place)}"
         "</div>"
     )

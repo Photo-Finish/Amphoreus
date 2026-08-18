@@ -18,6 +18,13 @@ in-game stills and pull the generator into CGI.
 - Mermaid (siren is song, not a figure)
 - Named Chrysos Heirs
 
+## On-stage (land UI)
+
+Painted PNGs are only for **outdoor interactive** figures (chimera, dromas,
+square cat, civilian, well, stall, forge, gate, boat, kite, olive, cicada…).
+Indoor furniture (bath, hearth, lamp, scroll, loom) is not staged.
+Ambient grass / wind / wheat / dawn is CSS or SVG, not a painted sprite.
+
 ## Canon shapes
 
 - **Little Chimera:** tiny quadruped, huge round head, short body, fur collar,

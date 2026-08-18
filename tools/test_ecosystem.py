@@ -66,6 +66,9 @@ check("chimera in Okhema day", "chimera" in kinds)
 check("grass or wind present", "grass" in kinds or "wind" in kinds)
 check("no shore in Okhema", "shore" not in kinds)
 check("no faults Okhema", not tick["faults"], str(tick["faults"]))
+check("Okhema outdoor — no indoor furniture",
+      not (kinds & {"bath", "hearth", "loom", "scroll", "lamp"}),
+      str(kinds & {"bath", "hearth", "loom", "scroll", "lamp"}))
 
 chim = next(b for b in scene if b["kind"] == "chimera")
 inter = eco.interact(ws, chim["id"])
@@ -83,6 +86,10 @@ check("grove has olive or cicada", "olive" in kg or "cicada" in kg)
 check("grove no chimera", "chimera" not in kg)
 check("grove no shore", "shore" not in kg)
 check("grove no boat", "boat" not in kg)
+check("grove no scroll", "scroll" not in kg)
+check("grove outdoor — no indoor furniture",
+      not (kg & {"bath", "hearth", "loom", "scroll", "lamp"}),
+      str(kg & {"bath", "hearth", "loom", "scroll", "lamp"}))
 check("grove faults empty", not eco.logic_faults(sc_g, "Grove of Epiphany"))
 
 print("== Night Okhema: chimeras rest ==")

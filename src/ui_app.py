@@ -95,6 +95,7 @@ st.set_page_config(
     page_title="Project Amphoreus — Chrysos Heirs",
     page_icon="🔥",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 # --------------------------------------------------------------------------- #
@@ -286,6 +287,8 @@ manager = get_manager()
 # Sidebar — Character Selection
 st.sidebar.title("The Sanctuary")
 st.sidebar.caption("Amphoreus — pick an Heir, then visit or walk the land.")
+from src.ui_look import render_look_picker  # noqa: E402
+render_look_picker()
 
 # LLM status
 if not is_visitor():
@@ -952,8 +955,8 @@ with main_tab:
     # The backdrop follows the Heir's CURRENT place in the little Amphoreus
     # (falling back to their home city, then the default banner).
     try:
-        from src.ui_backgrounds import bg_path as _loc_bg, current_location as _loc_now
-        _chat_bg = _loc_bg(selected)
+        from src.ui_backgrounds import bg_path as _loc_bg, current_location as _loc_now, land_art_path
+        _chat_bg = land_art_path(_loc_bg(selected))
         _chat_place = _loc_now(selected)
     except Exception:
         _chat_bg = BG_IMAGE if BG_IMAGE.exists() else None
@@ -966,54 +969,62 @@ with main_tab:
     except Exception:
         pass
     if _chat_bg:
-        # Place art is the page backdrop; figures sit on the whole viewport.
-        try:
-            from src.ui_weather import effect_for as _wx_fx, page_backdrop_css
-            from src.ui_scene_life import render_pictorial_stage, render_focus_strip
-            from src.world import ecosystem as _eco_ui
-            from src.world.world_state import WorldState as _WS_eco
-            from src.ui_role import is_visitor as _is_vis_stage
-            _bg_ok = False
+        from src.ui_look import is_pictorial as _is_pictorial_visit
+        if _is_pictorial_visit():
+            # Place art is the page backdrop; figures sit on the whole viewport.
             try:
-                _bg_css = page_backdrop_css(_chat_bg, max_width=1600)
-                if _bg_css:
-                    st.markdown(_bg_css, unsafe_allow_html=True)
-                    _bg_ok = True
-            except Exception:
-                pass
-            _fx, _sky = _wx_fx(_chat_place)
-            _eco_sc = _eco_ui.scene_for_heir(_WS_eco(), selected)
-            try:
-                render_pictorial_stage(
-                    _chat_bg, _chat_place or info["name"], _fx, _sky, _eco_sc,
-                    max_width=1600, dense=False, page_layer=True,
-                    key=f"eco_{selected}",
-                )
-            except Exception:
+                from src.ui_weather import effect_for as _wx_fx, page_backdrop_css
+                from src.ui_scene_life import render_pictorial_stage, render_focus_strip
+                from src.world import ecosystem as _eco_ui
+                from src.world.world_state import WorldState as _WS_eco
+                from src.ui_role import is_visitor as _is_vis_stage
+                _bg_ok = False
+                try:
+                    _bg_css = page_backdrop_css(_chat_bg, max_width=1600)
+                    if _bg_css:
+                        st.markdown(_bg_css, unsafe_allow_html=True)
+                        _bg_ok = True
+                except Exception:
+                    pass
+                _fx, _sky = _wx_fx(_chat_place)
+                _eco_sc = _eco_ui.scene_for_heir(_WS_eco(), selected)
+                try:
+                    render_pictorial_stage(
+                        _chat_bg, _chat_place or info["name"], _fx, _sky, _eco_sc,
+                        max_width=1600, dense=False, page_layer=True,
+                        key=f"eco_{selected}",
+                    )
+                except Exception:
+                    if not _bg_ok:
+                        raise
                 if not _bg_ok:
-                    raise
-            if not _bg_ok:
-                from src.ui_weather import render_scene as _wx_scene
-                _wx_scene(_chat_place, image_path=_chat_bg,
-                          title=f"{info['name']} — {_chat_place}" if _chat_place else info["name"],
-                          height=300)
-            try:
-                render_focus_strip(
-                    _eco_sc, heir_id=selected, heir_name=info["name"],
-                    key_prefix=f"eco_{selected}",
-                    place=_chat_place or None,
-                    read_only=_is_vis_stage(),
-                )
-            except Exception:
-                pass
-        except Exception:
-            try:
-                from src.ui_weather import render_scene as _wx_scene
-                _wx_scene(_chat_place, image_path=_chat_bg,
-                          title=f"{info['name']} — {_chat_place}" if _chat_place else info["name"],
-                          height=300)
+                    st.image(str(_chat_bg), width="stretch")
+                try:
+                    render_focus_strip(
+                        _eco_sc, heir_id=selected, heir_name=info["name"],
+                        key_prefix=f"eco_{selected}",
+                        place=_chat_place or None,
+                        read_only=_is_vis_stage(),
+                    )
+                except Exception:
+                    pass
             except Exception:
                 st.image(str(_chat_bg), width="stretch")
+        else:
+            st.image(str(_chat_bg), width="stretch")
+            try:
+                from src.world import ecosystem as _eco_ui
+                from src.world.world_state import WorldState as _WS_eco
+                from src.ui_scene_life import render_presence_chips
+                from src.ui_role import is_visitor as _is_vis_stage
+                _eco_sc = _eco_ui.scene_for_heir(_WS_eco(), selected)
+                render_presence_chips(
+                    _eco_sc, heir_id="" if _is_vis_stage() else selected,
+                    key_prefix=f"eco_{selected}",
+                    place=_chat_place or None,
+                )
+            except Exception:
+                pass
         if _chat_place:
             st.caption(f"{info['name']} is in **{_chat_place}**.")
     hero_l, hero_r = st.columns([1, 3], gap="large")

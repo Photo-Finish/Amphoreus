@@ -25,6 +25,9 @@ SHORE = set(le.SEA)
 GROVE = set(le.GROVE)
 FIELDS = set(le.FIELDS)
 
+# Indoor furniture lives in lore / mechanisms. The land UI is outdoors.
+INDOOR_LAND = frozenset({"bath", "hearth", "loom", "scroll", "lamp"})
+
 # Visual / interact kinds the Visit UI knows how to paint.
 KIND_VISUAL = {
     "chimera": "chimera",
@@ -787,46 +790,41 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
 def hotspot_for(kind: str, idx: int) -> dict:
     """Where to paint a clickable hotspot on the scene (percent CSS)."""
     table = {
-        "chimera": ("22%", "18%"),
-        "dromas": ("72%", "20%"),
-        "wheat": ("40%", "8%"),
-        "shore": ("50%", "6%"),
-        "grove_leaf": ("30%", "62%"),
-        "grass": ("18%", "4%"),
-        "wind": ("80%", "70%"),
-        "hearth_cat": ("58%", "14%"),
-        "dawn": ("48%", "78%"),
-        "thief_star": ("82%", "82%"),
-        "lamp": ("12%", "28%"),
-        "hearth": ("8%", "16%"),
-        "bath": ("88%", "22%"),
-        "well": ("64%", "18%"),
-        "shrine": ("10%", "36%"),
-        "market_stall": ("36%", "22%"),
-        "forge": ("78%", "18%"),
-        "loom": ("24%", "26%"),
-        "scroll": ("44%", "48%"),
-        "gate": ("50%", "12%"),
-        "siren": ("70%", "10%"),
-        "maze": ("28%", "10%"),
-        "pebble": ("16%", "6%"),
-        "pearl": ("62%", "8%"),
-        "fountain": ("46%", "16%"),
-        "olive": ("20%", "30%"),
-        "cicada": ("34%", "58%"),
-        "laundry": ("86%", "32%"),
-        "boat": ("78%", "8%"),
-        "net": ("68%", "7%"),
-        "ribbon": ("14%", "40%"),
+        "chimera": ("22%", "16%"),
+        "dromas": ("72%", "12%"),
+        "wheat": ("40%", "6%"),
+        "shore": ("50%", "4%"),
+        "grove_leaf": ("30%", "48%"),
+        "grass": ("18%", "3%"),
+        "wind": ("80%", "68%"),
+        "hearth_cat": ("58%", "12%"),
+        "dawn": ("48%", "76%"),
+        "thief_star": ("82%", "80%"),
+        "well": ("64%", "12%"),
+        "shrine": ("12%", "14%"),
+        "market_stall": ("36%", "14%"),
+        "forge": ("78%", "12%"),
+        "gate": ("50%", "10%"),
+        "siren": ("70%", "8%"),
+        "maze": ("28%", "8%"),
+        "pebble": ("16%", "5%"),
+        "pearl": ("62%", "6%"),
+        "fountain": ("46%", "12%"),
+        "olive": ("20%", "16%"),
+        "cicada": ("34%", "42%"),
+        "laundry": ("86%", "28%"),
+        "boat": ("78%", "6%"),
+        "net": ("68%", "5%"),
+        "ribbon": ("14%", "26%"),
         "mosaic": ("50%", "4%"),
-        "courier": ("70%", "76%"),
-        "banner": ("84%", "48%"),
-        "incense": ("8%", "40%"),
-        "kite": ("60%", "72%"),
-        "mill": ("32%", "14%"),
+        "courier": ("70%", "62%"),
+        "banner": ("84%", "32%"),
+        "incense": ("8%", "16%"),
+        "kite": ("60%", "68%"),
+        "mill": ("32%", "12%"),
         "tidepool": ("56%", "5%"),
-        "pillar": ("28%", "22%"),
-        "resident": ("40%", "24%"),
+        "pillar": ("28%", "12%"),
+        "resident": ("40%", "14%"),
     }
     left, bottom = table.get(kind, ("50%", "20%"))
     if idx > 1:
@@ -897,11 +895,10 @@ def derive_scene(world, place: Optional[str] = None,
             out.append(_mk_being("thief_star", place, 1, world, flags, character_id))
         return out[:8]
 
-    # Sky / hour furniture
+    # Sky / hour furniture (the Device and the Thief Star — not household lamps)
     out.append(_mk_being("dawn", place, 1, world, flags, character_id))
     if period == 4 or flags.get("device_withdrawn"):
         out.append(_mk_being("thief_star", place, 1, world, flags, character_id))
-        out.append(_mk_being("lamp", place, 1, world, flags, character_id))
 
     # Place-bound life
     if place in CHIMERA_CITIES:
@@ -910,8 +907,6 @@ def derive_scene(world, place: Optional[str] = None,
             out.append(_mk_being("chimera", place, i, world, flags, character_id))
         if flags.get("resting") or period in (0, 4):
             out.append(_mk_being("hearth_cat", place, 1, world, flags, character_id))
-        if place in {"Okhema", "Eternal Holy City"}:
-            out.append(_mk_being("bath", place, 1, world, flags, character_id))
 
     if place in DROMAS_STRONG or place in le.CITYISH:
         out.append(_mk_being("dromas", place, 1, world, flags, character_id))
@@ -930,17 +925,13 @@ def derive_scene(world, place: Optional[str] = None,
 
     if place in GROVE:
         out.append(_mk_being("grove_leaf", place, 1, world, flags, character_id))
-        out.append(_mk_being("scroll", place, 1, world, flags, character_id))
 
     if place not in GROVE and place in le.CITYISH:
         out.append(_mk_being("grass", place, 1, world, flags, character_id))
         out.append(_mk_being("wind", place, 1, world, flags, character_id))
-        out.append(_mk_being("hearth", place, 1, world, flags, character_id))
         out.append(_mk_being("well", place, 1, world, flags, character_id))
         if flags.get("market_open") and place not in GROVE:
             out.append(_mk_being("market_stall", place, 1, world, flags, character_id))
-        if month == 9:
-            out.append(_mk_being("loom", place, 1, world, flags, character_id))
 
     if place in le.SHRINE:
         out.append(_mk_being("shrine", place, 1, world, flags, character_id))
@@ -1018,6 +1009,8 @@ def derive_scene(world, place: Optional[str] = None,
             "banner",
         }]
 
+    out = [b for b in out if b.get("kind") not in INDOOR_LAND]
+
     # Keep a readable stage, not a census
     preferred = []
     seen_kinds = set()
@@ -1050,6 +1043,9 @@ def logic_faults(scene: List[dict], place: str) -> List[str]:
         faults.append("Banner outside Kremnos family")
     if "mill" in kinds and place not in FIELDS:
         faults.append("Mill outside field places")
+    indoor = kinds & INDOOR_LAND
+    if indoor:
+        faults.append("Indoor furniture on outdoor land: " + ", ".join(sorted(indoor)))
     for b in scene:
         if b.get("status") in {"dead", "starving", "plague"}:
             faults.append(f"Forbidden status on {b.get('id')}")

@@ -99,6 +99,17 @@ def bg_path_for_place(place: str):
     return DEFAULT_BG if DEFAULT_BG.exists() else None
 
 
+def land_art_path(path):
+    """Visit / Walk art: wiki Area JPEG cropped onto pavement / path / terrace."""
+    if not path:
+        return None
+    try:
+        from src.ui_ground import ensure_grounded
+        return ensure_grounded(path)
+    except Exception:
+        return Path(path)
+
+
 def place_for_slug(slug: str) -> str:
     """Best-effort world place name for a bg slug (for weather/eco derive)."""
     if not slug:

@@ -19,12 +19,16 @@ st.set_page_config(
     page_title="Walk the Land — Project Amphoreus",
     page_icon="🌿",
     layout="wide",
-    initial_sidebar_state="collapsed",
 )
 
 from src.ui_gate import enforce_auth  # noqa: E402
 
 enforce_auth()
+
+from src.ui_look import render_look_picker  # noqa: E402
+
+st.sidebar.title("The Sanctuary")
+render_look_picker()
 
 from src.ui_walk_land import render_walk_page  # noqa: E402
 

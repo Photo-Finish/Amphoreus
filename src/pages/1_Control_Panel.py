@@ -24,6 +24,12 @@ st.set_page_config(
 from src.ui_gate import enforce_auth, get_manager  # noqa: E402
 
 enforce_auth()
+
+from src.ui_look import render_look_picker  # noqa: E402
+
+st.sidebar.title("The Sanctuary")
+render_look_picker()
+
 manager = get_manager()
 characters = manager.list_available_characters()
 

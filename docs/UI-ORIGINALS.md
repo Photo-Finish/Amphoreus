@@ -6,6 +6,13 @@ The **previous settings still exist** in git and as frozen copies on disk.
 Copilot-era Stage 1 files remain frozen under the project rule. This archive
 is only for the land UI that Stage 2 replaced.
 
+The live app keeps both looks. Sidebar **Land look** switches:
+
+- **Pictures on the land** — full-bleed art + figures (the current default).
+- **Classic (inset + names)** — one inset picture and named buttons. No weather
+  overlay, no grass/rain layer, no full-page figures. Restore-from-git is still
+  available below if you want the exact 113d7c2 files.
+
 ## Restore points (git)
 
 | Tag | Commit | What it is |

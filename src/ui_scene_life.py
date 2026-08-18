@@ -1,9 +1,9 @@
 """Visit / Walk scene life — figures on the page art, not a second picture.
 
-Area art is the Streamlit page backdrop. Living presence is painted as SVG
-silhouettes across the viewport; clicks run inside ``st.components.v1.html``
-and set ``?amp_notice=`` on the parent (preserving ``amp_guest``). Readable
-copy sits in glass panels.
+Area art is the Streamlit page backdrop. Interactive outdoor figures use
+AI-painted PNGs; grass/wind/wheat/dawn are CSS or SVG. Clicks run inside
+``st.components.v1.html`` and set ``?amp_notice=`` on the parent (preserving
+``amp_guest``). Readable copy sits in glass panels.
 """
 from __future__ import annotations
 
@@ -221,6 +221,20 @@ _DEFAULT_SPRITE = (
 
 _SPRITE_DIR = Path(__file__).resolve().parent.parent / "assets" / "life_sprites"
 
+# AI-painted sprites are only for outdoor beings you can walk up to and touch.
+# Ambient (grass, wind, wheat, dawn) is CSS/SVG. Indoor furniture is not staged.
+_PAINTED_INTERACTIVE = frozenset({
+    "chimera", "dromas", "hearth_cat", "resident",
+    "well", "fountain", "shrine", "market_stall", "forge", "gate",
+    "courier", "boat", "kite", "olive", "cicada", "pearl", "pebble",
+    "mill", "laundry", "banner", "incense", "pillar",
+})
+_AMBIENT_STAGE = frozenset({
+    "grass", "wind", "wheat", "grove_leaf", "shore", "mosaic",
+    "bath", "hearth", "loom", "scroll", "lamp",
+})
+_SKY_KINDS = frozenset({"kite", "courier", "dawn", "thief_star", "wind"})
+
 # Painted walk/fly cycles — consecutive frames stitched L→R.
 _FILM_DUR = {
     "chimera": "0.64s",
@@ -254,17 +268,19 @@ def sprite_film_uri(kind: str) -> str:
 
 
 def _sprite_markup(kind: str) -> str:
-    film = sprite_film_uri(kind)
-    if film:
-        dur = _FILM_DUR.get(kind, "0.8s")
-        return (
-            f'<span class="amp-sprite-film" style="'
-            f"background-image:url('{film}');"
-            f"--amp-frames:4;--amp-film-dur:{dur};\"></span>"
-        )
-    uri = sprite_png_uri(kind)
-    if uri:
-        return f'<img src="{uri}" alt="" draggable="false" />'
+    # Painted PNGs/films only for outdoor figures you can actually touch.
+    if kind in _PAINTED_INTERACTIVE:
+        film = sprite_film_uri(kind)
+        if film:
+            dur = _FILM_DUR.get(kind, "0.8s")
+            return (
+                f'<span class="amp-sprite-film" style="'
+                f"background-image:url('{film}');"
+                f"--amp-frames:4;--amp-film-dur:{dur};\"></span>"
+            )
+        uri = sprite_png_uri(kind)
+        if uri:
+            return f'<img src="{uri}" alt="" draggable="false" />'
     inner = _SPRITE_PATHS.get(kind) or _DEFAULT_SPRITE
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" '
@@ -416,6 +432,15 @@ def _css() -> str:
   animation: amp-sprite-breathe 3.2s ease-in-out infinite;
   pointer-events: auto;
 }
+.amp-sprite::after {
+  content: "";
+  position: absolute; left: 18%; right: 18%; bottom: 6%;
+  height: 10px;
+  background: radial-gradient(ellipse, rgba(0,0,0,.42), transparent 72%);
+  pointer-events: none;
+}
+.amp-sprite.sky { animation: none; }
+.amp-sprite.sky::after { display: none; }
 .amp-sprite svg, .amp-sprite img { width: 100%; height: 100%; display: block; pointer-events: none; }
 .amp-sprite img { object-fit: contain; filter: drop-shadow(0 2px 5px rgba(0,0,0,.55)); }
 .amp-sprite-film {
@@ -473,14 +498,6 @@ def life_overlay_html(scene: List[dict], place: str = "", *, dense: bool = False
                 f'<div class="amp-grass-blade" style="left:{x}%;'
                 f'animation-delay:{delay:.2f}s;height:{14 + (i % 5) * 3}px;"></div>'
             )
-
-    chimeras = [b for b in scene if b.get("kind") == "chimera"]
-    n_chim = min(len(chimeras), 3 if dense else 2)
-    for i, ch in enumerate(chimeras[:n_chim]):
-        cls = "amp-chimera-dot ailing" if ch.get("status") == "ailing" else "amp-chimera-dot"
-        parts.append(
-            f'<div class="{cls}" style="animation-delay:{i * 5.5}s;bottom:{16 + i * 8}%;"></div>'
-        )
 
     if "grove_leaf" in kinds:
         leaf_xs = (18, 42, 67, 81) if not dense else (12, 28, 44, 58, 72, 86)
@@ -552,12 +569,17 @@ def pictorial_stage_html(
     ambient = life_overlay_html(scene, place, dense=dense)
     # Cap on-stage figures so the art stays readable (full list lives in eco).
     _PRIORITY = (
-        "chimera", "dromas", "hearth_cat", "resident", "dawn", "thief_star",
+        "chimera", "dromas", "hearth_cat", "resident",
         "well", "fountain", "forge", "boat", "siren", "olive", "cicada",
-        "pearl", "shrine", "gate", "hearth", "market_stall", "bath",
-        "laundry", "mill", "kite", "courier", "banner", "scroll",
+        "pearl", "shrine", "gate", "market_stall",
+        "laundry", "mill", "kite", "courier", "banner", "pillar", "incense",
+        "dawn", "thief_star",
     )
-    clickable = [b for b in (scene or []) if b.get("clickable") and b.get("id")]
+    clickable = [
+        b for b in (scene or [])
+        if b.get("clickable") and b.get("id")
+        and str(b.get("kind") or "") not in _AMBIENT_STAGE
+    ]
     ranked = sorted(
         clickable,
         key=lambda b: (
@@ -566,7 +588,7 @@ def pictorial_stage_html(
             str(b.get("id")),
         ),
     )
-    max_sprites = 14 if dense else 10
+    max_sprites = 10 if dense else 7
     sprites = []
     for b in ranked[:max_sprites]:
         kind = str(b.get("kind") or "")
@@ -576,9 +598,10 @@ def pictorial_stage_html(
         oid = _html.escape(str(b.get("id")), quote=True)
         title = _html.escape(str(b.get("name") or kind or "life"), quote=True)
         ailing = " ailing" if b.get("status") == "ailing" else ""
+        sky = " sky" if kind in _SKY_KINDS else ""
         delay = abs(hash(oid)) % 17 / 10.0
         sprites.append(
-            f'<button type="button" class="amp-sprite{ailing}" data-oid="{oid}" '
+            f'<button type="button" class="amp-sprite{ailing}{sky}" data-oid="{oid}" '
             f'title="{title}" aria-label="{title}" '
             f'style="left:{left};bottom:{bottom};animation-delay:{delay:.1f}s;">'
             f'<span class="amp-sprite-halo"></span>'
@@ -622,7 +645,7 @@ def pictorial_stage_html(
         )
         art_div = (
             f'<div style="position:absolute;inset:0;background-image:url(\'{uri}\');'
-            f'background-size:cover;background-position:center;"></div>'
+            f'background-size:cover;background-position:center 62%;"></div>'
         )
 
     pin_js = ""
@@ -631,17 +654,29 @@ def pictorial_stage_html(
             "  var f = window.frameElement;\n"
             "  if (f) {\n"
             "    f.setAttribute('data-amp-land', '1');\n"
-            "    f.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;"
-            "border:0;z-index:0;background:transparent;pointer-events:auto;"
+            "    f.removeAttribute('width'); f.removeAttribute('height');\n"
+            "    f.style.cssText = 'position:fixed;top:5.75rem;left:0;right:0;bottom:0;"
+            "width:100vw;height:calc(100vh - 5.75rem);border:0;z-index:0;"
+            "background:transparent;pointer-events:auto;"
             "max-width:none;max-height:none;';\n"
             "    var p = f.parentElement;\n"
             "    if (p) {\n"
             "      p.setAttribute('data-amp-land-wrap', '1');\n"
-            "      p.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;"
+            "      p.style.cssText = 'position:fixed;top:5.75rem;left:0;right:0;bottom:0;"
+            "width:100vw;height:calc(100vh - 5.75rem);"
             "margin:0;padding:0;overflow:visible;z-index:0;border:none;"
             "background:transparent;pointer-events:none;';\n"
             "    }\n"
             "  }\n"
+            "  try {\n"
+            "    window.parent.Function(\n"
+            "      'if(window.__ampNoticeBound)return;window.__ampNoticeBound=true;'\n"
+            "      + 'window.addEventListener(\"message\",function(ev){try{var d=ev.data;'\n"
+            "      + 'if(!d||d.amp!==\"notice\"||!d.oid)return;var u=new URL(location.href);'\n"
+            "      + 'u.searchParams.set(\"amp_notice\",String(d.oid));location.href=u.toString();}'\n"
+            "      + 'catch(e){}});'\n"
+            "    )();\n"
+            "  } catch (e) {}\n"
         )
 
     body = (
@@ -656,6 +691,7 @@ def pictorial_stage_html(
         "(function(){\n"
         f"{pin_js}"
         "  function go(oid){\n"
+        "    try { window.parent.postMessage({amp:'notice', oid:oid}, '*'); } catch (e) {}\n"
         "    try {\n"
         "      var u = new URL(window.parent.location.href);\n"
         "      u.searchParams.set('amp_notice', oid);\n"
@@ -735,6 +771,52 @@ def _do_notice(*, oid: str, heir_id: str, place: Optional[str],
         st.session_state["eco_focus"] = oid
     else:
         st.session_state[f"{key_prefix}_flash"] = res.get("reason")
+
+
+def render_presence_chips(
+    scene: List[dict],
+    *,
+    heir_id: str = "",
+    key_prefix: str,
+    place: Optional[str] = None,
+) -> None:
+    """Classic land: named buttons under the inset picture. No overlays."""
+    import streamlit as st
+
+    flash = st.session_state.pop(f"{key_prefix}_flash", None)
+    if flash:
+        st.info(str(flash))
+    _render_pocket()
+
+    skip = {
+        "grass", "wind", "wheat", "grove_leaf", "shore", "mosaic",
+        "bath", "hearth", "loom", "scroll", "lamp",
+    }
+    beings = [
+        b for b in (scene or [])
+        if b.get("id")
+        and (b.get("clickable") or b.get("kind"))
+        and str(b.get("kind") or "") not in skip
+    ]
+    st.markdown("#### Presence")
+    if not beings:
+        st.caption("Quiet here this hour.")
+        return
+    st.caption("Touch a name to notice who or what is here.")
+    shown = beings[:12]
+    for row_i in range(0, len(shown), 4):
+        chunk = shown[row_i:row_i + 4]
+        cols = st.columns(len(chunk))
+        for col, b in zip(cols, chunk):
+            oid = str(b.get("id") or "")
+            name = str(b.get("name") or b.get("kind") or "life")
+            with col:
+                if st.button(name, key=f"{key_prefix}_chip_{oid}"):
+                    _do_notice(
+                        oid=oid, heir_id=heir_id, place=place,
+                        key_prefix=key_prefix,
+                    )
+                    st.rerun()
 
 
 def render_stage_bar(
