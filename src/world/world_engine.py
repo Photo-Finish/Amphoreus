@@ -96,6 +96,7 @@ class WorldEngine:
         }
         if seed is not None:
             random.seed(seed)
+        self._catchup = False
 
     # ------------------------------------------------------------------ #
     def _name_of(self, character_id: str) -> str:
@@ -239,6 +240,7 @@ class WorldEngine:
             self.chronicle.append({"time": time_str, "text": night})
             self.world.add_event(night)
             self.world.save()
+            self._note_lived()
             return [night]
 
         # Active hour — every Heir decides freely (unless they are on the road).
@@ -321,6 +323,7 @@ class WorldEngine:
             self.world.add_event(milestone)
 
         self.world.save()
+        self._note_lived()
         return lines
 
     def _world_texture(self, time_str: str, flags: Optional[dict] = None) -> List[str]:
@@ -573,7 +576,17 @@ class WorldEngine:
     # ------------------------------------------------------------------ #
     # Stop / status
     # ------------------------------------------------------------------ #
+    def _note_lived(self):
+        """Stamp the last day the engine actually wrote (1x catch-up)."""
+        try:
+            from src.world import rest_catchup as _rc
+            _rc.mark_lived(self.world, self.world.clock)
+        except Exception:
+            pass
+
     def _stop_requested(self) -> bool:
+        if getattr(self, "_catchup", False):
+            return False
         return os.path.exists(self.stop_path)
 
     def _clear_stop(self):
@@ -587,6 +600,11 @@ class WorldEngine:
         os.makedirs(os.path.dirname(os.path.abspath(self.stop_path)), exist_ok=True)
         with open(self.stop_path, "w") as f:
             f.write("stop")
+        try:
+            from src.world import rest_catchup as _rc
+            _rc.record_rest(self.world)
+        except Exception:
+            pass
 
     def status(self) -> dict:
         return {
@@ -606,6 +624,8 @@ def main():
     parser.add_argument("--once", action="store_true", help="run a single day then exit")
     parser.add_argument("--stop", action="store_true", help="request the engine to stop")
     parser.add_argument("--status", action="store_true", help="show world status")
+    parser.add_argument("--catch-up", action="store_true",
+                        help="at 1x, generate days missed while the world rested, then run")
     parser.add_argument("--model", default="qwen2.5:14b-instruct")
     parser.add_argument("--base-url", default=None)
     parser.add_argument("--ambient-model", default=None,
@@ -629,6 +649,26 @@ def main():
         for k, v in engine.status().items():
             print(f"  {k}: {v}")
         return
+    if args.catch_up:
+        try:
+            from src.world import rest_catchup as _rc
+            if float(getattr(engine.world, "time_scale", 1.0) or 1.0) <= 1.0:
+                _rc.sync_calendar_to_gmt8(engine.world)
+            offer = _rc.make_offer(engine.world)
+            if offer.get("clocks"):
+                print(
+                    f"Catch-up: generating {offer['generate']} day(s) "
+                    f"the world missed at rest "
+                    f"({offer['from_label']} → {offer['to_label']})."
+                )
+                _rc.generate_missed_days(
+                    engine, offer["clocks"], skipped=int(offer.get("skipped") or 0)
+                )
+            else:
+                _rc.clear_rest(engine.world)
+                print("Catch-up: no missed days.")
+        except Exception as e:
+            print(f"Catch-up could not run ({e}) — starting the world as it is.")
 
     engine.run_loop(interval_seconds=args.interval, once=args.once)
 

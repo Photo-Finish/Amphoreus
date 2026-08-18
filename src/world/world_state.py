@@ -168,6 +168,7 @@ class WorldState:
         self.curiosity: Dict[str, dict] = {}    # the Heirs' minds: cid -> {questions, inferences} (see src/core/curiosity.py)
         self.horizons: Dict[str, list] = {}     # the changeable knowledge bank: cid -> [what they have come to know] (see src/core/horizons.py)
         self.time_scale: float = 1.0            # 1x = GMT+8 sanctuary overlay; 2x–60x = persisted sim clock
+        self._clock_override = None             # Stage-2 catch-up: pin the clock to a rested day
         self.visitor_location: str = "Okhema"   # where the star-stranger (you) currently stands
         self.visitor_travel: dict = {}          # your journey: {"to", "from", "remaining"} while on the road
         self.vivid: Dict = {}                   # Stage-2 society/world ledger (see vivid_stage2.py)
@@ -508,6 +509,9 @@ class WorldState:
     @property
     def clock(self) -> WorldClock:
         """At 1x: GMT+8 sanctuary overlay. At 2x–60x: the persisted sim timestamp."""
+        override = getattr(self, "_clock_override", None)
+        if override is not None:
+            return override
         if float(self.time_scale or 1.0) <= 1.0:
             return WorldClock.from_gmt8()
         return self._sim_clock
@@ -528,6 +532,12 @@ class WorldState:
         with self._lock:
             self.time_scale = max(1.0, scale)
         self.save()
+        if float(self.time_scale or 1.0) <= 1.0:
+            try:
+                from src.world.rest_catchup import sync_calendar_to_gmt8
+                sync_calendar_to_gmt8(self)
+            except Exception:
+                pass
 
     # ------------------------------------------------------------------ #
     # The star-stranger's own road — physically moving about Amphoreus

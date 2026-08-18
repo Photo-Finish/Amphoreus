@@ -69,6 +69,12 @@ def _engine_stop() -> bool:
     """Ask the engine to rest (it notices the flag within seconds now)."""
     try:
         (PROJECT_ROOT / "world_runtime" / "stop.flag").write_text("stop", encoding="ascii")
+        try:
+            from src.world.world_state import WorldState
+            from src.world import rest_catchup as _rc
+            _rc.record_rest(WorldState())
+        except Exception:
+            pass
         return True
     except Exception:
         return False
@@ -80,6 +86,110 @@ def _engine_stopping() -> bool:
         return (PROJECT_ROOT / "world_runtime" / "stop.flag").exists()
     except Exception:
         return False
+
+
+def _queue_1x_catchup(ws, start_after: bool, offer: dict | None = None) -> bool:
+    """Remember a 1x catch-up question for the operator. True if one is shown."""
+    from src.world import rest_catchup as _rc
+    _rc.sync_calendar_to_gmt8(ws)
+    offer = offer or _rc.make_offer(ws)
+    if int(offer.get("days") or 0) <= 0:
+        return False
+    st.session_state.ctl_catchup_offer = {
+        "days": offer["days"],
+        "generate": offer["generate"],
+        "skipped": offer["skipped"],
+        "from_label": offer["from_label"],
+        "to_label": offer["to_label"],
+    }
+    st.session_state.ctl_start_after_catchup = bool(start_after)
+    return True
+
+
+def _begin_1x_or_start(ws) -> bool:
+    """Start the engine, or pause for the 1x rest-catch-up question."""
+    from src.world import rest_catchup as _rc
+    scale = float(getattr(ws, "time_scale", 1.0) or 1.0)
+    if scale <= 1.0:
+        _rc.sync_calendar_to_gmt8(ws)
+        offer = _rc.make_offer(ws)
+        if int(offer.get("days") or 0) > 0:
+            _queue_1x_catchup(ws, start_after=True, offer=offer)
+            return False
+        _rc.clear_rest(ws)
+    return _engine_start()
+
+
+def _run_catchup_generation(ws, manager) -> None:
+    from src.world import rest_catchup as _rc
+    from src.world.world_engine import WorldEngine
+    offer = _rc.make_offer(ws)
+    clocks = offer.get("clocks") or []
+    if not clocks:
+        _rc.clear_rest(ws)
+        st.session_state.ctl_catchup_offer = None
+        return
+    n = len(clocks)
+    with st.spinner(
+        f"The world is catching up — living {n} missed day(s). "
+        "This can take a while; each day the Heirs speak for themselves."
+    ):
+        engine = WorldEngine(
+            llm_model=getattr(manager, "voice_model_active", None)
+            or getattr(manager, "llm_model", None)
+            or "qwen2.5:14b-instruct",
+            llm_base_url=getattr(manager, "llm_base_url", None),
+            llm_api_key=getattr(manager, "llm_api_key", None),
+        )
+        _rc.generate_missed_days(
+            engine, clocks, skipped=int(offer.get("skipped") or 0)
+        )
+    st.session_state.ctl_catchup_offer = None
+    if st.session_state.get("ctl_start_after_catchup") and not _engine_running():
+        _engine_start()
+    st.success(
+        f"Caught up {n} day(s) on the Light Calendar"
+        + (f" ({offer['from_label']} → {offer['to_label']})" if offer.get("from_label") else "")
+        + "."
+    )
+
+
+def _render_1x_catchup(ws, manager, running: bool) -> None:
+    offer = st.session_state.get("ctl_catchup_offer")
+    if not offer:
+        return
+    n = int(offer.get("days") or 0)
+    gen = int(offer.get("generate") or n)
+    skipped = int(offer.get("skipped") or 0)
+    span = ""
+    if offer.get("from_label") and offer.get("to_label"):
+        span = f" ({offer['from_label']} → {offer['to_label']})"
+    extra = ""
+    if skipped:
+        extra = (
+            f" The last {gen} of those days can be lived in full; "
+            f"{skipped} quieter day(s) will be noted in the chronicle."
+        )
+    st.warning(
+        f"While Amphoreus rested, **{n} Light-Calendar day(s)** passed{span}. "
+        "The calendar is synced to GMT+8. Generate the events and stories "
+        f"of those days?{extra}"
+    )
+    y, nbtn = st.columns(2)
+    with y:
+        if st.button("Yes — generate those days", type="primary",
+                     key="ctl_catchup_yes"):
+            _run_catchup_generation(ws, manager)
+            st.rerun()
+    with nbtn:
+        if st.button("No — leave those days unwritten", key="ctl_catchup_no"):
+            from src.world import rest_catchup as _rc
+            _rc.decline_missed(ws)
+            st.session_state.ctl_catchup_offer = None
+            if (st.session_state.get("ctl_start_after_catchup")
+                    and not running and not _engine_running()):
+                _engine_start()
+            st.rerun()
 
 
 # --------------------------------------------------------------------------- #
@@ -343,6 +453,12 @@ def render_control_panel(manager, characters):
     st.markdown("### World engine")
     running = _engine_running()
     stopping = _engine_stopping()
+    if not running:
+        try:
+            from src.world import rest_catchup as _rc
+            _rc.record_rest(ws)
+        except Exception:
+            pass
     if running and stopping:
         st.warning("A stop is in progress — the engine rests as soon as its current "
                    "moment's work allows (a few seconds now).")
@@ -352,11 +468,16 @@ def render_control_panel(manager, characters):
         st.info("The world engine is not running — the Heirs wait for you. Start it to "
                 "let the world move on its own (it uses the GPU/RAM for the Ambient "
                 "Director and the Heirs' free days).")
+
+    _render_1x_catchup(ws, manager, running)
+
     c1, c2 = st.columns(2)
     with c1:
         if st.button("Start the world", disabled=running, key="ctl_eng_start"):
-            if _engine_start():
+            if _begin_1x_or_start(ws):
                 st.success("The world engine is starting… (give it a minute to load)")
+                st.rerun()
+            elif st.session_state.get("ctl_catchup_offer"):
                 st.rerun()
             else:
                 st.error("Could not start the engine.")
@@ -370,7 +491,9 @@ def render_control_panel(manager, characters):
     st.caption(
         "How fast the world elapses while the engine runs, measured linearly "
         "against real time. **1x** follows GMT+8 on the sanctuary Light Calendar "
-        "(one in-game day per real day; Hours from midnight). **2x–60x** keep the "
+        "(one in-game day per real day; Hours from midnight). Starting **1x** "
+        "after a rest syncs that calendar and asks whether to generate the "
+        "events of the days the world missed. **2x–60x** keep the "
         "original sim timestamp (Year 4932…) and scale that clock: **60x** = "
         "24 real minutes per in-game day (each day still needs a little time "
         "to be lived — every Heir decides for themselves)."
@@ -382,6 +505,8 @@ def render_control_panel(manager, characters):
                        format_func=lambda s: s[0], key="ctl_time")
     if float(_chosen[1]) != _cur_scale:
         ws.set_time_scale(_chosen[1])
+        if float(_chosen[1]) <= 1.0 and not running:
+            _queue_1x_catchup(ws, start_after=False)
         st.rerun()
 
     st.markdown("---")

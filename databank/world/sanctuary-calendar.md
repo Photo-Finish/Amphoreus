@@ -188,6 +188,12 @@ The sync epoch is **mission end = still 4932**, **this civil year 2026 = 4933** 
 
 ---
 
+## 1x start after a rest
+
+When the operator starts the world at **1x** (or switches time flow to 1x), the persisted sim clock is copied from the GMT+8 overlay so later **2x–60x** do not jump back to a frozen stamp. If the engine had been at rest across complete civil days, the Control Panel asks whether to generate those missed days’ events and stories. **Yes** lives them through the world engine (capped at seven full days; quieter days beyond that are noted in the chronicle). **No** leaves them unwritten. Same-day rest asks nothing.
+
+---
+
 ## Summary
 
 *Twelve Titan-months, one Heir-month (Membrance), and the Uncounted (Dies Astrorum; Scarlet Day in leap years). Dies Cosmi is the Express's other Latin name, not another date. A day is 24 h. A month is 28 days. 2026 is 4933.*
