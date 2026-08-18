@@ -1,19 +1,20 @@
-"""Control Panel + Admin Console: Keeper ambient + lived world entities."""
+"""Control Panel + Admin Console: Keeper ambient + lived world (operator)."""
 from __future__ import annotations
-
-import streamlit as st
 
 
 def render_world_stage(ws, manager=None, *, key_prefix: str = "wstage") -> None:
-    """Read-only status of weather / errands / news / lived entities."""
+    """Read-only status of weather / errands / news / lived entities / mechanisms."""
+    import streamlit as st
     from src.world import lived_entities as le
+    from src.world import lived_mechanisms as lm
 
     snap = le.snapshot(ws)
+    der = lm.derive(ws)
     st.markdown("### The living world")
     st.caption(
-        "Keeper ambient (sky, errands, news) plus coarse physical entities. "
-        "Status is derived from the Light Calendar, today's sky, and where "
-        "you stand — not a second random weather."
+        "Operator view: Keeper ambient, coarse entities, active mechanisms, "
+        "and residents this hour. Visit and Gazette show a stage sentence — "
+        "not this census."
     )
     st.markdown(
         f"**Clock:** {snap.get('clock') or '—'}  \n"
@@ -53,6 +54,36 @@ def render_world_stage(ws, manager=None, *, key_prefix: str = "wstage") -> None:
                         name = cid
                 st.markdown(f"- **{name}** — {txt}")
 
+    flags = der.get("flags") or {}
+    active = der.get("active") or []
+    lived = {}
+    try:
+        lived = (getattr(ws, "vivid") or {}).get("lived") or {}
+    except Exception:
+        lived = {}
+    st.markdown("#### Active mechanisms this hour")
+    if active:
+        bits = [f"**{r['name']}** — {r['fact']}" for r in active[:12]]
+        st.markdown("\n\n".join(f"- {b}" for b in bits))
+    else:
+        st.caption("No mechanism snapshot yet.")
+    flag_bits = []
+    for k in ("resting", "market_open", "device_withdrawn", "gathering",
+              "carrying", "making", "teaching", "crossing"):
+        if k in flags:
+            flag_bits.append(f"{k}={'yes' if flags[k] else 'no'}")
+    if flags.get("harvest_phase"):
+        flag_bits.append(f"harvest={flags['harvest_phase']}")
+    if flags.get("lighting"):
+        flag_bits.append(f"lighting={flags['lighting']}")
+    if flag_bits:
+        st.caption("Tick flags: " + " · ".join(flag_bits))
+    tick_facts = lived.get("facts") or der.get("facts") or []
+    if tick_facts:
+        with st.expander(f"Last tick facts ({len(tick_facts)})"):
+            for f in tick_facts:
+                st.markdown(f"- {f}")
+
     st.markdown("#### Lived entities (positive, coarse)")
     here = [r for r in snap["entities"] if r.get("presence") == "here"]
     near = [r for r in snap["entities"] if r.get("presence") == "near"]
@@ -72,8 +103,29 @@ def render_world_stage(ws, manager=None, *, key_prefix: str = "wstage") -> None:
     _block("Near — the day's wider stage", near, False)
     _block("Elsewhere — present in Amphoreus, not this scene", distant, False)
 
-    faults = le.logic_faults(snap)
+    try:
+        from src.world import resident_npcs as rn
+        place = snap.get("place") or "Okhema"
+        vis = [] if snap.get("traveling") else rn.visible_in_city(ws, place)
+        st.markdown("#### Residents this hour")
+        if vis:
+            with st.expander(f"Here in {place} ({len(vis)} visible)", expanded=True):
+                for r in vis[:12]:
+                    st.markdown(
+                        f"- **{r['name']}** — {r.get('role')} at the {r.get('spot')}"
+                    )
+        else:
+            st.caption("No residents standing in this scene this hour.")
+        enc = ((getattr(ws, "vivid") or {}).get("residents") or {}).get("encounters") or []
+        if enc:
+            with st.expander(f"Last tick encounters ({len(enc)})"):
+                for e in enc:
+                    st.markdown(f"- {e.get('line')}")
+    except Exception as _e:
+        st.caption(f"(residents unavailable: {_e})")
+
+    faults = le.logic_faults(snap) + lm.logic_faults(der)
     if faults:
         st.warning("World-logic check: " + "; ".join(faults))
     else:
-        st.caption("World-logic check: sky, hour, place, and harvest agree.")
+        st.caption("World-logic check: sky, hour, place, harvest, and mechanisms agree.")

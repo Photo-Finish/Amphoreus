@@ -30,3 +30,21 @@
 Shown in **Control Panel** and **Admin Console** (`src/ui_world_stage.py`) together with Keeper ambient (weather, errands, news). Visit “This hour” and the Heir prompt only inject entities that are *here* this hour.
 
 Suite: `tools/test_lived_entities.py` (59 checks) plus the original 44 vivid checks.
+
+## Lived day mechanisms (tick verbs)
+
+`src/world/lived_mechanisms.py` — the 17 day-verbs mutate `world.vivid["lived"]` on `run_day` (after Keeper ambient, before rest-early-return). Feeding/growing once per Light Calendar **date**. Rest = Curtain-Fall or Entry Hour. Night withdraws the Dawn Device even if today's weather was blazing.
+
+## Residents (street, not protagonists)
+
+`src/world/resident_npcs.py` — ~110 templated Amphoreus residents across real map cities. Copilot `world_events.NPCS` left verbatim (merge at read-time). On tick: visible set this hour from period + mechanism flags; 1–3 Heir–resident encounters. Grove has no harbor-fishers. Resting hour: hearths, not a feast square.
+
+## Visitor UI (notice, don't inventory)
+
+- **Visit:** one literary stage paragraph for *this* place and hour; 2–4 people actually here to greet. No 17-mechanism catalog, no Here/Near/Elsewhere census.
+- **Gazette:** “This Hour in the World” (handful of tick facts) and “Seen in the Streets” (encounters). Heirs Abroad remain the spine.
+- **Road:** existing lived vignette plus a sheltering/carrying clause.
+- **Control Panel / Admin:** the dense ledger stays there.
+
+Suites: `tools/test_lived_mechanisms.py` (63), `tools/test_resident_npcs.py` (33),
+`tools/test_lived_entities.py` (61), plus the original 44 vivid checks.

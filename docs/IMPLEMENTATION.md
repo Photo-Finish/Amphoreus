@@ -1145,6 +1145,44 @@ the knowledge wall, and never scripts Realization.
   these entities via `src/ui_world_stage.py`. Chat injects only *here/near*.
   Suite: `tools/test_lived_entities.py`.
 
+### 3.16 Stage 2 — lived day mechanisms & residents (tick facts)
+(`src/world/lived_mechanisms.py`, `src/world/resident_npcs.py`, a small hook
+in `world_engine.run_day`)
+
+Entities name the furniture. **Mechanisms** are the verbs: on each engine
+tick they mutate `world.vivid["lived"]` (flags, facts, hearths fed for the
+date, harvest phase) *before* the rest-hour early return, so Curtain-Fall
+still writes the Device withdrawn and stalls down. **Residents** then take
+their hour from those flags (`world.vivid["residents"]`: visible-by-city,
+Heir–resident encounters). Copilot's `world_events.NPCS` list is left
+verbatim and wins on name collision; the generated street fills the rest.
+
+Seventeen mechanisms (keeping time, lighting/withdrawing, sheltering,
+feeding, growing, carrying, trading, making, gathering, crossing, washing,
+cooling, teaching, tending, offering, remembering without burying, resting).
+No dying / burying / starving / campaigning / storm-wreck. Rest aligns with
+`clock.is_rest_time()` (Curtain-Fall **or** Entry). Entry may kindle the
+Device while the market stays closed. Night withdraws the Device even after
+blazing day-weather. Grove has no sea. Cultivation sows; Reaping reaps.
+
+`_world_texture` keeps Copilot's letter compose; it only *gates* NPC stroll
+(gathering, not resting) and letter chance (higher at Parting/carrying,
+lower at rest).
+
+**Visitor surfaces (notice, don't inventory):** Visit shows one stage
+paragraph (`visitor_stage_lines`) plus 2–4 people actually here this hour.
+Gazette: "This Hour in the World" / "Seen in the Streets" from the tick's
+salient gazette lines (not the full mechanism-fact list) and encounters.
+The Grove is not a market square. Persist flags use Okhema as the day's
+civic pulse so a visitor on the road does not shut every stall. Road
+vignette adds a sheltering/carrying clause. Heirs stay the face of Visit.
+
+**Operator surfaces:** Control Panel / Admin keep the full entity map,
+mechanism flags, resident census, last-tick facts.
+
+Suites: `tools/test_lived_mechanisms.py`, `tools/test_resident_npcs.py`,
+plus existing lived-entities and vivid suites.
+
 **Cross-checks (dry suite):** Mydei declines under a Kremnos surge but accepts
 when the tide is quiet; Aglaea's prompt after an overhear differs from
 Phainon's; Aftermath empties tide prompts; Styxia NPC lines tighten under

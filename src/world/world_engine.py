@@ -184,10 +184,32 @@ class WorldEngine:
             self.chronicle.append({"time": time_str, "text": board, "kind": "ambient"})
             self.world.add_event(board)
 
+        # Stage-2 lived day: mechanisms mutate vivid.lived, then residents
+        # take their hour from those flags — before rest-early-return so
+        # Curtain-Fall still writes facts. Copilot texture (surge / stroll /
+        # letters) follows, gated by the flags.
+        lived_flags: dict = {}
+        try:
+            from src.world import lived_mechanisms as _lm
+            from src.world import resident_npcs as _rn
+            _lived = _lm.apply_tick(self.world)
+            lived_flags = _lived.get("flags") or {}
+            for _ln in _lived.get("lines") or []:
+                lines.append(_ln)
+                self.chronicle.append({"time": time_str, "text": _ln, "kind": "lived"})
+                self.world.add_event(_ln)
+            _res = _rn.apply_tick(self.world, flags=lived_flags)
+            for _ln in _res.get("lines") or []:
+                lines.append(_ln)
+                self.chronicle.append({"time": time_str, "text": _ln, "kind": "npc"})
+                self.world.add_event(_ln)
+        except Exception:
+            pass
+
         # The living texture: a black-tide surge may stir (journey mode), the
         # cities' named residents go about their days, and a letter may travel
         # between distant Heirs.
-        lines.extend(self._world_texture(time_str))
+        lines.extend(self._world_texture(time_str, flags=lived_flags))
 
         # The Heirs go about their usual routines — the map reflects where they
         # actually are right now, not just where they live. Travellers stay on
@@ -299,9 +321,10 @@ class WorldEngine:
         self.world.save()
         return lines
 
-    def _world_texture(self, time_str: str) -> List[str]:
+    def _world_texture(self, time_str: str, flags: Optional[dict] = None) -> List[str]:
         """Surges, city residents, and letters — the daily texture of the world."""
         lines: List[str] = []
+        flags = flags or {}
         # 1) The black tide may stir along the edge cities (journey mode only).
         surge = wev.maybe_surge(self.world)
         if surge:
@@ -334,7 +357,11 @@ class WorldEngine:
         if flash:
             self.world.ambient["news_flash"] = [f for f in flash if f.get("ts") == today]
         # 2) A named resident is seen about their city (alive NPCs only).
-        if random.random() < 0.5:
+        #    Stage-2: skip the stroll when the city is at rest / not gathering.
+        stroll_ok = True
+        if flags:
+            stroll_ok = bool(flags.get("gathering")) and not bool(flags.get("resting"))
+        if stroll_ok and random.random() < 0.5:
             npc = self._pick_npc()
             if npc:
                 fline = (f"{time_str} — In {npc['city']}, {npc['name']} is about — "
@@ -342,7 +369,16 @@ class WorldEngine:
                 lines.append(fline)
                 self.chronicle.append({"time": time_str, "text": fline, "kind": "flavor"})
         # 3) Sometimes a letter travels between distant Heirs.
-        if random.random() < 0.3:
+        #    Stage-2: Parting/carrying raises the chance; rest lowers it.
+        #    No extra duplicate roll on top of this existing compose.
+        letter_p = 0.3
+        if flags:
+            try:
+                from src.world.lived_mechanisms import letter_chance as _lc
+                letter_p = _lc(flags, int(self.world.clock.period))
+            except Exception:
+                letter_p = 0.3
+        if random.random() < letter_p:
             letter = self._compose_letter(time_str)
             if letter:
                 lline = (f"{time_str} — A letter travels from {letter['from_name']} "
@@ -359,10 +395,12 @@ class WorldEngine:
                         f"visitor, unprompted.")
                 lines.append(note)
                 self.chronicle.append({"time": time_str, "text": note, "kind": "reach-out"})
-        for ml in _lw.advance_npcs(self.world):
-            mline = f"{time_str} — {ml}"
-            lines.append(mline)
-            self.chronicle.append({"time": time_str, "text": mline, "kind": "flavor"})
+        # Copilot small arcs wait with the city; they are not "about" at rest.
+        if stroll_ok:
+            for ml in _lw.advance_npcs(self.world):
+                mline = f"{time_str} — {ml}"
+                lines.append(mline)
+                self.chronicle.append({"time": time_str, "text": mline, "kind": "flavor"})
         _lw.advance_moods(self.world)
         return lines
 

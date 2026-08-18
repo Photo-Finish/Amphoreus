@@ -176,9 +176,11 @@ def main():
     check("frame reports no faults", not frame.get("entity_faults"),
           str(frame.get("entity_faults")))
     md = v2.place_hour_markdown(frame, "Aglaea")
-    check("markdown names lived world", "Lived world" in md)
+    check("markdown names place", "Okhema" in md)
+    check("markdown has this-hour stage", "Hour" in md)
+    check("markdown is not an entity dump", "Lived world —" not in md)
     pb = v2.place_hour_prompt_block(frame)
-    check("prompt has lived world", "Lived world" in pb)
+    check("prompt has stage", "hour you stand in" in pb.lower() or "Okhema" in pb)
     check("prompt forbids second weather", "second weather" in pb)
 
     print("== UI renderer import ==")

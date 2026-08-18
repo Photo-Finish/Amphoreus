@@ -72,7 +72,7 @@ def render_gazette(manager, characters):
 
     # ---- pick a headline: the most notable recent kind ----
     headline = ""
-    for pref in ("surge", "project", "encounter", "letter", "flavor", "event"):
+    for pref in ("surge", "project", "encounter", "letter", "npc", "lived", "flavor", "event"):
         for e in entries:
             if e.get("kind") == pref:
                 headline = e.get("text", "")
@@ -120,6 +120,23 @@ def render_gazette(manager, characters):
             if news:
                 parts.append(f'<div class="item" style="margin-top:6px;">News from the '
                              f'wider world: <i>{_html.escape(news)}</i></div>')
+
+        try:
+            from src.world import lived_mechanisms as _lm_g
+            _items = _lm_g.gazette_world_items(ws)
+            _facts = _items.get("facts") or []
+            _encs = _items.get("encounters") or []
+            if _facts:
+                parts.append('<h2>This Hour in the World</h2>')
+                for f in _facts[:6]:
+                    parts.append(f'<div class="item">• {_html.escape(str(f))}</div>')
+            if _encs:
+                parts.append('<h2>Seen in the Streets</h2>')
+                for e in _encs[:3]:
+                    parts.append(
+                        f'<div class="item">• {_html.escape(str(e.get("line") or ""))}</div>')
+        except Exception:
+            pass
 
         # the visitor's calls — today's word of the star-stranger
         flash = ws.ambient.get("news_flash") or []

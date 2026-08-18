@@ -94,8 +94,23 @@ def place_hour_frame(world, character_id: str,
     mood = lw.mood_of(world, character_id)
 
     from . import lived_entities as _le
+    from . import lived_mechanisms as _lm
     _ent_snap = _le.snapshot(world, place=loc, character_id=character_id)
     _ent_here = _le.here_entities(_ent_snap, limit=8)
+    _stage = _lm.visitor_stage_paragraph(world, place=loc, character_id=character_id)
+    _stage_lines = _lm.visitor_stage_lines(world, place=loc, character_id=character_id)
+    _residents = []
+    try:
+        from . import resident_npcs as _rn
+        _residents = _rn.greet_here(world, loc, limit=4) if not traveling else []
+    except Exception:
+        _residents = []
+    _mech = []
+    try:
+        _der = _lm.derive(world, place=loc, character_id=character_id)
+        _mech = _der.get("active") or []
+    except Exception:
+        _mech = []
 
     return {
         "place": loc,
@@ -112,6 +127,10 @@ def place_hour_frame(world, character_id: str,
         "mood": mood.get("label") or mood.get("valence"),
         "entities": _ent_here,
         "entity_faults": _le.logic_faults(_ent_snap),
+        "stage_paragraph": _stage,
+        "stage_lines": _stage_lines,
+        "residents_here": _residents,
+        "mechanisms_active": _mech,
     }
 
 
@@ -139,10 +158,10 @@ def place_hour_markdown(frame: dict, heir_name: str) -> str:
         lines.append(f"Word around Amphoreus: {frame['news']}")
     if frame.get("surge"):
         lines.append(f"⚠️ {frame['surge']}")
-    ents = frame.get("entities") or []
-    if ents:
-        bits = [f"{e['name']}: {e['status']}" for e in ents[:6]]
-        lines.append("Lived world — " + " · ".join(bits))
+    greet = frame.get("residents_here") or []
+    if greet and not frame.get("traveling"):
+        bits = [f"{r.get('name')} ({r.get('role')})" for r in greet[:3]]
+        lines.append("Someone here: " + "; ".join(bits))
     return "\n\n".join(lines)
 
 
@@ -161,16 +180,22 @@ def place_hour_prompt_block(frame: dict) -> str:
         bits.append(frame["surge"])
     if frame.get("rumor"):
         bits.append(f"You heard: {frame['rumor']}")
-    ents = frame.get("entities") or []
-    if ents:
+    stage = (frame.get("stage_paragraph") or "").strip()
+    if stage:
+        bits.append("The hour you stand in: " + stage)
+    greet = frame.get("residents_here") or []
+    if greet and not frame.get("traveling"):
         bits.append(
-            "Lived world here: "
-            + " ".join(f"{e['name']}: {e['status']}" for e in ents[:6])
-            + " Treat these as the stage. Do not invent famine, a death this hour "
-            "does not need, or a second weather; "
-            "do not put the sea in a grove or a busy market at Curtain-Fall if the "
-            "status says otherwise."
+            "Named residents actually here: "
+            + ", ".join(f"{r.get('name')} the {r.get('role')}" for r in greet[:3])
+            + "."
         )
+    bits.append(
+        "Treat this as the stage you stand on — notice it, do not inventory it. "
+        "Do not invent famine, a death this hour does not need, or a second weather; "
+        "do not put the sea in a grove or a busy market at Curtain-Fall if the "
+        "hour says otherwise."
+    )
     return "# This hour in the living world\n" + " ".join(bits)
 
 
@@ -474,49 +499,24 @@ def ongoing_moment_prompt(moment: dict) -> str:
 # Talk-to-place NPC — living residents only
 # --------------------------------------------------------------------------- #
 def npcs_in_city(city: str) -> List[dict]:
-    from . import world_events as wev
-    return [n for n in wev.NPCS if n.get("city") == city]
+    """Living residents of a city (Visit should prefer greet_here, not this census)."""
+    try:
+        from . import resident_npcs as rn
+        return rn.roster_in_city(city)
+    except Exception:
+        from . import world_events as wev
+        return [n for n in wev.NPCS if n.get("city") == city]
+
+
+def greet_here(world, city: str, limit: int = 4) -> List[dict]:
+    from . import resident_npcs as rn
+    return rn.greet_here(world, city, limit=limit)
 
 
 def talk_to_npc(world, city: str, npc_name: str) -> dict:
     """A short, deterministic sanctuary-safe line from a living NPC."""
-    from . import world_events as wev
-    match = None
-    for n in wev.NPCS:
-        if n.get("name") == npc_name and n.get("city") == city:
-            match = n
-            break
-    if not match:
-        # Allow match by name alone if they are in this city roster
-        for n in wev.NPCS:
-            if n.get("name") == npc_name:
-                if n.get("city") != city:
-                    return {"ok": False, "reason": f"{npc_name} is not in {city}."}
-                match = n
-                break
-    if not match:
-        return {"ok": False, "reason": "unknown or non-living figure"}
-
-    weather = world.ambient_weather(city) or "an ordinary sky"
-    surge_note = ""
-    try:
-        from . import world_events as wev2
-        from . import living_world as lw
-        if (lw.black_tide_enabled(world) and wev2.surge_active(world)
-                and city in (world.surge.get("cities") or [])):
-            surge_note = " They glance toward the darkening edge and lower their voice."
-    except Exception:
-        pass
-
-    line = (
-        f"{match['name']} ({match['role']}) regards you under {weather}. "
-        f"{match['flavor']}{surge_note}"
-    )
-    entry = {"npc": match["name"], "city": city, "line": line,
-             "ts": world.clock.format_short()}
-    vivid_bucket(world).setdefault("npc_chats", []).append(entry)
-    del vivid_bucket(world)["npc_chats"][20:]
-    return {"ok": True, "line": line, "npc": match}
+    from . import resident_npcs as rn
+    return rn.talk_to_npc(world, city, npc_name)
 
 
 # --------------------------------------------------------------------------- #
@@ -570,7 +570,15 @@ def lived_road_line(world, fr: str, to: str, remaining: int = 0) -> str:
         f"Leaving {fr} behind — {base}",
     ]
     seed = sum(ord(c) * (i + 1) for i, c in enumerate(key))
-    return twist[seed % len(twist)]
+    line = twist[seed % len(twist)]
+    try:
+        from . import lived_mechanisms as _lm
+        extra = _lm.road_stage_clause(world)
+        if extra and extra.lower() not in line.lower():
+            line = f"{line} {extra}"
+    except Exception:
+        pass
+    return line
 
 
 def tide_edge_prompt(world, character_id: str) -> str:

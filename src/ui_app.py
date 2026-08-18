@@ -970,7 +970,10 @@ with main_tab:
     try:
         from src.world import vivid_stage2 as _v2
         _frame = manager.place_hour(selected)
-        with st.expander("This hour — place, sky, who is here", expanded=True):
+        _stage = (_frame.get("stage_paragraph") or "").strip()
+        if _stage:
+            st.markdown(f"*{_stage}*")
+        with st.expander("This hour — place, sky, who is here", expanded=False):
             st.markdown(_v2.place_hour_markdown(_frame, info["name"]))
             _moment = manager.ongoing_moment(selected)
             if _moment and _moment.get("kind") != "quiet":
@@ -1000,12 +1003,13 @@ with main_tab:
                     manager.clear_shared_scene()
                     st.info("The shared scene ends.")
         _npc_city = _frame.get("place") or ""
-        _npcs = _v2.npcs_in_city(_npc_city) if _npc_city else []
-        if _npcs and not is_visitor():
-            with st.expander(f"Speak with a resident of {_npc_city}"):
-                _npc_names = [n["name"] for n in _npcs]
+        _npcs = list(_frame.get("residents_here") or [])
+        if _npcs and not is_visitor() and not _frame.get("traveling"):
+            with st.expander(f"Someone here in {_npc_city}"):
+                _npc_names = [n.get("name") for n in _npcs if n.get("name")]
                 _npc_pick = st.selectbox(
-                    "Living resident", _npc_names, key=f"npc_pick_{selected}")
+                    "A person actually here this hour", _npc_names,
+                    key=f"npc_pick_{selected}")
                 if st.button("Talk with them", key=f"npc_btn_{selected}"):
                     _nr = manager.talk_to_npc(_npc_city, _npc_pick)
                     if _nr.get("ok"):

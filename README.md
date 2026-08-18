@@ -1060,4 +1060,23 @@ tide / letter / weather / co-location / aftermath features):
 - **Suite:** `tools/test_lived_entities.py` (59 checks). Stage-2 vivid suite still
   44/44.
 
+### 2026-08-18 — Lived day mechanisms + residents (tick facts, visitor stage)
+- **Mechanisms** (`src/world/lived_mechanisms.py`) — all 17 day-verbs now mutate
+  `world.vivid["lived"]` on the world-engine tick (after Keeper ambient, before
+  night's early return): time, lighting/withdrawing, sheltering, feeding,
+  growing, carrying, trading, making, gathering, crossing, washing, cooling,
+  teaching, tending, offering, remembering without burying, resting. Feeding
+  and growing once per date. Rest matches `is_rest_time()` (Curtain-Fall or
+  Entry); Entry does not open a busy market. Night withdraws the Dawn Device
+  even after blazing day-weather.
+- **Residents** (`src/world/resident_npcs.py`) — ~110 templated street people
+  across real cities. Copilot's `world_events.NPCS` list is untouched and wins
+  on name collision. Tick writes who is visible this hour and 1–3 Heir–resident
+  encounters. No burial/famine/war jobs; Grove has no harbor-fishers.
+- **Visitor UI** — Visit shows one stage paragraph plus 2–4 people actually
+  here (not a catalog). Gazette: “This Hour in the World” / “Seen in the
+  Streets.” Control Panel / Admin keep the full ledger.
+- **Suites:** `tools/test_lived_mechanisms.py` (63), `tools/test_resident_npcs.py` (33),
+  `tools/test_lived_entities.py` (61), vivid suite 44/44.
+
 
