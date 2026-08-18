@@ -60,6 +60,9 @@ def _format_row(example: dict) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", type=Path, default=Path(__file__).with_name("config.yaml"))
+    ap.add_argument("--dataset", type=Path, default=None, help="Override config dataset_path")
+    ap.add_argument("--output-dir", type=Path, default=None, help="Override config output_dir")
+    ap.add_argument("--heir", type=str, default=None, help="Label for logs only")
     ap.add_argument(
         "--dry-load",
         action="store_true",
@@ -72,8 +75,14 @@ def main() -> int:
     os.environ.setdefault("HUGGINGFACE_HUB_CACHE", r"D:\hf-cache\hub")
 
     cfg = _load_config(args.config)
+    if args.dataset is not None:
+        cfg["dataset_path"] = str(args.dataset)
+    if args.output_dir is not None:
+        cfg["output_dir"] = str(args.output_dir)
     out_dir = Path(cfg["output_dir"])
     out_dir.mkdir(parents=True, exist_ok=True)
+    if args.heir:
+        log.info("=== Heir: %s ===", args.heir)
 
     tokenizer = AutoTokenizer.from_pretrained(cfg["model_name_or_path"], trust_remote_code=True)
     if tokenizer.pad_token is None:
@@ -131,6 +140,16 @@ def main() -> int:
     ds_path = Path(cfg["dataset_path"])
     dataset = _load_jsonl(ds_path).map(_format_row)
 
+    # Newer TRL SFTConfig dropped warmup_ratio — use warmup_steps.
+    warmup_steps = cfg.get("warmup_steps")
+    if warmup_steps is None:
+        n = len(dataset)
+        bsz = int(cfg.get("per_device_train_batch_size", 1))
+        gas = int(cfg.get("gradient_accumulation_steps", 8))
+        steps_per_epoch = max(1, (n + bsz - 1) // bsz // max(gas, 1))
+        epochs = float(cfg.get("num_train_epochs", 1))
+        warmup_steps = max(1, int(float(cfg.get("warmup_ratio", 0.03)) * steps_per_epoch * epochs))
+
     train_args = SFTConfig(
         output_dir=str(out_dir),
         num_train_epochs=float(cfg.get("num_train_epochs", 1)),
@@ -139,7 +158,7 @@ def main() -> int:
         learning_rate=float(cfg.get("learning_rate", 1e-4)),
         logging_steps=int(cfg.get("logging_steps", 5)),
         save_steps=int(cfg.get("save_steps", 50)),
-        warmup_ratio=float(cfg.get("warmup_ratio", 0.03)),
+        warmup_steps=int(warmup_steps),
         lr_scheduler_type=cfg.get("lr_scheduler_type", "cosine"),
         optim=cfg.get("optim", "paged_adamw_8bit"),
         bf16=bool(cfg.get("bf16", True)),

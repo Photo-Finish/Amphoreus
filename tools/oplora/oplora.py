@@ -49,6 +49,32 @@ def _matched(name: str, needles: Iterable[str]) -> bool:
 
 
 @torch.no_grad()
+def _materialize_weight(module: nn.Module) -> Optional[torch.Tensor]:
+    """Return a dense 2D float weight for SVD (dequantize BitsAndBytes if needed)."""
+    weight = getattr(module, "weight", None)
+    if weight is None:
+        return None
+    # BitsAndBytes Params4bit / Linear4bit
+    quant_state = getattr(weight, "quant_state", None)
+    if quant_state is not None:
+        try:
+            import bitsandbytes.functional as F
+
+            w = F.dequantize_4bit(weight.data, quant_state)
+            return w.detach().float().cpu()
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("4bit dequant failed for SVD (%s): %s", type(module).__name__, exc)
+            return None
+    w = weight.detach()
+    if w.ndim != 2:
+        return None
+    # Reject packed/garbage shapes (e.g. (N, 1) storage views)
+    if min(w.shape) < 8 or max(w.shape) > 200_000:
+        return None
+    return w.float().cpu()
+
+
+@torch.no_grad()
 def compute_module_svd(
     weight: torch.Tensor,
     k: int,
@@ -56,7 +82,7 @@ def compute_module_svd(
 ) -> ModuleSVD:
     w = weight.detach().float()
     if w.ndim != 2:
-        w = w.reshape(w.shape[0], -1)
+        raise ValueError(f"Expected 2D weight for SVD, got {tuple(w.shape)} ({name})")
     max_k = min(w.shape[0], w.shape[1])
     k = max(1, min(k, max_k))
     try:
@@ -64,7 +90,7 @@ def compute_module_svd(
         v = vh.transpose(0, 1)
     except RuntimeError:
         logger.warning("Full SVD failed for %s; using svd_lowrank.", name)
-        u, s, v = torch.svd_lowrank(w, q=k)
+        u, s, v = torch.svd_lowrank(w, q=min(k + 8, max_k))
     return ModuleSVD(
         name=name,
         u_k=u[:, :k].contiguous().cpu(),
@@ -82,45 +108,43 @@ def collect_base_svds(
     """
     SVD of frozen base weights for modules that have LoRA adapters.
 
-    Looks for PEFT-style names containing 'lora_' and resolves the sibling
-    base Linear (…base_layer or the parent Linear).
+    Resolves PEFT `base_layer` (incl. BitsAndBytes Linear4bit via dequant).
     """
     svds: Dict[str, ModuleSVD] = {}
     seen_linears: Dict[int, str] = {}
 
     for full_name, module in model.named_modules():
+        if "lora_" in full_name:
+            continue
         if not _matched(full_name, target_substrings):
             continue
-        if not isinstance(module, nn.Linear):
-            # PEFT LoraLayer wraps Linear; prefer base_layer when present
-            base = getattr(module, "base_layer", None)
-            if not isinstance(base, nn.Linear):
-                continue
-            linear = base
-            key = full_name
-        else:
-            # Skip LoRA A/B matrices themselves
-            if "lora_" in full_name:
-                continue
-            linear = module
-            key = full_name
 
+        linear = None
+        if isinstance(module, nn.Linear):
+            linear = module
+        else:
+            base = getattr(module, "base_layer", None)
+            if base is not None and hasattr(base, "weight"):
+                linear = base
+            elif hasattr(module, "weight"):
+                linear = module
+
+        if linear is None:
+            continue
         lid = id(linear)
         if lid in seen_linears:
             continue
-        seen_linears[lid] = key
-        logger.info("SVD %s shape=%s k=%s", key, tuple(linear.weight.shape), projection_rank)
-        svds[key] = compute_module_svd(linear.weight, projection_rank, name=key)
+        seen_linears[lid] = full_name
 
-    if not svds:
-        # Fallback: every Linear whose name matches targets
-        for full_name, module in model.named_modules():
-            if isinstance(module, nn.Linear) and _matched(full_name, target_substrings):
-                if "lora_" in full_name:
-                    continue
-                svds[full_name] = compute_module_svd(
-                    module.weight, projection_rank, name=full_name
-                )
+        dense = _materialize_weight(linear)
+        if dense is None:
+            logger.warning("Skip SVD (no dense weight): %s", full_name)
+            continue
+        logger.info("SVD %s shape=%s k=%s", full_name, tuple(dense.shape), projection_rank)
+        try:
+            svds[full_name] = compute_module_svd(dense, projection_rank, name=full_name)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("SVD failed for %s: %s", full_name, exc)
     return svds
 
 

@@ -23,6 +23,7 @@ DATABANK = REPO_ROOT / "databank"
 WORK = Path(__file__).resolve().parent / "work_copies"
 DATASETS = Path(__file__).resolve().parent / "datasets"
 
+# The 13 sanctuary cards in src/characters/ (plus optional extras like Terravox).
 HEIR_ALIASES: Dict[str, List[str]] = {
     "Phainon": ["Phainon", "Khaslana", "Snowy"],
     "Mydei": ["Mydei", "Mydeimos"],
@@ -35,9 +36,28 @@ HEIR_ALIASES: Dict[str, List[str]] = {
     "Hysilens": ["Hysilens"],
     "Cerydra": ["Cerydra"],
     "Cyrene": ["Cyrene"],
-    "Terravox": ["Terravox"],
+    "Evernight": ["Evernight"],
     "Dan Heng": ["Dan Heng", "Dan Heng • Permansor Terrae"],
+    # Extra (not one of the 13 cards) — kept if lines appear in missions
+    "Terravox": ["Terravox"],
 }
+
+# Official training roster = 13 character cards
+TRAINING_HEIRS: Tuple[str, ...] = (
+    "Aglaea",
+    "Anaxa",
+    "Castorice",
+    "Cerydra",
+    "Cipher",
+    "Cyrene",
+    "Dan Heng",
+    "Evernight",
+    "Hyacine",
+    "Hysilens",
+    "Mydei",
+    "Phainon",
+    "Tribbie",
+)
 
 # Sources relative to databank/ that we duplicate (read-only originals).
 COPY_GLOBS: Sequence[str] = (
@@ -45,6 +65,7 @@ COPY_GLOBS: Sequence[str] = (
     "missions/adventure/*.md",
     "missions/_cache/*.md",
     "world/*.md",
+    "chrysos-heirs/*.md",
 )
 
 SKIP_NAME_PARTS = (
@@ -54,10 +75,14 @@ SKIP_NAME_PARTS = (
     "PROCESS_",
 )
 
-# **Phainon:** line   or   **??? (Phainon):** line
+# **Phainon:** / **"Evernight":** / **??? (Phainon):**
 _SPEAKER = re.compile(
-    r"^(?P<indent>>+\s*)?(?:\*\*)?(?P<speaker>\?\?\?\s*\([^)]+\)|[A-Za-z]"
-    r"[A-Za-z0-9 ·•'\-]{0,48})(?:\*\*)?\s*[:：]\s*(?P<line>.+)$"
+    r"^(?P<indent>>+\s*)?(?:\*\*)?(?P<speaker>"
+    r'\?\?\?\s*\([^)]+\)|'
+    r'"[^"]{1,48}"|'
+    r"'[^']{1,48}'|"
+    r"[A-Za-z][A-Za-z0-9 ·•'\-]{0,48}"
+    r")(?:\*\*)?\s*[:：]\s*(?P<line>.+)$"
 )
 _PAREN_HEIR = re.compile(r"\((?P<inner>[^)]+)\)")
 _QUOTED = re.compile(r'"([^"\n]{12,400})"')
@@ -74,11 +99,10 @@ class Row:
 
 
 def _canonical_heir(speaker: str) -> Optional[str]:
-    s = speaker.strip()
+    s = speaker.strip().strip('"').strip("'")
     m = _PAREN_HEIR.search(s)
     if m:
-        s = m.group("inner").strip()
-    # Drop leading ??? already handled via paren
+        s = m.group("inner").strip().strip('"').strip("'")
     for canon, aliases in HEIR_ALIASES.items():
         for a in aliases:
             if s.lower() == a.lower():
@@ -290,14 +314,23 @@ def main() -> int:
         safe = heir.lower().replace(" ", "_")
         write_jsonl(DATASETS / f"heir_{safe}.jsonl", rows)
 
+    training_13 = {h: len(by_heir.get(h, [])) for h in TRAINING_HEIRS}
+    missing_13 = [h for h, n in training_13.items() if n == 0]
     manifest = {
         "source_policy": "duplicates only; databank originals never modified",
         "work_copies": str(WORK.relative_to(REPO_ROOT)).replace("\\", "/"),
         "files_copied": len(copies),
         "total_rows": len(dict_rows),
+        "training_heirs_13": TRAINING_HEIRS,
+        "training_13_counts": training_13,
+        "training_13_missing": missing_13,
+        "training_13_total": sum(training_13.values()),
         "per_heir": {h: len(r) for h, r in sorted(by_heir.items())},
         "kinds": dict(Counter(r["kind"] for r in dict_rows)),
     }
+    # Convenience combined file for the official 13 only
+    rows_13 = [r for r in dict_rows if r["heir"] in TRAINING_HEIRS]
+    write_jsonl(DATASETS / "heirs_training_13.jsonl", rows_13)
     (DATASETS / "manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",

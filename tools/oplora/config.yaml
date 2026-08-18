@@ -44,6 +44,6 @@ bf16: true
 report_to: none
 seed: 42
 
-# Dataset filter — pilot Heir (expand later)
-heir_filter: Phainon
-max_samples: 200
+# Dataset filter — pilot Heir (train_all_heirs.py overrides per Heir)
+heir_filter: Aglaea
+max_samples: 0
