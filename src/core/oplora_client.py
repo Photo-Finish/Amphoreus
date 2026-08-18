@@ -18,7 +18,10 @@ from typing import Any, Optional
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 INFER_SCRIPT = PROJECT_ROOT / "tools" / "oplora" / "infer_server.py"
 OPLORA_PY = PROJECT_ROOT / ".venv-oplora" / "Scripts" / "python.exe"
-DEFAULT_PORT = int(os.environ.get("AMPHOREUS_OPLORA_PORT", "8765"))
+# 8765 is the public world-status server (photo-finish.github.io/status/).
+_STATUS_PORT = 8765
+_requested_port = int(os.environ.get("AMPHOREUS_OPLORA_PORT", "8766"))
+DEFAULT_PORT = 8766 if _requested_port == _STATUS_PORT else _requested_port
 DEFAULT_BASE = f"http://127.0.0.1:{DEFAULT_PORT}"
 PID_FILE = PROJECT_ROOT / "world_runtime" / "oplora_infer.pid"
 LOG_FILE = PROJECT_ROOT / "world_runtime" / "oplora_infer.log"

@@ -162,7 +162,8 @@ def render_control_panel(manager, characters):
     st.caption(
         f"Adapters ready: **{_ad['ready_count']}/{_ad['total']}** · "
         f"OPLoRA venv: {'yes' if _ad['venv_exists'] else 'missing'} · "
-        f"infer server: {'up' if _oc.is_up() else 'down'}"
+        f"infer :{_oc.DEFAULT_PORT} {'up' if _oc.is_up() else 'down'} "
+        f"(status page stays on :8765)"
     )
     if _path_choice != _cur_path:
         if st.button(

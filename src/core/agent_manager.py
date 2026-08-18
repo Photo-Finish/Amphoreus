@@ -18,6 +18,7 @@ from .preference_store import PreferenceStore
 from .teaching_store import TeachingStore
 from .llm_client import LLMClient
 from .senses import Senses
+from .speech_sanitize import spoken_words as _spoken_words
 from ..knowledge.vector_store import VectorStore
 
 # Framing used when the visitor shares a picture/video: the Heir perceives it
@@ -316,6 +317,7 @@ class AgentManager:
         # Build message history
         session = self.sessions.get_or_create(character_id)
         messages = session.to_openai_format(system_prompt)
+        self._sanitize_history_for_llm(messages)
 
         # The visitor's own road — a stage note placed inside the visitor's
         # own turn, so the Heir plainly knows where the visitor stands. The
@@ -372,6 +374,8 @@ class AgentManager:
             response = self._call_llm(messages, stream=stream)
 
         if not stream or has_image or has_video:
+            if isinstance(response, str):
+                response = _spoken_words(response)
             # Add assistant response to session + persistent memory
             self.sessions.add_message(character_id, "assistant", response)
             self.memory.add_history(character_id, "assistant", response)
@@ -475,7 +479,10 @@ class AgentManager:
         self.memory.add_history(character_id, "user", user_message)
         session = self.sessions.get_or_create(character_id)
         messages = session.to_openai_format(system_prompt)
+        self._sanitize_history_for_llm(messages)
         response = self._call_llm(messages, stream=stream)
+        if isinstance(response, str):
+            response = _spoken_words(response)
 
         # Advance the epistemic ledger
         self.teaching.record_exchange(
@@ -840,9 +847,12 @@ class AgentManager:
                 "Reply as yourself, speaking directly. Say only the words you "
                 "would actually say — nothing more. Do not narrate your own "
                 "actions or expressions (\"I reply with a nod\", \"I smile\", "
-                "\"I pause\"), and do not describe your own tone (\"my tone "
-                "remains analytical\", \"I say warmly\"). Let the words "
-                "themselves carry how you feel.\n\n"
+                "\"I pause\", \"I pause briefly, gathering\", \"I offer a "
+                "measured smile\", \"I give a slight nod\"), and do not describe "
+                "your own tone (\"my tone remains analytical\", \"I say warmly\", "
+                "\"my gaze flickers\"). Do not wrap your words in quotation "
+                "marks as if writing a novel, and do not write other people's "
+                "actions. Let the words themselves carry how you feel.\n\n"
                 "# Questions are not a reflex\n"
                 "Ending every reply on a question is a machine habit, not yours. "
                 "Most replies simply end — a statement, a thought left to rest, "
@@ -855,6 +865,14 @@ class AgentManager:
             )
         except Exception:
             return system_prompt
+
+    @staticmethod
+    def _sanitize_history_for_llm(messages: list) -> None:
+        """Past assistant turns may still carry novel tags; the model must not
+        be taught to copy them. Disk history is left as written."""
+        for msg in messages:
+            if msg.get("role") == "assistant" and isinstance(msg.get("content"), str):
+                msg["content"] = _spoken_words(msg["content"])
 
     def give_gift(self, character_id, gift_name):
         """The visitor gives the Heir a gift from the city market. It becomes
@@ -1032,10 +1050,10 @@ class AgentManager:
             if chunk.choices[0].delta.content:
                 content = chunk.choices[0].delta.content
                 full_response.append(content)
-                yield content
 
         # Store complete response in session + persistent memory
-        text = "".join(full_response)
+        text = _spoken_words("".join(full_response))
+        yield text
         self.sessions.add_message(character_id, "assistant", text)
         self.memory.add_history(character_id, "assistant", text)
         self._witness_realization(character_id, text)

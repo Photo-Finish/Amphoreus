@@ -1,8 +1,9 @@
 """OPLoRA voice infer server (runs under .venv-oplora, not the Streamlit venv).
 
-Listens on localhost:8765. Loads Qwen2.5-7B-Instruct in 4-bit once, then
-swaps Heir LoRA adapters on demand. Keep Ollama's large models unloaded
-while this process holds VRAM.
+Listens on localhost:8766 (not 8765 — that port is the public world-status
+API that photo-finish.github.io/status/ fetches). Loads Qwen2.5-7B-Instruct
+in 4-bit once, then swaps Heir LoRA adapters on demand. Keep Ollama's large
+models unloaded while this process holds VRAM.
 
 Endpoints:
   GET  /health
@@ -23,13 +24,20 @@ from typing import Any, Optional
 
 os.environ.setdefault("HF_HOME", r"D:\hf-cache")
 os.environ.setdefault("HUGGINGFACE_HUB_CACHE", r"D:\hf-cache\hub")
+# Stay on the local cache. A leftover hf-mirror HEAD for custom_generate
+# hung the first load even with local_files_only=True.
+os.environ.setdefault("HF_HUB_OFFLINE", "1")
+os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 
 ROOT = Path(__file__).resolve().parents[2]
 OPLORA = Path(__file__).resolve().parent
 ADAPTERS = OPLORA / "outputs" / "heirs"
 BASE_MODEL = "Qwen/Qwen2.5-7B-Instruct"
 HOST = "127.0.0.1"
-PORT = int(os.environ.get("AMPHOREUS_OPLORA_PORT", "8765"))
+# 8765 is reserved for tools/world_status_server.py (github.io live status).
+_STATUS_PORT = 8765
+_requested_port = int(os.environ.get("AMPHOREUS_OPLORA_PORT", "8766"))
+PORT = 8766 if _requested_port == _STATUS_PORT else _requested_port
 
 CARD_TO_ADAPTER = {
     "aglaea": "aglaea",
