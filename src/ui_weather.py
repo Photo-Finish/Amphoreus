@@ -339,17 +339,104 @@ def _overlay_html(effect, sky, place):
     )
 
 
+def image_data_uri(image_path, max_width=1920):
+    """Public JPEG data-URI for embedding in pictorial / full-bleed stages."""
+    return _data_uri_jpeg(image_path, max_width=max_width)
+
+
+def page_backdrop_css(image_path, max_width=1920) -> str:
+    """CSS that paints the region art behind the whole Streamlit page.
+
+    Text sits in glass panels (``.amp-read``) so it stays readable over the art.
+    """
+    uri = _data_uri_jpeg(image_path, max_width=max_width)
+    if not uri:
+        return ""
+    return f"""
+<style>
+[data-testid="stAppViewContainer"] {{
+  background-image: url('{uri}') !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-attachment: fixed !important;
+  background-color: #0a0814 !important;
+}}
+[data-testid="stAppViewContainer"]::before {{
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 6, 16, 0.58) 0%,
+    rgba(8, 6, 16, 0.72) 45%,
+    rgba(8, 6, 16, 0.82) 100%
+  );
+}}
+[data-testid="stHeader"] {{
+  background: rgba(10,8,20,.35) !important;
+}}
+[data-testid="stAppViewContainer"] > .main {{
+  background: transparent !important;
+}}
+.block-container {{
+  position: relative;
+  z-index: 1;
+}}
+.amp-read {{
+  background: rgba(10, 8, 20, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(232, 213, 163, 0.22);
+  border-radius: 12px;
+  padding: 0.85rem 1.15rem;
+  color: #f0e6c8;
+  margin: 0.4rem 0 0.85rem 0;
+}}
+.amp-read h1, .amp-read h2, .amp-read h3 {{
+  color: #f0e6c8; margin-top: 0;
+}}
+.amp-read .sub {{ color: #b8a97f; }}
+.amp-read .meta {{ color: #c9b896; font-size: 0.9rem; letter-spacing: 0.03em; }}
+.amp-read .beat {{
+  font-family: Georgia, "Palatino Linotype", serif;
+  font-size: 1.1rem; line-height: 1.55; font-style: italic;
+  color: #e8dcc0; margin: 0.35rem 0 0 0;
+}}
+section[data-testid="stSidebar"] {{
+  background: rgba(12, 10, 22, 0.92) !important;
+}}
+/* Chat / markdown text stays readable over the land art */
+[data-testid="stMarkdownContainer"],
+[data-testid="stChatMessage"],
+.stCaption, .stAlert {{
+  text-shadow: 0 1px 2px rgba(0,0,0,.45);
+}}
+</style>
+"""
+
+
 def scene_html(image_path, place, effect, sky, height=300, rounded=True,
-               max_width=1280):
-    """Full HTML for a location scene: art + weather overlay + place tag."""
+               max_width=1280, full_bleed=False):
+    """Full HTML for a location scene: art + weather overlay + place tag.
+
+    ``full_bleed=True`` drops the rounded card frame so the art can read as
+    the stage plane (used under pictorial hotspots / Walk the Land).
+    """
     uri = _data_uri_jpeg(image_path, max_width=max_width)
     if not uri:
         return ""
     bg_css = f"background-image:url('{uri}');"
-    radius = "border-radius:14px;" if rounded else ""
+    if full_bleed:
+        radius = "border-radius:0;"
+        border = "border:none;"
+    else:
+        radius = "border-radius:14px;" if rounded else "border-radius:0;"
+        border = "border:1px solid rgba(232,213,163,.16);"
     return (
-        f"<div style=\"position:relative;height:{height}px;{radius}overflow:hidden;"
-        f"border:1px solid rgba(232,213,163,.16);\">"
+        f"<div style=\"position:relative;height:{height}px;{radius}{border}"
+        f"overflow:hidden;\">"
         f"<div style=\"position:absolute;inset:0;{bg_css}background-size:cover;"
         f"background-position:center;\"></div>"
         f"{_overlay_html(effect, sky, place)}"

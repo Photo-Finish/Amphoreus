@@ -1,11 +1,252 @@
-"""Visit scene life — ambient visuals + clickable ecosystem objects.
+"""Visit / Walk scene life — pictorial stage, not word-button grids.
 
-Extends the weather backdrop with grass / leaf / chimera / shore motion, and
-exposes Streamlit controls for interact (Awoo, NPC identity) and gated care.
+Area art is the stage. Living presence is painted as SVG silhouettes on that
+art; clicks run inside ``st.components.v1.html`` and set ``?amp_notice=`` on
+the parent page (preserving ``amp_guest``). Readable copy sits in glass panels.
 """
 from __future__ import annotations
 
+import html as _html
 from typing import Any, Dict, List, Optional
+
+
+# --------------------------------------------------------------------- #
+# SVG silhouettes (viewBox 0 0 40 40) — one glyph per kind
+# --------------------------------------------------------------------- #
+
+_SPRITE_PATHS: Dict[str, str] = {
+    "chimera": (
+        '<ellipse cx="20" cy="24" rx="12" ry="8" fill="#e8d5a3"/>'
+        '<circle cx="14" cy="16" r="5" fill="#f0e6c8"/>'
+        '<circle cx="26" cy="16" r="5" fill="#f0e6c8"/>'
+        '<circle cx="13" cy="15" r="1.2" fill="#1a1428"/>'
+        '<circle cx="25" cy="15" r="1.2" fill="#1a1428"/>'
+    ),
+    "dromas": (
+        '<ellipse cx="20" cy="26" rx="14" ry="9" fill="#c9a86a"/>'
+        '<rect x="28" y="10" width="5" height="16" rx="2" fill="#b8955a"/>'
+        '<circle cx="31" cy="9" r="3.5" fill="#d4b87a"/>'
+    ),
+    "hearth_cat": (
+        '<ellipse cx="20" cy="26" rx="10" ry="7" fill="#d8c8a8"/>'
+        '<circle cx="20" cy="18" r="6" fill="#e6d6b6"/>'
+        '<polygon points="14,14 12,6 18,12" fill="#e6d6b6"/>'
+        '<polygon points="26,14 28,6 22,12" fill="#e6d6b6"/>'
+    ),
+    "well": (
+        '<ellipse cx="20" cy="28" rx="12" ry="5" fill="#6a8a9a"/>'
+        '<rect x="10" y="14" width="20" height="14" fill="#8a7a68"/>'
+        '<ellipse cx="20" cy="14" rx="10" ry="4" fill="#4a6a7a"/>'
+    ),
+    "fountain": (
+        '<ellipse cx="20" cy="30" rx="14" ry="5" fill="#7a9aaa"/>'
+        '<circle cx="20" cy="18" r="4" fill="#a8c8d8"/>'
+        '<path d="M20 8 Q24 14 20 18 Q16 14 20 8" fill="#c0dce8"/>'
+    ),
+    "olive": (
+        '<ellipse cx="20" cy="22" rx="11" ry="14" fill="#4a7a48"/>'
+        '<ellipse cx="16" cy="20" rx="3" ry="4" fill="#6a9a58"/>'
+        '<ellipse cx="24" cy="24" rx="3" ry="4" fill="#3a6a38"/>'
+    ),
+    "cicada": (
+        '<ellipse cx="20" cy="22" rx="6" ry="10" fill="#8a9a5a"/>'
+        '<ellipse cx="14" cy="20" rx="5" ry="8" fill="#a8b878" opacity=".85"/>'
+        '<ellipse cx="26" cy="20" rx="5" ry="8" fill="#a8b878" opacity=".85"/>'
+    ),
+    "boat": (
+        '<path d="M6 22 L34 22 L28 30 L12 30 Z" fill="#8a6a48"/>'
+        '<line x1="20" y1="8" x2="20" y2="22" stroke="#c9b896" stroke-width="2"/>'
+        '<path d="M20 8 L30 20 L20 20 Z" fill="#e8d5a3" opacity=".7"/>'
+    ),
+    "pearl": (
+        '<circle cx="20" cy="20" r="9" fill="#e8f0f4"/>'
+        '<circle cx="17" cy="17" r="3" fill="#fff" opacity=".7"/>'
+    ),
+    "pebble": (
+        '<ellipse cx="20" cy="22" rx="10" ry="7" fill="#9a9080"/>'
+        '<ellipse cx="17" cy="20" rx="3" ry="2" fill="#b0a898" opacity=".5"/>'
+    ),
+    "shore": (
+        '<path d="M4 24 Q12 18 20 24 Q28 30 36 22 L36 34 L4 34 Z" fill="#5a8aaa"/>'
+        '<path d="M4 26 Q14 20 22 26 Q30 32 36 24" fill="none" stroke="#a8d0e0" stroke-width="1.5"/>'
+    ),
+    "siren": (
+        '<path d="M8 28 Q20 8 32 28" fill="none" stroke="#c9a8d8" stroke-width="2"/>'
+        '<circle cx="20" cy="14" r="4" fill="#e0c8f0"/>'
+    ),
+    "forge": (
+        '<rect x="8" y="18" width="24" height="14" fill="#4a3a30"/>'
+        '<path d="M12 18 L20 8 L28 18" fill="#c95a3a"/>'
+        '<rect x="16" y="22" width="8" height="6" fill="#1a1010"/>'
+    ),
+    "banner": (
+        '<line x1="12" y1="6" x2="12" y2="34" stroke="#c9b896" stroke-width="2"/>'
+        '<path d="M12 8 L30 12 L12 20 Z" fill="#c94a4a"/>'
+    ),
+    "lamp": (
+        '<rect x="17" y="22" width="6" height="10" fill="#6a5a48"/>'
+        '<ellipse cx="20" cy="16" rx="8" ry="7" fill="#e8c86a"/>'
+        '<circle cx="20" cy="14" r="3" fill="#fff0c0"/>'
+    ),
+    "hearth": (
+        '<path d="M8 30 L12 14 L28 14 L32 30 Z" fill="#5a4030"/>'
+        '<ellipse cx="20" cy="20" rx="6" ry="8" fill="#e87830"/>'
+        '<ellipse cx="20" cy="18" rx="3" ry="5" fill="#f0c060"/>'
+    ),
+    "shrine": (
+        '<rect x="12" y="18" width="16" height="14" fill="#8a7a68"/>'
+        '<path d="M8 18 L20 8 L32 18 Z" fill="#c9b896"/>'
+        '<circle cx="20" cy="24" r="2.5" fill="#e8d5a3"/>'
+    ),
+    "market_stall": (
+        '<path d="M6 16 L20 8 L34 16" fill="#c94a4a"/>'
+        '<rect x="10" y="16" width="20" height="14" fill="#d8c8a8"/>'
+        '<line x1="10" y1="16" x2="10" y2="32" stroke="#6a5a48" stroke-width="2"/>'
+        '<line x1="30" y1="16" x2="30" y2="32" stroke="#6a5a48" stroke-width="2"/>'
+    ),
+    "gate": (
+        '<path d="M8 34 L8 12 Q20 4 32 12 L32 34" fill="none" stroke="#c9b896" stroke-width="3"/>'
+        '<line x1="20" y1="10" x2="20" y2="34" stroke="#a89070" stroke-width="2"/>'
+    ),
+    "scroll": (
+        '<rect x="10" y="8" width="20" height="24" rx="2" fill="#e8dcc0"/>'
+        '<line x1="14" y1="14" x2="26" y2="14" stroke="#8a7a68" stroke-width="1.5"/>'
+        '<line x1="14" y1="20" x2="26" y2="20" stroke="#8a7a68" stroke-width="1.5"/>'
+        '<line x1="14" y1="26" x2="22" y2="26" stroke="#8a7a68" stroke-width="1.5"/>'
+    ),
+    "loom": (
+        '<rect x="8" y="8" width="24" height="4" fill="#8a6a48"/>'
+        '<line x1="12" y1="12" x2="12" y2="32" stroke="#c9b896" stroke-width="2"/>'
+        '<line x1="28" y1="12" x2="28" y2="32" stroke="#c9b896" stroke-width="2"/>'
+        '<path d="M12 18 H28 M12 24 H28" stroke="#e8d5a3" stroke-width="1.5"/>'
+    ),
+    "laundry": (
+        '<line x1="4" y1="14" x2="36" y2="14" stroke="#c9b896" stroke-width="2"/>'
+        '<rect x="8" y="14" width="8" height="14" fill="#e8e0d0"/>'
+        '<rect x="20" y="14" width="10" height="12" fill="#d0d8e8"/>'
+    ),
+    "net": (
+        '<path d="M8 12 L32 12 L28 30 L12 30 Z" fill="none" stroke="#a8c0d0" stroke-width="1.5"/>'
+        '<path d="M12 12 L14 30 M20 12 L20 30 M28 12 L26 30 M8 18 H32 M8 24 H32" '
+        'stroke="#a8c0d0" stroke-width="1"/>'
+    ),
+    "ribbon": (
+        '<path d="M12 8 Q20 20 12 32" fill="none" stroke="#e87898" stroke-width="3"/>'
+        '<path d="M28 8 Q20 20 28 32" fill="none" stroke="#e87898" stroke-width="3"/>'
+        '<circle cx="20" cy="20" r="4" fill="#f0a0b8"/>'
+    ),
+    "mosaic": (
+        '<rect x="6" y="10" width="12" height="10" fill="#6a8aaa"/>'
+        '<rect x="22" y="10" width="12" height="10" fill="#c9a86a"/>'
+        '<rect x="6" y="22" width="12" height="10" fill="#c94a4a"/>'
+        '<rect x="22" y="22" width="12" height="10" fill="#4a7a48"/>'
+    ),
+    "courier": (
+        '<ellipse cx="20" cy="22" rx="12" ry="5" fill="#c9b896"/>'
+        '<path d="M8 22 Q14 12 22 18" fill="none" stroke="#a89070" stroke-width="2"/>'
+        '<circle cx="30" cy="18" r="3" fill="#d8c8a8"/>'
+    ),
+    "incense": (
+        '<rect x="18" y="10" width="4" height="22" fill="#8a6a48"/>'
+        '<circle cx="20" cy="8" r="3" fill="#c9b896" opacity=".6"/>'
+        '<path d="M20 6 Q24 0 20 -4" fill="none" stroke="#e8d5a3" stroke-width="1.5"/>'
+    ),
+    "kite": (
+        '<path d="M20 6 L32 20 L20 28 L8 20 Z" fill="#e87860"/>'
+        '<line x1="20" y1="28" x2="24" y2="36" stroke="#c9b896" stroke-width="1.5"/>'
+    ),
+    "mill": (
+        '<rect x="16" y="22" width="8" height="12" fill="#8a7a68"/>'
+        '<circle cx="20" cy="18" r="3" fill="#c9b896"/>'
+        '<line x1="20" y1="18" x2="8" y2="8" stroke="#e8d5a3" stroke-width="3"/>'
+        '<line x1="20" y1="18" x2="34" y2="12" stroke="#e8d5a3" stroke-width="3"/>'
+        '<line x1="20" y1="18" x2="14" y2="32" stroke="#e8d5a3" stroke-width="3"/>'
+    ),
+    "tidepool": (
+        '<ellipse cx="20" cy="22" rx="14" ry="10" fill="#4a7a8a"/>'
+        '<ellipse cx="18" cy="20" rx="6" ry="4" fill="#7ab0c0" opacity=".6"/>'
+    ),
+    "pillar": (
+        '<rect x="14" y="10" width="12" height="24" fill="#c9b896"/>'
+        '<rect x="10" y="8" width="20" height="4" fill="#e8d5a3"/>'
+        '<rect x="10" y="32" width="20" height="4" fill="#e8d5a3"/>'
+    ),
+    "dawn": (
+        '<circle cx="20" cy="20" r="12" fill="#e8c86a" opacity=".85"/>'
+        '<circle cx="20" cy="20" r="6" fill="#fff0c0"/>'
+    ),
+    "thief_star": (
+        '<polygon points="20,4 23,16 36,16 26,24 30,36 20,28 10,36 14,24 4,16 17,16" '
+        'fill="#e8d5a3"/>'
+    ),
+    "wheat": (
+        '<line x1="20" y1="34" x2="20" y2="12" stroke="#c9a86a" stroke-width="2"/>'
+        '<ellipse cx="20" cy="10" rx="5" ry="8" fill="#e8d080"/>'
+    ),
+    "grass": (
+        '<path d="M10 34 Q12 16 10 8" fill="none" stroke="#6a9a48" stroke-width="2"/>'
+        '<path d="M20 34 Q22 14 20 6" fill="none" stroke="#5a8a40" stroke-width="2"/>'
+        '<path d="M30 34 Q28 18 32 10" fill="none" stroke="#7aaa58" stroke-width="2"/>'
+    ),
+    "grove_leaf": (
+        '<path d="M20 6 Q32 20 20 34 Q8 20 20 6" fill="#4a8a48"/>'
+        '<line x1="20" y1="8" x2="20" y2="32" stroke="#2a5a28" stroke-width="1"/>'
+    ),
+    "wind": (
+        '<path d="M6 14 H28 Q34 14 34 18" fill="none" stroke="#c8d8e8" stroke-width="2"/>'
+        '<path d="M10 22 H30 Q36 22 36 26" fill="none" stroke="#a8c0d8" stroke-width="2"/>'
+        '<path d="M8 30 H24" fill="none" stroke="#88a8c8" stroke-width="2"/>'
+    ),
+    "bath": (
+        '<ellipse cx="20" cy="26" rx="14" ry="8" fill="#7a9aaa"/>'
+        '<path d="M8 22 Q20 14 32 22" fill="#a8c8d8"/>'
+    ),
+    "maze": (
+        '<rect x="6" y="6" width="28" height="28" fill="none" stroke="#8a7a98" stroke-width="2"/>'
+        '<path d="M6 20 H18 V34 M22 6 V22 H34" fill="none" stroke="#a898b8" stroke-width="2"/>'
+    ),
+    "resident": (
+        '<circle cx="20" cy="12" r="6" fill="#e8d5a3"/>'
+        '<path d="M10 34 Q10 20 20 20 Q30 20 30 34" fill="#c9b896"/>'
+    ),
+}
+
+_DEFAULT_SPRITE = (
+    '<circle cx="20" cy="20" r="12" fill="rgba(232,213,163,.55)" '
+    'stroke="#e8d5a3" stroke-width="2"/>'
+)
+
+# Short labels for visitor acts (shown only after a figure is noticed).
+_ACT_GLYPH: Dict[str, str] = {
+    "pick_keepsake": "◇ pocket",
+    "leave_offering": "▣ thanks",
+    "sit_hearth": "▣ sit",
+    "wave": "⌒ wave",
+    "drink": "○ drink",
+    "touch_air": "≈ air",
+    "pet_cat": "◠ pet",
+    "scratch_ear": "◠ ear",
+    "greet_dromas": "⌒ greet",
+    "soak": "≈ soak",
+    "look_up": "☆ look",
+    "step_through": "⊓ step",
+    "listen_iron": "▣ iron",
+    "watch_thread": "┊ thread",
+    "trail_maze": "▦ trail",
+    "brush_grain": "┊ grain",
+    "rest_shade": "⌒ shade",
+    "hang_ribbon": "⌒ ribbon",
+    "watch_water": "≈ water",
+    "follow_bird": "⌒ bird",
+    "read_cloth": "▣ cloth",
+    "breathe_incense": "⌒ scent",
+    "listen_cicada": "⌒ listen",
+    "glance_hull": "⌒ hull",
+    "trace_mosaic": "▦ trace",
+    "hum_mill": "⌒ mill",
+    "linger_lamp": "☆ lamp",
+    "read_page": "▣ page",
+}
 
 
 def _css() -> str:
@@ -49,18 +290,11 @@ def _css() -> str:
   0%,100% { transform: rotate(-6deg); }
   50% { transform: rotate(7deg); }
 }
-.amp-life-layer { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
-.amp-hotspot {
-  pointer-events: none;
-  position: absolute;
-  width: 44px; height: 44px;
-  margin-left: -22px; margin-bottom: -8px;
-  border-radius: 50%;
-  z-index: 6;
-  background: radial-gradient(circle, rgba(240,230,200,.38), transparent 72%);
-  border: 1px solid rgba(232,213,163,.45);
-  box-shadow: 0 0 10px rgba(232,213,163,.15);
+@keyframes amp-sprite-breathe {
+  0%,100% { transform: translateY(0); filter: drop-shadow(0 0 6px rgba(232,213,163,.35)); }
+  50% { transform: translateY(-3px); filter: drop-shadow(0 0 12px rgba(232,213,163,.65)); }
 }
+.amp-life-layer { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
 .amp-grass-blade {
   position:absolute; bottom:0; width:3px; height:18px;
   background: linear-gradient(180deg, rgba(120,160,80,.0), rgba(90,130,55,.75));
@@ -73,11 +307,6 @@ def _css() -> str:
   background: radial-gradient(circle at 30% 40%, #f2e6c9, #c9a86a 70%);
   box-shadow: 0 0 0 1px rgba(0,0,0,.25);
   animation: amp-chimera-wander 14s linear infinite;
-}
-.amp-chimera-dot::after {
-  content:"Awoo"; position:absolute; top:-14px; left:-4px;
-  font-size:9px; color:#f0e6c8; opacity:.0;
-  text-shadow:0 1px 4px #000;
 }
 .amp-chimera-dot.ailing { background: radial-gradient(circle at 30% 40%, #d8c8a8, #8a7060 70%); filter:saturate(.6); }
 .amp-leaf {
@@ -119,12 +348,53 @@ def _css() -> str:
   text-shadow:0 1px 6px rgba(0,0,0,.85);
   background:rgba(10,8,20,.5); padding:2px 10px; border-radius:999px;
 }
+.amp-sprite {
+  position: absolute;
+  width: 52px; height: 52px;
+  margin-left: -26px; margin-bottom: -8px;
+  padding: 0; border: none; background: transparent;
+  cursor: pointer; z-index: 8;
+  animation: amp-sprite-breathe 3.2s ease-in-out infinite;
+  pointer-events: auto;
+}
+.amp-sprite svg { width: 100%; height: 100%; display: block; }
+.amp-sprite:hover { transform: scale(1.12); filter: drop-shadow(0 0 14px rgba(240,230,200,.85)); }
+.amp-sprite.ailing svg { filter: saturate(.55) brightness(.85); }
+.amp-sprite-halo {
+  position: absolute; inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240,230,200,.28), transparent 70%);
+  pointer-events: none;
+}
+.amp-stage-hint {
+  position: absolute; left: 14px; bottom: 12px; z-index: 9;
+  font: 12px/1.35 Georgia, serif; color: #f0e6c8;
+  background: rgba(10,8,20,.62); padding: 4px 12px; border-radius: 8px;
+  text-shadow: 0 1px 4px #000; pointer-events: none;
+}
+.amp-stage-read {
+  position: absolute; left: 12px; right: 12px; top: 44px; z-index: 7;
+  max-width: 420px;
+  background: rgba(10,8,20,.72);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(232,213,163,.22);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #f0e6c8;
+  font: 13px/1.45 Georgia, serif;
+  pointer-events: none;
+}
+.amp-stage-read .kicker { color: #b8a97f; font-size: 11px; letter-spacing: .04em; }
 </style>
 """
 
 
+def _sprite_inner(kind: str) -> str:
+    return _SPRITE_PATHS.get(kind) or _DEFAULT_SPRITE
+
+
 def life_overlay_html(scene: List[dict], place: str = "", *, dense: bool = False) -> str:
-    """CSS/HTML layer for grass, chimeras, leaves, shore, wheat — visual only."""
+    """CSS/HTML layer for ambient motion — visual only (no clicks)."""
     kinds = {b.get("kind") for b in (scene or [])}
     parts = ['<div class="amp-life-layer">']
 
@@ -172,38 +442,13 @@ def life_overlay_html(scene: List[dict], place: str = "", *, dense: bool = False
     if "courier" in kinds:
         parts.append('<div class="amp-courier"></div>')
 
-    label_bits = []
-    for k in (
-        "chimera", "dromas", "wheat", "shore", "grove_leaf", "grass",
-        "fountain", "olive", "boat", "cicada", "mosaic",
-    ):
-        if k in kinds:
-            label_bits.append(k.replace("_", " "))
-    if label_bits:
-        parts.append(
-            f'<div class="amp-life-tag">{" · ".join(label_bits[:4])}</div>'
-        )
-    # Decorative glows only — Streamlit rewrites <a href> into new tabs
-    # and drops the guest session. Real clicks live in render_stage_bar().
-    import html as _html
-    for b in (scene or []):
-        if not b.get("clickable"):
-            continue
-        hs = b.get("hotspot") or {}
-        left = hs.get("left") or "50%"
-        bottom = hs.get("bottom") or "20%"
-        title = _html.escape(str(b.get("name") or b.get("kind") or "life"))
-        parts.append(
-            f'<span class="amp-hotspot" title="{title}" '
-            f'style="left:{left};bottom:{bottom};"></span>'
-        )
     parts.append("</div>")
     return _css() + "".join(parts)
 
 
 def inject_into_scene_html(scene_html: str, scene: List[dict], place: str = "",
                            *, dense: bool = False) -> str:
-    """Slip the life layer into an existing weather scene container."""
+    """Slip the ambient life layer into an existing weather scene container."""
     if not scene_html:
         return life_overlay_html(scene, place, dense=dense)
     overlay = life_overlay_html(scene, place, dense=dense)
@@ -211,6 +456,144 @@ def inject_into_scene_html(scene_html: str, scene: List[dict], place: str = "",
     if idx < 0:
         return scene_html + overlay
     return scene_html[:idx] + overlay + scene_html[idx:]
+
+
+def pictorial_stage_html(
+    image_path,
+    place: str,
+    effect: str,
+    sky: str,
+    scene: List[dict],
+    *,
+    height: int = 520,
+    max_width: int = 1920,
+    read_line: str = "",
+    dense: bool = True,
+) -> str:
+    """Full pictorial stage: area art + weather + ambient + clickable sprites."""
+    from src.ui_weather import image_data_uri, overlay_for
+
+    uri = image_data_uri(image_path, max_width=max_width)
+    if not uri:
+        return ""
+
+    ambient = life_overlay_html(scene, place, dense=dense)
+    # Cap on-stage figures so the art stays readable (full list lives in eco).
+    _PRIORITY = (
+        "chimera", "dromas", "hearth_cat", "resident", "dawn", "thief_star",
+        "well", "fountain", "forge", "boat", "siren", "olive", "cicada",
+        "pearl", "shrine", "gate", "hearth", "market_stall", "bath",
+        "laundry", "mill", "kite", "courier", "banner", "scroll",
+    )
+    clickable = [b for b in (scene or []) if b.get("clickable") and b.get("id")]
+    ranked = sorted(
+        clickable,
+        key=lambda b: (
+            _PRIORITY.index(b.get("kind"))
+            if b.get("kind") in _PRIORITY else 80,
+            str(b.get("id")),
+        ),
+    )
+    max_sprites = 14 if dense else 10
+    sprites = []
+    for b in ranked[:max_sprites]:
+        kind = str(b.get("kind") or "")
+        hs = b.get("hotspot") or {}
+        left = hs.get("left") or "50%"
+        bottom = hs.get("bottom") or "20%"
+        oid = _html.escape(str(b.get("id")), quote=True)
+        title = _html.escape(str(b.get("name") or kind or "life"), quote=True)
+        ailing = " ailing" if b.get("status") == "ailing" else ""
+        delay = abs(hash(oid)) % 17 / 10.0
+        sprites.append(
+            f'<button type="button" class="amp-sprite{ailing}" data-oid="{oid}" '
+            f'title="{title}" aria-label="{title}" '
+            f'style="left:{left};bottom:{bottom};animation-delay:{delay:.1f}s;">'
+            f'<span class="amp-sprite-halo"></span>'
+            f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" '
+            f'aria-hidden="true">{_sprite_inner(kind)}</svg>'
+            f"</button>"
+        )
+
+    read_block = ""
+    if read_line:
+        read_block = (
+            '<div class="amp-stage-read">'
+            '<div class="kicker">This hour</div>'
+            f"{_html.escape(read_line[:280])}"
+            "</div>"
+        )
+
+    hint = (
+        '<div class="amp-stage-hint">'
+        "Touch a figure on the land — not a name list."
+        "</div>"
+    )
+
+    try:
+        from src.ui_weather import _overlay_html as _wx_layers
+        wx = _wx_layers(effect or "none", sky or "", place or "Amphoreus")
+    except Exception:
+        wx = overlay_for(place or "Amphoreus", place or "Amphoreus")
+    body = (
+        f'<div id="amp-pict-stage" style="position:relative;height:{height}px;'
+        f'overflow:hidden;border:none;border-radius:0;background:#0a0814;">'
+        f'<div style="position:absolute;inset:0;background-image:url(\'{uri}\');'
+        f'background-size:cover;background-position:center;"></div>'
+        f"{wx}"
+        f"{ambient}"
+        f'{"".join(sprites)}'
+        f"{read_block}"
+        f"{hint}"
+        f"</div>"
+        "<script>\n"
+        "(function(){\n"
+        "  function go(oid){\n"
+        "    try {\n"
+        "      var u = new URL(window.parent.location.href);\n"
+        "      u.searchParams.set('amp_notice', oid);\n"
+        "      window.parent.location.href = u.toString();\n"
+        "    } catch (e) {}\n"
+        "  }\n"
+        "  var root = document.getElementById('amp-pict-stage');\n"
+        "  if(!root) return;\n"
+        "  root.addEventListener('click', function(ev){\n"
+        "    var t = ev.target.closest ? ev.target.closest('.amp-sprite') : null;\n"
+        "    if(!t) return;\n"
+        "    ev.preventDefault();\n"
+        "    go(t.getAttribute('data-oid'));\n"
+        "  });\n"
+        "})();\n"
+        "</script>\n"
+    )
+    return body
+
+
+def render_pictorial_stage(
+    image_path,
+    place: str,
+    effect: str,
+    sky: str,
+    scene: List[dict],
+    *,
+    height: int = 520,
+    max_width: int = 1920,
+    read_line: str = "",
+    dense: bool = True,
+    key: str = "pict",
+) -> bool:
+    """Render the clickable pictorial stage. Returns True if art was shown."""
+    import streamlit as st
+    from streamlit.components.v1 import html as components_html
+
+    html = pictorial_stage_html(
+        image_path, place, effect, sky, scene,
+        height=height, max_width=max_width, read_line=read_line, dense=dense,
+    )
+    if not html:
+        return False
+    components_html(html, height=height + 8, scrolling=False)
+    return True
 
 
 def _do_notice(*, oid: str, heir_id: str, place: Optional[str],
@@ -240,6 +623,7 @@ def _do_notice(*, oid: str, heir_id: str, place: Optional[str],
             "place": place or b.get("place") or "",
         }
         st.session_state["eco_noticed"] = noticed
+        st.session_state["eco_focus"] = oid
     else:
         st.session_state[f"{key_prefix}_flash"] = res.get("reason")
 
@@ -251,27 +635,11 @@ def render_stage_bar(
     key_prefix: str,
     place: Optional[str] = None,
 ) -> None:
-    """In-session name chips under the picture (no URL navigation)."""
-    import streamlit as st
-
-    clickable = [b for b in (scene or []) if b.get("clickable") and b.get("id")]
-    if not clickable:
-        return
-    st.caption("On this stage — touch a name. Same session; nothing opens a new page.")
-    for i in range(0, len(clickable), 4):
-        cols = st.columns(4)
-        for j, b in enumerate(clickable[i:i + 4]):
-            oid = b.get("id") or ""
-            label = (b.get("name") or b.get("kind") or "life").strip()
-            with cols[j]:
-                if st.button(label, key=f"{key_prefix}_glow_{oid}"):
-                    _do_notice(
-                        oid=oid, heir_id=heir_id, place=place,
-                        key_prefix=key_prefix)
-    _render_pocket()
-    flash = st.session_state.pop(f"{key_prefix}_flash", None)
-    if flash:
-        st.info(flash)
+    """Compat shim — focus strip only (no name-button grid)."""
+    render_focus_strip(
+        scene, heir_id=heir_id, key_prefix=key_prefix, place=place,
+        read_only=not heir_id,
+    )
 
 
 def _render_pocket() -> None:
@@ -287,6 +655,152 @@ def _render_pocket() -> None:
         st.caption("In your pocket: " + " · ".join(names))
 
 
+def render_focus_strip(
+    scene: List[dict],
+    *,
+    heir_id: str = "",
+    heir_name: str = "",
+    key_prefix: str,
+    place: Optional[str] = None,
+    read_only: bool = False,
+) -> None:
+    """After a pictorial click: show the noticed being + touch/care glyphs."""
+    import streamlit as st
+    from src.world import ecosystem as eco
+    from src.world.world_state import WorldState
+
+    flash = st.session_state.pop(f"{key_prefix}_flash", None)
+    if flash:
+        st.markdown(
+            f'<div class="amp-read">{_html.escape(str(flash))}</div>',
+            unsafe_allow_html=True,
+        )
+    _render_pocket()
+
+    focus_id = st.session_state.get("eco_focus") or ""
+    noticed = st.session_state.get("eco_noticed") or {}
+    if not focus_id and noticed:
+        # Prefer last notice at this place / heir.
+        for oid, row in reversed(list(noticed.items())):
+            if place and row.get("place") and row.get("place") != place:
+                continue
+            if heir_id and row.get("heir") and row.get("heir") != heir_id:
+                continue
+            focus_id = oid
+            break
+
+    being = None
+    for b in (scene or []):
+        if b.get("id") == focus_id:
+            being = b
+            break
+    if being is None and focus_id and focus_id in noticed:
+        # Scene may have refreshed; synthesize a minimal row.
+        row = noticed[focus_id]
+        being = {
+            "id": focus_id,
+            "name": row.get("name"),
+            "kind": row.get("kind"),
+            "status": row.get("status"),
+            "visitor_acts": [],
+        }
+
+    if not being:
+        st.caption("Touch a figure on the picture to notice what lives here.")
+        return
+
+    oid = being.get("id") or focus_id
+    label = being.get("name") or being.get("kind") or "life"
+    status = being.get("status") or ""
+    mark = f" · {status}" if status and status != "resting" else ""
+    st.markdown(
+        f'<div class="amp-read"><strong>{_html.escape(str(label))}</strong>'
+        f'{_html.escape(mark)}'
+        f'<div class="sub">{_html.escape(str(being.get("doing") or ""))}</div></div>',
+        unsafe_allow_html=True,
+    )
+
+    acts = list(being.get("visitor_acts") or [])
+    if not acts:
+        try:
+            acts = eco.visitor_acts_for(str(being.get("kind") or ""))
+        except Exception:
+            acts = []
+
+    if acts:
+        cols = st.columns(min(4, len(acts)))
+        for i, aid in enumerate(acts):
+            glyph = _ACT_GLYPH.get(aid, aid.replace("_", " "))
+            with cols[i % len(cols)]:
+                if st.button(glyph, key=f"{key_prefix}_v_{oid}_{aid}"):
+                    ws = WorldState()
+                    touch = eco.visitor_touch(
+                        ws, oid, aid, place=place, save=True)
+                    if touch.get("ok"):
+                        st.session_state[f"{key_prefix}_flash"] = touch.get("note")
+                        noticed = st.session_state.setdefault("eco_noticed", {})
+                        noticed[oid] = {
+                            "id": oid, "name": label, "kind": being.get("kind"),
+                            "status": status, "line": touch.get("note"),
+                            "heir": heir_id, "place": place or "",
+                            "touched": aid,
+                        }
+                        st.session_state["eco_focus"] = oid
+                        st.rerun()
+                    else:
+                        st.session_state[f"{key_prefix}_flash"] = touch.get("reason")
+                        st.rerun()
+
+    if read_only or not heir_id:
+        return
+
+    actions = eco.authorized_actions(heir_id, being)
+    if not actions:
+        return
+    care_cols = st.columns(min(3, len(actions)))
+    for i, a in enumerate(actions):
+        btn = f"◇ {a['label']} ({heir_name})"
+        with care_cols[i % len(care_cols)]:
+            if st.button(btn, key=f"{key_prefix}_c_{oid}_{a['id']}"):
+                ws = WorldState()
+                care = eco.apply_care(ws, heir_id, oid, a["id"], save=True)
+                if care.get("ok"):
+                    st.session_state[f"{key_prefix}_flash"] = (
+                        f"{heir_name}: {care.get('note')}"
+                    )
+                    msgs = st.session_state.setdefault("messages", {})
+                    hist = msgs.setdefault(heir_id, [])
+                    hist.append({
+                        "role": "user",
+                        "content": (
+                            f"*(you ask {heir_name} to {a['label']} "
+                            f"{label})*"
+                        ),
+                    })
+                    hist.append({
+                        "role": "assistant",
+                        "content": (
+                            f"*(the living world records: {care.get('note')})*"
+                        ),
+                    })
+                    noticed = st.session_state.setdefault("eco_noticed", {})
+                    noticed[oid] = {
+                        "id": oid,
+                        "name": label,
+                        "kind": being.get("kind"),
+                        "status": (care.get("being") or {}).get("status") or status,
+                        "line": care.get("note"),
+                        "cared": True,
+                        "heir": heir_id,
+                        "place": place or "",
+                    }
+                    st.session_state["eco_focus"] = oid
+                    st.rerun()
+                else:
+                    st.session_state[f"{key_prefix}_flash"] = care.get("reason")
+                    st.rerun()
+
+
 def render_life_interactions(
     scene: List[dict],
     *,
@@ -297,120 +811,27 @@ def render_life_interactions(
     read_only: bool = False,
     place: Optional[str] = None,
 ) -> None:
-    """Streamlit controls: click → textbox sound / identity; gated care."""
-    import streamlit as st
-    from src.world import ecosystem as eco
-    from src.world.world_state import WorldState
-
-    if not scene:
-        st.caption("No living presence on this stage this hour.")
-        return
-
-    st.markdown("##### Life on this stage")
-    st.caption(
-        "Touch a **name under the picture**, or a row here. "
-        "Sounds, names, a pebble in your pocket — Heir care only when that Heir is with you."
+    """Focus strip after pictorial notice — no full name-button inventory."""
+    render_focus_strip(
+        scene,
+        heir_id=heir_id,
+        heir_name=heir_name,
+        key_prefix=key_prefix,
+        place=place,
+        read_only=read_only,
     )
-
-    # Persist what the visitor noticed so chat can reference it.
-    noticed = st.session_state.setdefault("eco_noticed", {})
-    if not isinstance(noticed, dict):
-        noticed = {}
-        st.session_state["eco_noticed"] = noticed
-
-    for b in scene:
-        oid = b.get("id") or ""
-        kind = b.get("kind") or ""
-        label = b.get("name") or kind
-        status = b.get("status") or ""
-        col_a, col_b, col_c = st.columns([3, 1, 2])
-        with col_a:
-            mark = ""
-            if status == "ailing":
-                mark = " · ailing"
-            elif status == "restless":
-                mark = " · restless"
-            elif status == "uneasy":
-                mark = " · uneasy"
-            st.markdown(f"**{label}**{mark}  \n*{b.get('doing') or ''}*")
-        with col_b:
-            if st.button("Notice", key=f"{key_prefix}_n_{oid}"):
-                _do_notice(
-                    oid=oid, heir_id=heir_id, place=place,
-                    key_prefix=key_prefix)
-        with col_c:
-            acts = list(b.get("visitor_acts") or [])
-            for aid in acts:
-                pretty = aid.replace("_", " ")
-                if st.button(pretty, key=f"{key_prefix}_v_{oid}_{aid}"):
-                    ws = WorldState()
-                    touch = eco.visitor_touch(
-                        ws, oid, aid, place=place, save=True)
-                    if touch.get("ok"):
-                        st.session_state[f"{key_prefix}_flash"] = touch.get("note")
-                        noticed[oid] = {
-                            "id": oid, "name": label, "kind": kind,
-                            "status": status, "line": touch.get("note"),
-                            "heir": heir_id, "place": place or "",
-                            "touched": aid,
-                        }
-                        st.session_state["eco_noticed"] = noticed
-                    else:
-                        st.session_state[f"{key_prefix}_flash"] = touch.get("reason")
-            if read_only or not heir_id:
-                continue
-            actions = eco.authorized_actions(heir_id, b)
-            for a in actions:
-                btn = f"{a['label'].title()} ({heir_name})"
-                if st.button(btn, key=f"{key_prefix}_c_{oid}_{a['id']}"):
-                    ws = WorldState()
-                    care = eco.apply_care(ws, heir_id, oid, a["id"], save=True)
-                    if care.get("ok"):
-                        st.session_state[f"{key_prefix}_flash"] = (
-                            f"{heir_name}: {care.get('note')}"
-                        )
-                        msgs = st.session_state.setdefault("messages", {})
-                        hist = msgs.setdefault(heir_id, [])
-                        hist.append({
-                            "role": "user",
-                            "content": (
-                                f"*(you ask {heir_name} to {a['label']} "
-                                f"{label})*"
-                            ),
-                        })
-                        hist.append({
-                            "role": "assistant",
-                            "content": (
-                                f"*(the living world records: {care.get('note')})*"
-                            ),
-                        })
-                        noticed[oid] = {
-                            "id": oid,
-                            "name": label,
-                            "kind": kind,
-                            "status": (care.get("being") or {}).get("status") or status,
-                            "line": care.get("note"),
-                            "cared": True,
-                            "heir": heir_id,
-                        }
-                        st.session_state["eco_noticed"] = noticed
-                        st.rerun()
-                    else:
-                        st.session_state[f"{key_prefix}_flash"] = care.get("reason")
-
-    flash = st.session_state.pop(f"{key_prefix}_flash", None)
-    if flash:
-        st.info(flash)
-    _render_pocket()
-
-    if noticed and heir_id:
+    if heir_id:
+        import streamlit as st
+        noticed = st.session_state.get("eco_noticed") or {}
         bits = [
             v.get("name") for v in noticed.values()
             if v.get("heir") == heir_id
         ][:4]
         if bits:
-            st.caption("You have noticed: " + " · ".join(bits)
-                       + " — ask the Heir about them in chat.")
+            st.caption(
+                "You have noticed: " + " · ".join(str(b) for b in bits if b)
+                + " — ask the Heir about them in chat."
+            )
 
 
 def noticed_prompt_addon(heir_id: str) -> str:
@@ -474,6 +895,7 @@ def consume_notice_query(*, place: Optional[str] = None, heir_id: str = "",
             "place": place or b.get("place") or "",
         }
         st.session_state["eco_noticed"] = noticed
+        st.session_state["eco_focus"] = oid
     else:
         st.session_state[f"{key_prefix}_flash"] = res.get("reason")
     try:

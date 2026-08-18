@@ -1,8 +1,8 @@
 """Walk the Land — stand in a region of Amphoreus (no Heir dialogue).
 
-Immersive ambient page: area art + Keeper weather + ecosystem life overlays
-and clickable presence (Awoo, passerby identity). Care that needs an Heir's
-voice stays on Visit; this page is the body in the place.
+Immersive ambient page: full-bleed region art as the page backdrop, a
+pictorial stage with SVG figures to touch, and glass reading panels for
+clock / stage text. Care that needs an Heir's voice stays on Visit.
 """
 from __future__ import annotations
 
@@ -92,50 +92,17 @@ def _stage_for(ws, place: str) -> str:
 
 def render_walk_page(*, key_prefix: str = "walk") -> None:
     """Full immersion: pick a region, stand in it, notice life. No Heir chat."""
+    import html as _html
     import streamlit as st
     from src.world.world_state import WorldState
     from src.world import ecosystem as eco
     from src.ui_scene_life import (
-        inject_into_scene_html,
-        render_life_interactions,
+        render_pictorial_stage,
+        render_focus_strip,
         life_overlay_html,
-        render_stage_bar,
+        consume_notice_query,
     )
-
-    st.markdown(
-        """
-        <style>
-        .walk-hero h1 {
-          font-family: Georgia, "Palatino Linotype", serif;
-          font-size: 2.1rem; letter-spacing: .04em; color: #f0e6c8;
-          margin: 0 0 .25rem 0;
-        }
-        .walk-hero .sub {
-          color: #b8a97f; font-size: .95rem; margin-bottom: 1rem;
-        }
-        .walk-beat {
-          font-family: Georgia, serif; font-size: 1.15rem; line-height: 1.55;
-          color: #e8dcc0; font-style: italic;
-          border-left: 3px solid rgba(201,168,106,.55);
-          padding: .4rem 0 .4rem 1rem; margin: .75rem 0 1rem 0;
-        }
-        .walk-meta {
-          color: #c9b896; font-size: .9rem; letter-spacing: .03em;
-          margin-bottom: .5rem;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        '<div class="walk-hero">'
-        "<h1>Walk the Land</h1>"
-        '<div class="sub">Stand in a region of Amphoreus — sky, ground, and '
-        "living presence. No Heir dialogue here; only the place itself.</div>"
-        "</div>",
-        unsafe_allow_html=True,
-    )
+    from src.ui_weather import page_backdrop_css
 
     ws = WorldState()
     opts = region_options()
@@ -155,6 +122,7 @@ def render_walk_page(*, key_prefix: str = "walk") -> None:
     except Exception:
         pass
 
+    # Region picker first (before backdrop) so follow-road can choose art.
     c1, c2 = st.columns([2, 1])
     with c1:
         pick = st.selectbox(
@@ -184,7 +152,12 @@ def render_walk_page(*, key_prefix: str = "walk") -> None:
             pass
 
     label, place, art = by_label[pick]
-    from src.ui_scene_life import consume_notice_query
+
+    if art is not None:
+        css = page_backdrop_css(art, max_width=1920)
+        if css:
+            st.markdown(css, unsafe_allow_html=True)
+
     consume_notice_query(place=place, heir_id="", key_prefix=f"{key_prefix}_{place}")
     clock = _clock_line(ws)
     sky = ""
@@ -193,74 +166,81 @@ def render_walk_page(*, key_prefix: str = "walk") -> None:
     except Exception:
         sky = ""
 
-    # Temporarily align visitor place for eco derive of *this* region
-    # without saving — derive_scene takes place= explicitly.
     scene = eco.derive_scene(ws, place=place, include_residents=True)
     try:
-        eco.apply_tick(ws)  # refresh gazette cache; idempotent
+        eco.apply_tick(ws)
     except Exception:
         pass
 
     stage = _stage_for(ws, place)
+
+    # Glass reading panel — title, clock, stage beat
+    beat = f'<div class="beat">{_html.escape(stage)}</div>' if stage else ""
+    sky_bit = f" · sky: {_html.escape(sky)}" if sky else ""
     st.markdown(
-        f'<div class="walk-meta">{clock} · <b>{place}</b>'
-        + (f" · sky: {sky}" if sky else "")
-        + "</div>",
+        f'<div class="amp-read">'
+        f"<h1 style=\"font-family:Georgia,'Palatino Linotype',serif;"
+        f"font-size:1.85rem;letter-spacing:.04em;margin:0 0 .35rem 0;\">"
+        f"Walk the Land</h1>"
+        f'<div class="sub">Stand in a region — sky, ground, living figures on the art. '
+        f"No Heir dialogue here; only the place itself.</div>"
+        f'<div class="meta" style="margin-top:.65rem;">'
+        f'{_html.escape(clock)} · <b>{_html.escape(place)}</b>'
+        f"{sky_bit} · {_html.escape(label)}</div>"
+        f"{beat}"
+        f"</div>",
         unsafe_allow_html=True,
     )
-    if stage:
-        st.markdown(f'<div class="walk-beat">{stage}</div>', unsafe_allow_html=True)
 
-    # Tall immersive scene
     height = 560
+    shown = False
     if art is not None:
         try:
-            from src.ui_weather import scene_html, effect_for, classify
-            # Weather keyed by place name; slug labels still get Keeper text via place.
+            from src.ui_weather import effect_for, classify
             effect, sky_fx = effect_for(place)
             if not sky_fx and sky:
                 effect = classify(sky)
                 sky_fx = sky
-            raw = scene_html(
-                art, f"{label}", effect, sky_fx, height=height, rounded=True,
-                max_width=1920)
-            merged = inject_into_scene_html(raw, scene, place, dense=True)
-            if merged:
-                st.markdown(merged, unsafe_allow_html=True)
-            else:
-                st.image(str(art), use_container_width=True)
+            shown = render_pictorial_stage(
+                art, place, effect, sky_fx, scene,
+                height=height, max_width=1920,
+                read_line="", dense=True,
+                key=f"{key_prefix}_{place}",
+            )
         except Exception as e:
-            st.image(str(art), use_container_width=True)
-            st.caption(f"(scene overlay fallback: {e})")
-            st.markdown(life_overlay_html(scene, place), unsafe_allow_html=True)
-    else:
+            st.caption(f"(pictorial stage fallback: {e})")
+            try:
+                st.image(str(art), use_container_width=True)
+                st.markdown(life_overlay_html(scene, place, dense=True),
+                            unsafe_allow_html=True)
+                shown = True
+            except Exception:
+                pass
+    if not shown:
         st.warning(
             "No area artwork on disk for this region yet. "
             "Run `python tools/fetch_galgame_backgrounds.py` "
             "(optionally `--force --width 1920`) when the wiki proxy is up."
         )
-        st.markdown(life_overlay_html(scene, place), unsafe_allow_html=True)
+        st.markdown(life_overlay_html(scene, place, dense=True),
+                    unsafe_allow_html=True)
 
-    render_stage_bar(
-        scene, heir_id="", key_prefix=f"{key_prefix}_{place}", place=place)
-
-    # Presence strip — interactive, no Heir chat
-    st.markdown("#### Presence")
-    st.caption(
-        "Touch a name under the picture to notice a sound or a person. "
-        "Heir care and dialogue live on **Visit an Heir** — this page is only the land underfoot."
+    st.markdown(
+        '<div class="amp-read"><div class="sub">'
+        "Touch a <b>figure on the picture</b> to notice a sound or a person. "
+        "Heir care and dialogue live on <b>Visit an Heir</b>."
+        "</div></div>",
+        unsafe_allow_html=True,
     )
-    render_life_interactions(
+    render_focus_strip(
         scene,
-        heir_id="",  # no Heir — notice only
+        heir_id="",
         heir_name="",
-        manager=None,
         key_prefix=f"{key_prefix}_{place}",
-        read_only=True,
         place=place,
+        read_only=True,
     )
 
-    # Quiet facts — still notice, not inventory
     life_bits = [
         b for b in scene
         if b.get("kind") not in {"resident"} and b.get("status") not in {"resting"}
@@ -272,7 +252,6 @@ def render_walk_page(*, key_prefix: str = "walk") -> None:
                     f"- **{b.get('name')}** — {b.get('doing')}"
                 )
 
-    # Who of the Thirteen is physically here (read-only presence, no chat)
     try:
         heirs_here = []
         for cid, loc in (ws.agent_location or {}).items():
