@@ -945,7 +945,7 @@ with main_tab:
     st.info(
         "**Start here.** Left sidebar: pick who to speak with. "
         "Type at the bottom to talk. "
-        "Touch a figure on the land to notice life. "
+        "The picture is their place — **touch a name under it** to notice life. "
         "To walk a city with no conversation, open the **Walk the Land** tab."
     )
     # Main Chat Area — hero banner with the Heir's portrait + where they are.
@@ -966,44 +966,32 @@ with main_tab:
     except Exception:
         pass
     if _chat_bg:
-        # Place art is the page backdrop; figures sit on the whole viewport.
+        # The backdrop follows the Heir's current place AND today's weather
+        # (the Keeper's sky), so the same art changes mood with the world.
+        # Ecosystem life (grass, chimeras, shore…) layers on top.
         try:
-            from src.ui_weather import effect_for as _wx_fx, page_backdrop_css
-            from src.ui_scene_life import render_pictorial_stage, render_focus_strip
+            from src.ui_weather import render_scene as _wx_scene
+            from src.ui_weather import scene_html as _wx_html, effect_for as _wx_fx
+            from src.ui_scene_life import inject_into_scene_html
             from src.world import ecosystem as _eco_ui
             from src.world.world_state import WorldState as _WS_eco
-            from src.ui_role import is_visitor as _is_vis_stage
-            _bg_ok = False
-            try:
-                _bg_css = page_backdrop_css(_chat_bg, max_width=1600)
-                if _bg_css:
-                    st.markdown(_bg_css, unsafe_allow_html=True)
-                    _bg_ok = True
-            except Exception:
-                pass
             _fx, _sky = _wx_fx(_chat_place)
+            _raw = _wx_html(
+                _chat_bg, _chat_place or info["name"], _fx, _sky, height=300)
             _eco_sc = _eco_ui.scene_for_heir(_WS_eco(), selected)
-            try:
-                render_pictorial_stage(
-                    _chat_bg, _chat_place or info["name"], _fx, _sky, _eco_sc,
-                    max_width=1600, dense=False, page_layer=True,
-                    key=f"eco_{selected}",
-                )
-            except Exception:
-                if not _bg_ok:
-                    raise
-            if not _bg_ok:
-                from src.ui_weather import render_scene as _wx_scene
+            _merged = inject_into_scene_html(_raw, _eco_sc, _chat_place or "")
+            if _merged:
+                st.markdown(_merged, unsafe_allow_html=True)
+            else:
                 _wx_scene(_chat_place, image_path=_chat_bg,
                           title=f"{info['name']} — {_chat_place}" if _chat_place else info["name"],
                           height=300)
             try:
-                render_focus_strip(
-                    _eco_sc, heir_id=selected, heir_name=info["name"],
+                from src.ui_scene_life import render_stage_bar as _eco_bar
+                _eco_bar(
+                    _eco_sc, heir_id=selected,
                     key_prefix=f"eco_{selected}",
-                    place=_chat_place or None,
-                    read_only=_is_vis_stage(),
-                )
+                    place=_chat_place or None)
             except Exception:
                 pass
         except Exception:
@@ -1015,7 +1003,7 @@ with main_tab:
             except Exception:
                 st.image(str(_chat_bg), width="stretch")
         if _chat_place:
-            st.caption(f"{info['name']} is in **{_chat_place}**.")
+            st.caption(f"{info['name']} is in **{_chat_place}** — the backdrop shows where they are.")
     hero_l, hero_r = st.columns([1, 3], gap="large")
     with hero_l:
         if _selected_portrait:
@@ -1108,13 +1096,13 @@ with main_tab:
                         }
                     else:
                         st.warning(_nr.get("reason", "They are not here."))
-        # Ecosystem — care / extra acts after a pictorial notice
+        # Ecosystem — interactive life (full immersion: sidebar → Walk the Land)
         _eco_scene = list(_frame.get("eco_scene") or [])
         if _eco_scene and not _frame.get("traveling"):
-            with st.expander("Life on this stage (care & quiet facts)", expanded=False):
+            with st.expander("Life on this stage", expanded=False):
                 st.caption(
-                    "Figures live on the picture above. Open **Walk the Land** "
-                    "for a taller ambient stage (no Heir dialogue)."
+                    "Quick notice here — or open **Walk the Land** "
+                    "for the full ambient view (no Heir dialogue)."
                 )
                 from src.ui_scene_life import render_life_interactions
                 render_life_interactions(
@@ -1122,7 +1110,7 @@ with main_tab:
                     heir_id=selected,
                     heir_name=info["name"],
                     manager=manager,
-                    key_prefix=f"eco_{selected}_exp",
+                    key_prefix=f"eco_{selected}",
                     read_only=is_visitor(),
                     place=_frame.get("place"),
                 )

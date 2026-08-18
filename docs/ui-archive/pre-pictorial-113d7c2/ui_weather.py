@@ -318,21 +318,13 @@ def _particle_html(effect: str, place: str) -> str:
     return ""
 
 
-def _overlay_html(effect, sky, place, *, show_place_tag=True):
+def _overlay_html(effect, sky, place):
     """A full-bleed, layered, animated weather overlay for a scene."""
     emoji, label = EFFECT_LABEL.get(effect, EFFECT_LABEL["none"])
     tint = _TINT.get(effect, _TINT["none"])
     particles = _particle_html(effect, place)
     light = _light_layer(effect)
-    tag = ""
-    if show_place_tag:
-        label_txt = f"{emoji} {place} — {label}" + (f" <i>({sky})</i>" if sky else "")
-        tag = (
-            f"<div style=\"position:absolute;top:12px;left:14px;font-size:13px;"
-            f"color:#f0e6c8;letter-spacing:.5px;text-shadow:0 1px 6px rgba(0,0,0,.8);"
-            f"background:rgba(10,8,20,.45);padding:3px 12px;border-radius:999px;\">"
-            f"{label_txt}</div>"
-        )
+    label_txt = f"{emoji} {place} — {label}" + (f" <i>({sky})</i>" if sky else "")
     return (
         f"<style>{_BASE_KEYS}</style>"
         f"<div style=\"position:absolute;inset:0;pointer-events:none;overflow:hidden;\">"
@@ -340,260 +332,24 @@ def _overlay_html(effect, sky, place, *, show_place_tag=True):
         f"{particles}"
         f"{light}"
         f"</div>"
-        f"{tag}"
+        f"<div style=\"position:absolute;top:12px;left:14px;font-size:13px;"
+        f"color:#f0e6c8;letter-spacing:.5px;text-shadow:0 1px 6px rgba(0,0,0,.8);"
+        f"background:rgba(10,8,20,.45);padding:3px 12px;border-radius:999px;\">"
+        f"{label_txt}</div>"
     )
 
 
-def image_data_uri(image_path, max_width=1920):
-    """Public JPEG data-URI for embedding in pictorial / full-bleed stages."""
-    return _data_uri_jpeg(image_path, max_width=max_width)
-
-
-# High-key skies/wheat need dark ink; sampled left-reading zone of local JPEGs.
-_INK_SLUGS = frozenset({"styxia", "aedes-elysiae"})
-# Mid-key marble/mist: keep sanctuary gold, thicker glass.
-_THICK_GOLD_SLUGS = frozenset({
-    "okhema", "kremnos", "memortis-shore", "beyond-time",
-    "grove", "eye-of-twilight",
-})
-
-
-def backdrop_slug(image_path) -> str:
-    """``bg-okhema.jpg`` → ``okhema``."""
-    stem = Path(image_path).stem.lower() if image_path else ""
-    return stem[3:] if stem.startswith("bg-") else stem
-
-
-def read_palette(image_path) -> dict:
-    """Body/heading/glass/scrim for words over this backdrop."""
-    slug = backdrop_slug(image_path)
-    if slug in _INK_SLUGS:
-        return {
-            "body": "#1a140c",
-            "heading": "#3d2a12",
-            "sub": "#5c4030",
-            "meta": "#4a3828",
-            "beat": "#2a1c12",
-            "glass": "rgba(248, 242, 228, 0.78)",
-            "border": "rgba(61, 42, 18, 0.28)",
-            "scrim": (
-                "linear-gradient(105deg,"
-                "rgba(248,242,228,.58) 0%,"
-                "rgba(248,242,228,.22) 34%,"
-                "rgba(248,242,228,.05) 100%)"
-            ),
-            "shadow": "0 1px 0 rgba(248,242,228,.6)",
-            "chat_bg": "rgba(248, 242, 228, 0.86)",
-        }
-    thick = slug in _THICK_GOLD_SLUGS
-    a0, a1 = ("0.58", "0.28") if thick else ("0.52", "0.20")
-    glass = "rgba(10, 8, 20, 0.88)" if thick else "rgba(10, 8, 20, 0.78)"
-    return {
-        "body": "#f0e6c8",
-        "heading": "#e8d5a3",
-        "sub": "#b8a97f",
-        "meta": "#c9b896",
-        "beat": "#e8dcc0",
-        "glass": glass,
-        "border": "rgba(232, 213, 163, 0.22)",
-        "scrim": (
-            f"linear-gradient(105deg,"
-            f"rgba(8, 6, 16, {a0}) 0%,"
-            f"rgba(8, 6, 16, {a1}) 34%,"
-            f"rgba(8, 6, 16, 0.08) 100%)"
-        ),
-        "shadow": "0 1px 2px rgba(0,0,0,.55)",
-        "chat_bg": "rgba(10, 8, 20, 0.84)",
-    }
-
-
-def page_backdrop_css(image_path, max_width=1920) -> str:
-    """CSS that paints the region art behind the whole Streamlit page.
-
-    ``cover`` crops to the live viewport aspect (wide pages keep the street;
-    tall pages keep the sky). Text colour follows the sampled backdrop.
-    """
-    uri = _data_uri_jpeg(image_path, max_width=max_width)
-    if not uri:
-        return ""
-    pal = read_palette(image_path)
-    return f"""
-<style>
-.stApp {{ background: transparent !important; }}
-[data-testid="stAppViewContainer"] {{
-  background-image: url('{uri}') !important;
-  background-size: cover !important;
-  background-repeat: no-repeat !important;
-  background-position: center 42% !important;
-  background-attachment: fixed !important;
-  background-color: #0a0814 !important;
-}}
-@media (min-aspect-ratio: 16/9) {{
-  [data-testid="stAppViewContainer"] {{
-    background-position: center 58% !important;
-  }}
-}}
-@media (max-aspect-ratio: 3/4) {{
-  [data-testid="stAppViewContainer"] {{
-    background-position: center 32% !important;
-  }}
-}}
-[data-testid="stAppViewContainer"]::before {{
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: {pal["scrim"]};
-}}
-[data-testid="stHeader"] {{
-  background: rgba(10,8,20,.28) !important;
-}}
-[data-testid="stAppViewContainer"] > .main {{
-  background: transparent !important;
-  pointer-events: none;
-}}
-.block-container {{
-  position: relative;
-  z-index: 2;
-  background: transparent !important;
-  pointer-events: none;
-}}
-/* Empty page area clicks the land; widgets stay usable. */
-.block-container .stButton,
-.block-container .stCheckbox,
-.block-container .stSelectbox,
-.block-container .stMultiSelect,
-.block-container .stTextInput,
-.block-container .stTextArea,
-.block-container .stNumberInput,
-.block-container .stRadio,
-.block-container .stExpander,
-.block-container .stAlert,
-.block-container .stImage,
-.block-container .stChatInput,
-.block-container [data-testid="stChatMessage"],
-.block-container [data-testid="stCaptionContainer"],
-.block-container [data-testid="stTooltipHoverTarget"],
-.block-container [data-testid="stTabs"],
-.block-container .amp-read,
-.block-container .stMarkdown:has(.amp-read),
-[data-testid="stBottomBlockContainer"],
-[data-testid="stHeader"],
-[data-testid="stToolbar"],
-[data-testid="stTabs"],
-[data-baseweb="tab-list"],
-[data-baseweb="tab"],
-section[data-testid="stSidebar"] {{
-  pointer-events: auto !important;
-}}
-[data-testid="stBottomBlockContainer"] {{
-  position: relative;
-  z-index: 6;
-}}
-[data-amp-land-wrap="1"] {{
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: visible !important;
-  z-index: 0 !important;
-  border: none !important;
-  background: transparent !important;
-  pointer-events: none !important;
-}}
-iframe[data-amp-land="1"] {{
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  max-width: none !important;
-  max-height: none !important;
-  border: none !important;
-  z-index: 0 !important;
-  background: transparent !important;
-  pointer-events: auto !important;
-}}
-.amp-read {{
-  background: {pal["glass"]};
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid {pal["border"]};
-  border-radius: 12px;
-  padding: 0.85rem 1.15rem;
-  color: {pal["body"]};
-  margin: 0.4rem 0 0.85rem 0;
-}}
-.amp-read h1, .amp-read h2, .amp-read h3 {{
-  color: {pal["heading"]}; margin-top: 0;
-}}
-.amp-read .sub {{ color: {pal["sub"]}; }}
-.amp-read .meta {{ color: {pal["meta"]}; font-size: 0.9rem; letter-spacing: 0.03em; }}
-.amp-read .beat {{
-  font-family: Georgia, "Palatino Linotype", serif;
-  font-size: 1.1rem; line-height: 1.55; font-style: italic;
-  color: {pal["beat"]}; margin: 0.35rem 0 0 0;
-}}
-[data-testid="stAppViewContainer"] > .main h1,
-[data-testid="stAppViewContainer"] > .main h2,
-[data-testid="stAppViewContainer"] > .main h3 {{
-  color: {pal["heading"]} !important;
-  text-shadow: {pal["shadow"]};
-}}
-[data-testid="stAppViewContainer"] > .main p,
-[data-testid="stAppViewContainer"] > .main li,
-[data-testid="stAppViewContainer"] > .main label,
-[data-testid="stAppViewContainer"] > .main [data-testid="stMarkdownContainer"],
-[data-testid="stAppViewContainer"] > .main [data-testid="stCaptionContainer"],
-[data-testid="stAppViewContainer"] > .main [data-testid="stWidgetLabel"],
-[data-testid="stAppViewContainer"] > .main .stCaption {{
-  color: {pal["body"]} !important;
-  text-shadow: {pal["shadow"]};
-}}
-[data-testid="stChatMessage"] {{
-  background: {pal["chat_bg"]} !important;
-  color: {pal["body"]} !important;
-  border: 1px solid {pal["border"]} !important;
-}}
-[data-testid="stChatMessage"] p,
-[data-testid="stChatMessage"] span,
-[data-testid="stChatMessage"] li {{
-  color: {pal["body"]} !important;
-}}
-section[data-testid="stSidebar"] {{
-  background: rgba(12, 10, 22, 0.92) !important;
-}}
-[data-testid="stMarkdownContainer"],
-[data-testid="stChatMessage"],
-.stCaption, .stAlert {{
-  text-shadow: {pal["shadow"]};
-}}
-</style>
-"""
-
-
 def scene_html(image_path, place, effect, sky, height=300, rounded=True,
-               max_width=1280, full_bleed=False):
-    """Full HTML for a location scene: art + weather overlay + place tag.
-
-    ``full_bleed=True`` drops the rounded card frame so the art can read as
-    the stage plane (used under pictorial hotspots / Walk the Land).
-    """
+               max_width=1280):
+    """Full HTML for a location scene: art + weather overlay + place tag."""
     uri = _data_uri_jpeg(image_path, max_width=max_width)
     if not uri:
         return ""
     bg_css = f"background-image:url('{uri}');"
-    if full_bleed:
-        radius = "border-radius:0;"
-        border = "border:none;"
-    else:
-        radius = "border-radius:14px;" if rounded else "border-radius:0;"
-        border = "border:1px solid rgba(232,213,163,.16);"
+    radius = "border-radius:14px;" if rounded else ""
     return (
-        f"<div style=\"position:relative;height:{height}px;{radius}{border}"
-        f"overflow:hidden;\">"
+        f"<div style=\"position:relative;height:{height}px;{radius}overflow:hidden;"
+        f"border:1px solid rgba(232,213,163,.16);\">"
         f"<div style=\"position:absolute;inset:0;{bg_css}background-size:cover;"
         f"background-position:center;\"></div>"
         f"{_overlay_html(effect, sky, place)}"
@@ -601,12 +357,12 @@ def scene_html(image_path, place, effect, sky, height=300, rounded=True,
     )
 
 
-def overlay_for(location, place=None, *, show_place_tag=True):
+def overlay_for(location, place=None):
     """Public weather overlay HTML for a place — for embedding inside custom
     scenes (e.g. the Galgame view's component). Includes its keyframes."""
     effect, sky = effect_for(location)
     label_place = place or location or "Amphoreus"
-    return _overlay_html(effect, sky, label_place, show_place_tag=show_place_tag)
+    return _overlay_html(effect, sky, label_place)
 
 
 def render_scene(location, image_path=None, title=None, height=300):

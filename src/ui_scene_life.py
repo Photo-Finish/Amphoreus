@@ -1,12 +1,15 @@
-"""Visit / Walk scene life — pictorial stage, not word-button grids.
+"""Visit / Walk scene life — figures on the page art, not a second picture.
 
-Area art is the stage. Living presence is painted as SVG silhouettes on that
-art; clicks run inside ``st.components.v1.html`` and set ``?amp_notice=`` on
-the parent page (preserving ``amp_guest``). Readable copy sits in glass panels.
+Area art is the Streamlit page backdrop. Living presence is painted as SVG
+silhouettes across the viewport; clicks run inside ``st.components.v1.html``
+and set ``?amp_notice=`` on the parent (preserving ``amp_guest``). Readable
+copy sits in glass panels.
 """
 from __future__ import annotations
 
 import html as _html
+from functools import lru_cache
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
@@ -216,6 +219,58 @@ _DEFAULT_SPRITE = (
     'stroke="#e8d5a3" stroke-width="2"/>'
 )
 
+_SPRITE_DIR = Path(__file__).resolve().parent.parent / "assets" / "life_sprites"
+
+# Painted walk/fly cycles — consecutive frames stitched L→R.
+_FILM_DUR = {
+    "chimera": "0.64s",
+    "dromas": "1.35s",
+    "hearth_cat": "2.1s",
+    "resident": "0.88s",
+    "cicada": "0.28s",
+    "courier": "0.42s",
+    "kite": "1.7s",
+}
+
+
+@lru_cache(maxsize=64)
+def sprite_png_uri(kind: str) -> str:
+    """data-URI for a painted hotspot PNG, or '' if none on disk."""
+    p = _SPRITE_DIR / f"{kind}.png"
+    if not p.is_file():
+        return ""
+    import base64
+    return "data:image/png;base64," + base64.b64encode(p.read_bytes()).decode("ascii")
+
+
+@lru_cache(maxsize=32)
+def sprite_film_uri(kind: str) -> str:
+    """data-URI for a 4-frame motion strip, or ''."""
+    p = _SPRITE_DIR / f"{kind}_film.png"
+    if not p.is_file():
+        return ""
+    import base64
+    return "data:image/png;base64," + base64.b64encode(p.read_bytes()).decode("ascii")
+
+
+def _sprite_markup(kind: str) -> str:
+    film = sprite_film_uri(kind)
+    if film:
+        dur = _FILM_DUR.get(kind, "0.8s")
+        return (
+            f'<span class="amp-sprite-film" style="'
+            f"background-image:url('{film}');"
+            f"--amp-frames:4;--amp-film-dur:{dur};\"></span>"
+        )
+    uri = sprite_png_uri(kind)
+    if uri:
+        return f'<img src="{uri}" alt="" draggable="false" />'
+    inner = _SPRITE_PATHS.get(kind) or _DEFAULT_SPRITE
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" '
+        f'aria-hidden="true">{inner}</svg>'
+    )
+
 # Short labels for visitor acts (shown only after a figure is noticed).
 _ACT_GLYPH: Dict[str, str] = {
     "pick_keepsake": "◇ pocket",
@@ -348,29 +403,39 @@ def _css() -> str:
   text-shadow:0 1px 6px rgba(0,0,0,.85);
   background:rgba(10,8,20,.5); padding:2px 10px; border-radius:999px;
 }
+@keyframes amp-film {
+  to { background-position: calc(var(--amp-frames, 4) * var(--amp-cell, 92px) * -1) 0; }
+}
 .amp-sprite {
+  --amp-cell: 92px;
   position: absolute;
-  width: 52px; height: 52px;
-  margin-left: -26px; margin-bottom: -8px;
+  width: var(--amp-cell); height: var(--amp-cell);
+  margin-left: calc(var(--amp-cell) / -2); margin-bottom: -12px;
   padding: 0; border: none; background: transparent;
   cursor: pointer; z-index: 8;
   animation: amp-sprite-breathe 3.2s ease-in-out infinite;
   pointer-events: auto;
 }
-.amp-sprite svg { width: 100%; height: 100%; display: block; }
+.amp-sprite svg, .amp-sprite img { width: 100%; height: 100%; display: block; pointer-events: none; }
+.amp-sprite img { object-fit: contain; filter: drop-shadow(0 2px 5px rgba(0,0,0,.55)); }
+.amp-sprite-film {
+  display: block; width: 100%; height: 100%;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: calc(var(--amp-frames, 4) * var(--amp-cell, 92px)) var(--amp-cell, 92px);
+  pointer-events: none;
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,.55));
+  animation: amp-film var(--amp-film-dur, .8s) steps(var(--amp-frames, 4)) infinite;
+}
 .amp-sprite:hover { transform: scale(1.12); filter: drop-shadow(0 0 14px rgba(240,230,200,.85)); }
-.amp-sprite.ailing svg { filter: saturate(.55) brightness(.85); }
+.amp-sprite.ailing svg, .amp-sprite.ailing img, .amp-sprite.ailing .amp-sprite-film {
+  filter: saturate(.55) brightness(.85);
+}
 .amp-sprite-halo {
   position: absolute; inset: -4px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(240,230,200,.28), transparent 70%);
   pointer-events: none;
-}
-.amp-stage-hint {
-  position: absolute; left: 14px; bottom: 12px; z-index: 9;
-  font: 12px/1.35 Georgia, serif; color: #f0e6c8;
-  background: rgba(10,8,20,.62); padding: 4px 12px; border-radius: 8px;
-  text-shadow: 0 1px 4px #000; pointer-events: none;
 }
 .amp-stage-read {
   position: absolute; left: 12px; right: 12px; top: 44px; z-index: 7;
@@ -469,13 +534,20 @@ def pictorial_stage_html(
     max_width: int = 1920,
     read_line: str = "",
     dense: bool = True,
+    page_layer: bool = False,
 ) -> str:
-    """Full pictorial stage: area art + weather + ambient + clickable sprites."""
+    """Weather + ambient + clickable sprites.
+
+    ``page_layer=True`` is a transparent viewport overlay — the JPEG lives on
+    the Streamlit page (``page_backdrop_css``) so the art is not shown twice.
+    """
     from src.ui_weather import image_data_uri, overlay_for
 
-    uri = image_data_uri(image_path, max_width=max_width)
-    if not uri:
-        return ""
+    uri = ""
+    if image_path and not page_layer:
+        uri = image_data_uri(image_path, max_width=max_width) or ""
+        if not uri:
+            return ""
 
     ambient = life_overlay_html(scene, place, dense=dense)
     # Cap on-stage figures so the art stays readable (full list lives in eco).
@@ -510,8 +582,7 @@ def pictorial_stage_html(
             f'title="{title}" aria-label="{title}" '
             f'style="left:{left};bottom:{bottom};animation-delay:{delay:.1f}s;">'
             f'<span class="amp-sprite-halo"></span>'
-            f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" '
-            f'aria-hidden="true">{_sprite_inner(kind)}</svg>'
+            f'{_sprite_markup(kind)}'
             f"</button>"
         )
 
@@ -524,30 +595,66 @@ def pictorial_stage_html(
             "</div>"
         )
 
-    hint = (
-        '<div class="amp-stage-hint">'
-        "Touch a figure on the land — not a name list."
-        "</div>"
-    )
-
     try:
         from src.ui_weather import _overlay_html as _wx_layers
-        wx = _wx_layers(effect or "none", sky or "", place or "Amphoreus")
+        wx = _wx_layers(
+            effect or "none", sky or "", place or "Amphoreus",
+            show_place_tag=not page_layer,
+        )
     except Exception:
-        wx = overlay_for(place or "Amphoreus", place or "Amphoreus")
+        wx = overlay_for(
+            place or "Amphoreus", place or "Amphoreus",
+            show_place_tag=not page_layer,
+        )
+
+    if page_layer:
+        shell = (
+            '<style>html,body{margin:0;padding:0;width:100%;height:100%;'
+            'background:transparent;overflow:hidden;}</style>'
+            '<div id="amp-pict-stage" style="position:fixed;inset:0;width:100%;'
+            'height:100%;overflow:hidden;background:transparent;pointer-events:none;">'
+        )
+        art_div = ""
+    else:
+        shell = (
+            f'<div id="amp-pict-stage" style="position:relative;height:{height}px;'
+            f'overflow:hidden;border:none;border-radius:0;background:#0a0814;">'
+        )
+        art_div = (
+            f'<div style="position:absolute;inset:0;background-image:url(\'{uri}\');'
+            f'background-size:cover;background-position:center;"></div>'
+        )
+
+    pin_js = ""
+    if page_layer:
+        pin_js = (
+            "  var f = window.frameElement;\n"
+            "  if (f) {\n"
+            "    f.setAttribute('data-amp-land', '1');\n"
+            "    f.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;"
+            "border:0;z-index:0;background:transparent;pointer-events:auto;"
+            "max-width:none;max-height:none;';\n"
+            "    var p = f.parentElement;\n"
+            "    if (p) {\n"
+            "      p.setAttribute('data-amp-land-wrap', '1');\n"
+            "      p.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;"
+            "margin:0;padding:0;overflow:visible;z-index:0;border:none;"
+            "background:transparent;pointer-events:none;';\n"
+            "    }\n"
+            "  }\n"
+        )
+
     body = (
-        f'<div id="amp-pict-stage" style="position:relative;height:{height}px;'
-        f'overflow:hidden;border:none;border-radius:0;background:#0a0814;">'
-        f'<div style="position:absolute;inset:0;background-image:url(\'{uri}\');'
-        f'background-size:cover;background-position:center;"></div>'
+        f"{shell}"
+        f"{art_div}"
         f"{wx}"
         f"{ambient}"
         f'{"".join(sprites)}'
         f"{read_block}"
-        f"{hint}"
         f"</div>"
         "<script>\n"
         "(function(){\n"
+        f"{pin_js}"
         "  function go(oid){\n"
         "    try {\n"
         "      var u = new URL(window.parent.location.href);\n"
@@ -580,19 +687,21 @@ def render_pictorial_stage(
     max_width: int = 1920,
     read_line: str = "",
     dense: bool = True,
+    page_layer: bool = True,
     key: str = "pict",
 ) -> bool:
-    """Render the clickable pictorial stage. Returns True if art was shown."""
-    import streamlit as st
+    """Render the land overlay. ``page_layer`` pins figures to the viewport."""
     from streamlit.components.v1 import html as components_html
 
     html = pictorial_stage_html(
         image_path, place, effect, sky, scene,
-        height=height, max_width=max_width, read_line=read_line, dense=dense,
+        height=height, max_width=max_width, read_line=read_line,
+        dense=dense, page_layer=page_layer,
     )
     if not html:
         return False
-    components_html(html, height=height + 8, scrolling=False)
+    slot = 1 if page_layer else height + 8
+    components_html(html, height=slot, scrolling=False)
     return True
 
 
@@ -635,7 +744,7 @@ def render_stage_bar(
     key_prefix: str,
     place: Optional[str] = None,
 ) -> None:
-    """Compat shim — focus strip only (no name-button grid)."""
+    """Compat shim — focus strip after a figure is noticed."""
     render_focus_strip(
         scene, heir_id=heir_id, key_prefix=key_prefix, place=place,
         read_only=not heir_id,
@@ -811,7 +920,7 @@ def render_life_interactions(
     read_only: bool = False,
     place: Optional[str] = None,
 ) -> None:
-    """Focus strip after pictorial notice — no full name-button inventory."""
+    """Focus strip after pictorial notice."""
     render_focus_strip(
         scene,
         heir_id=heir_id,

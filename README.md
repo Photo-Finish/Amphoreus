@@ -1065,4 +1065,10 @@ tide / letter / weather / co-location / aftermath features):
   the 1x overlay. Setting: `databank/world/sanctuary-calendar.md`. Kephale's
   `calendar.md` untouched. Suite: `tools/test_sanctuary_calendar.py`.
 
+### 2026-08-19
+- **UI originals (kept)** — the last land UI before the full-bleed pictorial
+  rewrite is frozen at git tag `ui-pre-pictorial` (`113d7c2`) and as copies in
+  `docs/ui-archive/pre-pictorial-113d7c2/`. How to restore:
+  `docs/UI-ORIGINALS.md`.
+
 

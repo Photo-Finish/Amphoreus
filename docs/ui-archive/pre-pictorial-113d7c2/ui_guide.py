@@ -32,10 +32,9 @@ def render_guide(manager, characters):
     _section("The places to go", (
         "Tabs across the top:\n\n"
         "- **Visit an Heir** — talk with one of the thirteen. Pick them on the left. "
-        "The picture is their city; **touch a figure on the art** to notice a chimera, a stall, a well…\n"
+        "The picture is their city; **touch a name under it** to notice a chimera, a stall, a well…\n"
         "- **Walk the Land** — stand in a region with **no conversation**. "
-        "The region art fills the page; touch the living silhouettes, pocket a pebble, "
-        "sit a hearth, wave at someone in the street.\n"
+        "Click the glows, pocket a pebble, sit a hearth, wave at someone in the street.\n"
         "- **A Chronicle of Amphoreus** — the Gazette: sky, news, moods, mailbox.\n"
         "- **Map of Amphoreus** — geography. Click a place or Heir.\n"
         "- **Galgame** — the same talk as a visual novel.\n"
@@ -55,20 +54,22 @@ def render_guide(manager, characters):
     ))
 
     _section("Clicking the land", (
-        "On **Visit** and **Walk the Land**, the area picture fills the page. "
-        "Living presence is drawn as figures on that art — a chimera (it howls **Awoo**), "
-        "a passerby, a well, a shrine, a stall, a forge, a fountain, wash on the line, "
+        "On **Visit** and **Walk the Land**, names under the picture are things "
+        "actually here this hour — a chimera (it howls **Awoo**), a passerby, "
+        "a well, a shrine, a stall, a forge, a fountain, wash on the line, "
         "an olive, a cicada, a hull, a mill, a kite, a mosaic floor, "
         "the Dawn Device, the Thief Star at night, a shore-pearl, a road pebble…\n\n"
-        "Touch a figure. After you notice something, "
-        "quiet touch glyphs appear — pocket, sit, wave, drink, and the rest.\n\n"
         "Each place has its own life: the Grove is not the sea; Kremnos keeps iron; "
         "Styxia keeps hulls and song.\n\n"
-        "Those acts are small and logged; they cannot change the clock, starve a city, "
-        "or write another Heir's mind.\n\n"
+        "You may **pocket** a pearl or pebble, **sit** a hearth, **wave** at someone, "
+        "**drink** from a well or fountain, **pet** a square cat, **scratch** a chimera's ear, "
+        "**soak** a hand in bath or tide-pool, **look up** at the Device or the Thief Star, "
+        "**step through** a gate, **leave thanks** at a shrine, or a dozen quieter touches "
+        "(thread, iron, shade, incense, mill-stone…). Those acts are small and logged; "
+        "they cannot change the clock, starve a city, or write another Heir's mind.\n\n"
         "If an Heir is with you and authorized (Hyacine tending an ailing chimera, "
         "Hysilens hushing a shore-song, Phainon calming a restless dromas, "
-        "Mydei stilling an anvil…), a care glyph appears. Everything else is refused."
+        "Mydei stilling an anvil…), a care button appears. Everything else is refused."
     ))
 
     _section("Gifts from the market", (
@@ -169,7 +170,7 @@ def render_guide(manager, characters):
 
     _section("A gentle path to begin", (
         "1. Pick an Heir on the left and say hello on **Visit an Heir**.\n"
-        "2. Touch a **figure on the picture** — a chimera howls, a passerby has a name.\n"
+        "2. Click a glow on the picture — a chimera howls, a passerby has a name.\n"
         "3. Open **Walk the Land** to stand in Okhema, the Grove, Styxia… without talking.\n"
         "4. Check the **Chronicle** for the sky, whispers, and your mailbox.\n"
         "5. When you have grown close, bring a **gift**, and let the deeper story open.\n"
