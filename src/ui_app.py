@@ -44,6 +44,13 @@ def _load_ui_auth():
 _UI_USER, _UI_PASS = _load_ui_auth()[0]
 _VISITOR_USER, _VISITOR_PASS = _load_ui_auth()[1]
 
+try:
+    if str(st.query_params.get("amp_guest") or "") == "1":
+        st.session_state.ui_authed = True
+        st.session_state.ui_role = "visitor"
+except Exception:
+    pass
+
 if (_UI_USER and _UI_PASS) and not st.session_state.get("ui_authed"):
     st.set_page_config(page_title="Project Amphoreus — the Sanctuary",
                        page_icon="🔥")
@@ -73,6 +80,10 @@ if (_UI_USER and _UI_PASS) and not st.session_state.get("ui_authed"):
         if st.button("Visit as a guest (read-only)"):
             st.session_state.ui_authed = True
             st.session_state.ui_role = "visitor"
+            try:
+                st.query_params["amp_guest"] = "1"
+            except Exception:
+                pass
             st.rerun()
     st.stop()
 
@@ -129,11 +140,14 @@ st.markdown(
     """
     <style>
     .stApp { background: linear-gradient(160deg, #0b0a14 0%, #131022 45%, #0d0b18 100%); }
+    /* Hide Streamlit's chrome so first-timer tabs are not under the 60px bar. */
+    header[data-testid="stHeader"] { display: none !important; }
+    .stApp > header { display: none !important; }
     /* Streamlit's top bar (Running… / Deploy / Main menu) is absolutely
        positioned over the top 60px of the main area. The block container must
-       start BELOW it, or the tabs sit underneath the bar. Default padding is
-       5rem; we keep a touch more so the tabs never coincide with it. */
-    .block-container { padding-top: 5.4rem; }
+       start BELOW it, or the tabs sit underneath the bar. */
+    .block-container { padding-top: 1.6rem !important; }
+    [data-testid="stTabs"] { margin-top: 0.2rem; }
     h1, h2, h3 { color: #e8d5a3; letter-spacing: .5px; }
     [data-testid="stSidebar"] {
         background: linear-gradient(180deg, #141126 0%, #0d0b18 100%);
@@ -270,46 +284,43 @@ def get_manager():
 manager = get_manager()
 
 # Sidebar — Character Selection
-st.sidebar.title("Project Amphoreus")
-st.sidebar.markdown("### The Sanctuary of the Chrysos Heirs")
+st.sidebar.title("The Sanctuary")
+st.sidebar.caption("Amphoreus — pick an Heir, then visit or walk the land.")
 
-# LLM status — truthful: the backend is reachable AND the Heir voice model is
-# actually present on it (a bare `ollama serve` with an empty models dir would
-# otherwise claim “Ready” and then 404 on every call).
-vs = manager.voice_status()
-if vs["ready"]:
-    st.sidebar.success(f"🗣️ Voice: Ready ({vs['model']})")
-else:
-    st.sidebar.warning(f"🗣️ Voice: {vs['detail']} ({vs['model']})")
-
-# RAG status
-try:
-    from src.core.voice_path import get_voice_path, label as _vp_label, PATH_OPLORA
-    _vpath = get_voice_path()
-    if _vpath == PATH_OPLORA:
-        st.sidebar.info(f"🛤️ Path: {_vp_label(_vpath)}")
+# LLM status
+if not is_visitor():
+    vs = manager.voice_status()
+    if vs["ready"]:
+        st.sidebar.success(f"🗣️ Voice: Ready ({vs['model']})")
     else:
-        st.sidebar.success(f"🛤️ Path: {_vp_label(_vpath)}")
-except Exception:
-    pass
+        st.sidebar.warning(f"🗣️ Voice: {vs['detail']} ({vs['model']})")
+    try:
+        from src.core.voice_path import get_voice_path, label as _vp_label, PATH_OPLORA
+        _vpath = get_voice_path()
+        if _vpath == PATH_OPLORA:
+            st.sidebar.info(f"🛤️ Path: {_vp_label(_vpath)}")
+        else:
+            st.sidebar.success(f"🛤️ Path: {_vp_label(_vpath)}")
+    except Exception:
+        pass
 
-# RAG status
-try:
-    rag = manager.rag_status()
-    if rag.get("enabled"):
-        n_docs = rag.get("total_documents", 0)
-        st.sidebar.success(
-            f"📚 RAG: Ready\n\n{n_docs} canon documents indexed\n({rag.get('embedding', 'auto')} embeddings)"
-        )
-        if not is_visitor():
+# RAG status (operator)
+if not is_visitor():
+    try:
+        rag = manager.rag_status()
+        if rag.get("enabled"):
+            n_docs = rag.get("total_documents", 0)
+            st.sidebar.success(
+                f"📚 RAG: Ready\n\n{n_docs} canon documents indexed\n({rag.get('embedding', 'auto')} embeddings)"
+            )
             if st.sidebar.button("Rebuild Knowledge Base"):
                 with st.spinner("Rebuilding RAG index..."):
                     manager.build_knowledge_base()
                 st.rerun()
-    else:
-        st.sidebar.warning("📚 RAG: Disabled")
-except Exception as e:
-    st.sidebar.warning(f"📚 RAG: Unavailable ({e})")
+        else:
+            st.sidebar.warning("📚 RAG: Disabled")
+    except Exception as e:
+        st.sidebar.warning(f"📚 RAG: Unavailable ({e})")
 
 characters = manager.list_available_characters()
 if not characters:
@@ -317,7 +328,7 @@ if not characters:
     st.stop()
 
 selected = st.sidebar.selectbox(
-    "Select a Chrysos Heir to speak with:",
+    "Who do you want to speak with?",
     characters,
     format_func=lambda x: manager.get_character_info(x)["name"],
 )
@@ -474,16 +485,17 @@ if not is_visitor():
     except Exception:
         pass
 
-# Senses status (hearing / eyesight / music)
-try:
-    sn = manager.senses_status()
-    st.sidebar.markdown("---")
-    eye = "👁️ Eyes: Ready" if sn.get("eyesight") else "👁️ Eyes: offline (set VISION_MODEL)"
-    ear = "👂 Ears: Ready" if sn.get("hearing") else "👂 Ears: offline (no STT model)"
-    music = "🎵 Music: Ready" if sn.get("music") else "🎵 Music: offline (set AUDIO_MODEL)"
-    st.sidebar.caption(f"{eye}\n\n{ear}\n\n{music}")
-except Exception:
-    pass
+# Senses status (operator)
+if not is_visitor():
+    try:
+        sn = manager.senses_status()
+        st.sidebar.markdown("---")
+        eye = "👁️ Eyes: Ready" if sn.get("eyesight") else "👁️ Eyes: offline (set VISION_MODEL)"
+        ear = "👂 Ears: Ready" if sn.get("hearing") else "👂 Ears: offline (no STT model)"
+        music = "🎵 Music: Ready" if sn.get("music") else "🎵 Music: offline (set AUDIO_MODEL)"
+        st.sidebar.caption(f"{eye}\n\n{ear}\n\n{music}")
+    except Exception:
+        pass
 
 st.sidebar.markdown("---")
 try:
@@ -493,32 +505,51 @@ try:
     )
 except Exception:
     pass
-st.sidebar.caption("*Project Amphoreus — the Sanctuary*")
-st.sidebar.caption("*Databank: Complete*")
-st.sidebar.caption("*See PHILOSOPHY.md for the charter*")
+st.sidebar.caption("*The Sanctuary of the Chrysos Heirs*")
 
-# Main Area
-main_tab, chronicle_tab, map_tab, admin_tab, game_tab, guide_tab, control_tab = st.tabs([
+# Main Area — first-timer: Visit is first; Walk the Land is a first-class tab.
+from src.ui_role import is_visitor as _is_vis_tabs
+_TAB_CORE = [
     "Visit an Heir",
+    "Walk the Land",
     "A Chronicle of Amphoreus",
     "Map of Amphoreus",
-    "Admin Console",
-    "Galgame",
-    "How to use",
-    "Control Panel",
-])
+]
+_TAB_MID = [] if _is_vis_tabs() else ["Admin Console"]
+_TAB_REST = ["Galgame", "How to use"]
+_TAB_END = ["Control Panel"] if not _is_vis_tabs() else ["World status"]
+_TAB_NAMES = _TAB_CORE + _TAB_MID + _TAB_REST + _TAB_END
+_tab_objs = st.tabs(_TAB_NAMES)
+_tab = dict(zip(_TAB_NAMES, _tab_objs))
+main_tab = _tab["Visit an Heir"]
+walk_tab = _tab["Walk the Land"]
+chronicle_tab = _tab["A Chronicle of Amphoreus"]
+map_tab = _tab["Map of Amphoreus"]
+admin_tab = _tab.get("Admin Console")
+game_tab = _tab["Galgame"]
+guide_tab = _tab["How to use"]
+control_tab = _tab.get("Control Panel") or _tab.get("World status")
 
 with control_tab:
-    # 🎛️ The Control Panel — also a dedicated Streamlit page (sidebar).
-    st.info(
-        "The **Control Panel** is also its own page in the left sidebar "
-        "(**Control Panel** under pages). The RAG / OPLoRA voice-path switch lives there."
-    )
+    if is_visitor():
+        st.caption("How the world stands right now — looking only, no switches.")
+    else:
+        st.info(
+            "Operator tools. **Walk the Land** (tab) is the place itself; "
+            "**Visit an Heir** is conversation."
+        )
     try:
         from src.ui_control_panel import render_control_panel
         render_control_panel(manager, characters)
     except Exception as e:
         st.error(f"Could not render the control panel: {e}")
+
+with walk_tab:
+    try:
+        from src.ui_walk_land import render_walk_page
+        render_walk_page(key_prefix="walk_tab")
+    except Exception as e:
+        st.error(f"Walk the Land could not open: {e}")
 
 with guide_tab:
     # ❓ How to use — a friendly guide to the Sanctuary and its living world.
@@ -808,110 +839,115 @@ with map_tab:
     except Exception as e:
         st.error(f"Could not render the map: {e}")
 
-with admin_tab:
-    # 🛠️ Admin Console — the machine under the world: models, world-state,
-    # cause-and-effect chain, and the automation loop that keeps the Heirs
-    # converging on their voices. Read-only; nothing here changes the world.
-    st.title("Admin Console — the machine under the world")
-    st.caption("Backend, world-state, cause-and-effect, and the quality loop.")
+if admin_tab:
+    with admin_tab:
+        # 🛠️ Admin Console — the machine under the world
+        st.title("Admin Console — the machine under the world")
+        st.caption("Backend, world-state, cause-and-effect, and the quality loop.")
 
-    # ---- 1. Backend & models ----
-    st.markdown("### Backend & models")
-    try:
-        sn = manager.senses_status()
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Heir model", manager.voice_model())
-        c2.metric("Vision (eyes)", sn.get("vision_model") or "off")
-        c3.metric("Audio (music)", sn.get("audio_model") or "off")
-        st.caption(f"STT (hearing): {sn.get('stt_model')} · judge/refine: gemma3:27b")
-    except Exception as e:
-        st.caption(f"(backend status unavailable: {e})")
-    try:
-        rag = manager.rag_status()
-        st.markdown(f"**RAG:** {'on' if rag.get('enabled') else 'off'} · "
-                    f"{rag.get('total_documents', 0)} canon docs · {rag.get('embedding', '')}")
-    except Exception as e:
-        st.caption(f"(rag unavailable: {e})")
+        # ---- 1. Backend & models ----
+        st.markdown("### Backend & models")
+        try:
+            sn = manager.senses_status()
+            c1, c2, c3 = st.columns(3)
+            c1.metric("Heir model", manager.voice_model())
+            c2.metric("Vision (eyes)", sn.get("vision_model") or "off")
+            c3.metric("Audio (music)", sn.get("audio_model") or "off")
+            st.caption(f"STT (hearing): {sn.get('stt_model')} · judge/refine: gemma3:27b")
+        except Exception as e:
+            st.caption(f"(backend status unavailable: {e})")
+        try:
+            rag = manager.rag_status()
+            st.markdown(f"**RAG:** {'on' if rag.get('enabled') else 'off'} · "
+                        f"{rag.get('total_documents', 0)} canon docs · {rag.get('embedding', '')}")
+        except Exception as e:
+            st.caption(f"(rag unavailable: {e})")
 
-    # ---- 2. World-state machine ----
-    try:
-        from src.world.world_state import WorldState as _WS, GUEST_HEIRS as _GUEST_HEIRS
-        _ws2 = _WS()
-        st.markdown("### World state")
-        st.markdown(f"**Clock:** {_ws2.clock.format()}")
-        st.markdown("**Where the Heirs are right now**")
-        for _cid, _loc in _ws2.present_locations().items():
-            if _cid in _ws2.agent_travel:
-                continue
-            _tag = " *(visitor from beyond Amphoreus)*" \
-                if _ws2.guest_status(_cid) == "present" else ""
-            st.markdown(f"- {manager.get_character_info(_cid)['name']} — {_loc}{_tag}")
-        _away = [c for c in _GUEST_HEIRS if _ws2.guest_status(c) == "away"]
-        if _away:
-            st.markdown("**Beyond Amphoreus**")
-            for _cid in _away:
-                st.markdown(f"- {manager.get_character_info(_cid)['name']} — "
-                            f"riding the Trailblaze path (drops in from time to time)")
-        if _ws2.agent_travel:
-            st.markdown("**On the road**")
-            for _cid, _ti in _ws2.agent_travel.items():
-                st.markdown(f"- {manager.get_character_info(_cid)['name']} → {_ti['to']} "
-                            f"({_ti['remaining_days']} day(s) left)")
-        _ev = _ws2.recent_events_text(limit=10)
-        if _ev:
-            with st.expander("Recent events — the causal trail"):
-                st.markdown(_ev)
-    except Exception as e:
-        st.caption(f"(world state unavailable: {e})")
+        # ---- 2. World-state machine ----
+        try:
+            from src.world.world_state import WorldState as _WS, GUEST_HEIRS as _GUEST_HEIRS
+            _ws2 = _WS()
+            st.markdown("### World state")
+            st.markdown(f"**Clock:** {_ws2.clock.format()}")
+            st.markdown("**Where the Heirs are right now**")
+            for _cid, _loc in _ws2.present_locations().items():
+                if _cid in _ws2.agent_travel:
+                    continue
+                _tag = " *(visitor from beyond Amphoreus)*" \
+                    if _ws2.guest_status(_cid) == "present" else ""
+                st.markdown(f"- {manager.get_character_info(_cid)['name']} — {_loc}{_tag}")
+            _away = [c for c in _GUEST_HEIRS if _ws2.guest_status(c) == "away"]
+            if _away:
+                st.markdown("**Beyond Amphoreus**")
+                for _cid in _away:
+                    st.markdown(f"- {manager.get_character_info(_cid)['name']} — "
+                                f"riding the Trailblaze path (drops in from time to time)")
+            if _ws2.agent_travel:
+                st.markdown("**On the road**")
+                for _cid, _ti in _ws2.agent_travel.items():
+                    st.markdown(f"- {manager.get_character_info(_cid)['name']} → {_ti['to']} "
+                                f"({_ti['remaining_days']} day(s) left)")
+            _ev = _ws2.recent_events_text(limit=10)
+            if _ev:
+                with st.expander("Recent events — the causal trail"):
+                    st.markdown(_ev)
+        except Exception as e:
+            st.caption(f"(world state unavailable: {e})")
 
-    # ---- 3. Cause & effect: why today is what it is ----
-    try:
-        st.markdown("### Cause & effect — why today is what it is")
-        st.markdown(f"**Season:** {_ws2.clock.season} · **Month:** {_ws2.clock.month_name} "
-                    f"(patron {_ws2.clock.patron_titan})")
-        from src.ui_world_stage import render_world_stage
-        render_world_stage(_ws2, manager, key_prefix="admin_stage")
-    except Exception as e:
-        st.caption(f"(ambient unavailable: {e})")
+        # ---- 3. Cause & effect: why today is what it is ----
+        try:
+            st.markdown("### Cause & effect — why today is what it is")
+            st.markdown(f"**Season:** {_ws2.clock.season} · **Month:** {_ws2.clock.month_name} "
+                        f"(patron {_ws2.clock.patron_titan})")
+            from src.ui_world_stage import render_world_stage
+            render_world_stage(_ws2, manager, key_prefix="admin_stage")
+        except Exception as e:
+            st.caption(f"(ambient unavailable: {e})")
 
-    # ---- 4. The automation loop ----
-    st.markdown("### The quality loop (auto-cycle)")
-    try:
-        import time as _time
-        _root = Path(__file__).parent.parent
-        _log = _root / "docs" / "AUTO-CYCLE-LOG.md"
-        _report = _root / "docs" / "RESEMBLANCE-STYLE-REPORT.md"
-        _wdlog = _root / "world_runtime" / "watchdog.log"
-        _now = _time.time()
+        # ---- 4. The automation loop ----
+        st.markdown("### The quality loop (auto-cycle)")
+        try:
+            import time as _time
+            _root = Path(__file__).parent.parent
+            _log = _root / "docs" / "AUTO-CYCLE-LOG.md"
+            _report = _root / "docs" / "RESEMBLANCE-STYLE-REPORT.md"
+            _wdlog = _root / "world_runtime" / "watchdog.log"
+            _now = _time.time()
 
-        def _age_min(p):
-            return int((_now - p.stat().st_mtime) // 60) if p.exists() else None
-        _l, _r, _w = _age_min(_log), _age_min(_report), _age_min(_wdlog)
-        st.markdown(f"- AUTO-CYCLE-LOG last written **{_l if _l is not None else 'never'} min ago**")
-        st.markdown(f"- Style report last written **{_r if _r is not None else 'never'} min ago**")
-        st.markdown(f"- Watchdog last event **{_w if _w is not None else 'never'} min ago**")
-        if _log.exists():
-            with st.expander("Auto-cycle log (tail)"):
-                st.code("\n".join(_log.read_text(encoding="utf-8").splitlines()[-45:]))
-        if _wdlog.exists():
-            with st.expander("Watchdog log (tail)"):
-                st.code("\n".join(_wdlog.read_text(encoding="utf-8").splitlines()[-20:]))
-        if _report.exists():
-            with st.expander("Latest style report (tail)"):
-                st.code("\n".join(_report.read_text(encoding="utf-8").splitlines()[-25:]))
-    except Exception as e:
-        st.caption(f"(loop status unavailable: {e})")
+            def _age_min(p):
+                return int((_now - p.stat().st_mtime) // 60) if p.exists() else None
+            _l, _r, _w = _age_min(_log), _age_min(_report), _age_min(_wdlog)
+            st.markdown(f"- AUTO-CYCLE-LOG last written **{_l if _l is not None else 'never'} min ago**")
+            st.markdown(f"- Style report last written **{_r if _r is not None else 'never'} min ago**")
+            st.markdown(f"- Watchdog last event **{_w if _w is not None else 'never'} min ago**")
+            if _log.exists():
+                with st.expander("Auto-cycle log (tail)"):
+                    st.code("\n".join(_log.read_text(encoding="utf-8").splitlines()[-45:]))
+            if _wdlog.exists():
+                with st.expander("Watchdog log (tail)"):
+                    st.code("\n".join(_wdlog.read_text(encoding="utf-8").splitlines()[-20:]))
+            if _report.exists():
+                with st.expander("Latest style report (tail)"):
+                    st.code("\n".join(_report.read_text(encoding="utf-8").splitlines()[-25:]))
+        except Exception as e:
+            st.caption(f"(loop status unavailable: {e})")
 
-    # ---- 5. Chronicle — the written record ----
-    try:
-        from src.world.chronicle import Chronicle as _Chr
-        _ch = _Chr(str(Path(__file__).parent.parent / "world_runtime" / "chronicle"))
-        with st.expander("Chronicle — what has happened (the record)"):
-            st.markdown(_ch.read_markdown(30))
-    except Exception as e:
-        st.caption(f"(chronicle unavailable: {e})")
+        # ---- 5. Chronicle — the written record ----
+        try:
+            from src.world.chronicle import Chronicle as _Chr
+            _ch = _Chr(str(Path(__file__).parent.parent / "world_runtime" / "chronicle"))
+            with st.expander("Chronicle — what has happened (the record)"):
+                st.markdown(_ch.read_markdown(30))
+        except Exception as e:
+            st.caption(f"(chronicle unavailable: {e})")
 
 with main_tab:
+    st.info(
+        "**Start here.** Left sidebar: pick who to speak with. "
+        "Type at the bottom to talk. "
+        "The picture is their place — **touch a name under it** to notice life. "
+        "To walk a city with no conversation, open the **Walk the Land** tab."
+    )
     # Main Chat Area — hero banner with the Heir's portrait + where they are.
     # The backdrop follows the Heir's CURRENT place in the little Amphoreus
     # (falling back to their home city, then the default banner).
@@ -922,16 +958,50 @@ with main_tab:
     except Exception:
         _chat_bg = BG_IMAGE if BG_IMAGE.exists() else None
         _chat_place = ""
+    try:
+        from src.ui_scene_life import consume_notice_query
+        consume_notice_query(
+            place=_chat_place or None, heir_id=selected,
+            key_prefix=f"eco_{selected}")
+    except Exception:
+        pass
     if _chat_bg:
         # The backdrop follows the Heir's current place AND today's weather
         # (the Keeper's sky), so the same art changes mood with the world.
+        # Ecosystem life (grass, chimeras, shore…) layers on top.
         try:
             from src.ui_weather import render_scene as _wx_scene
-            _wx_scene(_chat_place, image_path=_chat_bg,
-                      title=f"{info['name']} — {_chat_place}" if _chat_place else info["name"],
-                      height=300)
+            from src.ui_weather import scene_html as _wx_html, effect_for as _wx_fx
+            from src.ui_scene_life import inject_into_scene_html
+            from src.world import ecosystem as _eco_ui
+            from src.world.world_state import WorldState as _WS_eco
+            _fx, _sky = _wx_fx(_chat_place)
+            _raw = _wx_html(
+                _chat_bg, _chat_place or info["name"], _fx, _sky, height=300)
+            _eco_sc = _eco_ui.scene_for_heir(_WS_eco(), selected)
+            _merged = inject_into_scene_html(_raw, _eco_sc, _chat_place or "")
+            if _merged:
+                st.markdown(_merged, unsafe_allow_html=True)
+            else:
+                _wx_scene(_chat_place, image_path=_chat_bg,
+                          title=f"{info['name']} — {_chat_place}" if _chat_place else info["name"],
+                          height=300)
+            try:
+                from src.ui_scene_life import render_stage_bar as _eco_bar
+                _eco_bar(
+                    _eco_sc, heir_id=selected,
+                    key_prefix=f"eco_{selected}",
+                    place=_chat_place or None)
+            except Exception:
+                pass
         except Exception:
-            st.image(str(_chat_bg), width="stretch")
+            try:
+                from src.ui_weather import render_scene as _wx_scene
+                _wx_scene(_chat_place, image_path=_chat_bg,
+                          title=f"{info['name']} — {_chat_place}" if _chat_place else info["name"],
+                          height=300)
+            except Exception:
+                st.image(str(_chat_bg), width="stretch")
         if _chat_place:
             st.caption(f"{info['name']} is in **{_chat_place}** — the backdrop shows where they are.")
     hero_l, hero_r = st.columns([1, 3], gap="large")
@@ -1014,8 +1084,36 @@ with main_tab:
                     _nr = manager.talk_to_npc(_npc_city, _npc_pick)
                     if _nr.get("ok"):
                         st.markdown(_nr.get("line", ""))
+                        # Also mark as noticed ambient for chat context.
+                        _noticed = st.session_state.setdefault("eco_noticed", {})
+                        _noticed[f"resident:{_npc_city}:{_npc_pick}"] = {
+                            "id": f"resident:{_npc_city}:{_npc_pick}",
+                            "name": _npc_pick,
+                            "kind": "resident",
+                            "status": "here",
+                            "line": _nr.get("line"),
+                            "heir": selected,
+                        }
                     else:
                         st.warning(_nr.get("reason", "They are not here."))
+        # Ecosystem — interactive life (full immersion: sidebar → Walk the Land)
+        _eco_scene = list(_frame.get("eco_scene") or [])
+        if _eco_scene and not _frame.get("traveling"):
+            with st.expander("Life on this stage", expanded=False):
+                st.caption(
+                    "Quick notice here — or open **Walk the Land** "
+                    "for the full ambient view (no Heir dialogue)."
+                )
+                from src.ui_scene_life import render_life_interactions
+                render_life_interactions(
+                    _eco_scene,
+                    heir_id=selected,
+                    heir_name=info["name"],
+                    manager=manager,
+                    key_prefix=f"eco_{selected}",
+                    read_only=is_visitor(),
+                    place=_frame.get("place"),
+                )
     except Exception:
         pass
 
@@ -1146,7 +1244,6 @@ with main_tab:
                 "Show a picture",
                 type=["png", "jpg", "jpeg", "webp", "gif"],
                 key=f"img_{selected}",
-                label_visibility="collapsed",
             )
             if uploaded is not None:
                 st.session_state["pending_image"] = {
@@ -1159,7 +1256,6 @@ with main_tab:
                 "Show a video",
                 type=["mp4", "mov", "avi", "mkv", "webm"],
                 key=f"vid_{selected}",
-                label_visibility="collapsed",
             )
             if uploaded_video is not None:
                 st.session_state["pending_video"] = {

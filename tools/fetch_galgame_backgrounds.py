@@ -58,7 +58,16 @@ SESSION.proxies = {"https": PROXY, "http": PROXY}
 SESSION.headers["User-Agent"] = "Mozilla/5.0 (Amphoreus bg fetch)"
 
 
+def _try_direct_session():
+    """Fall back to a no-proxy session when the local proxy is down."""
+    s = requests.Session()
+    s.proxies = {"https": "", "http": ""}
+    s.headers["User-Agent"] = "Mozilla/5.0 (Amphoreus bg fetch)"
+    return s
+
+
 def api(params, tries=6, timeout=45):
+    global SESSION
     last = None
     for i in range(tries):
         try:
@@ -69,6 +78,9 @@ def api(params, tries=6, timeout=45):
             last = RuntimeError(f"HTTP {r.status_code}")
         except Exception as e:  # noqa: BLE001
             last = e
+            if i == 1 and ("ProxyError" in type(e).__name__ or "10061" in str(e)):
+                print("  (proxy down — trying direct)")
+                SESSION = _try_direct_session()
         time.sleep(1.5 * (i + 1))
     raise RuntimeError(f"API failed: {last}")
 
@@ -135,11 +147,11 @@ def pick(imgs, needle):
     return None
 
 
-def thumb_url(filename):
+def thumb_url(filename, width=1920):
     if not filename.lower().startswith("file:"):
         filename = "File:" + filename
     d = api({"action": "query", "titles": filename, "prop": "imageinfo",
-             "iiprop": "url", "iiurlwidth": 1600, "format": "json",
+             "iiprop": "url", "iiurlwidth": int(width), "format": "json",
              "formatversion": "2"})
     for p in d["query"]["pages"]:
         info = p.get("imageinfo", [{}])[0]
@@ -150,20 +162,24 @@ def thumb_url(filename):
     return None
 
 
-def save_jpg(raw, dest, max_px=1600):
+def save_jpg(raw, dest, max_px=1920):
     from PIL import Image
     img = Image.open(io.BytesIO(raw))
     if img.width > max_px:
         h = int(img.height * max_px / img.width)
         img = img.resize((max_px, h), Image.LANCZOS)
     img = img.convert("RGB")
-    img.save(dest, "JPEG", quality=88)
+    img.save(dest, "JPEG", quality=92)
     return dest
 
 
 def main():
     ap = argparse.ArgumentParser(description="Fetch Amphoreus area backgrounds for the Galgame UI.")
     ap.add_argument("--slug", default="", help="comma-separated subset of slugs")
+    ap.add_argument("--force", action="store_true",
+                    help="re-download even if the file already exists")
+    ap.add_argument("--width", type=int, default=1920,
+                    help="wiki thumbnail width / max JPEG edge (default 1920)")
     args = ap.parse_args()
 
     wanted = {s.strip() for s in args.slug.split(",") if s.strip()} if args.slug else None
@@ -178,7 +194,7 @@ def main():
         if wanted and slug not in wanted:
             continue
         dest = OUT / f"bg-{slug}.jpg"
-        if dest.exists():
+        if dest.exists() and not args.force:
             print(f"  = {slug} (exists)")
             continue
         fn = pick(imgs, needle)
@@ -187,14 +203,14 @@ def main():
             fail.append(slug)
             continue
         try:
-            url = thumb_url(fn)
+            url = thumb_url(fn, width=args.width)
             if not url:
                 print(f"  ✗ {slug}: no thumburl")
                 fail.append(slug)
                 continue
             sep = "&" if "?" in url else "?"
-            raw = get(f"{url}{sep}cb=20260813000000")
-            save_jpg(raw, dest)
+            raw = get(f"{url}{sep}cb=20260818230000")
+            save_jpg(raw, dest, max_px=args.width)
             print(f"  ✓ {slug} -> {dest.name} ({len(raw)//1024} KB)")
             ok += 1
         except Exception as e:  # noqa: BLE001

@@ -29,19 +29,17 @@ def render_guide(manager, characters):
     except Exception:
         pass
 
-    _section("The five places to go", (
-        "The tabs across the top are your doorway into Amphoreus:\n\n"
-        "- **Visit an Heir** — talk with one of the thirteen Chrysos Heirs. "
-        "Choose them in the sidebar on the left.\n"
-        "- **A Chronicle of Amphoreus** — the Gazette, a newspaper of the "
-        "world's days: the sky, the news, the Heirs' moods, the whispers, your "
-        "mailbox, and the written record.\n"
-        "- **Map of Amphoreus** — the real geography. Click any place or "
-        "Heir for a pop-up. Silver ⏳ nodes are the Dawn-era (past) forms; the "
-        "purple † node is the Nether.\n"
-        "- **Admin Console** — the operational view (memory, world state, "
-        "the quality loop).\n"
-        "- **Galgame** — the same conversation as a visual novel.\n"
+    _section("The places to go", (
+        "Tabs across the top:\n\n"
+        "- **Visit an Heir** — talk with one of the thirteen. Pick them on the left. "
+        "The picture is their city; **touch a name under it** to notice a chimera, a stall, a well…\n"
+        "- **Walk the Land** — stand in a region with **no conversation**. "
+        "Click the glows, pocket a pebble, sit a hearth, wave at someone in the street.\n"
+        "- **A Chronicle of Amphoreus** — the Gazette: sky, news, moods, mailbox.\n"
+        "- **Map of Amphoreus** — geography. Click a place or Heir.\n"
+        "- **Galgame** — the same talk as a visual novel.\n"
+        "- **How to use** — this page.\n"
+        "- **Control Panel / World status** — how you play (operator) or how the world stands (guest).\n"
     ))
 
     _section("The black tide (optional — a live threat)", (
@@ -55,11 +53,31 @@ def render_guide(manager, characters):
         "It is a toggle, not a difficulty setting — switch it whenever you like."
     ))
 
+    _section("Clicking the land", (
+        "On **Visit** and **Walk the Land**, names under the picture are things "
+        "actually here this hour — a chimera (it howls **Awoo**), a passerby, "
+        "a well, a shrine, a stall, a forge, a fountain, wash on the line, "
+        "an olive, a cicada, a hull, a mill, a kite, a mosaic floor, "
+        "the Dawn Device, the Thief Star at night, a shore-pearl, a road pebble…\n\n"
+        "Each place has its own life: the Grove is not the sea; Kremnos keeps iron; "
+        "Styxia keeps hulls and song.\n\n"
+        "You may **pocket** a pearl or pebble, **sit** a hearth, **wave** at someone, "
+        "**drink** from a well or fountain, **pet** a square cat, **scratch** a chimera's ear, "
+        "**soak** a hand in bath or tide-pool, **look up** at the Device or the Thief Star, "
+        "**step through** a gate, **leave thanks** at a shrine, or a dozen quieter touches "
+        "(thread, iron, shade, incense, mill-stone…). Those acts are small and logged; "
+        "they cannot change the clock, starve a city, or write another Heir's mind.\n\n"
+        "If an Heir is with you and authorized (Hyacine tending an ailing chimera, "
+        "Hysilens hushing a shore-song, Phainon calming a restless dromas, "
+        "Mydei stilling an anvil…), a care button appears. Everything else is refused."
+    ))
+
     _section("Gifts from the market", (
-        "Open any Heir in **Visit an Heir**, then open **“Give a gift”**.\n\n"
+        "If you signed in as operator: open any Heir in **Visit an Heir**, then open **“Give a gift”**.\n\n"
         "The market is the Heir's *own* city, so every gift is something from "
         "their world. Giving one becomes a memory they keep, and it warms their "
-        "mood — you will see them soften."
+        "mood — you will see them soften.\n\n"
+        "Guests (read-only) look; they do not give gifts or take the road."
     ))
 
     _section("Your mailbox", (
@@ -122,8 +140,9 @@ def render_guide(manager, characters):
 
     _section("Moving around Amphoreus (physically)", (
         "You are not a disembodied voice — you stand in a city, and you can "
-        "**travel** to another. Open the **Control Panel → “Your "
-        "whereabouts”**, pick a destination and press **Set out**. The road "
+        "**travel** to another (operator). Open the **Control Panel → “Your "
+        "whereabouts”**, pick a destination and press **Set out**. Guests see "
+        "where they stand; they do not set out. The road "
         "takes whole in-game days; your journey advances while the world engine "
         "runs (it pauses only while you are mid-conversation with an Heir). "
         "Your sidebar shows where you are, or the road ahead: **You are in "
@@ -150,13 +169,11 @@ def render_guide(manager, characters):
     ))
 
     _section("A gentle path to begin", (
-        "1. Pick an Heir in the sidebar and say hello.\n"
-        "2. Visit again tomorrow — they remember you, and the world will have "
-        "moved on.\n"
-        "3. Check the **Gazette** to see the sky, the whispers, and your "
-        "mailbox.\n"
-        "4. When you have grown close, bring a **gift** from their city, and "
-        "let the deeper story open.\n"
+        "1. Pick an Heir on the left and say hello on **Visit an Heir**.\n"
+        "2. Click a glow on the picture — a chimera howls, a passerby has a name.\n"
+        "3. Open **Walk the Land** to stand in Okhema, the Grove, Styxia… without talking.\n"
+        "4. Check the **Chronicle** for the sky, whispers, and your mailbox.\n"
+        "5. When you have grown close, bring a **gift**, and let the deeper story open.\n"
     ))
 
     st.caption(

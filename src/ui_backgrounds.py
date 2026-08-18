@@ -91,6 +91,26 @@ def bg_path(character_id):
     return DEFAULT_BG if DEFAULT_BG.exists() else None
 
 
+def bg_path_for_place(place: str):
+    """Backdrop Path for a world place name (or None)."""
+    slug = location_slug(place)
+    if slug and (GALGAME_DIR / f"{slug}.jpg").exists():
+        return GALGAME_DIR / f"{slug}.jpg"
+    return DEFAULT_BG if DEFAULT_BG.exists() else None
+
+
+def place_for_slug(slug: str) -> str:
+    """Best-effort world place name for a bg slug (for weather/eco derive)."""
+    if not slug:
+        return "Okhema"
+    # Prefer longest matching LOCATION_MATCHES entry that maps to this slug.
+    for key, s in LOCATION_MATCHES:
+        if s == f"bg-{slug}" or s == slug or s.endswith(slug):
+            # Title-ish from key
+            return key.title() if key != "elysiae" else "Aedes Elysiae"
+    return slug.replace("-", " ").title()
+
+
 def available_backgrounds():
     """[(slug, Path)] for every downloaded area backdrop (sorted)."""
     out = []

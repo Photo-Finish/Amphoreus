@@ -658,6 +658,20 @@ class AgentManager:
             om = _v2.ongoing_moment_prompt(moment)
             if om:
                 parts.append(om)
+            try:
+                from src.world import ecosystem as _eco
+                eco_block = _eco.prompt_block(ws, character_id)
+                if eco_block:
+                    parts.append(eco_block)
+            except Exception:
+                pass
+            try:
+                from src.ui_scene_life import noticed_prompt_addon
+                noticed = noticed_prompt_addon(character_id)
+                if noticed:
+                    parts.append(noticed)
+            except Exception:
+                pass
             if parts:
                 return system_prompt + "\n\n" + "\n\n".join(parts)
         except Exception:
@@ -716,6 +730,24 @@ class AgentManager:
         res = _v2.talk_to_npc(ws, city, npc_name)
         ws.save()
         return res
+
+    def eco_scene(self, character_id: str) -> list:
+        """Living presence on the Heir's stage this hour."""
+        from src.world import ecosystem as eco
+        from src.world.world_state import WorldState
+        return eco.scene_for_heir(WorldState(), character_id)
+
+    def eco_interact(self, character_id: str, object_id: str) -> dict:
+        from src.world import ecosystem as eco
+        from src.world.world_state import WorldState
+        return eco.interact(WorldState(), object_id, character_id=character_id)
+
+    def eco_care(self, character_id: str, object_id: str, action_id: str) -> dict:
+        """Gated care only — whitelist in ecosystem.CARE_AUTH."""
+        from src.world import ecosystem as eco
+        from src.world.world_state import WorldState
+        return eco.apply_care(
+            WorldState(), character_id, object_id, action_id, save=True)
 
     def ongoing_moment(self, character_id: str) -> dict:
         from src.world import vivid_stage2 as _v2

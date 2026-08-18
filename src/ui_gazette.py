@@ -138,6 +138,16 @@ def render_gazette(manager, characters):
         except Exception:
             pass
 
+        try:
+            from src.world import ecosystem as _eco_g
+            _eco_bits = _eco_g.gazette_items(ws, limit=3)
+            if _eco_bits:
+                parts.append('<h2>Life of the Hour</h2>')
+                for f in _eco_bits:
+                    parts.append(f'<div class="item">• {_html.escape(str(f))}</div>')
+        except Exception:
+            pass
+
         # the visitor's calls — today's word of the star-stranger
         flash = ws.ambient.get("news_flash") or []
         if flash:

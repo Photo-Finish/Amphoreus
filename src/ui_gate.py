@@ -35,6 +35,13 @@ def enforce_auth() -> None:
         return
     if st.session_state.get("ui_authed"):
         return
+    try:
+        if str(st.query_params.get("amp_guest") or "") == "1":
+            st.session_state.ui_authed = True
+            st.session_state.ui_role = "visitor"
+            return
+    except Exception:
+        pass
     st.markdown(
         "<style>.stApp{background:linear-gradient(160deg,#0b0a14,#131022)}</style>",
         unsafe_allow_html=True)
@@ -61,6 +68,10 @@ def enforce_auth() -> None:
         if st.button("Visit as a guest (read-only)", key="gate_guest"):
             st.session_state.ui_authed = True
             st.session_state.ui_role = "visitor"
+            try:
+                st.query_params["amp_guest"] = "1"
+            except Exception:
+                pass
             st.rerun()
     st.stop()
 

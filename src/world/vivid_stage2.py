@@ -111,6 +111,17 @@ def place_hour_frame(world, character_id: str,
         _mech = _der.get("active") or []
     except Exception:
         _mech = []
+    _eco_scene = []
+    _eco_faults = []
+    try:
+        from . import ecosystem as _eco
+        _eco_scene = _eco.scene_for_heir(world, character_id) if character_id else (
+            _eco.derive_scene(world, place=loc)
+        )
+        _eco_faults = _eco.logic_faults(_eco_scene, loc)
+    except Exception:
+        _eco_scene = []
+        _eco_faults = []
 
     return {
         "place": loc,
@@ -131,6 +142,8 @@ def place_hour_frame(world, character_id: str,
         "stage_lines": _stage_lines,
         "residents_here": _residents,
         "mechanisms_active": _mech,
+        "eco_scene": _eco_scene,
+        "eco_faults": _eco_faults,
     }
 
 
@@ -185,9 +198,23 @@ def place_hour_prompt_block(frame: dict) -> str:
         bits.append("The hour you stand in: " + stage)
     greet = frame.get("residents_here") or []
     if greet and not frame.get("traveling"):
+        from . import lived_mechanisms as _lm
         bits.append(
             "Named residents actually here: "
-            + ", ".join(f"{r.get('name')} the {r.get('role')}" for r in greet[:3])
+            + ", ".join(
+                _lm._named_resident(r.get("name"), r.get("role")) for r in greet[:3]
+            )
+            + "."
+        )
+    eco = frame.get("eco_scene") or []
+    life = [b for b in eco if b.get("kind") != "resident"]
+    if life and not frame.get("traveling"):
+        bits.append(
+            "Living presence here: "
+            + "; ".join(
+                f"{b.get('name')} ({b.get('status')}: {b.get('doing')})"
+                for b in life[:4]
+            )
             + "."
         )
     bits.append(

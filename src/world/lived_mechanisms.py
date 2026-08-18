@@ -636,6 +636,15 @@ def apply_tick(world) -> Dict[str, Any]:
     }
 
 
+def _named_resident(name: str, role: Optional[str] = None) -> str:
+    """Avoid 'Bartholos the a merchant' when the role already has an article."""
+    r = (role or "resident").strip()
+    who = (name or "someone").strip()
+    if r.lower().startswith(("a ", "an ", "the ")):
+        return f"{who}, {r}"
+    return f"{who} the {r}"
+
+
 def visitor_stage_lines(world, place: Optional[str] = None,
                         character_id: Optional[str] = None) -> List[str]:
     """Curated 2–4 literary beats for Visit / Gazette. Never a catalog."""
@@ -711,11 +720,14 @@ def visitor_stage_lines(world, place: Optional[str] = None,
         if here and not traveling:
             if len(here) == 1:
                 r = here[0]
-                out.append(f"{r['name']} the {r['role']} is here this hour.")
+                out.append(
+                    f"{_named_resident(r['name'], r['role'])} is here this hour."
+                )
             else:
                 a, b = here[0], here[1]
                 out.append(
-                    f"{a['name']} the {a['role']} and {b['name']} the {b['role']} are here."
+                    f"{_named_resident(a['name'], a['role'])} and "
+                    f"{_named_resident(b['name'], b['role'])} are here."
                 )
         enc = _rn.last_encounter_for(world, place)
         if enc and not traveling:

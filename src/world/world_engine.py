@@ -206,6 +206,13 @@ class WorldEngine:
                 lines.append(_ln)
                 self.chronicle.append({"time": time_str, "text": _ln, "kind": "npc"})
                 self.world.add_event(_ln)
+            # Ecosystem — living non-human presence (chimeras, herds, fields…)
+            from src.world import ecosystem as _eco
+            _eco_tick = _eco.apply_tick(self.world, flags=lived_flags)
+            for _ln in _eco_tick.get("lines") or []:
+                lines.append(_ln)
+                self.chronicle.append({"time": time_str, "text": _ln, "kind": "eco"})
+                self.world.add_event(_ln)
         except Exception:
             pass
 

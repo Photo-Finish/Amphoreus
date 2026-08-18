@@ -125,6 +125,29 @@ def render_world_stage(ws, manager=None, *, key_prefix: str = "wstage") -> None:
         st.caption(f"(residents unavailable: {_e})")
 
     faults = le.logic_faults(snap) + lm.logic_faults(der)
+    try:
+        from src.world import ecosystem as eco
+        eco_scene = eco.derive_scene(ws, place=snap.get("place"))
+        st.markdown("#### Ecosystem (living presence)")
+        if eco_scene:
+            with st.expander(f"On this stage ({len(eco_scene)})", expanded=True):
+                for b in eco_scene:
+                    st.markdown(
+                        f"- **{b.get('name')}** [{b.get('kind')}] — "
+                        f"{b.get('status')}: {b.get('doing')}"
+                    )
+            audit = (getattr(ws, "vivid") or {}).get("eco", {}).get("audit") or []
+            if audit:
+                with st.expander(f"Care audit ({len(audit)})"):
+                    for a in audit[-8:]:
+                        st.caption(
+                            f"{a.get('ts')}: {a.get('heir')} · {a.get('action')} · "
+                            f"{a.get('object_id')} ({a.get('from')}→{a.get('to')})"
+                        )
+        faults = faults + eco.logic_faults(eco_scene, snap.get("place") or "")
+    except Exception as _e:
+        st.caption(f"(ecosystem unavailable: {_e})")
+
     if faults:
         st.warning("World-logic check: " + "; ".join(faults))
     else:

@@ -116,7 +116,7 @@ def _data_uri_jpeg(path, max_width=1280):
             im = im.resize((max_width, h), Image.LANCZOS)
         im = im.convert("RGB")
         buf = io.BytesIO()
-        im.save(buf, format="JPEG", quality=82)
+        im.save(buf, format="JPEG", quality=88 if max_width >= 1600 else 82)
         b64 = base64.b64encode(buf.getvalue()).decode("ascii")
     except Exception:
         return None
@@ -339,9 +339,10 @@ def _overlay_html(effect, sky, place):
     )
 
 
-def scene_html(image_path, place, effect, sky, height=300, rounded=True):
+def scene_html(image_path, place, effect, sky, height=300, rounded=True,
+               max_width=1280):
     """Full HTML for a location scene: art + weather overlay + place tag."""
-    uri = _data_uri_jpeg(image_path)
+    uri = _data_uri_jpeg(image_path, max_width=max_width)
     if not uri:
         return ""
     bg_css = f"background-image:url('{uri}');"
