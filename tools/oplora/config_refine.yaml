@@ -1,0 +1,45 @@
+# Continue-train OPLoRA adapters (do not overwrite adapter/ in place).
+# Writes to adapter_v2/. Init from adapter_v1/ (copy of the verified first pass).
+# Extra epochs + lower LR to bring train loss down on 8GB QLoRA.
+
+model_name_or_path: Qwen/Qwen2.5-7B-Instruct
+output_dir: tools/oplora/outputs/refine
+dataset_path: tools/oplora/datasets/heir_phainon.jsonl
+
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+
+oplora_enabled: true
+projection_rank: 64
+
+load_in_4bit: true
+bnb_4bit_compute_dtype: bfloat16
+bnb_4bit_quant_type: nf4
+bnb_4bit_use_double_quant: true
+
+num_train_epochs: 1
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
+learning_rate: 8.0e-5
+max_seq_length: 512
+logging_steps: 5
+save_strategy: "no"
+warmup_steps: 10
+lr_scheduler_type: cosine
+optim: paged_adamw_8bit
+gradient_checkpointing: true
+bf16: true
+report_to: none
+seed: 42
+
+heir_filter: Phainon
+max_samples: 0

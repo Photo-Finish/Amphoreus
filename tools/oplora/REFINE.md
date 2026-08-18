@@ -1,28 +1,40 @@
-# OPLoRA refine notes (do not overwrite working adapters yet)
+# OPLoRA refine notes
 
 Working adapters under `outputs/heirs/<heir>/adapter/` were verified
 2026-08-18 (non-zero LoRA tensors; Phainon generate OK via Visit/OPLoRA path).
 
-## Observed
+## First pass (1 epoch from random LoRA)
 
-| Heir | rows (approx) | train wall | note |
-|------|---------------|------------|------|
-| Phainon | 1930 | ~45 min | richest set |
-| Evernight | 232 | ~18 min | smallest; highest avg loss in first pass |
-| Hysilens | 324 | ~20 min | thin |
-| Cipher | 414 | ~21 min | thin |
+| Heir | rows | last loss | mean loss |
+|------|------|-----------|-----------|
+| Phainon | 1930 | 1.672 | 1.822 |
+| Dan Heng | 1108 | 1.666 | 1.960 |
+| Aglaea | 802 | 1.702 | 2.061 |
+| Castorice | 1307 | 1.707 | 1.864 |
+| Cyrene | 1114 | 1.726 | 2.028 |
+| Tribbie | 997 | 1.778 | 1.996 |
+| Anaxa | 681 | 1.821 | 2.092 |
+| Mydei | 613 | 1.850 | 2.130 |
+| Hyacine | 608 | 1.988 | 2.244 |
+| Hysilens | 324 | 2.038 | 2.394 |
+| Evernight | 232 | 2.083 | 2.634 |
+| Cerydra | 338 | 2.090 | 2.489 |
+| Cipher | 414 | 2.103 | 2.399 |
 
-## Safe next refine (when disk ≥ ~25 GiB free)
+## Refine run (2026-08-18)
 
-1. Copy each current `adapter/` → `adapter_v1/` (keep the verified weights).
-2. Retrain weak heirs into `outputs/heirs/<heir>/adapter_v2/` with
-   `config_refine_small.yaml` (2 epochs, same r=16, max_seq 512).
-3. Health-check + short generate on v2; only then swap `adapter/` → v2.
+Continue SFT **from** `adapter_v1/` (snapshot of the verified first pass)
+into `adapter_v2/`. Does not train from scratch.
+
+- LR `8e-5` (was `1e-4`)
+- 2 extra epochs: Evernight, Cerydra, Cipher, Hysilens, Hyacine
+- 1 extra epoch: the other eight
+- `save_strategy: no` so 8GB disk is not eaten by optimizer checkpoints
+- Live `adapter/` is swapped to v2 only when last loss is strictly lower
+
+```
+.\.venv-oplora\Scripts\python.exe tools\oplora\train_refine.py
+```
 
 Do **not** edit `databank/` or cards — reshape via `shape_training_data.py`
 into `work_copies/` only.
-
-## Done this round without retrain
-
-- Infer server `local_files_only=True` against `D:\hf-cache` (avoids HF-mirror TLS).
-- UI voice-path switch + live RAG and OPLoRA message tests.
