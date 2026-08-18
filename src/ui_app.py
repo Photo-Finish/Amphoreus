@@ -869,29 +869,8 @@ with admin_tab:
         st.markdown("### Cause & effect — why today is what it is")
         st.markdown(f"**Season:** {_ws2.clock.season} · **Month:** {_ws2.clock.month_name} "
                     f"(patron {_ws2.clock.patron_titan})")
-        _amb = _ws2.ambient
-        _w = _amb.get("weather") or {}
-        if _w:
-            with st.expander("Weather — the sky's cause"):
-                for _city, _sky in _w.items():
-                    st.markdown(f"- **{_city}** — {_sky}")
-        _e = _amb.get("errands") or {}
-        if _e:
-            with st.expander("Errands — request + original impetus"):
-                for _cid2, _er in _e.items():
-                    if not _er:
-                        continue
-                    if isinstance(_er, dict):
-                        _ask = (_er.get("ask") or "").strip()
-                        _cause = (_er.get("cause") or "").strip()
-                        st.markdown(f"**{manager.get_character_info(_cid2)['name']}**")
-                        st.markdown(f"&nbsp;&nbsp;*ask:* {_ask}")
-                        if _cause:
-                            st.markdown(f"&nbsp;&nbsp;*cause (impetus):* {_cause}")
-                    else:
-                        st.markdown(f"- {manager.get_character_info(_cid2)['name']} — {_er}")
-        if _amb.get("news"):
-            st.markdown(f"*News from the wider world:* {_amb['news']}")
+        from src.ui_world_stage import render_world_stage
+        render_world_stage(_ws2, manager, key_prefix="admin_stage")
     except Exception as e:
         st.caption(f"(ambient unavailable: {e})")
 

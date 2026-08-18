@@ -1136,6 +1136,14 @@ the knowledge wall, and never scripts Realization.
 - Chat injectors via `AgentManager._inject_vivid_context` (place-hour, shared
   scene, society continuity, overhear notice, tide-at-the-edge, ongoing moment).
 - `ui_travel.road_vignette` prefers `lived_road_line` (weather + surge aware).
+- **Lived entities** (`src/world/lived_entities.py`) — coarse positive physical
+  things (Dawn Device, sky, harvest, market, road, Grove, sea, forge, shrine, …)
+  with a mechanism each. Status is derived from the clock, Keeper weather, and
+  place so a Grove Visit cannot grow a sea, Curtain-Fall cannot run a busy
+  market, and a blazing day's weather does not keep the Device “high and hot”
+  after nightfall. Control Panel + Admin Console render Keeper ambient and
+  these entities via `src/ui_world_stage.py`. Chat injects only *here/near*.
+  Suite: `tools/test_lived_entities.py`.
 
 **Cross-checks (dry suite):** Mydei declines under a Kremnos surge but accepts
 when the tide is quiet; Aglaea's prompt after an overhear differs from

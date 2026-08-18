@@ -110,6 +110,11 @@ def render_control_panel(manager, characters):
                 st.markdown(f"- **Voice path:** {_vp_label(get_voice_path())}")
             except Exception:
                 pass
+            try:
+                from src.ui_world_stage import render_world_stage
+                render_world_stage(ws, manager, key_prefix="ctl_vis_stage")
+            except Exception as _e:
+                st.caption(f"(living world status unavailable: {_e})")
         except Exception as e:
             st.caption(f"(status unavailable: {e})")
         return
@@ -321,6 +326,15 @@ def render_control_panel(manager, characters):
             else:
                 st.success(f"You set out for {_dest} — {_days} day(s) on the road.")
             st.rerun()
+
+    st.markdown("---")
+
+    # ---------------- Living world (ambient + entities) ----------------
+    try:
+        from src.ui_world_stage import render_world_stage
+        render_world_stage(ws, manager, key_prefix="ctl_stage")
+    except Exception as _e:
+        st.caption(f"(living world status unavailable: {_e})")
 
     st.markdown("---")
 

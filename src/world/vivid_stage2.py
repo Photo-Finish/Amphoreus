@@ -93,6 +93,10 @@ def place_hour_frame(world, character_id: str,
         surge = wev.surge_text(world)
     mood = lw.mood_of(world, character_id)
 
+    from . import lived_entities as _le
+    _ent_snap = _le.snapshot(world, place=loc, character_id=character_id)
+    _ent_here = _le.here_entities(_ent_snap, limit=8)
+
     return {
         "place": loc,
         "traveling": traveling,
@@ -106,6 +110,8 @@ def place_hour_frame(world, character_id: str,
         "rumor": rumors[0] if rumors else "",
         "surge": surge,
         "mood": mood.get("label") or mood.get("valence"),
+        "entities": _ent_here,
+        "entity_faults": _le.logic_faults(_ent_snap),
     }
 
 
@@ -133,6 +139,10 @@ def place_hour_markdown(frame: dict, heir_name: str) -> str:
         lines.append(f"Word around Amphoreus: {frame['news']}")
     if frame.get("surge"):
         lines.append(f"⚠️ {frame['surge']}")
+    ents = frame.get("entities") or []
+    if ents:
+        bits = [f"{e['name']}: {e['status']}" for e in ents[:6]]
+        lines.append("Lived world — " + " · ".join(bits))
     return "\n\n".join(lines)
 
 
@@ -151,6 +161,16 @@ def place_hour_prompt_block(frame: dict) -> str:
         bits.append(frame["surge"])
     if frame.get("rumor"):
         bits.append(f"You heard: {frame['rumor']}")
+    ents = frame.get("entities") or []
+    if ents:
+        bits.append(
+            "Lived world here: "
+            + " ".join(f"{e['name']}: {e['status']}" for e in ents[:6])
+            + " Treat these as the stage. Do not invent famine, a death this hour "
+            "does not need, or a second weather; "
+            "do not put the sea in a grove or a busy market at Curtain-Fall if the "
+            "status says otherwise."
+        )
     return "# This hour in the living world\n" + " ".join(bits)
 
 

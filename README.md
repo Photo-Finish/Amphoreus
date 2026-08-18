@@ -1041,3 +1041,23 @@ tide / letter / weather / co-location / aftermath features):
   `adapter_v2/` only after verify. Infer server now prefers `local_files_only`
   against `D:\hf-cache` to avoid HF-mirror TLS stalls on load.
 
+### 2026-08-18 — Lived world entities (positive, coarse)
+- **Catalog** (`src/world/lived_entities.py`) — Amphoreus-native physical stage
+  (Dawn Device, Thief Star, sky, wind, earth, harvest, dromases, hearth, house,
+  city, cloth, road, gates, market, coin, Grove, sea, harbor, fields, workshop,
+  ship, forge, scroll, letter, hours, teaching hall, healer's house, shrine).
+  Each has a **mechanism**. Excluded: famine, plague, war, storm-as-entity,
+  and **grave/burial** (the sanctuary assumes people live on; no system here
+  desperately needs a death, so that mechanism was removed).
+- **Status is derived**, not a second weather roll: Light Calendar hour/month +
+  Keeper sky + where the body stands. Night withdraws the Dawn Device even if
+  the day's weather was blazing; a Grove Visit cannot grow a sea; Cultivation
+  sows and Reaping reaps; the road is not a house; a tide surge thins the market
+  without inventing famine.
+- **UI** — Control Panel (tab + dedicated page) and Admin Console show Keeper
+  **ambient** (weather, errands, news) and the entity ledger (here / near /
+  elsewhere). Visit “This hour” and the Heir prompt inject only what is here.
+- **Suite:** `tools/test_lived_entities.py` (59 checks). Stage-2 vivid suite still
+  44/44.
+
+

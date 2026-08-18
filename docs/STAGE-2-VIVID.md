@@ -21,5 +21,12 @@
 - Styxia NPC under surge → line tightens; Gorgo rejected
 - Lived road to surged Aidonia → sky/tide wording; `ui_travel` uses lived vignette
 - Place-hour lists co-located Heirs; letters/rumors/bond drift surface in continuity
+- Lived entities: night withdraws the Dawn Device; Grove has no sea; Cultivation sows, Reaping reaps; road ≠ house; surge thins the market without inventing famine
 
-Suite: `world_runtime/_test_vivid_stage2.py` (44 checks, no LLM).
+## Lived entities (positive, coarse)
+
+`src/world/lived_entities.py` — Amphoreus-native physical stage (Dawn Device, sky, harvest, market, road, Grove, sea, forge, shrine, …). No famine / plague / war / storm-as-entity. Status is derived from Light Calendar + Keeper weather + place.
+
+Shown in **Control Panel** and **Admin Console** (`src/ui_world_stage.py`) together with Keeper ambient (weather, errands, news). Visit “This hour” and the Heir prompt only inject entities that are *here* this hour.
+
+Suite: `tools/test_lived_entities.py` (59 checks) plus the original 44 vivid checks.
