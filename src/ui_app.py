@@ -284,6 +284,17 @@ else:
 
 # RAG status
 try:
+    from src.core.voice_path import get_voice_path, label as _vp_label, PATH_OPLORA
+    _vpath = get_voice_path()
+    if _vpath == PATH_OPLORA:
+        st.sidebar.info(f"🛤️ Path: {_vp_label(_vpath)}")
+    else:
+        st.sidebar.success(f"🛤️ Path: {_vp_label(_vpath)}")
+except Exception:
+    pass
+
+# RAG status
+try:
     rag = manager.rag_status()
     if rag.get("enabled"):
         n_docs = rag.get("total_documents", 0)
@@ -498,7 +509,11 @@ main_tab, chronicle_tab, map_tab, admin_tab, game_tab, guide_tab, control_tab = 
 ])
 
 with control_tab:
-    # 🎛️ The Control Panel — the visitor picks their own way to play.
+    # 🎛️ The Control Panel — also a dedicated Streamlit page (sidebar).
+    st.info(
+        "The **Control Panel** is also its own page in the left sidebar "
+        "(**Control Panel** under pages). The RAG / OPLoRA voice-path switch lives there."
+    )
     try:
         from src.ui_control_panel import render_control_panel
         render_control_panel(manager, characters)

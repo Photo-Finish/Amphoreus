@@ -227,13 +227,21 @@ class AgentManager:
         # Validate character exists
         card = self.loader.load(character_id)
         system_prompt = self.loader.build_system_prompt(character_id)
+        self._oplora_character_id = character_id
 
         # Record this visit and restore any prior session from persistent memory
         self.memory.record_visit(character_id)
         self._restore_session(character_id)
 
+        # Voice path: RAG retrieves scripture; OPLoRA skips Chroma (adapter is voice).
+        try:
+            from src.core.voice_path import is_oplora as _is_oplora
+            _oplora_path = _is_oplora()
+        except Exception:
+            _oplora_path = False
+
         # Enrich the system prompt with RAG-grounded canon context
-        if self.use_rag:
+        if self.use_rag and not _oplora_path:
             system_prompt = self.context_builder.retrieve_for_chat(
                 character_id, system_prompt, user_message
             )
@@ -915,6 +923,33 @@ class AgentManager:
         gemma3:27b cannot load because memory is tight). Once a fallback has
         succeeded it is locked for the process, so the big model is never
         re-tried and failed on every message."""
+        # OPLoRA avenue: local 7B + Heir adapter via .venv-oplora infer server.
+        # Streaming is not supported on this path yet — return the full reply.
+        try:
+            from src.core.voice_path import is_oplora, adapter_ready
+            if is_oplora():
+                if stream:
+                    stream = False
+                # character_id is not on messages; recover from session/context
+                # via a hint the chat() path can set, else from system prompt.
+                cid = getattr(self, "_oplora_character_id", None)
+                if not cid:
+                    raise RuntimeError("OPLoRA path active but no character id set")
+                if not adapter_ready(cid):
+                    raise RuntimeError(
+                        f"No OPLoRA adapter ready for '{cid}'. "
+                        "Train or place adapters under tools/oplora/outputs/heirs/."
+                    )
+                from src.core import oplora_client
+                text = oplora_client.generate(cid, messages, max_new_tokens=256)
+                self.voice_model_active = f"oplora:{cid}"
+                return text
+        except Exception:
+            # Only swallow import/path detection failures when not on OPLoRA.
+            from src.core.voice_path import is_oplora as _check
+            if _check():
+                raise
+
         if not self.llm.configured:
             # No backend configured — return a graceful placeholder so the UI
             # remains fully testable offline (RAG + memory context still attached).

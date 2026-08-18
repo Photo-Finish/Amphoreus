@@ -105,6 +105,11 @@ def render_control_panel(manager, characters):
             st.markdown(f"- **Time flow:** "
                         f"×{float(getattr(ws, 'time_scale', 1.0) or 1.0):g}")
             st.markdown(f"- **Heir voice:** {getattr(ws, 'heir_voice', '?')}")
+            try:
+                from src.core.voice_path import get_voice_path, label as _vp_label
+                st.markdown(f"- **Voice path:** {_vp_label(get_voice_path())}")
+            except Exception:
+                pass
         except Exception as e:
             st.caption(f"(status unavailable: {e})")
         return
@@ -115,6 +120,8 @@ def render_control_panel(manager, characters):
     from src.world import living_world as lw
     from src.core.visitor_mode import current_mode
     from src.core.agent_manager import AgentManager
+    from src.core import voice_path as _vp
+    from src.core import oplora_client as _oc
 
     ws = WorldState()
     # Today's reach-outs materialize here (idempotent, deduped per Heir per day)
@@ -124,6 +131,77 @@ def render_control_panel(manager, characters):
         ws.save()
     except Exception:
         pass
+
+    # ---------------- 0. Voice path (RAG vs OPLoRA) ----------------
+    st.markdown("### Voice path — RAG or OPLoRA")
+    st.caption(
+        "**RAG** (Stage 1) — Ollama Heir voice + Chroma scripture retrieval. "
+        "**OPLoRA** — local Qwen2.5-7B (4-bit) + per-Heir LoRA adapter via an "
+        "isolated infer server (`.venv-oplora`). On 8 GB VRAM do not run both "
+        "heavy models at once: switching paths starts/stops the OPLoRA server "
+        "and you should keep only one avenue loaded."
+    )
+    _cur_path = _vp.get_voice_path()
+    _path_choice = st.radio(
+        "Which avenue speaks for the Heirs?",
+        [_vp.PATH_RAG, _vp.PATH_OPLORA],
+        index=0 if _cur_path == _vp.PATH_RAG else 1,
+        format_func=lambda p: (
+            "RAG — Ollama + Chroma scripture"
+            if p == _vp.PATH_RAG
+            else "OPLoRA — Qwen2.5-7B + Heir adapter"
+        ),
+        key="ctl_voice_path",
+    )
+    _ad = _vp.adapters_status()
+    st.caption(
+        f"Adapters ready: **{_ad['ready_count']}/{_ad['total']}** · "
+        f"OPLoRA venv: {'yes' if _ad['venv_exists'] else 'missing'} · "
+        f"infer server: {'up' if _oc.is_up() else 'down'}"
+    )
+    if _path_choice != _cur_path:
+        if st.button(
+            f"Switch to {_vp.label(_path_choice)}",
+            type="primary",
+            key="ctl_voice_path_btn",
+        ):
+            if _path_choice == _vp.PATH_OPLORA:
+                with st.spinner("Starting OPLoRA infer server (unload large Ollama models if VRAM is tight)…"):
+                    try:
+                        import subprocess as _sp
+                        _sp.run(
+                            ["ollama", "stop", "gemma3:27b"],
+                            capture_output=True, timeout=60,
+                        )
+                    except Exception:
+                        pass
+                    _start = _oc.start_server()
+                if not _start.get("started") and not _start.get("already"):
+                    st.error(_start.get("error") or "Could not start OPLoRA infer server.")
+                else:
+                    _vp.set_voice_path(_vp.PATH_OPLORA)
+                    st.success("Voice path: **OPLoRA**. Visit an Heir to speak through the adapters.")
+                    st.rerun()
+            else:
+                with st.spinner("Stopping OPLoRA infer server so Ollama can use the GPU…"):
+                    _oc.stop_server()
+                _vp.set_voice_path(_vp.PATH_RAG)
+                st.success("Voice path: **RAG**. Heirs speak through Ollama + Chroma again.")
+                st.rerun()
+    else:
+        st.success(f"Active: **{_vp.label(_cur_path)}**.")
+        if _cur_path == _vp.PATH_OPLORA:
+            c_a, c_b = st.columns(2)
+            with c_a:
+                if st.button("Start OPLoRA server", key="ctl_oplora_start"):
+                    st.write(_oc.start_server())
+                    st.rerun()
+            with c_b:
+                if st.button("Stop OPLoRA server", key="ctl_oplora_stop"):
+                    st.write(_oc.stop_server())
+                    st.rerun()
+
+    st.markdown("---")
 
     # ---------------- 1. Experience mode ----------------
     st.markdown("### Experience mode")

@@ -72,7 +72,9 @@ def _ensure_base():
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
     print(f"[oplora-infer] loading base {BASE_MODEL} (4-bit)…", flush=True)
-    _tok = AutoTokenizer.from_pretrained(BASE_MODEL, trust_remote_code=True)
+    _tok = AutoTokenizer.from_pretrained(
+        BASE_MODEL, trust_remote_code=True, local_files_only=True
+    )
     if _tok.pad_token is None:
         _tok.pad_token = _tok.eos_token
     bnb = BitsAndBytesConfig(
@@ -87,6 +89,7 @@ def _ensure_base():
         device_map="auto",
         trust_remote_code=True,
         torch_dtype=torch.bfloat16,
+        local_files_only=True,
     )
     _model.eval()
     print("[oplora-infer] base ready", flush=True)

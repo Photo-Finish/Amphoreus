@@ -1,0 +1,51 @@
+# Optional refine config for thin Heir sets (Evernight / Hysilens / Cipher).
+# Train into adapter_v2/ first — never overwrite a verified adapter/ in place.
+# Usage:
+#   .\.venv-oplora\Scripts\python.exe tools\oplora\train_sft.py \
+#     --config tools/oplora/config_refine_small.yaml \
+#     --dataset tools/oplora/datasets/heir_evernight.jsonl \
+#     --output-dir tools/oplora/outputs/heirs/evernight_v2 \
+#     --heir Evernight
+
+model_name_or_path: Qwen/Qwen2.5-7B-Instruct
+output_dir: tools/oplora/outputs/refine_small
+dataset_path: tools/oplora/datasets/heir_evernight.jsonl
+
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+
+oplora_enabled: true
+projection_rank: 64
+
+load_in_4bit: true
+bnb_4bit_compute_dtype: bfloat16
+bnb_4bit_quant_type: nf4
+bnb_4bit_use_double_quant: true
+
+# Extra pass over thin dialogue sets
+num_train_epochs: 2
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
+learning_rate: 8.0e-5
+max_seq_length: 512
+logging_steps: 5
+save_steps: 50
+warmup_steps: 20
+lr_scheduler_type: cosine
+optim: paged_adamw_8bit
+gradient_checkpointing: true
+bf16: true
+report_to: none
+seed: 42
+
+heir_filter: Evernight
+max_samples: 0
