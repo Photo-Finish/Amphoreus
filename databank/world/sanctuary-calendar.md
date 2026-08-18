@@ -48,7 +48,7 @@ Rest (Heirs sleep, stalls down) is still **Curtain-Fall and Entry**: on the cloc
 
 Seven days, from the moon-quarrel in `calendar.md`. Kephale's seventh day remains the rest-day of the *week* (not the same as Curtain-Fall).
 
-The 364 month-days of the year are exactly **52 weeks**. Week-days **do not advance** on Uncounted days. After Dies Astrorum (or Zagreus's leap day), the week continues as if those dates had not happened. Gate, week 1, day 1 is therefore always the same weekday — a perpetual weekly grid for the Heirs.
+The 364 month-days of the year are exactly **52 weeks**. Week-days **do not advance** on Uncounted days. After Scarlet Day or Dies Astrorum, the week continues as if those dates had not happened. Gate, week 1, day 1 is therefore always the same weekday — a perpetual weekly grid for the Heirs.
 
 Uncounted dates have a sky and five Hours; they have **no** Monday–Sunday.
 
@@ -56,7 +56,7 @@ Uncounted dates have a sky and five Hours; they have **no** Monday–Sunday.
 
 ## The thirteen months
 
-Months 1–12 are Kephale's Titan-months, unchanged in name, patron, and season. They stay **28 days**. Fortune is **no longer** variable in length; Zagreus's old ghost day moved to the Uncounted (leap).
+Months 1–12 are Kephale's Titan-months, unchanged in name, patron, and season. They stay **28 days**. Fortune is **no longer** variable in length; Zagreus's old ghost day stays **after** Fortune as Uncounted leap (Scarlet Day), not inside the month.
 
 **Month 13** is the sanctuary reform: Cyrene / Demiurge was not public when twelve Titans named the year. The other Heirs were already acquainted with a month-shaped sky; she was the missing name, not a 29th day glued onto Fortune.
 
@@ -74,7 +74,7 @@ Months 1–12 are Kephale's Titan-months, unchanged in name, patron, and season.
 | 10 | Month of Strife | Nikador | Calamity | |
 | 11 | Month of Mourning | Thanatos | Calamity | |
 | 12 | Month of Fortune | Zagreus | Calamity | Always 28 days here |
-| 13 | **Month of Membrance** | **Cyrene** | *outside the four seasons* | After Fortune. Aedes, Mem, remembrance as place — not Mnestia's family-weaving |
+| 13 | **Month of Membrance** | **Cyrene** | *outside the four seasons* | After Fortune (after Scarlet Day in leap years). Aedes, Mem, remembrance as place — not Mnestia's family-weaving |
 
 Membrance does not join Fate / Pillar / Creation / Calamity. It stands outside, as the Uncounted stand outside the week.
 
@@ -93,7 +93,7 @@ There are not two Express days in a 365-day year. Stretching a month or a day to
 | Date | When | Patron | Name |
 |------|------|--------|------|
 | Annual hinge | Every year, after Membrance's 28th | Astral Express | **Dies Astrorum** (*diēs astrōrum*, Day of the stars) |
-| Leap extra | Gregorian leap days only, on **29 February** | Zagreus | **Scarlet Day** (the old ghost day, now a rule instead of a coin-toss) |
+| Leap extra | Gregorian leap years only, **after Fortune's 28th**, before Membrance | Zagreus | **Scarlet Day** (the old ghost day, now a rule instead of a coin-toss) |
 
 **Dies Cosmi** (*diēs cosmī*, Day of the cosmos) is the Express's **companion name** in the same Latin register — our culture, not Amphorean. It does **not** occupy a second SI day in a common year and does **not** take the leap day (that is Zagreus's). Keep the name; do not add a 367th date.
 
@@ -101,11 +101,13 @@ Latin on these names is deliberate: tickets from beyond the sky. Titan-months st
 
 **Where they sit (Gate = 1 January, months unstretched):**
 
-- **Dies Astrorum** = **31 December**.
-- **Scarlet Day** = **29 February** in leap years. It does not count as a day of Evernight: Evernight's 28 week-days skip it (Feb 26, 27, 28, then 1 March…). Satellite “today” stays 1:1; the month is not stretched.
+- **Dies Astrorum** = **31 December** (leap and common).
+- **Scarlet Day** = **after Fortune**, still Uncounted — not Fortune's 29th, not a weekday. Original place of the Scarlet Month's ghost day. **Not** pinned to 29 February.
+
+Gregorian 29 February is an ordinary SI day. In a leap year it falls inside **Evernight** as a month-day. The Light Calendar does not skip it; months from Evernight through Fortune therefore sit **one civil day earlier** than in a common year. Scarlet Day then occupies **2 December**; Membrance and Dies Astrorum keep 3–30 December and 31 December.
 
 Common year: 364 month-days + Dies Astrorum = **365**.  
-Leap year: those + Scarlet Day = **366**.
+Leap year: 364 month-days + Scarlet Day + Dies Astrorum = **366**.
 
 ---
 
@@ -127,7 +129,7 @@ A = G + 2907.
 
 The official Amphoreus mission ended **November 2025**, still in **4932** (on this map: Mourning through 4 Nov, then Fortune 5 Nov – 2 Dec). Membrance 4932 is then 3–30 December 2025 — Cyrene's month after the tale. Dies Astrorum 4932 is 31 Dec 2025. **1 January 2026 = Month of Gate, 4933.**
 
-**2026 is not a leap year.** Next Scarlet Day: **29 February 2028** (Light Calendar 4935).
+**2026 is not a leap year.** Next Scarlet Day: **2 December 2028**, after Fortune 4935.
 
 This offset does **not** rewrite in-world 4931 onto 2024.
 
@@ -135,26 +137,27 @@ This offset does **not** rewrite in-world 4931 onto 2024.
 
 ## Civil overlay (unstretched months)
 
-Gate starts 1 January. Each month is 28 consecutive civil dates, except that **29 February** is Scarlet Day and is not a month-day.
+Gate starts 1 January. Each Titan-month and Membrance is 28 consecutive civil dates. Scarlet Day is **not** a month-day.
 
-| Month | Common year (non-leap) |
-|-------|------------------------|
-| 1 Gate | 1 Jan – 28 Jan |
-| 2 Balance | 29 Jan – 25 Feb |
-| 3 Evernight | 26 Feb – 25 Mar |
-| 4 Cultivation | 26 Mar – 22 Apr |
-| 5 Joy | 23 Apr – 20 May |
-| 6 Everday | 21 May – 17 Jun |
-| 7 Freedom | 18 Jun – 15 Jul |
-| 8 Reaping | 16 Jul – 12 Aug |
-| 9 Weaving | 13 Aug – 9 Sep |
-| 10 Strife | 10 Sep – 7 Oct |
-| 11 Mourning | 8 Oct – 4 Nov |
-| 12 Fortune | 5 Nov – 2 Dec |
-| 13 Membrance | 3 Dec – 30 Dec |
-| Dies Astrorum | 31 Dec |
+| Month | Common year | Leap year |
+|-------|-------------|-----------|
+| 1 Gate | 1 Jan – 28 Jan | 1 Jan – 28 Jan |
+| 2 Balance | 29 Jan – 25 Feb | 29 Jan – 25 Feb |
+| 3 Evernight | 26 Feb – 25 Mar | 26 Feb – 24 Mar |
+| 4 Cultivation | 26 Mar – 22 Apr | 25 Mar – 21 Apr |
+| 5 Joy | 23 Apr – 20 May | 22 Apr – 19 May |
+| 6 Everday | 21 May – 17 Jun | 20 May – 16 Jun |
+| 7 Freedom | 18 Jun – 15 Jul | 17 Jun – 14 Jul |
+| 8 Reaping | 16 Jul – 12 Aug | 15 Jul – 11 Aug |
+| 9 Weaving | 13 Aug – 9 Sep | 12 Aug – 8 Sep |
+| 10 Strife | 10 Sep – 7 Oct | 9 Sep – 6 Oct |
+| 11 Mourning | 8 Oct – 4 Nov | 7 Oct – 3 Nov |
+| 12 Fortune | 5 Nov – 2 Dec | 4 Nov – 1 Dec |
+| Scarlet Day | — | **2 Dec** (Uncounted, after Zagreus) |
+| 13 Membrance | 3 Dec – 30 Dec | 3 Dec – 30 Dec |
+| Dies Astrorum | 31 Dec | 31 Dec |
 
-Leap years: insert Scarlet Day on 29 Feb; Evernight's week-days resume 1 Mar. Later month **dates** in the table above shift by one civil day after February (the 28-count is unchanged).
+Leap years: the extra SI day (29 Feb) is counted inside Evernight. Evernight through Fortune shift **one civil day earlier**. Scarlet Day is attached after Fortune; Membrance and New Year do not move.
 
 English month names (January, August, …) are **not** equal to Gate, Weaving, … — only New Year, day length, and year number lock. August 2026 is **4933, Month of Weaving** (13 Aug – 9 Sep), not “Month of August.”
 
@@ -164,7 +167,7 @@ English month names (January, August, …) are **not** equal to Gate, Weaving, �
 
 See `calendar.md` for: Titan-month meanings, week origin myth, Hours, quints, Thief Star, Scarlet/Golden **as old Fortune lore**.
 
-**Changed here:** Fortune is fixed at 28 days. The probabilistic ghost day is replaced by **Scarlet Day on leap years**. Golden “no extra day” is the common year (only Dies Astrorum, Express, not Zagreus).
+**Changed here:** Fortune is fixed at 28 days. The probabilistic ghost day is replaced by **Scarlet Day on leap years**, still **after** Zagreus's month. Golden “no extra day” is the common year (only Dies Astrorum, Express, not Zagreus).
 
 ---
 
