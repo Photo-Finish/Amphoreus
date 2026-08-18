@@ -63,7 +63,9 @@ def generate_phainon() -> str:
 
     base = "Qwen/Qwen2.5-7B-Instruct"
     adapter = str(ROOT / "phainon" / "adapter")
-    tok = AutoTokenizer.from_pretrained(adapter, trust_remote_code=True)
+    tok = AutoTokenizer.from_pretrained(
+        adapter, trust_remote_code=True, local_files_only=True
+    )
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
     bnb = BitsAndBytesConfig(
@@ -78,8 +80,9 @@ def generate_phainon() -> str:
         device_map="auto",
         trust_remote_code=True,
         torch_dtype=torch.bfloat16,
+        local_files_only=True,
     )
-    model = PeftModel.from_pretrained(model, adapter)
+    model = PeftModel.from_pretrained(model, adapter, local_files_only=True)
     model.eval()
     prompt = (
         "### Instruction:\nYou are Phainon, a Chrysos Heir of Amphoreus. "
