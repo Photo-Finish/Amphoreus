@@ -1024,18 +1024,18 @@ tide / letter / weather / co-location / aftermath features):
   Streamlit app venv never imports torch/peft; `src/core/voice_path.py` persists
   `rag` | `oplora` under `world_runtime/voice_path.json`; `verify_health.py` checks
   adapter tensors and a short Phainon generation.
-- **Control Panel page + RAG/OPLoRA switch** — dedicated Streamlit page
+- **Control Panel page + RAG/OPLoRA switch** (`9fbcb90`) — dedicated Streamlit page
   `src/pages/1_Control_Panel.py` (sidebar) plus the existing Control Panel tab;
   Control Panel gains an exclusive **Voice path** switch (RAG = Ollama + Chroma;
   OPLoRA = infer server + adapters). Visit chat honors the path: RAG retrieves
   scripture; OPLoRA skips Chroma and calls the infer client. Sidebar shows the
   active path. On 8 GB VRAM the two heavy models must not load together — switching
   starts/stops the OPLoRA server and may `ollama stop gemma3:27b`.
-- **Live avenue tests** — RAG: Ollama `gemma3:27b` ready; Phainon reply on Aedes
+- **Live avenue tests** (`9fbcb90`) — RAG: Ollama `gemma3:27b` ready; Phainon reply on Aedes
   Elysiae grounded with Chroma hits (`11332` docs). OPLoRA: infer server on
   `:8765` with Phainon adapter answered a short battle-cry turn. Sequence one
   path at a time on 8 GB VRAM (`ollama stop` before loading the 7B adapter path).
-- **Training refine** — working 13 adapters verified earlier; **no overwrite** this
+- **Training refine** (`9fbcb90`) — working 13 adapters verified earlier; **no overwrite** this
   round (disk/VRAM tight). Added `tools/oplora/REFINE.md` and
   `config_refine_small.yaml` (2-epoch plan for thin sets like Evernight) targeting
   `adapter_v2/` only after verify. Infer server now prefers `local_files_only`
