@@ -67,11 +67,17 @@ _FEED_CITIES = [c for c in _PRESENT_CITIES if c in le.CITYISH]
 
 def clock_key(world) -> str:
     c = world.clock
+    u = getattr(c, "uncounted", None) or ""
+    if u:
+        return f"{int(c.year)}-{u}-{int(c.period)}"
     return f"{int(c.year)}-{int(c.month)}-{int(c.week)}-{int(c.day)}-{int(c.period)}"
 
 
 def date_key(world) -> str:
     c = world.clock
+    u = getattr(c, "uncounted", None) or ""
+    if u:
+        return f"{int(c.year)}-{u}"
     return f"{int(c.year)}-{int(c.month)}-{int(c.week)}-{int(c.day)}"
 
 

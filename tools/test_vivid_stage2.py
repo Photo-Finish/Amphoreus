@@ -44,6 +44,7 @@ def main():
     state_path = tmp / "world_state.json"
     os.environ["AMPHOREUS_STATE_PATH"] = str(state_path)
     ws = WorldState(str(state_path))
+    ws.time_scale = 2.0
 
     # Fresh amicable layout
     ws.set_location("aglaea", "Okhema")
@@ -232,6 +233,7 @@ def main():
     v2.note_overhear(ws, "anaxa", "a Grove secret", source="near Anaxa")
     ws.save()
     ws2 = WorldState(str(state_path))
+    ws2.time_scale = 2.0
     check("vivid ledger reloads",
           "aglaea" in (ws2.vivid.get("noticed_by") or {}))
 

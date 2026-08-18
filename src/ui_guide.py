@@ -134,11 +134,12 @@ def render_guide(manager, characters):
 
     _section("Time flow", (
         "The world does not run at a fixed speed. In the **Control Panel → "
-        "“Time flow”** you choose how fast the world elapses, measured "
-        "linearly against real time: **1x** = one in-game day per real day, "
-        "and every step up is proportional — **5x** ≈ 4.8 real hours per "
-        "in-game day, **60x** = 24 real minutes per in-game day. Change it "
-        "any time — it takes effect immediately, no restart."
+        "“Time flow”** you choose how fast the world elapses. **1x** follows "
+        "GMT+8 on the sanctuary Light Calendar (one in-game day per real day). "
+        "**2x–60x** keep the original Year 4932… timestamp and scale linearly "
+        "— **5x** ≈ 4.8 real hours per in-game day, **60x** = 24 real minutes "
+        "per in-game day. Change it any time — it takes effect immediately, "
+        "no restart."
     ))
 
     _section("Closing the tab does NOT stop the world", (

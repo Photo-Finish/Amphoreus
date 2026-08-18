@@ -30,6 +30,7 @@ def check(name, cond, extra=""):
 def _ws(**clock):
     tmp = Path(tempfile.mkdtemp(prefix="amp-ent-"))
     ws = WorldState(str(tmp / "world_state.json"))
+    ws.time_scale = 2.0
     for k, v in clock.items():
         setattr(ws.clock, k, v)
     ws.ambient = {

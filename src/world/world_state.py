@@ -2,10 +2,11 @@
 World State — the little Amphoreus: the Light Calendar clock and the
 persistent state of the world the Heirs live in.
 
-The clock follows the canon Light Calendar (databank/world/calendar.md):
-12 months in 4 seasons, 4 weeks/month, 7 days/week, 5 periods/day.
-The world begins in the Month of Weaving — the month of memory and
-storytelling — in the year after the long war ended.
+The sim clock's default timestamp remains Year 4932, Month of Weaving
+(week 1, day 1) — the month of memory, the year after the long war.
+Sanctuary months, Uncounted days, and the 1x GMT+8 overlay live in
+`sanctuary_clock.py` / `databank/world/sanctuary-calendar.md`.
+Kephale's original twelve-month lore remains in `databank/world/calendar.md`.
 """
 
 import json
@@ -21,37 +22,17 @@ from .map_data import can_cross_to as _map_can_cross_to
 from .map_data import is_cross_era as _map_is_cross_era
 from .map_data import TIME_FORMS as _TIME_FORMS, NETHER as _NETHER
 from .schedules import scheduled_place, home_of as _sched_home
-
-# --------------------------------------------------------------------- #
-# Light Calendar
-# --------------------------------------------------------------------- #
-MONTHS = [
-    # (name, season, patron titan)
-    ("Month of Gate", "Fate", "Janus"),
-    ("Month of Balance", "Fate", "Talanton"),
-    ("Month of Evernight", "Fate", "Oronyx"),
-    ("Month of Cultivation", "Pillar", "Georios"),
-    ("Month of Joy", "Pillar", "Phagousa"),
-    ("Month of Everday", "Pillar", "Aquila"),
-    ("Month of Freedom", "Creation", "Kephale"),
-    ("Month of Reaping", "Creation", "Cerces"),
-    ("Month of Weaving", "Creation", "Mnestia"),
-    ("Month of Strife", "Calamity", "Nikador"),
-    ("Month of Mourning", "Calamity", "Thanatos"),
-    ("Month of Fortune", "Calamity", "Zagreus"),
-]
-
-PERIODS = [
-    "Entry Hour",       # awakening, morning market, prayers
-    "Lucid Hour",       # mental peak, conversation, scholarship
-    "Action Hour",      # physical labor, exercise, revelry
-    "Parting Hour",     # work ends, farewells, departures
-    "Curtain-Fall Hour",  # rest and sleep
-]
-
-WEEKS_PER_MONTH = 4
-DAYS_PER_WEEK = 7
-PERIODS_PER_DAY = len(PERIODS)
+from .sanctuary_clock import (  # noqa: F401 — re-exported for existing imports
+    DAYS_PER_WEEK,
+    GMT8,
+    MONTHS,
+    PERIODS,
+    PERIODS_PER_DAY,
+    WEEKS_PER_MONTH,
+    WorldClock,
+    _day_index,
+    is_light_leap,
+)
 
 # Where each Heir makes their home in the sanctuary (from their cards).
 # NOTE: Hysilens is a knight commander serving Cerydra — she lives in Okhema,
@@ -92,12 +73,6 @@ def _stable_seed(text: str) -> int:
     for ch in text:
         s = (s * 31 + ord(ch)) & 0x7FFFFFFF
     return s
-
-
-def _day_index(clock) -> int:
-    """Total days since Year 4932, Month 1, Week 1, Day 1."""
-    return ((clock.year - 4932) * 12 + (clock.month - 1)) * 28 \
-        + (clock.week - 1) * 7 + (clock.day - 1)
 
 
 def guest_is_present(cid: str, clock=None) -> bool:
@@ -151,81 +126,6 @@ LOCATIONS: Dict[str, str] = {
 }
 
 
-class WorldClock:
-    """The Light Calendar clock of Amphoreus."""
-
-    def __init__(self, year: int = 4932, month: int = 9, week: int = 1,
-                 day: int = 1, period: int = 0):
-        self.year = year
-        self.month = month   # 1..12
-        self.week = week     # 1..4
-        self.day = day       # 1..7
-        self.period = period  # 0..4
-
-    def advance(self, periods: int = 1):
-        """Advance the clock by a number of daily periods."""
-        for _ in range(periods):
-            self.period += 1
-            if self.period >= PERIODS_PER_DAY:
-                self.period = 0
-                self.day += 1
-                if self.day > DAYS_PER_WEEK:
-                    self.day = 1
-                    self.week += 1
-                    if self.week > WEEKS_PER_MONTH:
-                        self.week = 1
-                        self.month += 1
-                        if self.month > 12:
-                            self.month = 1
-                            self.year += 1
-
-    @property
-    def month_name(self) -> str:
-        return MONTHS[self.month - 1][0]
-
-    @property
-    def season(self) -> str:
-        return MONTHS[self.month - 1][1]
-
-    @property
-    def patron_titan(self) -> str:
-        return MONTHS[self.month - 1][2]
-
-    @property
-    def period_name(self) -> str:
-        return PERIODS[self.period]
-
-    def is_rest_time(self) -> bool:
-        """Whether most would be asleep (Curtain-Fall Hour or first Entry Hour)."""
-        return self.period == 4 or self.period == 0
-
-    def format(self) -> str:
-        return (
-            f"Year {self.year}, {self.month_name} ({self.season} Season, "
-            f"patron {self.patron_titan}), Week {self.week}, Day {self.day} — "
-            f"{self.period_name}"
-        )
-
-    def format_short(self) -> str:
-        return f"Year {self.year} · {self.month_name} · Week {self.week} · Day {self.day} · {self.period_name}"
-
-    def to_dict(self) -> dict:
-        return {
-            "year": self.year, "month": self.month, "week": self.week,
-            "day": self.day, "period": self.period,
-        }
-
-    @classmethod
-    def from_dict(cls, data: dict) -> "WorldClock":
-        return cls(
-            year=data.get("year", 4932),
-            month=data.get("month", 9),
-            week=data.get("week", 1),
-            day=data.get("day", 1),
-            period=data.get("period", 0),
-        )
-
-
 class WorldState:
     """Persistent state of the little Amphoreus."""
 
@@ -243,7 +143,7 @@ class WorldState:
                 state_path = str(Path(__file__).resolve().parents[2] / state_path)
         self.state_path = state_path
         self._lock = threading.Lock()
-        self.clock = WorldClock()
+        self._sim_clock = WorldClock()
         self.agent_location: Dict[str, str] = dict(HOME_LOCATIONS)
         self.agent_travel: Dict[str, dict] = {}  # cid -> {"to": loc, "remaining_days": int, "from": loc}
         self.recent_events: List[str] = []
@@ -267,7 +167,7 @@ class WorldState:
         self.realization: Dict[str, dict] = {}  # the witness ledger: cid -> {stage, quotes, since} (see src/core/realization.py)
         self.curiosity: Dict[str, dict] = {}    # the Heirs' minds: cid -> {questions, inferences} (see src/core/curiosity.py)
         self.horizons: Dict[str, list] = {}     # the changeable knowledge bank: cid -> [what they have come to know] (see src/core/horizons.py)
-        self.time_scale: float = 1.0            # how fast the world elapses: 1x = one in-game day per engine interval (Control Panel)
+        self.time_scale: float = 1.0            # 1x = GMT+8 sanctuary overlay; 2x–60x = persisted sim clock
         self.visitor_location: str = "Okhema"   # where the star-stranger (you) currently stands
         self.visitor_travel: dict = {}          # your journey: {"to", "from", "remaining"} while on the road
         self.vivid: Dict = {}                   # Stage-2 society/world ledger (see vivid_stage2.py)
@@ -281,7 +181,7 @@ class WorldState:
             with self._lock:  # guard against torn reads while the engine writes
                 with open(self.state_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
-                self.clock = WorldClock.from_dict(data.get("clock", {}))
+                self._sim_clock = WorldClock.from_dict(data.get("clock", {}))
                 self.agent_location = {
                     **HOME_LOCATIONS,
                     **data.get("agent_location", {}),
@@ -324,7 +224,7 @@ class WorldState:
             with open(self.state_path, "w", encoding="utf-8") as f:
                 json.dump(
                     {
-                        "clock": self.clock.to_dict(),
+                        "clock": self._sim_clock.to_dict(),
                         "agent_location": self.agent_location,
                         "agent_travel": self.agent_travel,
                         "recent_events": self.recent_events[-20:],
@@ -605,8 +505,22 @@ class WorldState:
     # ------------------------------------------------------------------ #
     # Time flow — how fast the world elapses (Control Panel)
     # ------------------------------------------------------------------ #
+    @property
+    def clock(self) -> WorldClock:
+        """At 1x: GMT+8 sanctuary overlay. At 2x–60x: the persisted sim timestamp."""
+        if float(self.time_scale or 1.0) <= 1.0:
+            return WorldClock.from_gmt8()
+        return self._sim_clock
+
+    @clock.setter
+    def clock(self, value: WorldClock) -> None:
+        if isinstance(value, WorldClock):
+            self._sim_clock = value
+        else:
+            self._sim_clock = WorldClock.from_dict(value or {})
+
     def set_time_scale(self, scale: float):
-        """Persist the world's pace: 1x = one in-game day per engine interval."""
+        """Persist the world's pace. 1x follows GMT+8; 2x–60x keep the sim clock."""
         try:
             scale = float(scale)
         except Exception:

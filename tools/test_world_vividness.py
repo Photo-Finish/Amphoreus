@@ -13,6 +13,7 @@ from src.world import world_events as wev
 
 tmp = Path(tempfile.mkdtemp(prefix="vivid-"))
 ws = WorldState(state_path=str(tmp / "state.json"))
+ws.time_scale = 2.0
 
 # --- rumors ---
 wev.add_rumor(ws, "anaxa", "the star-stranger spoke of strange knowledge")
@@ -24,6 +25,7 @@ print("rumors + spread OK:", heard[0][:60])
 
 # --- rumor nesting cap (max 2 hops survive) + fidelity death at hop 3 ---
 w2 = WorldState(state_path=str(tmp / "s2.json"))
+w2.time_scale = 2.0
 wev.add_rumor(w2, "tribbie", "a comet crossed the sky over Janusopolis")
 wev.spread_rumors(w2, "tribbie", "aglaea")
 wev.spread_rumors(w2, "aglaea", "cipher")
@@ -112,6 +114,7 @@ from src.world.world_engine import WorldEngine
 eng = WorldEngine(state_path=str(tmp / "engine_state.json"),
                   memory_root=str(tmp / "memory"),
                   chronicle_path=str(tmp / "chronicle"))
+eng.world.time_scale = 2.0
 
 # (a) surge darkens the sky ONCE, idempotent across days + restart
 eng.world.surge = {"active": True, "remaining": 3, "cities": ["Styxia"]}
@@ -148,6 +151,7 @@ print("engine texture OK — lines:", len(lines))
 
 # --- companion lifecycle: the shared journey ends at the destination ---
 w3 = WorldState(state_path=str(tmp / "s3.json"))
+w3.time_scale = 2.0
 w3.set_location("phainon", "Okhema")
 w3.begin_travel("phainon", "Aedes Elysiae")
 assert w3.is_traveling("phainon")

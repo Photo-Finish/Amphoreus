@@ -368,7 +368,9 @@ def render_control_panel(manager, characters):
     st.markdown("### Time flow")
     st.caption(
         "How fast the world elapses while the engine runs, measured linearly "
-        "against real time: **1x** = one in-game day per real day; **60x** = "
+        "against real time. **1x** follows GMT+8 on the sanctuary Light Calendar "
+        "(one in-game day per real day; Hours from midnight). **2x–60x** keep the "
+        "original sim timestamp (Year 4932…) and scale that clock: **60x** = "
         "24 real minutes per in-game day (each day still needs a little time "
         "to be lived — every Heir decides for themselves)."
     )

@@ -124,7 +124,9 @@ class WorldEngine:
     def run_day(self) -> List[str]:
         """Advance one day and let the Heirs live it. Returns chronicle lines."""
         # Advance a full day + one period, so the hour of the day cycles.
-        self.world.clock.advance(PERIODS_PER_DAY + 1)
+        # 1x follows GMT+8 and must not move the persisted 4932… sim timestamp.
+        if float(getattr(self.world, "time_scale", 1.0) or 1.0) > 1.0:
+            self.world.clock.advance(PERIODS_PER_DAY + 1)
         clock = self.world.clock
         time_str = clock.format_short()
         lines: List[str] = []

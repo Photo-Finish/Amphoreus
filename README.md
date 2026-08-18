@@ -1080,4 +1080,12 @@ tide / letter / weather / co-location / aftermath features):
   `tools/test_lived_entities.py` (61), vivid suite 44/44.
 - **User catalog:** `docs/LIVED-WORLD.md` — all 31 entities and 17 mechanisms in detail.
 
+### 2026-08-18 — Sanctuary Light Calendar on the clock
+- **All speeds** use the sanctuary reform (`src/world/sanctuary_clock.py`): 13×28
+  months, Membrance after Fortune, Scarlet Day after Zagreus in leap years, Dies
+  Astrorum after Membrance, Hours from GMT+8 midnight at 1x.
+- **1x** syncs to GMT+8. **2x–60x** keep the original sim timestamp (Year 4932,
+  Month of Weaving…) and do not get overwritten when 1x is showing Earth today.
+- Setting: `databank/world/sanctuary-calendar.md`. Kephale's `calendar.md` untouched.
+
 

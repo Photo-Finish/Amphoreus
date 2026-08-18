@@ -4,7 +4,7 @@
 > Kephale's original twelve-month system remains in `calendar.md`. This file does not replace that lore; it records the **reform** and the **Earth sync**.
 > English names of Titan-months and Hours are a **translation** of Amphorean speech (which we may not hear). Latin on the Uncounted is **our** culture — the Nameless, not Amphoreus.
 
-**Not implemented in the world clock yet.** The running engine still uses twelve months of 28 days (`world_state.py`). This is the setting to implement against.
+**Implemented** in `src/world/sanctuary_clock.py`. Control Panel **1x** follows GMT+8 on this overlay. **2x–60x** keep the persisted sim timestamp (default Year 4932, Month of Weaving, week 1, day 1) and advance this calendar from there.
 
 ---
 

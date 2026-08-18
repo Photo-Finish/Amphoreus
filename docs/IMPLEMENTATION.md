@@ -1190,6 +1190,21 @@ Phainon's; Aftermath empties tide prompts; Styxia NPC lines tighten under
 surge; lived road mentions surged skies. See
 `world_runtime/_test_vivid_stage2.py`.
 
+### 3.17 Stage 2 — sanctuary Light Calendar on the world clock
+(`src/world/sanctuary_clock.py`, `databank/world/sanctuary-calendar.md`)
+
+The running clock uses the sanctuary reform for **every** time-flow speed:
+thirteen 28-day months (Membrance after Fortune), Uncounted Scarlet Day after
+Fortune in leap years, Dies Astrorum after Membrance every year, Hours linear
+from midnight (`h = (24/5) p`). Kephale's twelve-month lore in `calendar.md`
+is unchanged.
+
+**1x** does not move the persisted sim timestamp. It reads GMT+8 (`A = G + 2907`)
+so the visitor's today is the sanctuary today. **2x–60x** keep the original
+stored date (default Year 4932, Month of Weaving, week 1, day 1) and advance
+that sim clock. Saving the world never writes the 1x overlay onto the 4932…
+store. Suite: `tools/test_sanctuary_calendar.py`.
+
 ---
 
 *"Only through a worthy sacrifice can we gain a befitting victory."* — Cerydra.

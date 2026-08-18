@@ -31,6 +31,8 @@ features the visitor asked for to make the world *vivid* and the Heirs more
 
 from typing import Dict, List, Optional
 
+from .world_state import _day_index
+
 # --------------------------------------------------------------------------- #
 # Small stable helpers
 # --------------------------------------------------------------------------- #
@@ -39,11 +41,6 @@ def _seed(text: str) -> int:
     for ch in text:
         s = (s * 31 + ord(ch)) & 0x7FFFFFFF
     return s
-
-
-def _day_index(clock) -> int:
-    return ((clock.year - 4932) * 12 + (clock.month - 1)) * 28 \
-        + (clock.week - 1) * 7 + (clock.day - 1)
 
 
 FRIENDSHIP_ORDER = ["stranger", "acquaintance", "friend", "close friend", "best friend"]

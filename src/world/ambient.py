@@ -85,6 +85,23 @@ MONTH_LORE: Dict[int, Dict[str, List[str]]] = {
                     "whimsical and strange, as if the sky gambles with itself"],
          "seed": ["the Month of Fortune, Zagreus' gamble — merchants, thieves, and gamblers grow fervent; if it is a Scarlet Month, a ghost day swells the chaos",
                   "the Month of Fortune — fortunes rise and fall on a coin; the law struggles to keep up"]},
+    13: {"weather": ["clear and remembering, the light a little older than the year",
+                    "quiet, as if the world were turning a page it had already read"],
+         "seed": ["the Month of Membrance, Cyrene's month outside the four seasons — remembrance as a place, after Fortune and before the Express's Uncounted day",
+                  "the Month of Membrance — the thirteenth month, when the year looks back before it names the stars"]},
+}
+
+SCARLET_LORE = {
+    "weather": ["whimsical and extra, as if the sky stole a day",
+                "unpredictable, the ghost day of Zagreus laid on the year"],
+    "seed": ["Scarlet Day, Uncounted after Fortune — not a weekday, not Fortune's 29th, the old ghost day as a leap rule",
+             "Scarlet Day — thieves and gamblers keep the extra hours; the week does not advance"],
+}
+ASTRORUM_LORE = {
+    "weather": ["a high, ticketed sky, as if someone had punched a hole in the year",
+                "clear and nameless, a day that is not a month"],
+    "seed": ["Dies Astrorum, the Express's Uncounted day after Membrance — no weekday, the hinge of the year",
+             "Dies Astrorum — a Nameless date between years, not a Titan month"],
 }
 
 # Concrete, canon-grounded causes for each city's errands (fallback path). Each
@@ -193,6 +210,9 @@ KEEPER_KNOWLEDGE = (
     "weak sunlight and instinct; Month of Cultivation = sowing, busiest month; Month "
     "of Reaping = harvest; Month of Freedom = idleness; Month of Gate = renewal; "
     "Month of Everday = hottest, Dawn Device brightest.\n"
+    "• Sanctuary calendar: a thirteenth month, Membrance (Cyrene), after Fortune, "
+    "outside the four seasons. Fortune is always 28 days. Leap years add Scarlet Day "
+    "after Fortune (Uncounted, not a weekday). Dies Astrorum follows Membrance every year.\n"
     "• Weather is Titan-flavored: light that opens like doors (Janus), veils of "
     "evernight (Oronyx), golden harvest light (Mnestia), ash and long shadows "
     "(Nikador, Thanatos), silver tides (Phagousa). Amphoreus has no rain as we know "
@@ -290,6 +310,9 @@ class AmbientDirector:
 
     @staticmethod
     def _date_key(clock) -> str:
+        u = getattr(clock, "uncounted", None) or ""
+        if u:
+            return f"{clock.year}-{u}"
         return f"{clock.year}-{clock.month}-{clock.week}-{clock.day}"
 
     # ------------------------------------------------------------------ #
@@ -330,8 +353,7 @@ class AmbientDirector:
             for cid, info in heirs.items()
         )
         user = (
-            f"It is Year {clock.year}, {clock.month_name} ({clock.season} Season, "
-            f"patron {clock.patron_titan}), Week {clock.week}, Day {clock.day}.\n\n"
+            f"It is {clock.format()}.\n\n"
             f"City-states of Amphoreus: {', '.join(cities)}.\n\n"
             f"The Chrysos Heirs living in the world:\n{heir_lines}\n\n"
             "Set today's weather for each city, one errand for each Heir, and one "
@@ -357,8 +379,14 @@ class AmbientDirector:
     # ------------------------------------------------------------------ #
     def _fallback(self, clock, heirs: Dict[str, dict]) -> dict:
         rng = random.Random(self._date_key(clock))
-        month = getattr(clock, "month", 9)
-        lore = MONTH_LORE.get(month, MONTH_LORE[9])
+        u = getattr(clock, "uncounted", None)
+        if u == "scarlet":
+            lore = SCARLET_LORE
+        elif u == "astrorum":
+            lore = ASTRORUM_LORE
+        else:
+            month = getattr(clock, "month", 9)
+            lore = MONTH_LORE.get(month, MONTH_LORE[9])
         palette = lore["weather"]
         seed = rng.choice(lore["seed"])
         cities = sorted({info.get("home", "Okhema") for info in heirs.values()})
