@@ -1008,7 +1008,7 @@ tide / letter / weather / co-location / aftermath features):
 
 ## Changelog (Stage 2)
 
-### 2026-08-18 — OPLoRA voice PEFT beside RAG, and the voice-path Control Panel
+### 2026-08-18
 - **OPLoRA training stack** (`773aa2a`) — isolated `.venv-oplora` (PyTorch cu128 for
   Blackwell), `tools/oplora/` scaffold (OPLoRA wrapper, QLoRA SFT, config tuned for
   RTX 5070 Laptop **8 GB**), and shaped SFT datasets copied from the databank into
@@ -1040,52 +1040,29 @@ tide / letter / weather / co-location / aftermath features):
   `config_refine_small.yaml` (2-epoch plan for thin sets like Evernight) targeting
   `adapter_v2/` only after verify. Infer server now prefers `local_files_only`
   against `D:\hf-cache` to avoid HF-mirror TLS stalls on load.
-
-### 2026-08-18 — Lived world entities (positive, coarse)
-- **Catalog** (`src/world/lived_entities.py`) — Amphoreus-native physical stage
-  (Dawn Device, Thief Star, sky, wind, earth, harvest, dromases, hearth, house,
+- **Lived world entities** (`src/world/lived_entities.py`) — Amphoreus-native physical
+  stage (Dawn Device, Thief Star, sky, wind, earth, harvest, dromases, hearth, house,
   city, cloth, road, gates, market, coin, Grove, sea, harbor, fields, workshop,
   ship, forge, scroll, letter, hours, teaching hall, healer's house, shrine).
   Each has a **mechanism**. Excluded: famine, plague, war, storm-as-entity,
   and **grave/burial** (the sanctuary assumes people live on; no system here
-  desperately needs a death, so that mechanism was removed).
-- **Status is derived**, not a second weather roll: Light Calendar hour/month +
-  Keeper sky + where the body stands. Night withdraws the Dawn Device even if
-  the day's weather was blazing; a Grove Visit cannot grow a sea; Cultivation
-  sows and Reaping reaps; the road is not a house; a tide surge thins the market
-  without inventing famine.
-- **UI** — Control Panel (tab + dedicated page) and Admin Console show Keeper
-  **ambient** (weather, errands, news) and the entity ledger (here / near /
-  elsewhere). Visit “This hour” and the Heir prompt inject only what is here.
-- **Suite:** `tools/test_lived_entities.py` (59 checks). Stage-2 vivid suite still
-  44/44.
-
-### 2026-08-18 — Lived day mechanisms + residents (tick facts, visitor stage)
-- **Mechanisms** (`src/world/lived_mechanisms.py`) — all 17 day-verbs now mutate
-  `world.vivid["lived"]` on the world-engine tick (after Keeper ambient, before
-  night's early return): time, lighting/withdrawing, sheltering, feeding,
-  growing, carrying, trading, making, gathering, crossing, washing, cooling,
-  teaching, tending, offering, remembering without burying, resting. Feeding
-  and growing once per date. Rest matches `is_rest_time()` (Curtain-Fall or
-  Entry); Entry does not open a busy market. Night withdraws the Dawn Device
-  even after blazing day-weather.
-- **Residents** (`src/world/resident_npcs.py`) — ~110 templated street people
-  across real cities. Copilot's `world_events.NPCS` list is untouched and wins
-  on name collision. Tick writes who is visible this hour and 1–3 Heir–resident
-  encounters. No burial/famine/war jobs; Grove has no harbor-fishers.
-- **Visitor UI** — Visit shows one stage paragraph plus 2–4 people actually
-  here (not a catalog). Gazette: “This Hour in the World” / “Seen in the
-  Streets.” Control Panel / Admin keep the full ledger.
-- **Suites:** `tools/test_lived_mechanisms.py` (63), `tools/test_resident_npcs.py` (33),
-  `tools/test_lived_entities.py` (61), vivid suite 44/44.
-- **User catalog:** `docs/LIVED-WORLD.md` — all 31 entities and 17 mechanisms in detail.
-
-### 2026-08-18 — Sanctuary Light Calendar on the clock
-- **All speeds** use the sanctuary reform (`src/world/sanctuary_clock.py`): 13×28
-  months, Membrance after Fortune, Scarlet Day after Zagreus in leap years, Dies
-  Astrorum after Membrance, Hours from GMT+8 midnight at 1x.
-- **1x** syncs to GMT+8. **2x–60x** keep the original sim timestamp (Year 4932,
-  Month of Weaving…) and do not get overwritten when 1x is showing Earth today.
-- Setting: `databank/world/sanctuary-calendar.md`. Kephale's `calendar.md` untouched.
+  desperately needs a death, so that mechanism was removed). Status is derived,
+  not a second weather roll: Light Calendar hour/month + Keeper sky + where the
+  body stands. Night withdraws the Dawn Device even if the day's weather was blazing;
+  a Grove Visit cannot grow a sea; Cultivation sows and Reaping reaps; the road is
+  not a house; a tide surge thins the market without inventing famine. Control Panel
+  and Admin show the ledger; Visit injects only what is here.
+- **Lived day mechanisms + residents** — all 17 day-verbs mutate `world.vivid["lived"]`
+  on the world-engine tick; ~110 street residents plus Copilot's untouched `NPCS`.
+  Visit shows a stage paragraph plus 2–4 people here; Gazette: “This Hour in the
+  World” / “Seen in the Streets.” Catalog: `docs/LIVED-WORLD.md`. Suites:
+  `tools/test_lived_mechanisms.py` (63), `tools/test_resident_npcs.py` (33),
+  `tools/test_lived_entities.py` (61), vivid 44/44.
+- **Sanctuary Light Calendar** (`src/world/sanctuary_clock.py`) — every time-flow
+  speed uses the reform (13×28 months, Membrance, Scarlet Day after Fortune in leap
+  years, Dies Astrorum). **1x** follows GMT+8; **2x–60x** keep the persisted sim
+  timestamp (live store: Year 4932, Month of Strife…) and never get overwritten by
+  the 1x overlay. Setting: `databank/world/sanctuary-calendar.md`. Kephale's
+  `calendar.md` untouched. Suite: `tools/test_sanctuary_calendar.py`.
 
 
