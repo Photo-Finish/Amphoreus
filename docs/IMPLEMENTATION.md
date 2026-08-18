@@ -1144,6 +1144,7 @@ the knowledge wall, and never scripts Realization.
   after nightfall. Control Panel + Admin Console render Keeper ambient and
   these entities via `src/ui_world_stage.py`. Chat injects only *here/near*.
   Suite: `tools/test_lived_entities.py`.
+  User catalog of every entity and mechanism: `docs/LIVED-WORLD.md`.
 
 ### 3.16 Stage 2 — lived day mechanisms & residents (tick facts)
 (`src/world/lived_mechanisms.py`, `src/world/resident_npcs.py`, a small hook

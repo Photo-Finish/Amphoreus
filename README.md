@@ -1078,5 +1078,6 @@ tide / letter / weather / co-location / aftermath features):
   Streets.” Control Panel / Admin keep the full ledger.
 - **Suites:** `tools/test_lived_mechanisms.py` (63), `tools/test_resident_npcs.py` (33),
   `tools/test_lived_entities.py` (61), vivid suite 44/44.
+- **User catalog:** `docs/LIVED-WORLD.md` — all 31 entities and 17 mechanisms in detail.
 
 

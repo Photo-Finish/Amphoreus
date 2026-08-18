@@ -25,6 +25,8 @@
 
 ## Lived entities (positive, coarse)
 
+Full user catalog: [`docs/LIVED-WORLD.md`](LIVED-WORLD.md) (31 entities, 17 mechanisms, contradiction table).
+
 `src/world/lived_entities.py` — Amphoreus-native physical stage (Dawn Device, sky, harvest, market, road, Grove, sea, forge, shrine, …). No famine / plague / war / storm-as-entity. Status is derived from Light Calendar + Keeper weather + place.
 
 Shown in **Control Panel** and **Admin Console** (`src/ui_world_stage.py`) together with Keeper ambient (weather, errands, news). Visit “This hour” and the Heir prompt only inject entities that are *here* this hour.
