@@ -8,6 +8,7 @@ AI-painted PNGs; grass/wind/wheat/dawn are CSS or SVG. Clicks run inside
 from __future__ import annotations
 
 import html as _html
+import json
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -240,12 +241,22 @@ _STATIONARY_KINDS = frozenset({
     "mill", "pillar", "incense", "pearl", "pebble", "net", "tidepool",
     "banner", "laundry", "siren", "maze", "mosaic",
 })
-# Side-profile art facing in the film strip (frame 1). Symmetric / front-on: omit.
+# Side-profile walk films; frame 1 faces this direction. True side art only.
 _SPRITE_FACING: Dict[str, str] = {
     "chimera": "right",
-    "dromas": "left",
+    "dromas": "right",
     "resident": "right",
     "cicada": "left",
+}
+# Mobile roam uses side walk film; still PNG is front-facing for these kinds.
+_PROFILE_WALK_KINDS = frozenset({"chimera", "dromas"})
+# Viewport traverse spawn/despawn — only these kinds leave and re-enter view.
+_ROAMER_KINDS = frozenset({"chimera", "dromas", "resident", "cicada"})
+_ROAMER_DUR = {
+    "dromas": (16, 24),
+    "chimera": (12, 20),
+    "resident": (10, 17),
+    "cicada": (7, 12),
 }
 
 
@@ -335,17 +346,20 @@ def sprite_film_uri(kind: str) -> str:
     return "data:image/png;base64," + base64.b64encode(p.read_bytes()).decode("ascii")
 
 
-def _sprite_markup(kind: str) -> str:
+def _sprite_markup(kind: str, *, mobile: bool = True) -> str:
     # Painted PNGs/films only for outdoor figures you can actually touch.
     if kind in _PAINTED_INTERACTIVE:
-        film = sprite_film_uri(kind)
-        if film:
-            dur = _FILM_DUR.get(kind, "0.8s")
-            return (
-                f'<span class="amp-sprite-film" style="'
-                f"background-image:url('{film}');"
-                f"--amp-frames:4;--amp-film-dur:{dur};\"></span>"
-            )
+        # Profile-walk kinds: side film while roaming, front still otherwise.
+        use_film = mobile if kind in _PROFILE_WALK_KINDS else True
+        if use_film:
+            film = sprite_film_uri(kind)
+            if film:
+                dur = _FILM_DUR.get(kind, "0.8s")
+                return (
+                    f'<span class="amp-sprite-film" style="'
+                    f"background-image:url('{film}');"
+                    f"--amp-frames:4;--amp-film-dur:{dur};\"></span>"
+                )
         uri = sprite_png_uri(kind)
         if uri:
             return f'<img src="{uri}" alt="" draggable="false" />'
@@ -552,6 +566,27 @@ def _css() -> str:
 .amp-sprite.mobile:hover { animation-play-state: paused; }
 .amp-sprite.mobile.face-r:hover .amp-sprite-body,
 .amp-sprite.mobile.face-l:hover .amp-sprite-body { animation-play-state: paused; }
+.amp-sprite.amp-roamer {
+  animation: none;
+}
+.amp-sprite.amp-roamer .amp-sprite-body {
+  animation: none;
+  transform-origin: center bottom;
+}
+.amp-sprite.amp-roamer.face-r .amp-sprite-body { transform: scaleX(1); }
+.amp-sprite.amp-roamer.face-l .amp-sprite-body { transform: scaleX(-1); }
+.amp-sprite.amp-roamer.crossing {
+  animation: amp-roamer-cross var(--amp-cross-dur, 16s) linear forwards;
+}
+.amp-sprite.amp-roamer.crossing .amp-sprite-film {
+  animation: amp-film var(--amp-film-dur, .8s) steps(var(--amp-frames, 4)) infinite;
+}
+@keyframes amp-roamer-cross {
+  0% { transform: translateX(var(--amp-cross-from)); opacity: 0; }
+  7% { opacity: 1; }
+  93% { opacity: 1; }
+  100% { transform: translateX(var(--amp-cross-to)); opacity: 0; }
+}
 .amp-sprite.ailing svg, .amp-sprite.ailing img, .amp-sprite.ailing .amp-sprite-film {
   filter: saturate(.55) brightness(.85);
 }
@@ -580,6 +615,169 @@ def _css() -> str:
 
 def _sprite_inner(kind: str) -> str:
     return _SPRITE_PATHS.get(kind) or _DEFAULT_SPRITE
+
+
+def _roamer_cross_secs(kind: str, oid: str) -> float:
+    """Seconds to cross the viewport for a roamer kind."""
+    lo, hi = _ROAMER_DUR.get(kind, (11, 18))
+    seed = abs(hash(oid))
+    span = max(1, hi - lo)
+    return float(lo + seed % (span + 1))
+
+
+def _sprite_button_html(
+    b: dict,
+    *,
+    page_layer: bool,
+    roamer: bool = False,
+) -> str:
+    """One clickable stage sprite."""
+    kind = str(b.get("kind") or "")
+    hs = b.get("hotspot") or {}
+    left = hs.get("left") or "50%"
+    bottom = hs.get("bottom") or "20%"
+    if page_layer:
+        bottom = _page_window_bottom(kind, str(bottom))
+    oid_raw = str(b.get("id") or "")
+    oid = _html.escape(oid_raw, quote=True)
+    title = _html.escape(str(b.get("name") or kind or "life"), quote=True)
+    ailing = " ailing" if b.get("status") == "ailing" else ""
+    motion = _sprite_motion_class(kind)
+    sky = " sky" if kind in _SKY_KINDS else ""
+    delay = abs(hash(oid_raw)) % 17 / 10.0
+    facing = _sprite_facing_class(kind) if motion == " mobile" and not roamer else ""
+    roam = (
+        _sprite_roam_style(kind, oid_raw, delay=delay)
+        if motion == " mobile" and not roamer else ""
+    )
+    roamer_cls = " amp-roamer" if roamer else ""
+    return (
+        f'<button type="button" class="amp-sprite{motion}{facing}{ailing}{sky}{roamer_cls}" '
+        f'data-oid="{oid}" '
+        f'title="{title}" aria-label="{title}" '
+        f'style="left:{left};bottom:{bottom};{roam}">'
+        f'<span class="amp-sprite-halo"></span>'
+            f'<span class="amp-sprite-body">{_sprite_markup(kind, mobile=(motion == " mobile"))}</span>'
+        f"</button>"
+    )
+
+
+def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
+    """Place-eligible roamers for client-side viewport spawn/despawn."""
+    pool = []
+    for b in scene or []:
+        kind = str(b.get("kind") or "")
+        if kind not in _ROAMER_KINDS or not b.get("clickable") or not b.get("id"):
+            continue
+        hs = b.get("hotspot") or {}
+        bottom = hs.get("bottom") or "20%"
+        if page_layer:
+            bottom = _page_window_bottom(kind, str(bottom))
+        oid = str(b.get("id"))
+        pool.append({
+            "oid": oid,
+            "kind": kind,
+            "name": str(b.get("name") or kind),
+            "ailing": b.get("status") == "ailing",
+            "bottom": bottom,
+            "dur": _roamer_cross_secs(kind, oid),
+            "body": _sprite_markup(kind),
+        })
+    return pool
+
+
+def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
+    """Client-side probabilistic roamer lifecycle inside the land iframe."""
+    prob = max(0.05, min(0.95, spawn_prob))
+    return f"""
+  (function(){{
+    var el = document.getElementById('amp-roamer-pool');
+    if (!el || !root) return;
+    var pool = [];
+    try {{ pool = JSON.parse(el.textContent || '[]'); }} catch (e) {{ return; }}
+    if (!pool.length) return;
+
+    var maxActive = {max_active};
+    var spawnProb = {prob:.2f};
+    var active = 0;
+    var busy = {{}};
+
+    function rand(a, b) {{ return a + Math.random() * (b - a); }}
+    function stageW() {{
+      return root.clientWidth || window.innerWidth || 800;
+    }}
+    function cellPx() {{
+      var probe = root.querySelector('.amp-sprite');
+      if (!probe) return 92;
+      var v = getComputedStyle(probe).getPropertyValue('--amp-cell');
+      return parseFloat(v) || 92;
+    }}
+    function pick() {{
+      var avail = pool.filter(function(p) {{ return !busy[p.oid]; }});
+      if (!avail.length) {{
+        busy = {{}};
+        avail = pool.slice();
+      }}
+      return avail[Math.floor(Math.random() * avail.length)];
+    }}
+    function spawn(force) {{
+      if (active >= maxActive) return;
+      if (!force && Math.random() > spawnProb) return;
+      var ent = pick();
+      if (!ent) return;
+      busy[ent.oid] = true;
+      active += 1;
+
+      var w = stageW();
+      var cell = cellPx();
+      var margin = cell * 0.75;
+      var anchorPct = 12 + Math.random() * 76;
+      var anchorPx = w * anchorPct / 100;
+      var fromLeft = Math.random() < 0.5;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'amp-sprite amp-roamer mobile'
+        + (ent.ailing ? ' ailing' : '')
+        + (fromLeft ? ' face-r' : ' face-l');
+      btn.setAttribute('data-oid', ent.oid);
+      btn.setAttribute('title', ent.name);
+      btn.setAttribute('aria-label', ent.name);
+      btn.style.left = anchorPct + '%';
+      btn.style.bottom = ent.bottom;
+      if (fromLeft) {{
+        btn.style.setProperty('--amp-cross-from', (-anchorPx - margin) + 'px');
+        btn.style.setProperty('--amp-cross-to', (w - anchorPx + margin) + 'px');
+      }} else {{
+        btn.style.setProperty('--amp-cross-from', (w - anchorPx + margin) + 'px');
+        btn.style.setProperty('--amp-cross-to', (-anchorPx - margin) + 'px');
+      }}
+      btn.style.setProperty('--amp-cross-dur', (ent.dur || 14) + 's');
+      btn.innerHTML = '<span class="amp-sprite-halo"></span>'
+        + '<span class="amp-sprite-body">' + ent.body + '</span>';
+      root.appendChild(btn);
+      requestAnimationFrame(function() {{ btn.classList.add('crossing'); }});
+
+      function done() {{
+        btn.removeEventListener('animationend', done);
+        if (btn.parentNode) btn.parentNode.removeChild(btn);
+        delete busy[ent.oid];
+        active = Math.max(0, active - 1);
+        if (Math.random() < spawnProb) {{
+          setTimeout(function() {{ spawn(false); }}, rand(400, 2800));
+        }}
+      }}
+      btn.addEventListener('animationend', done);
+    }}
+
+    function tick() {{
+      spawn(false);
+      setTimeout(tick, rand(9000, 20000));
+    }}
+    if (Math.random() < 0.85) spawn(true);
+    if (Math.random() < 0.45 && maxActive > 1) setTimeout(function() {{ spawn(true); }}, rand(800, 3200));
+    setTimeout(tick, rand(6000, 14000));
+  }})();
+"""
 
 
 def life_overlay_html(scene: List[dict], place: str = "", *, dense: bool = False) -> str:
@@ -701,34 +899,14 @@ def pictorial_stage_html(
         ),
     )
     max_sprites = 10 if dense else 7
+    roamer_pool = _roamer_pool(clickable, page_layer=page_layer) if entities else []
+    max_roamers = 3 if dense else 2
     sprites = []
     for b in ranked[:max_sprites]:
         kind = str(b.get("kind") or "")
-        hs = b.get("hotspot") or {}
-        left = hs.get("left") or "50%"
-        bottom = hs.get("bottom") or "20%"
-        if page_layer:
-            bottom = _page_window_bottom(kind, str(bottom))
-        oid = _html.escape(str(b.get("id")), quote=True)
-        title = _html.escape(str(b.get("name") or kind or "life"), quote=True)
-        ailing = " ailing" if b.get("status") == "ailing" else ""
-        motion = _sprite_motion_class(kind)
-        sky = " sky" if kind in _SKY_KINDS else ""
-        delay = abs(hash(oid)) % 17 / 10.0
-        facing = _sprite_facing_class(kind) if motion == " mobile" else ""
-        roam = (
-            _sprite_roam_style(kind, str(b.get("id") or oid), delay=delay)
-            if motion == " mobile" else ""
-        )
-        sprites.append(
-            f'<button type="button" class="amp-sprite{motion}{facing}{ailing}{sky}" '
-            f'data-oid="{oid}" '
-            f'title="{title}" aria-label="{title}" '
-            f'style="left:{left};bottom:{bottom};{roam}">'
-            f'<span class="amp-sprite-halo"></span>'
-            f'<span class="amp-sprite-body">{_sprite_markup(kind)}</span>'
-            f"</button>"
-        )
+        if kind in _ROAMER_KINDS:
+            continue
+        sprites.append(_sprite_button_html(b, page_layer=page_layer))
 
     read_block = ""
     if read_line:
@@ -860,6 +1038,19 @@ def pictorial_stage_html(
             "  } catch (e) {}\n"
         )
 
+    roamer_json = ""
+    roam_js = ""
+    if roamer_pool:
+        roamer_json = (
+            '<script type="application/json" id="amp-roamer-pool">'
+            + json.dumps(roamer_pool, ensure_ascii=False)
+            + "</script>"
+        )
+        roam_js = _viewport_roam_js(
+            max_active=max_roamers,
+            spawn_prob=0.68 if dense else 0.62,
+        )
+
     body = (
         f"{shell}"
         f"{art_div}"
@@ -867,6 +1058,7 @@ def pictorial_stage_html(
         f"{ambient}"
         f'{"".join(sprites)}'
         f"{read_block}"
+        f"{roamer_json}"
         f"</div>"
         "<script>\n"
         "(function(){\n"
@@ -887,6 +1079,7 @@ def pictorial_stage_html(
         "    ev.preventDefault();\n"
         "    go(t.getAttribute('data-oid'));\n"
         "  });\n"
+        f"{roam_js}"
         "})();\n"
         "</script>\n"
     )

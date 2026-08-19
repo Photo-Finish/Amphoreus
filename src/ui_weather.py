@@ -453,8 +453,7 @@ html, body {{
   background-image: none !important;
 }}
 [data-testid="stAppViewContainer"],
-section[data-testid="stMain"],
-[data-testid="stAppViewContainer"] > .main {{
+section[data-testid="stMain"] {{
   background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
@@ -510,25 +509,41 @@ section[data-testid="stSidebar"] {{
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }}
-[data-testid="stAppViewContainer"] > .main {{
-  background: transparent !important;
+[role="tab"] {{
+  color: {pal["sub"]} !important;
+  text-shadow: {pal["shadow"]};
+}}
+[role="tab"][aria-selected="true"] {{
+  color: {pal["heading"]} !important;
+  border-bottom-color: {pal["heading"]} !important;
+}}
+section[data-testid="stMain"] {{
   pointer-events: none;
 }}
 .block-container {{
   position: relative;
   z-index: 2;
-  background: transparent !important;
   pointer-events: none;
+}}
+[data-testid="stMainBlockContainer"] {{
+  background: {pal["scrim"]} !important;
 }}
 .block-container [role="radiogroup"],
 .block-container [data-testid="stRadio"],
 .block-container [role="switch"],
 .block-container [data-testid="stCheckbox"] {{
-  background: rgba(10, 8, 20, 0.42) !important;
+  background: {pal["glass"]} !important;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  border: 1px solid {pal["border"]};
   border-radius: 10px;
   padding: 0.15rem 0.45rem;
+}}
+.block-container [data-testid="stWidgetLabel"] p,
+.block-container [role="radiogroup"] label,
+.block-container [role="switch"] label {{
+  color: {pal["body"]} !important;
+  text-shadow: {pal["shadow"]};
 }}
 /* Empty page area clicks the land; widgets stay usable. */
 .block-container .stButton,
@@ -570,6 +585,10 @@ section[data-testid="stSidebar"] {{
 [data-testid="stBottomBlockContainer"] {{
   position: relative;
   z-index: 6;
+  background: {pal["glass"]} !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid {pal["border"]} !important;
 }}
 [data-amp-land-wrap="1"] {{
   position: fixed !important;
@@ -623,21 +642,96 @@ iframe[data-amp-land="1"] {{
   font-size: 1.1rem; line-height: 1.55; font-style: italic;
   color: {pal["beat"]}; margin: 0.35rem 0 0 0;
 }}
-[data-testid="stAppViewContainer"] > .main h1,
-[data-testid="stAppViewContainer"] > .main h2,
-[data-testid="stAppViewContainer"] > .main h3 {{
+[data-testid="stMain"] h1,
+[data-testid="stMain"] h2,
+[data-testid="stMain"] h3,
+[data-testid="stMain"] [data-testid="stHeading"] {{
   color: {pal["heading"]} !important;
   text-shadow: {pal["shadow"]};
 }}
-[data-testid="stAppViewContainer"] > .main p,
-[data-testid="stAppViewContainer"] > .main li,
-[data-testid="stAppViewContainer"] > .main label,
-[data-testid="stAppViewContainer"] > .main [data-testid="stMarkdownContainer"],
-[data-testid="stAppViewContainer"] > .main [data-testid="stCaptionContainer"],
-[data-testid="stAppViewContainer"] > .main [data-testid="stWidgetLabel"],
-[data-testid="stAppViewContainer"] > .main .stCaption {{
+[data-testid="stMain"] [data-testid="stHeading"],
+[data-testid="stMain"] [data-testid="stHeadingWithActionElements"] {{
+  background: {pal["glass"]};
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid {pal["border"]};
+  border-radius: 12px;
+  padding: 0.45rem 1rem;
+  margin: 0.35rem 0 0.65rem 0;
+}}
+[data-testid="stMain"] p,
+[data-testid="stMain"] li,
+[data-testid="stMain"] label,
+[data-testid="stMain"] em,
+[data-testid="stMain"] strong,
+[data-testid="stMain"] [data-testid="stMarkdownContainer"],
+[data-testid="stMain"] [data-testid="stMarkdownContainer"] p,
+[data-testid="stMain"] [data-testid="stWidgetLabel"],
+[data-testid="stMain"] .stCaption {{
   color: {pal["body"]} !important;
   text-shadow: {pal["shadow"]};
+}}
+[data-testid="stMain"] [data-testid="stCaptionContainer"],
+[data-testid="stMain"] [data-testid="stCaptionContainer"] p,
+[data-testid="stMain"] [data-testid="stCaptionContainer"] span {{
+  color: {pal["sub"]} !important;
+  text-shadow: {pal["shadow"]};
+}}
+[data-testid="stMain"] [data-testid="stCaptionContainer"] {{
+  background: {pal["glass"]};
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid {pal["border"]};
+  border-radius: 8px;
+  padding: 0.2rem 0.65rem;
+  width: fit-content;
+  max-width: 100%;
+}}
+[data-testid="stMain"] [data-testid="stMarkdownContainer"]:has(em) {{
+  background: {pal["glass"]};
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid {pal["border"]};
+  border-radius: 10px;
+  padding: 0.55rem 0.85rem;
+  margin: 0.35rem 0 0.65rem 0;
+}}
+[data-testid="stMain"] [data-testid="stAlert"] {{
+  background: {pal["glass"]} !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid {pal["border"]} !important;
+  border-radius: 12px !important;
+  color: {pal["body"]} !important;
+}}
+[data-testid="stMain"] [data-testid="stAlert"] p,
+[data-testid="stMain"] [data-testid="stAlert"] span,
+[data-testid="stMain"] [data-testid="stAlert"] div {{
+  color: {pal["body"]} !important;
+}}
+[data-testid="stMain"] [data-testid="stExpander"] {{
+  background: {pal["glass"]} !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid {pal["border"]} !important;
+  border-radius: 12px !important;
+}}
+[data-testid="stMain"] [data-testid="stExpander"] summary,
+[data-testid="stMain"] [data-testid="stExpander"] p,
+[data-testid="stMain"] [data-testid="stExpander"] li {{
+  color: {pal["body"]} !important;
+  text-shadow: {pal["shadow"]};
+}}
+[data-testid="stMain"] .stButton > button {{
+  background: {pal["glass"]} !important;
+  color: {pal["body"]} !important;
+  border: 1px solid {pal["border"]} !important;
+  text-shadow: {pal["shadow"]};
+}}
+[data-testid="stMain"] [data-baseweb="select"] > div {{
+  background: {pal["glass"]} !important;
+  color: {pal["body"]} !important;
+  border-color: {pal["border"]} !important;
 }}
 [data-testid="stChatMessage"] {{
   background: {pal["chat_bg"]} !important;
@@ -648,6 +742,15 @@ iframe[data-amp-land="1"] {{
 [data-testid="stChatMessage"] span,
 [data-testid="stChatMessage"] li {{
   color: {pal["body"]} !important;
+}}
+[data-testid="stChatInput"] textarea,
+[data-testid="stChatInput"] input {{
+  color: {pal["body"]} !important;
+  background: transparent !important;
+  caret-color: {pal["heading"]} !important;
+}}
+[data-testid="stChatInput"] [data-testid="stChatInputSubmitButton"] {{
+  color: {pal["heading"]} !important;
 }}
 section[data-testid="stSidebar"] {{
   background: rgba(12, 10, 22, 0.92) !important;
@@ -673,8 +776,10 @@ html.amp-land-off [data-amp-land-wrap="1"] {{
   display: none !important;
   pointer-events: none !important;
 }}
-html.amp-land-off [data-testid="stAppViewContainer"] > .main,
+html.amp-land-off section[data-testid="stMain"],
+html.amp-land-off [data-testid="stMainBlockContainer"],
 html.amp-land-off .block-container {{
+  background: transparent !important;
   pointer-events: auto !important;
 }}
 </style>
