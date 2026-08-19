@@ -1,4 +1,4 @@
-"""Land look — pictorial (figures on the art) vs classic (inset + names)."""
+"""Land look — full-screen art vs inset window, and whether life is painted on it."""
 from __future__ import annotations
 
 LOOK_PICTORIAL = "pictorial"
@@ -6,6 +6,10 @@ LOOK_CLASSIC = "classic"
 _QUERY = "amp_ui"
 _STATE = "amp_land_look"
 _RADIO = "amp_land_look_radio"
+
+_LIFE_Q = "amp_life"
+_LIFE_STATE = "amp_land_life"
+_LIFE_KEY = "amp_land_life_check"
 
 _LABELS = (
     ("Pictures on the land", LOOK_PICTORIAL),
@@ -36,11 +40,39 @@ def is_pictorial() -> bool:
     return land_look() == LOOK_PICTORIAL
 
 
+def show_entities() -> bool:
+    """Whether chimera, grass, stalls… are painted on the land."""
+    import streamlit as st
+
+    if _LIFE_STATE in st.session_state:
+        return bool(st.session_state[_LIFE_STATE])
+    try:
+        q = str(st.query_params.get(_LIFE_Q) or "").strip().lower()
+    except Exception:
+        q = ""
+    if q in {"0", "off", "no", "false"}:
+        st.session_state[_LIFE_STATE] = False
+        return False
+    if q in {"1", "on", "yes", "true"}:
+        st.session_state[_LIFE_STATE] = True
+        return True
+    return True
+
+
 def _write_query(value: str) -> None:
     import streamlit as st
 
     try:
         st.query_params[_QUERY] = value
+    except Exception:
+        pass
+
+
+def _write_life_query(on: bool) -> None:
+    import streamlit as st
+
+    try:
+        st.query_params[_LIFE_Q] = "1" if on else "0"
     except Exception:
         pass
 
@@ -137,9 +169,8 @@ def render_look_picker() -> None:
         list(_VALUE_FOR.keys()),
         key=_RADIO,
         help=(
-            "Pictures on the land: figures live on the area art. "
-            "Classic: one inset picture and named buttons — no weather overlay, "
-            "no grass/rain layer, no full-page figures."
+            "Pictures on the land: the area art fills the page. "
+            "Classic: a small weather window and named buttons — no full-page art."
         ),
     )
     value = _VALUE_FOR.get(pick, LOOK_PICTORIAL)
@@ -150,6 +181,28 @@ def render_look_picker() -> None:
         qnow = ""
     if qnow != value:
         _write_query(value)
+
+    life_now = show_entities()
+    if _LIFE_KEY not in st.session_state:
+        st.session_state[_LIFE_KEY] = life_now
+    _toggle = getattr(st.sidebar, "toggle", None) or st.sidebar.checkbox
+    life_pick = _toggle(
+        "Life on the land",
+        key=_LIFE_KEY,
+        help=(
+            "On: chimera, grass, stalls, and the rest are painted on the picture. "
+            "Off: the place only — presence stays as names you can touch."
+        ),
+    )
+    st.session_state[_LIFE_STATE] = bool(life_pick)
+    try:
+        lq = str(st.query_params.get(_LIFE_Q) or "")
+    except Exception:
+        lq = ""
+    want = "1" if life_pick else "0"
+    if lq != want:
+        _write_life_query(bool(life_pick))
+
     if value == LOOK_CLASSIC:
         st.markdown(classic_page_css(), unsafe_allow_html=True)
     else:
@@ -158,5 +211,5 @@ def render_look_picker() -> None:
             components.html(_WATCHER, height=0, scrolling=False)
         except Exception:
             pass
-    if value != current:
+    if value != current or bool(life_pick) != life_now:
         st.rerun()

@@ -970,6 +970,8 @@ with main_tab:
         pass
     if _chat_bg:
         from src.ui_look import is_pictorial as _is_pictorial_visit
+        from src.ui_look import show_entities as _show_life_visit
+        _life_on = _show_life_visit()
         if _is_pictorial_visit():
             # Place art is the page backdrop; figures sit on the whole viewport.
             try:
@@ -992,7 +994,7 @@ with main_tab:
                     render_pictorial_stage(
                         _chat_bg, _chat_place or info["name"], _fx, _sky, _eco_sc,
                         max_width=1600, dense=False, page_layer=True,
-                        key=f"eco_{selected}",
+                        entities=_life_on, key=f"eco_{selected}",
                     )
                 except Exception:
                     if not _bg_ok:
@@ -1011,20 +1013,24 @@ with main_tab:
             except Exception:
                 st.image(str(_chat_bg), width="stretch")
         else:
-            st.image(str(_chat_bg), width="stretch")
             try:
                 from src.world import ecosystem as _eco_ui
                 from src.world.world_state import WorldState as _WS_eco
-                from src.ui_scene_life import render_presence_chips
+                from src.ui_scene_life import render_presence_chips, render_inset_window
                 from src.ui_role import is_visitor as _is_vis_stage
                 _eco_sc = _eco_ui.scene_for_heir(_WS_eco(), selected)
+                render_inset_window(
+                    _chat_bg, _chat_place or info["name"], _eco_sc,
+                    height=300, dense=False, entities=_life_on,
+                    key=f"eco_{selected}_inset",
+                )
                 render_presence_chips(
                     _eco_sc, heir_id="" if _is_vis_stage() else selected,
                     key_prefix=f"eco_{selected}",
                     place=_chat_place or None,
                 )
             except Exception:
-                pass
+                st.image(str(_chat_bg), width="stretch")
         if _chat_place:
             st.caption(f"{info['name']} is in **{_chat_place}**.")
     hero_l, hero_r = st.columns([1, 3], gap="large")

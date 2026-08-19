@@ -34,15 +34,17 @@ def render_guide(manager, characters):
         "- **Visit an Heir** — talk with one of the thirteen. Pick them on the left. "
         "The picture is their city; **touch a figure on the art** (or a name, in Classic look) to notice a chimera, a stall, a well…\n"
         "- **Walk the Land** — stand in a region with **no conversation**. "
-        "The region art fills the page (Pictures look) or sits inset with named buttons (Classic look).\n"
+        "The region art fills the page (Pictures look) or sits in a small weather window (Classic look).\n"
         "- **A Chronicle of Amphoreus** — the Gazette: sky, news, moods, mailbox.\n"
         "- **Map of Amphoreus** — geography. Click a place or Heir.\n"
         "- **Galgame** — the same talk as a visual novel.\n"
         "- **How to use** — this page.\n"
         "- **Control Panel / World status** — how you play (operator) or how the world stands (guest).\n\n"
         "Left sidebar **Land look** switches Pictures on the land ↔ Classic (inset + names). "
-        "Classic keeps the inset picture and presence names; it does not add weather overlays, "
-        "grass/rain layers, or full-page figures.\n"
+        "Pictures: the area art fills the page. Classic: a small rounded weather window "
+        "(sky overlays included) and named buttons — not a stretched full-width photo.\n"
+        "The **Life on the land** switch paints chimera, grass, stalls, and the rest onto "
+        "that picture (on), or leaves the place only, with presence as names you can touch (off).\n"
         "The same list is also the Streamlit page nav (Visit / Walk the Land / Control Panel)."
     ))
 
@@ -58,8 +60,8 @@ def render_guide(manager, characters):
     ))
 
     _section("Clicking the land", (
-        "On **Visit** and **Walk the Land**, the area picture fills the page. "
-        "Living presence is drawn as figures on that art — a chimera (it howls **Awoo**), "
+        "On **Visit** and **Walk the Land**, living presence is drawn as figures on the "
+        "area picture when **Life on the land** is on — a chimera (it howls **Awoo**), "
         "a passerby, a well, a shrine, a stall, a forge, a fountain, wash on the line, "
         "an olive, a cicada, a hull, a mill, a kite, "
         "the Dawn Device, the Thief Star at night, a shore-pearl, a road pebble…\n\n"

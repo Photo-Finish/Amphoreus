@@ -102,22 +102,27 @@ def _render_walk_classic(
     clock: str,
     sky: str,
     key_prefix: str,
+    entities: bool = True,
 ) -> None:
-    """Inset picture + named presence. No weather layer, no full-page figures."""
+    """Small weather window + named presence. No full-page art."""
     import streamlit as st
-    from src.ui_scene_life import render_presence_chips
+    from src.ui_scene_life import render_presence_chips, render_inset_window
 
     st.title("Walk the Land")
     st.caption(
         "Stand in a region of Amphoreus — no Heir dialogue. "
-        "The picture stays inset; presence is a name you can touch."
+        "The picture is a small weather window; presence is a name you can touch."
     )
     meta = f"{clock} · **{place}** · {label}"
     if sky:
         meta += f" · {sky}"
     st.caption(meta)
     if art is not None:
-        st.image(str(art), use_container_width=True)
+        render_inset_window(
+            art, place, scene or [],
+            height=520, dense=True, entities=entities,
+            key=f"{key_prefix}_{place}_inset",
+        )
     else:
         st.warning(
             "No area artwork on disk for this region yet. "
@@ -151,7 +156,7 @@ def render_walk_page(*, key_prefix: str = "walk") -> None:
     import streamlit as st
     from src.world.world_state import WorldState
     from src.world import ecosystem as eco
-    from src.ui_look import is_pictorial
+    from src.ui_look import is_pictorial, show_entities
     from src.ui_scene_life import (
         render_pictorial_stage,
         render_focus_strip,
@@ -223,10 +228,12 @@ def render_walk_page(*, key_prefix: str = "walk") -> None:
     except Exception:
         pass
 
+    life = show_entities()
     if not is_pictorial():
         _render_walk_classic(
             label=label, place=place, art=art, scene=scene,
             clock=clock, sky=sky, key_prefix=key_prefix,
+            entities=life,
         )
         return
 
@@ -266,24 +273,26 @@ def render_walk_page(*, key_prefix: str = "walk") -> None:
             render_pictorial_stage(
                 art, place, effect, sky_fx, scene,
                 max_width=1920, read_line="", dense=True,
-                page_layer=True,
+                page_layer=True, entities=life,
                 key=f"{key_prefix}_{place}",
             )
         except Exception as e:
             st.caption(f"(land overlay fallback: {e})")
-            try:
-                st.markdown(life_overlay_html(scene, place, dense=True),
-                            unsafe_allow_html=True)
-            except Exception:
-                pass
+            if life:
+                try:
+                    st.markdown(life_overlay_html(scene, place, dense=True),
+                                unsafe_allow_html=True)
+                except Exception:
+                    pass
     if not shown:
         st.warning(
             "No area artwork on disk for this region yet. "
             "Run `python tools/fetch_galgame_backgrounds.py` "
             "(optionally `--force --width 1920`) when the wiki proxy is up."
         )
-        st.markdown(life_overlay_html(scene, place, dense=True),
-                    unsafe_allow_html=True)
+        if life:
+            st.markdown(life_overlay_html(scene, place, dense=True),
+                        unsafe_allow_html=True)
 
     render_focus_strip(
         scene,

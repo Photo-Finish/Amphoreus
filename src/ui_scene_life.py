@@ -552,6 +552,7 @@ def pictorial_stage_html(
     read_line: str = "",
     dense: bool = True,
     page_layer: bool = False,
+    entities: bool = True,
 ) -> str:
     """Weather + ambient + clickable sprites.
 
@@ -566,7 +567,7 @@ def pictorial_stage_html(
         if not uri:
             return ""
 
-    ambient = life_overlay_html(scene, place, dense=dense)
+    ambient = life_overlay_html(scene, place, dense=dense) if entities else ""
     # Cap on-stage figures so the art stays readable (full list lives in eco).
     _PRIORITY = (
         "chimera", "dromas", "hearth_cat", "resident",
@@ -577,7 +578,8 @@ def pictorial_stage_html(
     )
     clickable = [
         b for b in (scene or [])
-        if b.get("clickable") and b.get("id")
+        if entities
+        and b.get("clickable") and b.get("id")
         and str(b.get("kind") or "") not in _AMBIENT_STAGE
     ]
     ranked = sorted(
@@ -639,13 +641,17 @@ def pictorial_stage_html(
         )
         art_div = ""
     else:
+        from src.ui_weather import ground_css_position
+        pos = ground_css_position(image_path) if image_path else "center 62%"
         shell = (
+            '<style>html,body{margin:0;padding:0;background:transparent;}</style>'
             f'<div id="amp-pict-stage" style="position:relative;height:{height}px;'
-            f'overflow:hidden;border:none;border-radius:0;background:#0a0814;">'
+            f'overflow:hidden;border:1px solid rgba(232,213,163,.16);'
+            f'border-radius:14px;background:#0a0814;">'
         )
         art_div = (
             f'<div style="position:absolute;inset:0;background-image:url(\'{uri}\');'
-            f'background-size:cover;background-position:center 62%;"></div>'
+            f'background-size:cover;background-position:{pos};"></div>'
         )
 
     pin_js = ""
@@ -724,6 +730,7 @@ def render_pictorial_stage(
     read_line: str = "",
     dense: bool = True,
     page_layer: bool = True,
+    entities: bool = True,
     key: str = "pict",
 ) -> bool:
     """Render the land overlay. ``page_layer`` pins figures to the viewport."""
@@ -732,13 +739,48 @@ def render_pictorial_stage(
     html = pictorial_stage_html(
         image_path, place, effect, sky, scene,
         height=height, max_width=max_width, read_line=read_line,
-        dense=dense, page_layer=page_layer,
+        dense=dense, page_layer=page_layer, entities=entities,
     )
     if not html:
         return False
     slot = 1 if page_layer else height + 8
     components_html(html, height=slot, scrolling=False)
     return True
+
+
+def render_inset_window(
+    image_path,
+    place: str,
+    scene: List[dict],
+    *,
+    height: int = 300,
+    dense: bool = False,
+    entities: bool = True,
+    key: str = "inset",
+) -> None:
+    """The pre-pictorial weather card — a small backdrop window, not full-bleed."""
+    import streamlit as st
+    from src.ui_weather import scene_html, effect_for
+
+    if not image_path:
+        return
+    effect, sky = effect_for(place)
+    if entities:
+        ok = render_pictorial_stage(
+            image_path, place, effect, sky, scene or [],
+            height=height, dense=dense, page_layer=False,
+            entities=True, key=key,
+        )
+        if ok:
+            return
+    html = scene_html(
+        image_path, place or "Amphoreus", effect, sky,
+        height=height, rounded=True,
+    )
+    if html:
+        st.markdown(html, unsafe_allow_html=True)
+    else:
+        st.image(str(image_path), use_container_width=True)
 
 
 def _do_notice(*, oid: str, heir_id: str, place: Optional[str],
