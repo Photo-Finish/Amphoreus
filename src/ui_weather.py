@@ -368,7 +368,8 @@ def ground_css_position(image_path) -> str:
     """Pin the backdrop onto pavement / path, not the sky."""
     p = Path(image_path) if image_path else None
     if p and p.parent.name == "ground":
-        return "center 62%"
+        # Already cropped to the floor — further 62% shift zooms into pavement.
+        return "center center"
     slug = backdrop_slug(image_path)
     return {
         "okhema": "18% 88%",
@@ -431,10 +432,13 @@ def read_palette(image_path) -> dict:
 
 
 def page_backdrop_css(image_path, max_width=1920) -> str:
-    """CSS that paints the region art behind the whole Streamlit page.
+    """CSS that paints ground-framed region art on the land plane.
 
-    ``cover`` plus a ground-framed JPEG (``src.ui_ground``) keep pavement,
-    paths, and terraces in the viewport instead of the cinematic sky.
+    Art lives on a ``position:fixed`` layer from ``--amp-land-top`` to the
+    bottom of the viewport — the same rectangle as the pictorial iframe —
+    with uniform ``cover``. Painting ``cover`` + ``background-attachment:
+    fixed`` on the whole ``stAppViewContainer`` sized the JPEG to the full
+    viewport (chrome included), which zoomed wide ground-crops.
     """
     uri = _data_uri_jpeg(image_path, max_width=max_width)
     if not uri:
@@ -443,32 +447,22 @@ def page_backdrop_css(image_path, max_width=1920) -> str:
     pos = ground_css_position(image_path)
     return f"""
 <style>
+html {{ --amp-land-top: 8.5rem; }}
 .stApp {{ background: transparent !important; }}
 [data-testid="stAppViewContainer"] {{
-  background-image: url('{uri}') !important;
-  background-size: cover !important;
-  background-repeat: no-repeat !important;
-  background-position: {pos} !important;
-  background-attachment: fixed !important;
+  background-image: none !important;
   background-color: #0a0814 !important;
-}}
-@media (min-aspect-ratio: 16/9) {{
-  [data-testid="stAppViewContainer"] {{
-    background-position: {pos} !important;
-  }}
-}}
-@media (max-aspect-ratio: 3/4) {{
-  [data-testid="stAppViewContainer"] {{
-    background-position: center 70% !important;
-  }}
 }}
 [data-testid="stAppViewContainer"]::before {{
   content: "";
   position: fixed;
-  inset: 0;
+  inset: var(--amp-land-top, 8.5rem) 0 0 0;
   z-index: 0;
   pointer-events: none;
-  background: {pal["scrim"]};
+  background-image: {pal["scrim"]}, url('{uri}');
+  background-size: auto, cover;
+  background-repeat: no-repeat, no-repeat;
+  background-position: 0 0, {pos};
 }}
 [data-testid="stHeader"] {{
   background: rgba(10,8,20,.28) !important;
@@ -661,13 +655,15 @@ html.amp-land-off .block-container {{
 
 def scene_html(image_path, place, effect, sky, height=300, rounded=True,
                max_width=1280, full_bleed=False, *,
-               box_max=None, aspect=None):
+               box_max=None, aspect=None, full_width=False):
     """Full HTML for a location scene: art + weather overlay + place tag.
 
     ``full_bleed=True`` drops the rounded card frame so the art can read as
     the stage plane (used under pictorial hotspots / Walk the Land).
     ``aspect`` (e.g. ``"16 / 9"``) sizes a centered card from width instead
     of a fixed pixel height, so a wide layout does not squash the picture.
+    ``full_width=True`` spans the column at a fixed ``height`` (Classic
+    inset: wide but not taller).
     """
     uri = _data_uri_jpeg(image_path, max_width=max_width)
     if not uri:
@@ -679,7 +675,13 @@ def scene_html(image_path, place, effect, sky, height=300, rounded=True,
     else:
         radius = "border-radius:14px;" if rounded else "border-radius:0;"
         border = "border:1px solid rgba(232,213,163,.16);"
-    if aspect:
+    if full_width:
+        box = (
+            f"position:relative;width:100%;height:{int(height)}px;"
+            f"max-width:none;margin:0;{radius}{border}overflow:hidden;"
+        )
+        pos = "center center"
+    elif aspect:
         cap = f"max-width:{int(box_max)}px;" if box_max else ""
         box = (
             f"position:relative;width:100%;{cap}margin:0 auto;"

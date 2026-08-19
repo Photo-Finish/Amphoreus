@@ -555,6 +555,7 @@ def pictorial_stage_html(
     page_layer: bool = False,
     entities: bool = True,
     inset_max_width: int = 960,
+    inset_height: int = 0,
 ) -> str:
     """Weather + ambient + clickable sprites.
 
@@ -644,7 +645,6 @@ def pictorial_stage_html(
         art_div = ""
     else:
         pos = "center center"
-        cap = max(320, int(inset_max_width or 960))
         shell = (
             '<style>html,body{margin:0;padding:0;width:100%;height:100%;'
             'background:transparent;overflow:hidden;}'
@@ -707,22 +707,38 @@ def pictorial_stage_html(
             "  } catch (e) {}\n"
         )
     else:
-        cap = max(320, int(inset_max_width or 960))
+        cap = int(inset_max_width or 0)
+        fixed_h = max(120, int(inset_height or 405))
         pin_js = (
             f"  var maxW = {cap};\n"
+            f"  var fixedH = {fixed_h};\n"
             "  var f = window.frameElement;\n"
             "  function fit(){\n"
             "    if (!f) return;\n"
             "    f.removeAttribute('width'); f.removeAttribute('height');\n"
-            "    var p = f.parentElement;\n"
-            "    var avail = (p && p.clientWidth) ? p.clientWidth : maxW;\n"
-            "    var w = Math.max(240, Math.min(maxW, avail));\n"
-            "    var h = Math.round(w * 9 / 16);\n"
+            "    var doc = window.parent.document;\n"
+            "    var sb = doc.querySelector('[data-testid=\"stSidebar\"]');\n"
+            "    var sbr = sb ? sb.getBoundingClientRect() : null;\n"
+            "    var left = (sbr && sbr.width > 40 && sbr.right > 0)\n"
+            "      ? Math.round(sbr.right) : 0;\n"
+            "    var avail = Math.max(240, Math.round(window.parent.innerWidth - left));\n"
+            "    var w = (maxW > 0) ? Math.min(maxW, avail) : avail;\n"
+            "    var h = fixedH;\n"
             "    f.style.cssText = 'width:'+w+'px;height:'+h+'px;border:0;"
-            "display:block;margin:0 auto;overflow:hidden;max-width:100%;';\n"
+            "display:block;margin:0;overflow:hidden;max-width:none;';\n"
+            "    var p = f.parentElement;\n"
             "    if (p) {\n"
-            "      p.style.cssText = 'width:100%;height:'+h+'px;text-align:center;"
-            "overflow:visible;margin:0 auto;padding:0;';\n"
+            "      p.style.marginLeft = '0px';\n"
+            "      p.style.width = 'auto';\n"
+            "      var pr = p.getBoundingClientRect();\n"
+            "      var shift = Math.round(left - pr.left);\n"
+            "      p.style.cssText = 'width:'+w+'px;height:'+h+'px;text-align:left;"
+            "overflow:visible;margin:0 0 0 '+shift+'px;padding:0;max-width:none;';\n"
+            "      var g = p.parentElement;\n"
+            "      if (g) {\n"
+            "        g.style.overflow = 'visible';\n"
+            "        g.style.maxWidth = 'none';\n"
+            "      }\n"
             "    }\n"
             "  }\n"
             "  fit();\n"
@@ -787,6 +803,7 @@ def render_pictorial_stage(
     page_layer: bool = True,
     entities: bool = True,
     inset_max_width: int = 960,
+    inset_height: int = 0,
     key: str = "pict",
 ) -> bool:
     """Render the land overlay. ``page_layer`` pins figures to the viewport."""
@@ -796,17 +813,20 @@ def render_pictorial_stage(
         image_path, place, effect, sky, scene,
         height=height, max_width=max_width, read_line=read_line,
         dense=dense, page_layer=page_layer, entities=entities,
-        inset_max_width=inset_max_width,
+        inset_max_width=inset_max_width, inset_height=inset_height,
     )
     if not html:
         return False
     if page_layer:
         slot = 1
     else:
-        cap = max(320, int(inset_max_width or 960))
-        slot = max(height, int(round(cap * 9 / 16)) + 8)
+        slot = max(120, int(inset_height or height or 405))
     components_html(html, height=slot, scrolling=False)
     return True
+
+
+# 16:9 height at the old Visit cap (720px). Width may grow; height does not.
+CLASSIC_WINDOW_HEIGHT = 405
 
 
 def render_inset_window(
@@ -814,13 +834,13 @@ def render_inset_window(
     place: str,
     scene: List[dict],
     *,
-    height: int = 300,
+    height: int = 0,
     dense: bool = False,
     entities: bool = True,
-    box_max: int = 960,
+    box_max: int = 0,
     key: str = "inset",
 ) -> None:
-    """The pre-pictorial weather card — a 16:9 backdrop window, not full-bleed."""
+    """Classic place window: full main-pane width, fixed height, not full-bleed."""
     import streamlit as st
     from src.ui_weather import scene_html, effect_for
 
@@ -831,20 +851,19 @@ def render_inset_window(
         image_path = postcard_art_path(image_path) or image_path
     except Exception:
         pass
-    cap = max(320, int(box_max or 960))
+    win_h = max(120, int(height or CLASSIC_WINDOW_HEIGHT))
     effect, sky = effect_for(place)
-    if entities:
-        ok = render_pictorial_stage(
-            image_path, place, effect, sky, scene or [],
-            height=int(round(cap * 9 / 16)), dense=dense, page_layer=False,
-            entities=True, inset_max_width=cap, key=key,
-        )
-        if ok:
-            return
+    ok = render_pictorial_stage(
+        image_path, place, effect, sky, scene or [],
+        height=win_h, dense=dense, page_layer=False,
+        entities=entities, inset_max_width=int(box_max or 0),
+        inset_height=win_h, key=key,
+    )
+    if ok:
+        return
     html = scene_html(
         image_path, place or "Amphoreus", effect, sky,
-        height=height, rounded=True,
-        box_max=cap, aspect="16 / 9",
+        height=win_h, rounded=True, full_width=True,
     )
     if html:
         st.markdown(html, unsafe_allow_html=True)

@@ -1037,7 +1037,7 @@ with main_tab:
                 from src.ui_role import is_visitor as _is_vis_stage
                 render_inset_window(
                     _inset_art, _chat_place or info["name"], _eco_sc,
-                    dense=False, entities=_life_on, box_max=720,
+                    dense=False, entities=_life_on,
                     key=f"eco_{selected}_inset",
                 )
                 render_presence_chips(

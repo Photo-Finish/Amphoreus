@@ -183,7 +183,7 @@ def render_look_picker() -> None:
             horizontal=True,
             help=(
                 "Pictures on the land: the area art fills the page. "
-                "Classic: a 16:9 weather window on a solid page — no full-page art. "
+                "Classic: a wide weather window on a solid page — no full-page art. "
                 "Named Presence only while Life on the land is on."
             ),
         )

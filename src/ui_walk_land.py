@@ -120,7 +120,7 @@ def _render_walk_classic(
     if art is not None:
         render_inset_window(
             art, place, scene or [],
-            dense=True, entities=entities, box_max=960,
+            dense=True, entities=entities,
             key=f"{key_prefix}_{place}_inset",
         )
     else:
