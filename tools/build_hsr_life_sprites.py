@@ -75,6 +75,56 @@ def _white_flood(im: Image.Image, white_min: int = 220, thresh: int = 28) -> Ima
     return out
 
 
+def _dark_flood(im: Image.Image, dark_max: int = 48, thresh: int = 36) -> Image.Image:
+    rgb = im.convert("RGB")
+    w, h = rgb.size
+    px = rgb.load()
+    vis = [[False] * w for _ in range(h)]
+    q: deque[tuple[int, int]] = deque()
+
+    def is_dark(c) -> bool:
+        return c[0] <= dark_max and c[1] <= dark_max and c[2] <= dark_max
+
+    def seed(x: int, y: int) -> None:
+        if 0 <= x < w and 0 <= y < h and not vis[y][x] and is_dark(px[x, y]):
+            vis[y][x] = True
+            q.append((x, y))
+
+    for x in range(w):
+        seed(x, 0)
+        seed(x, h - 1)
+    for y in range(h):
+        seed(0, y)
+        seed(w - 1, y)
+
+    def near(a, b) -> bool:
+        return abs(a[0] - b[0]) + abs(a[1] - b[1]) + abs(a[2] - b[2]) <= thresh
+
+    while q:
+        x, y = q.popleft()
+        c = px[x, y]
+        for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+            if (
+                0 <= nx < w
+                and 0 <= ny < h
+                and not vis[ny][nx]
+                and is_dark(px[nx, ny])
+                and near(c, px[nx, ny])
+            ):
+                vis[ny][nx] = True
+                q.append((nx, ny))
+
+    mask = Image.new("L", (w, h))
+    md = mask.load()
+    for y in range(h):
+        for x in range(w):
+            md[x, y] = 0 if vis[y][x] else 255
+    mask = mask.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(3))
+    out = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    out.paste(im.convert("RGBA"), mask=mask)
+    return out
+
+
 def _drop_islands(im: Image.Image, keep_frac: float = 0.05) -> Image.Image:
     w, h = im.size
     px = im.load()
@@ -197,6 +247,37 @@ def build_kind(name: str) -> None:
     _film(frames, OUT / f"{name}_film.png")
 
 
+def pack_pet_films() -> None:
+    """Key generated pet poses into 4-frame reaction strips."""
+    gen = Path(r"C:\Users\17501\.cursor\projects\d-Workspace-Amphoreus\assets")
+    pet_src = SRC / "pet"
+    pet_src.mkdir(parents=True, exist_ok=True)
+    jobs = (
+        ("chimera", 184),
+        ("dromas", 184),
+        ("hearth_cat", 256),
+    )
+    for name, cell in jobs:
+        frames: list[Image.Image] = []
+        for i in range(1, 5):
+            src = gen / f"{name}_pet_f{i}.png"
+            if not src.is_file():
+                src = pet_src / f"{name}_pet_f{i}.png"
+            if not src.is_file():
+                raise FileNotFoundError(f"missing pet frame: {name} f{i}")
+            raw = Image.open(src)
+            raw.save(pet_src / f"{name}_pet_f{i}.png")
+            fr = _fit_cell(_drop_islands(_dark_flood(raw)), cell=cell)
+            frames.append(fr)
+            fr.save(OUT / f"{name}_pet_f{i}.png")
+        strip = Image.new("RGBA", (cell * len(frames), cell), (0, 0, 0, 0))
+        for i, fr in enumerate(frames):
+            strip.paste(fr, (i * cell, 0), fr)
+        dest = OUT / f"{name}_pet_film.png"
+        strip.save(dest)
+        print("wrote", dest.name, strip.size)
+
+
 def main() -> None:
     if not WALK.is_dir():
         raise FileNotFoundError(f"missing walk frame dir: {WALK}")
@@ -206,4 +287,8 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if "pet" in sys.argv:
+        pack_pet_films()
+    else:
+        main()

@@ -216,6 +216,33 @@ if cat:
 else:
     check("pet square cat", False, "no cat at night")
 
+drom = next((b for b in sc_o if b["kind"] == "dromas"), None)
+if drom:
+    pet_d = eco.visitor_touch(ws_o, drom["id"], "pet", place="Okhema", save=False)
+    check("pet dromas", pet_d.get("ok") is True, str(pet_d))
+    acts = eco.visitor_acts_for("dromas")
+    check("dromas has pet act", "pet" in acts, str(acts))
+else:
+    check("pet dromas", False, "no dromas")
+
+print("== Trade caravan ==")
+found = False
+for per in (2, 3):
+    for month in (4, 9, 1):
+        ws_c = mk(per, "Okhema", month=month)
+        sc_c = eco.derive_scene(ws_c, place="Okhema")
+        mounts = [b for b in sc_c if b.get("kind") == "dromas" and b.get("caravan_id")]
+        if mounts:
+            cid = mounts[0]["caravan_id"]
+            mates = [b for b in sc_c if b.get("caravan_id") == cid and b.get("kind") != "dromas"]
+            check("caravan has dromas + people", bool(mates), f"mates={len(mates)}")
+            found = True
+            break
+    if found:
+        break
+if not found:
+    check("caravan has dromas + people", False, "no caravan hour in sample")
+
 ws_k = mk(2, "Castrum Kremnos")
 sc_k = eco.derive_scene(ws_k, place="Castrum Kremnos")
 kk = {b["kind"] for b in sc_k}

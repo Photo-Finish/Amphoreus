@@ -258,6 +258,44 @@ _ROAMER_DUR = {
     "resident": (10, 17),
     "cicada": (7, 12),
 }
+# Display height on the full pictorial stage. Resident is human scale.
+# Little chimera is a mascot you could pick up; dromas is a ridden earth-beast.
+_SPRITE_CELL: Dict[str, int] = {
+    "pebble": 22,
+    "pearl": 26,
+    "cicada": 30,
+    "courier": 36,
+    "incense": 40,
+    "kite": 46,
+    "hearth_cat": 50,
+    "chimera": 56,
+    "laundry": 54,
+    "net": 58,
+    "banner": 62,
+    "tidepool": 52,
+    "siren": 68,
+    "well": 74,
+    "fountain": 82,
+    "shrine": 88,
+    "resident": 104,
+    "market_stall": 120,
+    "forge": 128,
+    "mill": 144,
+    "boat": 148,
+    "olive": 152,
+    "pillar": 160,
+    "gate": 172,
+    "dromas": 220,
+}
+_INSET_CELL_SCALE = 58 / 92
+
+
+def _sprite_cell_px(kind: str, *, page_layer: bool) -> int:
+    """Per-kind stage height so a chimera is not the size of a well or a dromas."""
+    base = int(_SPRITE_CELL.get(kind, 92))
+    if page_layer:
+        return base
+    return max(18, round(base * _INSET_CELL_SCALE))
 
 
 def _sprite_facing_class(kind: str) -> str:
@@ -324,6 +362,12 @@ _FILM_DUR = {
     "courier": "0.42s",
     "kite": "1.7s",
 }
+_PET_FILM_DUR = {
+    "chimera": "0.72s",
+    "hearth_cat": "0.95s",
+    "dromas": "1.15s",
+}
+_PET_KINDS = frozenset({"chimera", "hearth_cat", "dromas"})
 
 
 @lru_cache(maxsize=64)
@@ -340,6 +384,16 @@ def sprite_png_uri(kind: str) -> str:
 def sprite_film_uri(kind: str) -> str:
     """data-URI for a 4-frame motion strip, or ''."""
     p = _SPRITE_DIR / f"{kind}_film.png"
+    if not p.is_file():
+        return ""
+    import base64
+    return "data:image/png;base64," + base64.b64encode(p.read_bytes()).decode("ascii")
+
+
+@lru_cache(maxsize=32)
+def sprite_pet_film_uri(kind: str) -> str:
+    """data-URI for a 4-frame pet reaction strip, or ''."""
+    p = _SPRITE_DIR / f"{kind}_pet_film.png"
     if not p.is_file():
         return ""
     import base64
@@ -378,7 +432,8 @@ _ACT_GLYPH: Dict[str, str] = {
     "drink": "○ drink",
     "touch_air": "≈ air",
     "pet_cat": "◠ pet",
-    "scratch_ear": "◠ ear",
+    "scratch_ear": "◠ pet",
+    "pet": "◠ pet",
     "greet_dromas": "⌒ greet",
     "soak": "≈ soak",
     "look_up": "☆ look",
@@ -433,7 +488,7 @@ def _notice_acts(kind: str) -> List[dict]:
         out.append({
             "id": aid,
             "glyph": _ACT_GLYPH.get(aid, aid.replace("_", " ")),
-            "note": spec.get("note") or "",
+            "note": (spec.get("notes") or {}).get(kind) or spec.get("note") or "",
         })
     return out
 
@@ -506,7 +561,8 @@ def _css() -> str:
   --amp-cell: 92px;
   position: absolute;
   width: var(--amp-cell); height: var(--amp-cell);
-  margin-left: calc(var(--amp-cell) / -2); margin-bottom: -12px;
+  margin-left: calc(var(--amp-cell) / -2);
+  margin-bottom: calc(var(--amp-cell) * -0.12);
   padding: 0; border: none; background: transparent;
   cursor: pointer; z-index: 8;
   animation: none;
@@ -587,6 +643,10 @@ def _css() -> str:
 @keyframes amp-film {
   to { background-position: calc(var(--amp-frames, 4) * var(--amp-cell, 92px) * -1) 0; }
 }
+@keyframes amp-film-pet {
+  from { background-position: 0 0; }
+  to { background-position: calc(var(--amp-frames, 4) * var(--amp-cell, 92px) * -1) 0; }
+}
 .amp-life-layer { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
 .amp-sprite::after {
   content: "";
@@ -608,7 +668,14 @@ def _css() -> str:
   filter: drop-shadow(0 2px 5px rgba(0,0,0,.55));
   animation: amp-film var(--amp-film-dur, .8s) steps(var(--amp-frames, 4)) infinite;
 }
-.amp-pict-inset .amp-sprite { --amp-cell: 58px; }
+.amp-sprite.petting,
+.amp-sprite.petting.amp-roamer.crossing {
+  animation-play-state: paused !important;
+}
+.amp-sprite.petting .amp-sprite-film {
+  background-image: var(--amp-pet-film) !important;
+  animation: amp-film-pet var(--amp-pet-dur, 0.9s) steps(var(--amp-frames, 4)) 2;
+}
 .amp-sprite:hover { filter: drop-shadow(0 0 14px rgba(240,230,200,.85)); }
 .amp-sprite.mobile:hover { animation-play-state: paused; }
 .amp-sprite.mobile.face-r:hover .amp-sprite-body,
@@ -630,6 +697,10 @@ def _css() -> str:
 }
 .amp-sprite.amp-roamer.crossing .amp-sprite-film {
   animation: amp-film var(--amp-film-dur, .8s) steps(var(--amp-frames, 4)) infinite;
+}
+.amp-sprite.petting.amp-roamer.crossing .amp-sprite-film {
+  background-image: var(--amp-pet-film) !important;
+  animation: amp-film-pet var(--amp-pet-dur, 0.9s) steps(var(--amp-frames, 4)) 2;
 }
 @keyframes amp-roamer-cross {
   0% { transform: translateX(var(--amp-cross-from)); opacity: 0; }
@@ -747,11 +818,13 @@ def _sprite_button_html(
         if motion == " mobile" and not roamer else ""
     )
     roamer_cls = " amp-roamer" if roamer else ""
+    cell = _sprite_cell_px(kind, page_layer=page_layer)
+    z = 8 + cell // 40
     return (
         f'<button type="button" class="amp-sprite{motion}{facing}{ailing}{sky}{roamer_cls}" '
-        f'data-oid="{oid}" '
+        f'data-oid="{oid}" data-kind="{_html.escape(kind, quote=True)}" '
         f'title="{title}" aria-label="{title}" '
-        f'style="left:{left};bottom:{bottom};{roam}">'
+        f'style="left:{left};bottom:{bottom};--amp-cell:{cell}px;z-index:{z};{roam}">'
         f'<span class="amp-sprite-halo"></span>'
             f'<span class="amp-sprite-body">{_sprite_markup(kind, mobile=(motion == " mobile"))}</span>'
         f"</button>"
@@ -777,10 +850,42 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
             "ailing": b.get("status") == "ailing",
             "bottom": bottom,
             "dur": _roamer_cross_secs(kind, oid),
+            "cell": _sprite_cell_px(kind, page_layer=page_layer),
             "body": _sprite_markup(kind),
             "face": _SPRITE_FACING.get(kind, "right"),
             "notice": _notice_entry(b),
+            "caravanId": str(b.get("caravan_id") or ""),
+            "caravanRole": str(b.get("caravan_role") or ""),
+            "caravanMate": False,
+            "mates": [],
         })
+    by_cid: Dict[str, List[dict]] = {}
+    for row in pool:
+        cid = row.get("caravanId") or ""
+        if cid:
+            by_cid.setdefault(cid, []).append(row)
+    for members in by_cid.values():
+        mounts = [m for m in members if m.get("kind") == "dromas"]
+        mates = [m for m in members if m.get("kind") != "dromas"]
+        if not mounts or not mates:
+            continue
+        mount = mounts[0]
+        packed = []
+        for i, mate in enumerate(mates[:2]):
+            mate["caravanMate"] = True
+            packed.append({
+                "oid": mate["oid"],
+                "kind": mate["kind"],
+                "name": mate["name"],
+                "ailing": mate["ailing"],
+                "bottom": mate["bottom"],
+                "cell": mate["cell"],
+                "body": mate["body"],
+                "face": mate["face"],
+                "notice": mate["notice"],
+                "offsetPct": -5.6 if i == 0 else -9.4,
+            })
+        mount["mates"] = packed
     return pool
 
 
@@ -811,28 +916,22 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
       return parseFloat(v) || 92;
     }}
     function pick() {{
-      var avail = pool.filter(function(p) {{ return !busy[p.oid]; }});
+      var avail = pool.filter(function(p) {{ return !busy[p.oid] && !p.caravanMate; }});
       if (!avail.length) {{
         busy = {{}};
-        avail = pool.slice();
+        avail = pool.filter(function(p) {{ return !p.caravanMate; }});
+        if (!avail.length) avail = pool.slice();
       }}
       return avail[Math.floor(Math.random() * avail.length)];
     }}
-    function spawn(force) {{
-      if (active >= maxActive) return;
-      if (!force && Math.random() > spawnProb) return;
-      var ent = pick();
-      if (!ent) return;
-      busy[ent.oid] = true;
-      active += 1;
-
-      var w = stageW();
-      var cell = cellPx();
+    function mountSprite(ent, opts) {{
+      var w = opts.w;
+      var cell = ent.cell || cellPx();
       var margin = cell * 0.75;
-      var anchorPct = 12 + Math.random() * 76;
-      var anchorPx = w * anchorPct / 100;
-      var fromLeft = Math.random() < 0.5;
-      var goRight = fromLeft;
+      var anchorPct = opts.anchorPct + (ent.offsetPct || 0);
+      var fromPx = opts.fromPx;
+      var toPx = opts.toPx;
+      var goRight = opts.goRight;
       var nativeRight = (ent.face || 'right') !== 'left';
       var keepNative = (goRight === nativeRight);
       var btn = document.createElement('button');
@@ -841,34 +940,77 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
         + (ent.ailing ? ' ailing' : '')
         + (keepNative ? ' face-r' : ' face-l');
       btn.setAttribute('data-oid', ent.oid);
+      btn.setAttribute('data-kind', ent.kind || '');
       btn.setAttribute('title', ent.name);
       btn.setAttribute('aria-label', ent.name);
       if (ent.notice && typeof book !== 'undefined') book[ent.oid] = ent.notice;
       btn.style.left = anchorPct + '%';
       btn.style.bottom = ent.bottom;
-      if (fromLeft) {{
-        btn.style.setProperty('--amp-cross-from', (-anchorPx - margin) + 'px');
-        btn.style.setProperty('--amp-cross-to', (w - anchorPx + margin) + 'px');
-      }} else {{
-        btn.style.setProperty('--amp-cross-from', (w - anchorPx + margin) + 'px');
-        btn.style.setProperty('--amp-cross-to', (-anchorPx - margin) + 'px');
-      }}
-      btn.style.setProperty('--amp-cross-dur', (ent.dur || 14) + 's');
+      btn.style.setProperty('--amp-cell', cell + 'px');
+      btn.style.zIndex = String(8 + Math.floor(cell / 40));
+      btn.style.setProperty('--amp-cross-from', fromPx + 'px');
+      btn.style.setProperty('--amp-cross-to', toPx + 'px');
+      btn.style.setProperty('--amp-cross-dur', (opts.dur || ent.dur || 14) + 's');
       btn.innerHTML = '<span class="amp-sprite-halo"></span>'
         + '<span class="amp-sprite-body">' + ent.body + '</span>';
       root.appendChild(btn);
       requestAnimationFrame(function() {{ btn.classList.add('crossing'); }});
-
-      function done() {{
+      btn.addEventListener('animationend', function done(ev) {{
+        if (ev.target !== btn) return;
         btn.removeEventListener('animationend', done);
         if (btn.parentNode) btn.parentNode.removeChild(btn);
         delete busy[ent.oid];
         active = Math.max(0, active - 1);
-        if (Math.random() < spawnProb) {{
+        if (opts.onDone) opts.onDone();
+      }});
+      return btn;
+    }}
+    function spawn(force) {{
+      if (active >= maxActive) return;
+      if (!force && Math.random() > spawnProb) return;
+      var ent = pick();
+      if (!ent) return;
+      var mates = (ent.mates && ent.mates.length && Math.random() < 0.62) ? ent.mates : [];
+      if (active + 1 + mates.length > maxActive + 2) mates = [];
+      busy[ent.oid] = true;
+      mates.forEach(function(m) {{ busy[m.oid] = true; }});
+      active += 1 + mates.length;
+
+      var w = stageW();
+      var cell = ent.cell || cellPx();
+      var margin = cell * 0.75;
+      var anchorPct = 18 + Math.random() * 64;
+      var anchorPx = w * anchorPct / 100;
+      var fromLeft = Math.random() < 0.5;
+      var goRight = fromLeft;
+      var fromPx, toPx;
+      if (fromLeft) {{
+        fromPx = -anchorPx - margin;
+        toPx = w - anchorPx + margin;
+      }} else {{
+        fromPx = w - anchorPx + margin;
+        toPx = -anchorPx - margin;
+      }}
+      var dur = mates.length ? Math.max(ent.dur || 16, 18) : (ent.dur || 14);
+      var finished = 0;
+      var total = 1 + mates.length;
+      function oneDone() {{
+        finished += 1;
+        if (finished >= total && Math.random() < spawnProb) {{
           setTimeout(function() {{ spawn(false); }}, rand(400, 2800));
         }}
       }}
-      btn.addEventListener('animationend', done);
+      var dirMates = mates.map(function(m) {{
+        var copy = {{}};
+        Object.keys(m).forEach(function(k) {{ copy[k] = m[k]; }});
+        var off = m.offsetPct || -5.6;
+        copy.offsetPct = fromLeft ? off : -off;
+        return copy;
+      }});
+      mountSprite(ent, {{w:w, anchorPct:anchorPct, fromPx:fromPx, toPx:toPx, goRight:goRight, dur:dur, onDone:oneDone}});
+      dirMates.forEach(function(m) {{
+        mountSprite(m, {{w:w, anchorPct:anchorPct, fromPx:fromPx, toPx:toPx, goRight:goRight, dur:dur, onDone:oneDone}});
+      }});
     }}
 
     function tick() {{
@@ -1002,7 +1144,7 @@ def pictorial_stage_html(
     )
     max_sprites = 10 if dense else 7
     roamer_pool = _roamer_pool(clickable, page_layer=page_layer) if entities else []
-    max_roamers = 3 if dense else 2
+    max_roamers = 4 if dense else 3
     notice_book = {
         str(b.get("id")): _notice_entry(b)
         for b in clickable
@@ -1054,7 +1196,7 @@ def pictorial_stage_html(
         shell = (
             '<style>html,body{margin:0;padding:0;width:100%;height:100%;'
             'background:transparent;overflow:hidden;}'
-            '.amp-pict-inset .amp-sprite{--amp-cell:58px;}</style>'
+            '</style>'
             '<div id="amp-pict-stage" class="amp-pict-inset" '
             'style="position:relative;width:100%;height:100%;'
             'overflow:hidden;border:1px solid rgba(232,213,163,.16);'
@@ -1145,6 +1287,16 @@ def pictorial_stage_html(
         + json.dumps(notice_book, ensure_ascii=False)
         + "</script>"
     )
+    pet_book = {
+        kind: sprite_pet_film_uri(kind)
+        for kind in _PET_KINDS
+        if sprite_pet_film_uri(kind)
+    }
+    pet_json = (
+        '<script type="application/json" id="amp-pet-films">'
+        + json.dumps(pet_book, ensure_ascii=False)
+        + "</script>"
+    )
     notice_ui = (
         '<div id="amp-notice" class="amp-notice" hidden>'
         '<div class="amp-notice-card">'
@@ -1165,6 +1317,7 @@ def pictorial_stage_html(
         f"{notice_ui}"
         f"{roamer_json}"
         f"{notice_json}"
+        f"{pet_json}"
         f"</div>"
         "<script>\n"
         "(function(){\n"
@@ -1176,11 +1329,38 @@ def pictorial_stage_html(
         "    var nb = document.getElementById('amp-notice-book');\n"
         "    book = JSON.parse((nb && nb.textContent) || '{}');\n"
         "  } catch (e) { book = {}; }\n"
+        "  var petFilms = {};\n"
+        "  var petDur = {chimera:'0.72s', hearth_cat:'0.95s', dromas:'1.15s'};\n"
+        "  try {\n"
+        "    var pf = document.getElementById('amp-pet-films');\n"
+        "    petFilms = JSON.parse((pf && pf.textContent) || '{}');\n"
+        "  } catch (e) { petFilms = {}; }\n"
         "  var card = document.getElementById('amp-notice');\n"
         "  var nameEl = card ? card.querySelector('.amp-notice-name') : null;\n"
         "  var lineEl = card ? card.querySelector('.amp-notice-line') : null;\n"
         "  var actsEl = card ? card.querySelector('.amp-notice-acts') : null;\n"
         "  function hideNotice(){ if (card) card.hidden = true; }\n"
+        "  function playPet(oid, kind){\n"
+        "    var src = petFilms[kind];\n"
+        "    if (!src || !root) return;\n"
+        "    var btn = root.querySelector('.amp-sprite[data-oid=\"'+oid+'\"]');\n"
+        "    if (!btn) return;\n"
+        "    var film = btn.querySelector('.amp-sprite-film');\n"
+        "    if (!film) return;\n"
+        "    if (btn.getAttribute('data-petting') === '1') return;\n"
+        "    btn.setAttribute('data-petting', '1');\n"
+        "    btn.style.setProperty('--amp-pet-film', 'url(\"'+src+'\")');\n"
+        "    btn.style.setProperty('--amp-pet-dur', petDur[kind] || '0.9s');\n"
+        "    btn.classList.add('petting');\n"
+        "    function restore(ev){\n"
+        "      if (ev && ev.target !== film) return;\n"
+        "      film.removeEventListener('animationend', restore);\n"
+        "      btn.classList.remove('petting');\n"
+        "      btn.removeAttribute('data-petting');\n"
+        "    }\n"
+        "    film.addEventListener('animationend', restore);\n"
+        "    setTimeout(function(){ restore({target: film}); }, 2400);\n"
+        "  }\n"
         "  function showNotice(oid){\n"
         "    var n = book[oid];\n"
         "    if (!n || !card || !nameEl || !lineEl || !actsEl) return;\n"
@@ -1195,6 +1375,9 @@ def pictorial_stage_html(
         "      b.addEventListener('click', function(ev){\n"
         "        ev.preventDefault(); ev.stopPropagation();\n"
         "        if (a.note) lineEl.textContent = a.note;\n"
+        "        if (a.id === 'pet' || a.id === 'pet_cat' || a.id === 'scratch_ear') {\n"
+        "          playPet(oid, n.kind);\n"
+        "        }\n"
         "      });\n"
         "      actsEl.appendChild(b);\n"
         "    });\n"

@@ -570,6 +570,8 @@ section[data-testid="stMain"] {{
 .block-container [data-testid="stCaptionContainer"],
 .block-container [data-testid="stTooltipHoverTarget"],
 .block-container [data-testid="stTabs"],
+.block-container [data-testid="stFileUploader"],
+.block-container [data-testid="stAudioInput"],
 .block-container .amp-read,
 .block-container .stMarkdown:has(.amp-read) {{
   position: relative !important;
@@ -590,10 +592,11 @@ section[data-testid="stSidebar"] {{
 [data-testid="stBottomBlockContainer"] {{
   position: relative;
   z-index: 6;
-  background: rgba(8, 6, 16, 0.28) !important;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border-top: 1px solid rgba(232, 213, 163, 0.14) !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-top: 1px solid rgba(232, 213, 163, 0.16) !important;
+  box-shadow: none !important;
 }}
 [data-amp-land-wrap="1"] {{
   position: fixed !important;
@@ -723,18 +726,42 @@ iframe[data-amp-land="1"] {{
   color: {pal["body"]} !important;
   text-shadow: {pal["shadow"]};
 }}
-[data-testid="stMain"] .stButton > button {{
-  background: rgba(10, 8, 20, 0.32) !important;
+[data-testid="stMain"] .stButton > button,
+[data-testid="stMain"] [data-testid^="stBaseButton"] {{
+  background: transparent !important;
   color: {pal["body"]} !important;
-  border: 1px solid rgba(232, 213, 163, 0.22) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(232, 213, 163, 0.32) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   text-shadow: {pal["shadow"]};
 }}
-[data-testid="stMain"] [data-baseweb="select"] > div {{
-  background: rgba(10, 8, 20, 0.32) !important;
-  color: {pal["body"]} !important;
-  border-color: {pal["border"]} !important;
+[data-testid="stMain"] .stButton > button:hover,
+[data-testid="stMain"] [data-testid^="stBaseButton"]:hover {{
+  color: {pal["heading"]} !important;
+  border-bottom-color: rgba(232, 213, 163, 0.7) !important;
+  background: transparent !important;
 }}
-[data-testid="stChatMessage"] {{
+[data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+[data-testid="stMain"] [data-baseweb="select"] > div {{
+  background: transparent !important;
+  background-color: transparent !important;
+  color: {pal["body"]} !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(232, 213, 163, 0.32) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-shadow: {pal["shadow"]};
+}}
+[data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
+[data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="select"] span {{
+  background: transparent !important;
+  color: {pal["body"]} !important;
+  text-shadow: {pal["shadow"]};
+}}
+[data-testid="stChatMessage"],
+[data-testid="stChatMessageContent"],
+[data-testid="stChatMessage"] > div {{
   background: transparent !important;
   color: {pal["body"]} !important;
   border: none !important;
@@ -762,21 +789,80 @@ iframe[data-amp-land="1"] {{
 }}
 [data-testid="stMain"] [data-testid="stFileUploader"],
 [data-testid="stMain"] [data-testid="stFileUploaderDropzone"],
-[data-testid="stMain"] [data-testid="stFileUploaderDropzoneInstructions"] {{
+[data-testid="stMain"] [data-testid="stFileUploaderDropzoneInstructions"],
+[data-testid="stMain"] [data-testid="stFileUploader"] section,
+[data-testid="stMain"] [data-testid="stFileUploader"] button {{
   background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
   text-shadow: {pal["shadow"]};
 }}
 [data-testid="stMain"] [data-testid="stFileUploaderDropzone"] {{
-  border: 1px dashed rgba(232, 213, 163, 0.2) !important;
+  border: none !important;
+  border-bottom: 1px dashed rgba(232, 213, 163, 0.28) !important;
+  border-radius: 0 !important;
+}}
+[data-testid="stMain"] [data-testid="stAudioInput"],
+[data-testid="stMain"] [data-testid="stAudioInput"] > div,
+[data-testid="stMain"] [data-testid="stAudioInputWaveSurfer"] {{
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(232, 213, 163, 0.28) !important;
+  border-radius: 0 !important;
+}}
+[data-testid="stChatInput"],
+[data-testid="stChatInput"] > div,
+[data-testid="stBottomBlockContainer"] [data-testid="stChatInput"] {{
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }}
 [data-testid="stChatInput"] textarea,
-[data-testid="stChatInput"] input {{
+[data-testid="stChatInput"] input,
+[data-testid="stChatInputTextArea"] {{
   color: {pal["body"]} !important;
   background: transparent !important;
   caret-color: {pal["heading"]} !important;
+  text-shadow: {pal["shadow"]};
+  border: none !important;
+  border-bottom: 1px solid rgba(232, 213, 163, 0.32) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }}
 [data-testid="stChatInput"] [data-testid="stChatInputSubmitButton"] {{
   color: {pal["heading"]} !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}}
+[data-testid="stMain"] [data-testid="stSelectbox"],
+[data-testid="stMain"] [data-testid="stFileUploader"],
+[data-testid="stMain"] [data-testid="stAudioInput"],
+[data-testid="stChatInput"],
+[data-testid="stBottomBlockContainer"] {{
+  --secondary-background-color: transparent !important;
+  --st-secondary-background-color: transparent !important;
+}}
+[data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="select"] div {{
+  background: transparent !important;
+  background-color: transparent !important;
+}}
+[data-testid="stChatInput"] div {{
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}}
+[data-testid="stMain"] [data-testid="stAudioInput"] div {{
+  background: transparent !important;
+  background-color: transparent !important;
+}}
+[data-testid="stMain"] [data-testid="stFileUploaderDropzone"] div {{
+  background: transparent !important;
+  background-color: transparent !important;
 }}
 section[data-testid="stSidebar"] {{
   background: rgba(12, 10, 22, 0.92) !important;

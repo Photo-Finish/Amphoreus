@@ -190,6 +190,12 @@ CARE_AUTH: Dict[str, Dict[str, dict]] = {
     },
 }
 
+# Old act ids still accepted by visitor_touch.
+_ACT_ALIASES = {
+    "pet_cat": "pet",
+    "scratch_ear": "pet",
+}
+
 # Visitor-only ambient acts (never Heir writes, never clock/bonds).
 VISITOR_ACT: Dict[str, dict] = {
     "pick_keepsake": {
@@ -216,13 +222,14 @@ VISITOR_ACT: Dict[str, dict] = {
         "kinds": {"wind", "grass", "kite"},
         "note": "the air of this hour moves through your fingers",
     },
-    "pet_cat": {
-        "kinds": {"hearth_cat"},
-        "note": "the cat leans in, then remembers it is its own cat",
-    },
-    "scratch_ear": {
-        "kinds": {"chimera"},
-        "note": "a small ear under your fingers; an Awoo, not a command",
+    "pet": {
+        "kinds": {"chimera", "hearth_cat", "dromas"},
+        "note": "they lean into the touch, then remain themselves",
+        "notes": {
+            "chimera": "a small head under your fingers — Awoo, pleased, not a command",
+            "hearth_cat": "the cat leans in, then remembers it is its own cat",
+            "dromas": "the neck plates warm under your palm; the road-beast does not hurry",
+        },
     },
     "greet_dromas": {
         "kinds": {"dromas"},
@@ -655,6 +662,72 @@ def _base_status(kind: str, place: str, period: int, month: int,
     return "well", "present this hour"
 
 
+def _caravan_this_hour(world, place: str, flags: dict, period: int, month: int) -> bool:
+    """Sometimes a dromas is on the road as a trade caravan with people."""
+    if flags.get("resting") or period in (0, 4):
+        return False
+    h = _h(_date_seed(world) + str(place) + "caravan")
+    if month == 4 and period in (2, 3):
+        return h % 2 == 0
+    if period in (2, 3):
+        return h % 3 == 0
+    return h % 5 == 0
+
+
+def _apply_trade_caravan(out: List[dict], world, place: str,
+                         flags: dict, period: int, month: int, *,
+                         traveling: bool = False) -> None:
+    """Tag a dromas + nearby people as one orderly trade caravan."""
+    dromases = [b for b in out if b.get("kind") == "dromas"]
+    if not dromases:
+        return
+    if not traveling and not _caravan_this_hour(world, place, flags, period, month):
+        return
+    mount = dromases[0]
+    cid = f"caravan:{place}:1"
+    mount["caravan_id"] = cid
+    mount["caravan_role"] = "mount"
+    mount["doing"] = "under harness with a trade caravan"
+
+    def _score(b: dict) -> int:
+        role = str(b.get("role") or "").lower()
+        if "dromas" in role or "handler" in role:
+            return 0
+        if "merchant" in role or "courier" in role:
+            return 1
+        return 2
+
+    residents = [b for b in out if b.get("kind") == "resident"]
+    residents.sort(key=_score)
+    mates = residents[:2]
+    if not mates:
+        handler = {
+            "id": f"resident:{place}:caravan-handler",
+            "kind": "resident",
+            "name": "a dromas-handler",
+            "place": place,
+            "status": "here",
+            "doing": "a dromas-handler with the trade caravan",
+            "role": "dromas-handler",
+            "spot": "road",
+            "sound": None,
+            "visual": "resident",
+            "clickable": True,
+            "care_hint": "",
+            "hotspot": hotspot_for("resident", 1),
+            "visitor_acts": visitor_acts_for("resident"),
+            "caravan_id": cid,
+            "caravan_role": "handler",
+        }
+        out.append(handler)
+        mates = [handler]
+    for i, m in enumerate(mates):
+        m["caravan_id"] = cid
+        m["caravan_role"] = "handler" if i == 0 else "trader"
+        role = m.get("role") or "a traveler"
+        m["doing"] = f"{role} with the trade caravan"
+
+
 def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
               character_id: Optional[str] = None) -> dict:
     seed = _date_seed(world)
@@ -893,6 +966,7 @@ def derive_scene(world, place: Optional[str] = None,
         out.append(_mk_being("pebble", place, 1, world, flags, character_id))
         if flags.get("device_withdrawn") or period == 4:
             out.append(_mk_being("thief_star", place, 1, world, flags, character_id))
+        _apply_trade_caravan(out, world, place, flags, period, month, traveling=True)
         return out[:8]
 
     # Sky / hour furniture (the Device and the Thief Star — not household lamps)
@@ -1000,6 +1074,8 @@ def derive_scene(world, place: Optional[str] = None,
                 })
         except Exception:
             pass
+
+    _apply_trade_caravan(out, world, place, flags, period, month, traveling=False)
 
     # Contradiction: strip sea/chimera if somehow in Grove
     if place in GROVE:
@@ -1137,11 +1213,23 @@ def interact(world, object_id: str,
     if kind == "chimera":
         line = f'{being["name"].capitalize()} looks up and howls: “{sound}!”'
     elif kind == "resident":
-        line = (
-            f"{being['name']} — {_role_doing(being.get('role'), being.get('spot'))}. "
-        )
+        if being.get("caravan_id"):
+            line = (
+                f"{being['name']} walks with the trade caravan — "
+                f"{_role_doing(being.get('role'), being.get('spot'))}."
+            )
+        else:
+            line = (
+                f"{being['name']} — {_role_doing(being.get('role'), being.get('spot'))}. "
+            )
     elif kind == "dromas":
-        line = f"{being['name'].capitalize()} shifts its weight; {sound}."
+        if being.get("caravan_id"):
+            line = (
+                f"{being['name'].capitalize()} walks under harness; "
+                "a trade caravan keeps its order."
+            )
+        else:
+            line = f"{being['name'].capitalize()} shifts its weight; {sound}."
     elif kind == "hearth_cat":
         line = f'The cat answers: “{sound}.”'
     elif kind == "shore":
@@ -1345,6 +1433,7 @@ def apply_care(world, heir_id: str, object_id: str, action_id: str,
 def visitor_touch(world, object_id: str, action_id: str,
                   place: Optional[str] = None, *, save: bool = True) -> dict:
     """Visitor ambient acts — pocket a pearl, sit a hearth, wave. No Heir write."""
+    action_id = _ACT_ALIASES.get(action_id, action_id)
     spec = VISITOR_ACT.get(action_id)
     if not spec:
         return {"ok": False, "reason": "That is not an allowed touch."}
@@ -1375,11 +1464,12 @@ def visitor_touch(world, object_id: str, action_id: str,
             world.save()
         except Exception:
             pass
+    note = (spec.get("notes") or {}).get(being.get("kind")) or spec.get("note") or ""
     return {
         "ok": True,
-        "note": spec.get("note") or "",
+        "note": note,
         "being": being,
-        "line": spec.get("note") or "",
+        "line": note,
     }
 
 
