@@ -170,7 +170,8 @@ def render_look_picker() -> None:
         key=_RADIO,
         help=(
             "Pictures on the land: the area art fills the page. "
-            "Classic: a small weather window and named buttons — no full-page art."
+            "Classic: a 16:9 weather window — no full-page art. "
+            "Named Presence only while Life on the land is on."
         ),
     )
     value = _VALUE_FOR.get(pick, LOOK_PICTORIAL)
@@ -191,7 +192,7 @@ def render_look_picker() -> None:
         key=_LIFE_KEY,
         help=(
             "On: chimera, grass, stalls, and the rest are painted on the picture. "
-            "Off: the place only — presence stays as names you can touch."
+            "Off: the place only."
         ),
     )
     st.session_state[_LIFE_STATE] = bool(life_pick)

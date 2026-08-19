@@ -110,6 +110,18 @@ def land_art_path(path):
         return Path(path)
 
 
+def postcard_art_path(path):
+    """Cinematic Area shot for the Classic inset window (not the ground crop)."""
+    if not path:
+        return None
+    p = Path(path)
+    if p.parent.name == "ground":
+        src = p.parent.parent / p.name
+        if src.exists():
+            return src
+    return p
+
+
 def place_for_slug(slug: str) -> str:
     """Best-effort world place name for a bg slug (for weather/eco derive)."""
     if not slug:

@@ -1021,7 +1021,7 @@ with main_tab:
                 _eco_sc = _eco_ui.scene_for_heir(_WS_eco(), selected)
                 render_inset_window(
                     _chat_bg, _chat_place or info["name"], _eco_sc,
-                    height=300, dense=False, entities=_life_on,
+                    dense=False, entities=_life_on, box_max=720,
                     key=f"eco_{selected}_inset",
                 )
                 render_presence_chips(

@@ -42,9 +42,11 @@ def render_guide(manager, characters):
         "- **Control Panel / World status** — how you play (operator) or how the world stands (guest).\n\n"
         "Left sidebar **Land look** switches Pictures on the land ↔ Classic (inset + names). "
         "Pictures: the area art fills the page. Classic: a small rounded weather window "
-        "(sky overlays included) and named buttons — not a stretched full-width photo.\n"
+        "(sky overlays included) — a 16:9 window, not a stretched full-width photo. "
+        "Named Presence buttons appear only while **Life on the land** is on.\n"
         "The **Life on the land** switch paints chimera, grass, stalls, and the rest onto "
-        "that picture (on), or leaves the place only, with presence as names you can touch (off).\n"
+        "that picture (on), or leaves the place only (off). Named Presence and the "
+        "touch-strip stay hidden while life is off.\n"
         "The same list is also the Streamlit page nav (Visit / Walk the Land / Control Panel)."
     ))
 

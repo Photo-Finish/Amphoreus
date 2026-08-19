@@ -111,7 +111,7 @@ def _render_walk_classic(
     st.title("Walk the Land")
     st.caption(
         "Stand in a region of Amphoreus — no Heir dialogue. "
-        "The picture is a small weather window; presence is a name you can touch."
+        "The picture is a small weather window."
     )
     meta = f"{clock} · **{place}** · {label}"
     if sky:
@@ -120,7 +120,7 @@ def _render_walk_classic(
     if art is not None:
         render_inset_window(
             art, place, scene or [],
-            height=520, dense=True, entities=entities,
+            dense=True, entities=entities, box_max=960,
             key=f"{key_prefix}_{place}_inset",
         )
     else:
@@ -303,16 +303,17 @@ def render_walk_page(*, key_prefix: str = "walk") -> None:
         read_only=True,
     )
 
-    life_bits = [
-        b for b in scene
-        if b.get("kind") not in {"resident"} and b.get("status") not in {"resting"}
-    ]
-    if life_bits:
-        with st.expander("What moves here this hour", expanded=False):
-            for b in life_bits[:8]:
-                st.markdown(
-                    f"- **{b.get('name')}** — {b.get('doing')}"
-                )
+    if life:
+        life_bits = [
+            b for b in scene
+            if b.get("kind") not in {"resident"} and b.get("status") not in {"resting"}
+        ]
+        if life_bits:
+            with st.expander("What moves here this hour", expanded=False):
+                for b in life_bits[:8]:
+                    st.markdown(
+                        f"- **{b.get('name')}** — {b.get('doing')}"
+                    )
 
     try:
         heirs_here = []

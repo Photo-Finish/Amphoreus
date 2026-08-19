@@ -657,11 +657,14 @@ html.amp-land-off .block-container {{
 
 
 def scene_html(image_path, place, effect, sky, height=300, rounded=True,
-               max_width=1280, full_bleed=False):
+               max_width=1280, full_bleed=False, *,
+               box_max=None, aspect=None):
     """Full HTML for a location scene: art + weather overlay + place tag.
 
     ``full_bleed=True`` drops the rounded card frame so the art can read as
     the stage plane (used under pictorial hotspots / Walk the Land).
+    ``aspect`` (e.g. ``"16 / 9"``) sizes a centered card from width instead
+    of a fixed pixel height, so a wide layout does not squash the picture.
     """
     uri = _data_uri_jpeg(image_path, max_width=max_width)
     if not uri:
@@ -673,11 +676,22 @@ def scene_html(image_path, place, effect, sky, height=300, rounded=True,
     else:
         radius = "border-radius:14px;" if rounded else "border-radius:0;"
         border = "border:1px solid rgba(232,213,163,.16);"
+    if aspect:
+        cap = f"max-width:{int(box_max)}px;" if box_max else ""
+        box = (
+            f"position:relative;width:100%;{cap}margin:0 auto;"
+            f"aspect-ratio:{aspect};{radius}{border}overflow:hidden;"
+        )
+        pos = "center center"
+    else:
+        box = (
+            f"position:relative;height:{height}px;{radius}{border}overflow:hidden;"
+        )
+        pos = ground_css_position(image_path)
     return (
-        f"<div style=\"position:relative;height:{height}px;{radius}{border}"
-        f"overflow:hidden;\">"
+        f"<div style=\"{box}\">"
         f"<div style=\"position:absolute;inset:0;{bg_css}background-size:cover;"
-        f"background-position:{ground_css_position(image_path)};\"></div>"
+        f"background-position:{pos};background-repeat:no-repeat;\"></div>"
         f"{_overlay_html(effect, sky, place)}"
         "</div>"
     )

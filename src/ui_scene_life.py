@@ -422,6 +422,7 @@ def _css() -> str:
 @keyframes amp-film {
   to { background-position: calc(var(--amp-frames, 4) * var(--amp-cell, 92px) * -1) 0; }
 }
+.amp-pict-inset .amp-sprite { --amp-cell: 58px; }
 .amp-sprite {
   --amp-cell: 92px;
   position: absolute;
@@ -553,6 +554,7 @@ def pictorial_stage_html(
     dense: bool = True,
     page_layer: bool = False,
     entities: bool = True,
+    inset_max_width: int = 960,
 ) -> str:
     """Weather + ambient + clickable sprites.
 
@@ -641,17 +643,21 @@ def pictorial_stage_html(
         )
         art_div = ""
     else:
-        from src.ui_weather import ground_css_position
-        pos = ground_css_position(image_path) if image_path else "center 62%"
+        pos = "center center"
+        cap = max(320, int(inset_max_width or 960))
         shell = (
-            '<style>html,body{margin:0;padding:0;background:transparent;}</style>'
-            f'<div id="amp-pict-stage" style="position:relative;height:{height}px;'
-            f'overflow:hidden;border:1px solid rgba(232,213,163,.16);'
-            f'border-radius:14px;background:#0a0814;">'
+            '<style>html,body{margin:0;padding:0;width:100%;height:100%;'
+            'background:transparent;overflow:hidden;}'
+            '.amp-pict-inset .amp-sprite{--amp-cell:58px;}</style>'
+            '<div id="amp-pict-stage" class="amp-pict-inset" '
+            'style="position:relative;width:100%;height:100%;'
+            'overflow:hidden;border:1px solid rgba(232,213,163,.16);'
+            'border-radius:14px;background:#0a0814;">'
         )
         art_div = (
             f'<div style="position:absolute;inset:0;background-image:url(\'{uri}\');'
-            f'background-size:cover;background-position:{pos};"></div>'
+            f'background-size:cover;background-position:{pos};'
+            f'background-repeat:no-repeat;"></div>'
         )
 
     pin_js = ""
@@ -674,6 +680,39 @@ def pictorial_stage_html(
             "background:transparent;pointer-events:none;';\n"
             "    }\n"
             "  }\n"
+            "  try {\n"
+            "    window.parent.Function(\n"
+            "      'if(window.__ampNoticeBound)return;window.__ampNoticeBound=true;'\n"
+            "      + 'window.addEventListener(\"message\",function(ev){try{var d=ev.data;'\n"
+            "      + 'if(!d||d.amp!==\"notice\"||!d.oid)return;var u=new URL(location.href);'\n"
+            "      + 'u.searchParams.set(\"amp_notice\",String(d.oid));location.href=u.toString();}'\n"
+            "      + 'catch(e){}});'\n"
+            "    )();\n"
+            "  } catch (e) {}\n"
+        )
+    else:
+        cap = max(320, int(inset_max_width or 960))
+        pin_js = (
+            f"  var maxW = {cap};\n"
+            "  var f = window.frameElement;\n"
+            "  function fit(){\n"
+            "    if (!f) return;\n"
+            "    f.removeAttribute('width'); f.removeAttribute('height');\n"
+            "    var p = f.parentElement;\n"
+            "    var avail = (p && p.clientWidth) ? p.clientWidth : maxW;\n"
+            "    var w = Math.max(240, Math.min(maxW, avail));\n"
+            "    var h = Math.round(w * 9 / 16);\n"
+            "    f.style.cssText = 'width:'+w+'px;height:'+h+'px;border:0;"
+            "display:block;margin:0 auto;overflow:hidden;max-width:100%;';\n"
+            "    if (p) {\n"
+            "      p.style.cssText = 'width:100%;height:'+h+'px;text-align:center;"
+            "overflow:visible;margin:0 auto;padding:0;';\n"
+            "    }\n"
+            "  }\n"
+            "  fit();\n"
+            "  try { new ResizeObserver(fit).observe(f.parentElement || f); }\n"
+            "  catch (e) {}\n"
+            "  window.addEventListener('resize', fit);\n"
             "  try {\n"
             "    window.parent.Function(\n"
             "      'if(window.__ampNoticeBound)return;window.__ampNoticeBound=true;'\n"
@@ -731,6 +770,7 @@ def render_pictorial_stage(
     dense: bool = True,
     page_layer: bool = True,
     entities: bool = True,
+    inset_max_width: int = 960,
     key: str = "pict",
 ) -> bool:
     """Render the land overlay. ``page_layer`` pins figures to the viewport."""
@@ -740,10 +780,15 @@ def render_pictorial_stage(
         image_path, place, effect, sky, scene,
         height=height, max_width=max_width, read_line=read_line,
         dense=dense, page_layer=page_layer, entities=entities,
+        inset_max_width=inset_max_width,
     )
     if not html:
         return False
-    slot = 1 if page_layer else height + 8
+    if page_layer:
+        slot = 1
+    else:
+        cap = max(320, int(inset_max_width or 960))
+        slot = max(height, int(round(cap * 9 / 16)) + 8)
     components_html(html, height=slot, scrolling=False)
     return True
 
@@ -756,26 +801,34 @@ def render_inset_window(
     height: int = 300,
     dense: bool = False,
     entities: bool = True,
+    box_max: int = 960,
     key: str = "inset",
 ) -> None:
-    """The pre-pictorial weather card — a small backdrop window, not full-bleed."""
+    """The pre-pictorial weather card — a 16:9 backdrop window, not full-bleed."""
     import streamlit as st
     from src.ui_weather import scene_html, effect_for
 
     if not image_path:
         return
+    try:
+        from src.ui_backgrounds import postcard_art_path
+        image_path = postcard_art_path(image_path) or image_path
+    except Exception:
+        pass
+    cap = max(320, int(box_max or 960))
     effect, sky = effect_for(place)
     if entities:
         ok = render_pictorial_stage(
             image_path, place, effect, sky, scene or [],
-            height=height, dense=dense, page_layer=False,
-            entities=True, key=key,
+            height=int(round(cap * 9 / 16)), dense=dense, page_layer=False,
+            entities=True, inset_max_width=cap, key=key,
         )
         if ok:
             return
     html = scene_html(
         image_path, place or "Amphoreus", effect, sky,
         height=height, rounded=True,
+        box_max=cap, aspect="16 / 9",
     )
     if html:
         st.markdown(html, unsafe_allow_html=True)
@@ -824,6 +877,13 @@ def render_presence_chips(
 ) -> None:
     """Classic land: named buttons under the inset picture. No overlays."""
     import streamlit as st
+
+    try:
+        from src.ui_look import show_entities
+        if not show_entities():
+            return
+    except Exception:
+        pass
 
     flash = st.session_state.pop(f"{key_prefix}_flash", None)
     if flash:
@@ -901,6 +961,13 @@ def render_focus_strip(
     import streamlit as st
     from src.world import ecosystem as eco
     from src.world.world_state import WorldState
+
+    try:
+        from src.ui_look import show_entities
+        if not show_entities():
+            return
+    except Exception:
+        pass
 
     flash = st.session_state.pop(f"{key_prefix}_flash", None)
     if flash:
