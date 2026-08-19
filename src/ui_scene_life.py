@@ -241,11 +241,11 @@ _STATIONARY_KINDS = frozenset({
     "mill", "pillar", "incense", "pearl", "pebble", "net", "tidepool",
     "banner", "laundry", "siren", "maze", "mosaic",
 })
-# Side-profile walk films; frame 1 faces this direction. True side art only.
+# Side-profile art facing in the film strip (frame 1). True side art only.
 _SPRITE_FACING: Dict[str, str] = {
     "chimera": "right",
     "dromas": "right",
-    "resident": "right",
+    "resident": "left",
     "cicada": "left",
 }
 # Mobile roam uses side walk film; still PNG is front-facing for these kinds.
@@ -616,10 +616,13 @@ def _css() -> str:
 .amp-sprite.amp-roamer {
   animation: none;
 }
-.amp-sprite.amp-roamer .amp-sprite-body {
-  animation: none;
+.amp-sprite.amp-roamer .amp-sprite-body,
+.amp-sprite.amp-roamer.mobile.face-r .amp-sprite-body,
+.amp-sprite.amp-roamer.mobile.face-l .amp-sprite-body {
+  animation: none !important;
   transform-origin: center bottom;
 }
+/* face-r = keep native art; face-l = mirror. Travel vs native facing is set in JS. */
 .amp-sprite.amp-roamer.face-r .amp-sprite-body { transform: scaleX(1); }
 .amp-sprite.amp-roamer.face-l .amp-sprite-body { transform: scaleX(-1); }
 .amp-sprite.amp-roamer.crossing {
@@ -644,15 +647,20 @@ def _css() -> str:
   pointer-events: none;
 }
 .amp-notice {
-  position: absolute; left: 50%; bottom: 4.5%;
-  transform: translateX(-50%);
-  z-index: 24; pointer-events: auto;
-  max-width: min(420px, 88%);
-  width: max-content;
+  position: absolute; left: 0; right: 12px; bottom: 4.5%;
+  transform: none;
+  z-index: 24; pointer-events: none;
+  display: flex; justify-content: center;
+  max-width: none; width: auto;
+  box-sizing: border-box;
+  padding-left: var(--amp-main-left, 0px);
 }
 .amp-notice[hidden] { display: none !important; }
 .amp-notice-card {
   position: relative;
+  pointer-events: auto;
+  max-width: min(420px, 92%);
+  width: max-content;
   background: rgba(10, 8, 20, 0.78);
   border: 1px solid rgba(232, 213, 163, 0.28);
   border-radius: 12px;
@@ -763,6 +771,7 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
             "bottom": bottom,
             "dur": _roamer_cross_secs(kind, oid),
             "body": _sprite_markup(kind),
+            "face": _SPRITE_FACING.get(kind, "right"),
             "notice": _notice_entry(b),
         })
     return pool
@@ -816,11 +825,14 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
       var anchorPct = 12 + Math.random() * 76;
       var anchorPx = w * anchorPct / 100;
       var fromLeft = Math.random() < 0.5;
+      var goRight = fromLeft;
+      var nativeRight = (ent.face || 'right') !== 'left';
+      var keepNative = (goRight === nativeRight);
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'amp-sprite amp-roamer mobile'
         + (ent.ailing ? ' ailing' : '')
-        + (fromLeft ? ' face-r' : ' face-l');
+        + (keepNative ? ' face-r' : ' face-l');
       btn.setAttribute('data-oid', ent.oid);
       btn.setAttribute('title', ent.name);
       btn.setAttribute('aria-label', ent.name);
@@ -1161,10 +1173,33 @@ def pictorial_stage_html(
         "  var nameEl = card ? card.querySelector('.amp-notice-name') : null;\n"
         "  var lineEl = card ? card.querySelector('.amp-notice-line') : null;\n"
         "  var actsEl = card ? card.querySelector('.amp-notice-acts') : null;\n"
+        "  function mainLeft(){\n"
+        "    try {\n"
+        "      var sb = window.parent.document.querySelector('[data-testid=\"stSidebar\"]');\n"
+        "      var r = sb && sb.getBoundingClientRect();\n"
+        "      if (r && r.width > 48 && r.right > 8) return Math.round(r.right);\n"
+        "    } catch (e) {}\n"
+        "    return 0;\n"
+        "  }\n"
+        "  function placeNotice(){\n"
+        "    if (!card || !root) return;\n"
+        "    root.style.setProperty('--amp-main-left', mainLeft() + 'px');\n"
+        "  }\n"
+        "  placeNotice();\n"
+        "  try { window.parent.addEventListener('resize', placeNotice); } catch (e) {}\n"
+        "  window.addEventListener('resize', placeNotice);\n"
+        "  setTimeout(placeNotice, 400);\n"
+        "  try {\n"
+        "    var sbEl = window.parent.document.querySelector('[data-testid=\"stSidebar\"]');\n"
+        "    if (sbEl && window.parent.MutationObserver) {\n"
+        "      new window.parent.MutationObserver(placeNotice).observe(sbEl, {attributes:true, subtree:true});\n"
+        "    }\n"
+        "  } catch (e) {}\n"
         "  function hideNotice(){ if (card) card.hidden = true; }\n"
         "  function showNotice(oid){\n"
         "    var n = book[oid];\n"
         "    if (!n || !card || !nameEl || !lineEl || !actsEl) return;\n"
+        "    placeNotice();\n"
         "    nameEl.textContent = n.name || oid;\n"
         "    lineEl.textContent = n.line || '';\n"
         "    actsEl.innerHTML = '';\n"
