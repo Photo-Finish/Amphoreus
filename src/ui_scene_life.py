@@ -647,8 +647,8 @@ def _css() -> str:
   pointer-events: none;
 }
 .amp-notice {
-  position: absolute; right: 14px; bottom: 16%;
-  left: auto; top: auto;
+  position: absolute; right: 14px; top: 14%;
+  left: auto; bottom: auto;
   z-index: 24; pointer-events: none;
   max-width: min(300px, 32vw);
   width: max-content;
@@ -657,15 +657,15 @@ def _css() -> str:
 .amp-notice-card {
   position: relative;
   pointer-events: auto;
-  background: rgba(8, 6, 16, 0.52);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(8, 6, 16, 0.38);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: none;
   border-left: 2px solid rgba(232, 213, 163, 0.42);
   border-radius: 0 10px 10px 0;
   padding: 0.55rem 1.65rem 0.6rem 0.7rem;
   color: #f0e6c8;
-  text-shadow: 0 1px 6px rgba(0,0,0,.55);
+  text-shadow: 0 0 1px rgba(0,0,0,.95), 0 1px 3px rgba(0,0,0,.85), 0 2px 8px rgba(0,0,0,.7);
   font: 14px/1.45 Georgia, "Palatino Linotype", serif;
   box-shadow: 0 8px 24px rgba(0,0,0,.28);
 }

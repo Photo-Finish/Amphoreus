@@ -426,7 +426,12 @@ def read_palette(image_path) -> dict:
             f"rgba(8, 6, 16, {a1}) 34%,"
             f"rgba(8, 6, 16, 0.08) 100%)"
         ),
-        "shadow": "0 1px 2px rgba(0,0,0,.55)",
+        "shadow": (
+            "0 0 1px rgba(0,0,0,.95),"
+            "0 1px 2px rgba(0,0,0,.88),"
+            "0 2px 8px rgba(0,0,0,.72),"
+            "0 0 14px rgba(0,0,0,.5)"
+        ),
         "chat_bg": "rgba(10, 8, 20, 0.84)",
     }
 
@@ -526,7 +531,7 @@ section[data-testid="stMain"] {{
   pointer-events: none;
 }}
 [data-testid="stMainBlockContainer"] {{
-  background: {pal["scrim"]} !important;
+  background: transparent !important;
 }}
 .block-container [role="radiogroup"],
 .block-container [data-testid="stRadio"],
@@ -585,10 +590,10 @@ section[data-testid="stSidebar"] {{
 [data-testid="stBottomBlockContainer"] {{
   position: relative;
   z-index: 6;
-  background: {pal["glass"]} !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-top: 1px solid {pal["border"]} !important;
+  background: rgba(8, 6, 16, 0.28) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-top: 1px solid rgba(232, 213, 163, 0.14) !important;
 }}
 [data-amp-land-wrap="1"] {{
   position: fixed !important;
@@ -623,14 +628,20 @@ iframe[data-amp-land="1"] {{
   pointer-events: none !important;
 }}
 .amp-read {{
-  background: {pal["glass"]};
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid {pal["border"]};
-  border-radius: 12px;
-  padding: 0.85rem 1.15rem;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0.35rem 0 0.55rem 0;
   color: {pal["body"]};
-  margin: 0.4rem 0 0.85rem 0;
+  margin: 0.25rem 0 0.55rem 0;
+}}
+.amp-read strong,
+.amp-read .sub,
+.amp-read .meta,
+.amp-read .beat {{
+  text-shadow: {pal["shadow"]};
 }}
 .amp-read h1, .amp-read h2, .amp-read h3 {{
   color: {pal["heading"]}; margin-top: 0;
@@ -668,24 +679,43 @@ iframe[data-amp-land="1"] {{
   text-shadow: {pal["shadow"]};
 }}
 [data-testid="stMain"] [data-testid="stAlert"] {{
-  background: {pal["glass"]} !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid {pal["border"]} !important;
-  border-radius: 12px !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  border-left: 2px solid rgba(232, 213, 163, 0.35) !important;
+  border-radius: 0 !important;
   color: {pal["body"]} !important;
+  padding-left: 0.55rem !important;
 }}
 [data-testid="stMain"] [data-testid="stAlert"] p,
 [data-testid="stMain"] [data-testid="stAlert"] span,
 [data-testid="stMain"] [data-testid="stAlert"] div {{
   color: {pal["body"]} !important;
+  text-shadow: {pal["shadow"]};
 }}
 [data-testid="stMain"] [data-testid="stExpander"] {{
-  background: {pal["glass"]} !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid {pal["border"]} !important;
-  border-radius: 12px !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid rgba(232, 213, 163, 0.12) !important;
+  box-shadow: none !important;
+  margin-bottom: 0 !important;
+}}
+[data-testid="stMain"] [data-testid="stExpander"] details,
+[data-testid="stMain"] [data-testid="stExpander"] > div,
+[data-testid="stMain"] [data-testid="stExpander"] [data-testid="stExpanderDetails"] {{
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}}
+[data-testid="stMain"] [data-testid="stExpander"] summary {{
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0.28rem 0 !important;
 }}
 [data-testid="stMain"] [data-testid="stExpander"] summary,
 [data-testid="stMain"] [data-testid="stExpander"] p,
@@ -694,25 +724,50 @@ iframe[data-amp-land="1"] {{
   text-shadow: {pal["shadow"]};
 }}
 [data-testid="stMain"] .stButton > button {{
-  background: {pal["glass"]} !important;
+  background: rgba(10, 8, 20, 0.32) !important;
   color: {pal["body"]} !important;
-  border: 1px solid {pal["border"]} !important;
+  border: 1px solid rgba(232, 213, 163, 0.22) !important;
   text-shadow: {pal["shadow"]};
 }}
 [data-testid="stMain"] [data-baseweb="select"] > div {{
-  background: {pal["glass"]} !important;
+  background: rgba(10, 8, 20, 0.32) !important;
   color: {pal["body"]} !important;
   border-color: {pal["border"]} !important;
 }}
 [data-testid="stChatMessage"] {{
-  background: {pal["chat_bg"]} !important;
+  background: transparent !important;
   color: {pal["body"]} !important;
-  border: 1px solid {pal["border"]} !important;
+  border: none !important;
+  box-shadow: none !important;
 }}
 [data-testid="stChatMessage"] p,
 [data-testid="stChatMessage"] span,
 [data-testid="stChatMessage"] li {{
   color: {pal["body"]} !important;
+  text-shadow: {pal["shadow"]};
+}}
+[data-testid="stMain"] .amp-travelbar {{
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(232, 213, 163, 0.12) !important;
+  border-radius: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  text-shadow: {pal["shadow"]};
+}}
+[data-testid="stMain"] .amp-travelnote {{
+  background: transparent !important;
+  border: none !important;
+  text-shadow: {pal["shadow"]};
+}}
+[data-testid="stMain"] [data-testid="stFileUploader"],
+[data-testid="stMain"] [data-testid="stFileUploaderDropzone"],
+[data-testid="stMain"] [data-testid="stFileUploaderDropzoneInstructions"] {{
+  background: transparent !important;
+  text-shadow: {pal["shadow"]};
+}}
+[data-testid="stMain"] [data-testid="stFileUploaderDropzone"] {{
+  border: 1px dashed rgba(232, 213, 163, 0.2) !important;
 }}
 [data-testid="stChatInput"] textarea,
 [data-testid="stChatInput"] input {{
