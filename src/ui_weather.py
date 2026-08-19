@@ -649,16 +649,6 @@ iframe[data-amp-land="1"] {{
   color: {pal["heading"]} !important;
   text-shadow: {pal["shadow"]};
 }}
-[data-testid="stMain"] [data-testid="stHeading"],
-[data-testid="stMain"] [data-testid="stHeadingWithActionElements"] {{
-  background: {pal["glass"]};
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid {pal["border"]};
-  border-radius: 12px;
-  padding: 0.45rem 1rem;
-  margin: 0.35rem 0 0.65rem 0;
-}}
 [data-testid="stMain"] p,
 [data-testid="stMain"] li,
 [data-testid="stMain"] label,
@@ -676,25 +666,6 @@ iframe[data-amp-land="1"] {{
 [data-testid="stMain"] [data-testid="stCaptionContainer"] span {{
   color: {pal["sub"]} !important;
   text-shadow: {pal["shadow"]};
-}}
-[data-testid="stMain"] [data-testid="stCaptionContainer"] {{
-  background: {pal["glass"]};
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid {pal["border"]};
-  border-radius: 8px;
-  padding: 0.2rem 0.65rem;
-  width: fit-content;
-  max-width: 100%;
-}}
-[data-testid="stMain"] [data-testid="stMarkdownContainer"]:has(em) {{
-  background: {pal["glass"]};
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid {pal["border"]};
-  border-radius: 10px;
-  padding: 0.55rem 0.85rem;
-  margin: 0.35rem 0 0.65rem 0;
 }}
 [data-testid="stMain"] [data-testid="stAlert"] {{
   background: {pal["glass"]} !important;

@@ -150,15 +150,6 @@ _WATCHER = """
       attributes: true, subtree: true, attributeFilter: ['aria-selected']
     });
   } catch (e) {}
-  try {
-    window.parent.Function(
-      'if(window.__ampNoticeBound)return;window.__ampNoticeBound=true;'
-      + 'window.addEventListener("message",function(ev){try{var d=ev.data;'
-      + 'if(!d||d.amp!=="notice"||!d.oid)return;var u=new URL(location.href);'
-      + 'u.searchParams.set("amp_notice",String(d.oid));location.href=u.toString();}'
-      + 'catch(e){}});'
-    )();
-  } catch (e) {}
 })();
 </script>
 """

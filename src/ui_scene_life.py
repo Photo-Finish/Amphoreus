@@ -2,8 +2,8 @@
 
 Area art is the Streamlit page backdrop. Interactive outdoor figures use
 AI-painted PNGs; grass/wind/wheat/dawn are CSS or SVG. Clicks run inside
-``st.components.v1.html`` and set ``?amp_notice=`` on the parent (preserving
-``amp_guest``). Readable copy sits in glass panels.
+``st.components.v1.html``. Clicks open a notice card *inside* the land
+iframe — no parent navigation, no Streamlit refresh.
 """
 from __future__ import annotations
 
@@ -402,6 +402,53 @@ _ACT_GLYPH: Dict[str, str] = {
 }
 
 
+def _notice_line(being: dict) -> str:
+    """Same copy as ``ecosystem.interact`` — computed at render, no click reload."""
+    try:
+        from src.world import ecosystem as eco
+        from src.world.world_state import WorldState
+        res = eco.interact(
+            WorldState(),
+            str(being.get("id") or ""),
+            place=being.get("place") or None,
+        )
+        if res.get("ok"):
+            return str(res.get("line") or "")
+    except Exception:
+        pass
+    name = being.get("name") or being.get("kind") or "life"
+    doing = being.get("doing") or ""
+    return f"{name}: {doing}".strip(": ")
+
+
+def _notice_acts(kind: str) -> List[dict]:
+    try:
+        from src.world.ecosystem import VISITOR_ACT, visitor_acts_for
+        aids = visitor_acts_for(kind)
+    except Exception:
+        return []
+    out = []
+    for aid in aids:
+        spec = VISITOR_ACT.get(aid) or {}
+        out.append({
+            "id": aid,
+            "glyph": _ACT_GLYPH.get(aid, aid.replace("_", " ")),
+            "note": spec.get("note") or "",
+        })
+    return out
+
+
+def _notice_entry(being: dict) -> dict:
+    kind = str(being.get("kind") or "")
+    return {
+        "name": str(being.get("name") or kind or "life"),
+        "kind": kind,
+        "status": str(being.get("status") or ""),
+        "line": _notice_line(being),
+        "acts": _notice_acts(kind),
+    }
+
+
 def _css() -> str:
     return """
 <style>
@@ -596,6 +643,40 @@ def _css() -> str:
   background: radial-gradient(circle, rgba(240,230,200,.28), transparent 70%);
   pointer-events: none;
 }
+.amp-notice {
+  position: absolute; left: 50%; bottom: 4.5%;
+  transform: translateX(-50%);
+  z-index: 24; pointer-events: auto;
+  max-width: min(420px, 88%);
+  width: max-content;
+}
+.amp-notice[hidden] { display: none !important; }
+.amp-notice-card {
+  position: relative;
+  background: rgba(10, 8, 20, 0.78);
+  border: 1px solid rgba(232, 213, 163, 0.28);
+  border-radius: 12px;
+  padding: 0.7rem 1.9rem 0.75rem 0.95rem;
+  color: #f0e6c8;
+  text-shadow: 0 1px 8px rgba(0,0,0,.65);
+  font: 15px/1.45 Georgia, "Palatino Linotype", serif;
+  box-shadow: 0 10px 28px rgba(0,0,0,.35);
+}
+.amp-notice-x {
+  position: absolute; top: 6px; right: 8px;
+  border: 0; background: transparent; color: #b8a97f;
+  cursor: pointer; font-size: 18px; line-height: 1; padding: 2px 6px;
+}
+.amp-notice-name { font-weight: 700; letter-spacing: .02em; margin: 0 0 .25rem 0; }
+.amp-notice-line { color: #e8d5a3; font-style: italic; }
+.amp-notice-acts { margin-top: .45rem; display: flex; flex-wrap: wrap; gap: .35rem; }
+.amp-notice-act {
+  border: 1px solid rgba(232, 213, 163, 0.28);
+  background: rgba(232, 213, 163, 0.08);
+  color: #f0e6c8; border-radius: 8px;
+  padding: .2rem .55rem; cursor: pointer; font: 13px/1.2 Georgia, serif;
+}
+.amp-notice-act:hover { background: rgba(232, 213, 163, 0.18); }
 .amp-stage-read {
   position: absolute; left: 12px; right: 12px; top: 44px; z-index: 7;
   max-width: 420px;
@@ -682,6 +763,7 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
             "bottom": bottom,
             "dur": _roamer_cross_secs(kind, oid),
             "body": _sprite_markup(kind),
+            "notice": _notice_entry(b),
         })
     return pool
 
@@ -742,6 +824,7 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
       btn.setAttribute('data-oid', ent.oid);
       btn.setAttribute('title', ent.name);
       btn.setAttribute('aria-label', ent.name);
+      if (ent.notice && typeof book !== 'undefined') book[ent.oid] = ent.notice;
       btn.style.left = anchorPct + '%';
       btn.style.bottom = ent.bottom;
       if (fromLeft) {{
@@ -901,6 +984,11 @@ def pictorial_stage_html(
     max_sprites = 10 if dense else 7
     roamer_pool = _roamer_pool(clickable, page_layer=page_layer) if entities else []
     max_roamers = 3 if dense else 2
+    notice_book = {
+        str(b.get("id")): _notice_entry(b)
+        for b in clickable
+        if b.get("id")
+    }
     sprites = []
     for b in ranked[:max_sprites]:
         kind = str(b.get("kind") or "")
@@ -978,15 +1066,6 @@ def pictorial_stage_html(
             "background:transparent;pointer-events:none;';\n"
             "    }\n"
             "  }\n"
-            "  try {\n"
-            "    window.parent.Function(\n"
-            "      'if(window.__ampNoticeBound)return;window.__ampNoticeBound=true;'\n"
-            "      + 'window.addEventListener(\"message\",function(ev){try{var d=ev.data;'\n"
-            "      + 'if(!d||d.amp!==\"notice\"||!d.oid)return;var u=new URL(location.href);'\n"
-            "      + 'u.searchParams.set(\"amp_notice\",String(d.oid));location.href=u.toString();}'\n"
-            "      + 'catch(e){}});'\n"
-            "    )();\n"
-            "  } catch (e) {}\n"
         )
     else:
         cap = int(inset_max_width or 0)
@@ -1027,15 +1106,6 @@ def pictorial_stage_html(
             "  try { new ResizeObserver(fit).observe(f.parentElement || f); }\n"
             "  catch (e) {}\n"
             "  window.addEventListener('resize', fit);\n"
-            "  try {\n"
-            "    window.parent.Function(\n"
-            "      'if(window.__ampNoticeBound)return;window.__ampNoticeBound=true;'\n"
-            "      + 'window.addEventListener(\"message\",function(ev){try{var d=ev.data;'\n"
-            "      + 'if(!d||d.amp!==\"notice\"||!d.oid)return;var u=new URL(location.href);'\n"
-            "      + 'u.searchParams.set(\"amp_notice\",String(d.oid));location.href=u.toString();}'\n"
-            "      + 'catch(e){}});'\n"
-            "    )();\n"
-            "  } catch (e) {}\n"
         )
 
     roamer_json = ""
@@ -1051,6 +1121,21 @@ def pictorial_stage_html(
             spawn_prob=0.68 if dense else 0.62,
         )
 
+    notice_json = (
+        '<script type="application/json" id="amp-notice-book">'
+        + json.dumps(notice_book, ensure_ascii=False)
+        + "</script>"
+    )
+    notice_ui = (
+        '<div id="amp-notice" hidden>'
+        '<div class="amp-notice-card">'
+        '<button type="button" class="amp-notice-x" aria-label="close">×</button>'
+        '<div class="amp-notice-name"></div>'
+        '<div class="amp-notice-line"></div>'
+        '<div class="amp-notice-acts"></div>'
+        "</div></div>"
+    )
+
     body = (
         f"{shell}"
         f"{art_div}"
@@ -1058,26 +1143,57 @@ def pictorial_stage_html(
         f"{ambient}"
         f'{"".join(sprites)}'
         f"{read_block}"
+        f"{notice_ui}"
         f"{roamer_json}"
+        f"{notice_json}"
         f"</div>"
         "<script>\n"
         "(function(){\n"
         f"{pin_js}"
-        "  function go(oid){\n"
-        "    try { window.parent.postMessage({amp:'notice', oid:oid}, '*'); } catch (e) {}\n"
-        "    try {\n"
-        "      var u = new URL(window.parent.location.href);\n"
-        "      u.searchParams.set('amp_notice', oid);\n"
-        "      window.parent.location.href = u.toString();\n"
-        "    } catch (e) {}\n"
-        "  }\n"
         "  var root = document.getElementById('amp-pict-stage');\n"
         "  if(!root) return;\n"
+        "  var book = {};\n"
+        "  try {\n"
+        "    var nb = document.getElementById('amp-notice-book');\n"
+        "    book = JSON.parse((nb && nb.textContent) || '{}');\n"
+        "  } catch (e) { book = {}; }\n"
+        "  var card = document.getElementById('amp-notice');\n"
+        "  var nameEl = card ? card.querySelector('.amp-notice-name') : null;\n"
+        "  var lineEl = card ? card.querySelector('.amp-notice-line') : null;\n"
+        "  var actsEl = card ? card.querySelector('.amp-notice-acts') : null;\n"
+        "  function hideNotice(){ if (card) card.hidden = true; }\n"
+        "  function showNotice(oid){\n"
+        "    var n = book[oid];\n"
+        "    if (!n || !card || !nameEl || !lineEl || !actsEl) return;\n"
+        "    nameEl.textContent = n.name || oid;\n"
+        "    lineEl.textContent = n.line || '';\n"
+        "    actsEl.innerHTML = '';\n"
+        "    (n.acts || []).forEach(function(a){\n"
+        "      var b = document.createElement('button');\n"
+        "      b.type = 'button';\n"
+        "      b.className = 'amp-notice-act';\n"
+        "      b.textContent = a.glyph || a.id;\n"
+        "      b.addEventListener('click', function(ev){\n"
+        "        ev.preventDefault(); ev.stopPropagation();\n"
+        "        if (a.note) lineEl.textContent = a.note;\n"
+        "      });\n"
+        "      actsEl.appendChild(b);\n"
+        "    });\n"
+        "    card.hidden = false;\n"
+        "  }\n"
+        "  if (card) {\n"
+        "    var x = card.querySelector('.amp-notice-x');\n"
+        "    if (x) x.addEventListener('click', function(ev){\n"
+        "      ev.preventDefault(); ev.stopPropagation(); hideNotice();\n"
+        "    });\n"
+        "    card.addEventListener('click', function(ev){ ev.stopPropagation(); });\n"
+        "  }\n"
         "  root.addEventListener('click', function(ev){\n"
         "    var t = ev.target.closest ? ev.target.closest('.amp-sprite') : null;\n"
-        "    if(!t) return;\n"
+        "    if(!t) { hideNotice(); return; }\n"
         "    ev.preventDefault();\n"
-        "    go(t.getAttribute('data-oid'));\n"
+        "    ev.stopPropagation();\n"
+        "    showNotice(t.getAttribute('data-oid'));\n"
         "  });\n"
         f"{roam_js}"
         "})();\n"
