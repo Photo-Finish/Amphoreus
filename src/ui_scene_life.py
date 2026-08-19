@@ -240,6 +240,23 @@ _STATIONARY_KINDS = frozenset({
     "mill", "pillar", "incense", "pearl", "pebble", "net", "tidepool",
     "banner", "laundry", "siren", "maze", "mosaic",
 })
+# Side-profile art facing in the film strip (frame 1). Symmetric / front-on: omit.
+_SPRITE_FACING: Dict[str, str] = {
+    "chimera": "right",
+    "dromas": "left",
+    "resident": "right",
+    "cicada": "left",
+}
+
+
+def _sprite_facing_class(kind: str) -> str:
+    """CSS class for bidirectional roam mirroring on profile art."""
+    facing = _SPRITE_FACING.get(kind)
+    if facing == "left":
+        return " face-l"
+    if facing == "right":
+        return " face-r"
+    return ""
 
 
 def _sprite_motion_class(kind: str) -> str:
@@ -253,14 +270,17 @@ def _sprite_motion_class(kind: str) -> str:
     return " mobile"
 
 
-def _sprite_roam_style(kind: str, oid: str) -> str:
+def _sprite_roam_style(kind: str, oid: str, *, delay: float = 0.0) -> str:
     """Per-sprite horizontal path along the ground line."""
     seed = abs(hash(oid))
     span = 55 if kind in ("chimera", "dromas") else 34
     a = -(span + seed % 36)
     b = span + seed % 36
     dur = 10 + seed % 14
-    return f"--amp-roam-a:{a}px;--amp-roam-b:{b}px;--amp-roam-dur:{dur}s;"
+    return (
+        f"--amp-roam-a:{a}px;--amp-roam-b:{b}px;--amp-roam-dur:{dur}s;"
+        f"--amp-roam-delay:{delay:.1f}s;"
+    )
 
 
 def _page_window_bottom(kind: str, hotspot_bottom: str) -> str:
@@ -413,6 +433,14 @@ def _css() -> str:
   0%, 100% { transform: translateX(var(--amp-roam-a, -36px)); }
   50% { transform: translateX(var(--amp-roam-b, 36px)); }
 }
+@keyframes amp-sprite-face-r {
+  0%, 49.99% { transform: scaleX(1); }
+  50%, 100% { transform: scaleX(-1); }
+}
+@keyframes amp-sprite-face-l {
+  0%, 49.99% { transform: scaleX(-1); }
+  50%, 100% { transform: scaleX(1); }
+}
 .amp-sprite {
   --amp-cell: 92px;
   position: absolute;
@@ -425,6 +453,19 @@ def _css() -> str:
 }
 .amp-sprite.mobile {
   animation: amp-sprite-roam var(--amp-roam-dur, 12s) ease-in-out infinite;
+  animation-delay: var(--amp-roam-delay, 0s);
+}
+.amp-sprite.mobile .amp-sprite-body {
+  display: block; width: 100%; height: 100%;
+}
+.amp-sprite.mobile.face-r .amp-sprite-body,
+.amp-sprite.mobile.face-l .amp-sprite-body {
+  transform-origin: center bottom;
+  animation: amp-sprite-face-r var(--amp-roam-dur, 12s) ease-in-out infinite;
+  animation-delay: var(--amp-roam-delay, 0s);
+}
+.amp-sprite.mobile.face-l .amp-sprite-body {
+  animation-name: amp-sprite-face-l;
 }
 .amp-sprite.still, .amp-sprite.cat {
   animation: none;
@@ -509,6 +550,8 @@ def _css() -> str:
 .amp-pict-inset .amp-sprite { --amp-cell: 58px; }
 .amp-sprite:hover { filter: drop-shadow(0 0 14px rgba(240,230,200,.85)); }
 .amp-sprite.mobile:hover { animation-play-state: paused; }
+.amp-sprite.mobile.face-r:hover .amp-sprite-body,
+.amp-sprite.mobile.face-l:hover .amp-sprite-body { animation-play-state: paused; }
 .amp-sprite.ailing svg, .amp-sprite.ailing img, .amp-sprite.ailing .amp-sprite-film {
   filter: saturate(.55) brightness(.85);
 }
@@ -614,15 +657,24 @@ def pictorial_stage_html(
 ) -> str:
     """Weather + ambient + clickable sprites.
 
-    ``page_layer=True`` is a transparent viewport overlay — the JPEG lives on
-    the Streamlit page (``page_backdrop_css``) so the art is not shown twice.
+    ``page_layer=True`` pins figures to the viewport. The cinematic postcard
+    is an ``<img>`` inside this iframe (not a page ``::before``), so Streamlit
+    cannot mangle ``background-size``.
     """
     from src.ui_weather import image_data_uri, overlay_for
 
+    art_path = image_path
+    if page_layer and image_path:
+        try:
+            from src.ui_backgrounds import postcard_art_path
+            art_path = postcard_art_path(image_path) or image_path
+        except Exception:
+            art_path = image_path
+
     uri = ""
-    if image_path and not page_layer:
-        uri = image_data_uri(image_path, max_width=max_width) or ""
-        if not uri:
+    if art_path:
+        uri = image_data_uri(art_path, max_width=max_width) or ""
+        if not uri and not page_layer:
             return ""
 
     ambient = life_overlay_html(scene, place, dense=dense) if entities else ""
@@ -663,13 +715,18 @@ def pictorial_stage_html(
         motion = _sprite_motion_class(kind)
         sky = " sky" if kind in _SKY_KINDS else ""
         delay = abs(hash(oid)) % 17 / 10.0
-        roam = _sprite_roam_style(kind, str(b.get("id") or oid)) if motion == " mobile" else ""
+        facing = _sprite_facing_class(kind) if motion == " mobile" else ""
+        roam = (
+            _sprite_roam_style(kind, str(b.get("id") or oid), delay=delay)
+            if motion == " mobile" else ""
+        )
         sprites.append(
-            f'<button type="button" class="amp-sprite{motion}{ailing}{sky}" data-oid="{oid}" '
+            f'<button type="button" class="amp-sprite{motion}{facing}{ailing}{sky}" '
+            f'data-oid="{oid}" '
             f'title="{title}" aria-label="{title}" '
-            f'style="left:{left};bottom:{bottom};animation-delay:{delay:.1f}s;{roam}">'
+            f'style="left:{left};bottom:{bottom};{roam}">'
             f'<span class="amp-sprite-halo"></span>'
-            f'{_sprite_markup(kind)}'
+            f'<span class="amp-sprite-body">{_sprite_markup(kind)}</span>'
             f"</button>"
         )
 
@@ -697,11 +754,16 @@ def pictorial_stage_html(
     if page_layer:
         shell = (
             '<style>html,body{margin:0;padding:0;width:100%;height:100%;'
-            'background:transparent;overflow:hidden;}</style>'
+            'background:transparent;overflow:hidden;}'
+            '.amp-land-photo{position:absolute;inset:0;width:100%;height:100%;'
+            'object-fit:cover;object-position:center bottom;pointer-events:none;'
+            'z-index:0;display:block;}</style>'
             '<div id="amp-pict-stage" style="position:fixed;inset:0;width:100%;'
             'height:100%;overflow:hidden;background:transparent;pointer-events:none;">'
         )
-        art_div = ""
+        art_div = (
+            f'<img class="amp-land-photo" alt="" src="{uri}">' if uri else ""
+        )
     else:
         pos = "center center"
         shell = (
@@ -848,7 +910,7 @@ def render_pictorial_stage(
     inset_height: int = 0,
     key: str = "pict",
 ) -> bool:
-    """Render the land overlay. ``page_layer`` pins figures to the viewport."""
+    """Render the land overlay. ``page_layer`` pins figures and the postcard to the viewport."""
     from streamlit.components.v1 import html as components_html
 
     html = pictorial_stage_html(

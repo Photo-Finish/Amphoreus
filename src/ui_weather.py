@@ -432,66 +432,50 @@ def read_palette(image_path) -> dict:
 
 
 def page_backdrop_css(image_path, max_width=1920) -> str:
-    """CSS that paints region art fixed to the viewport bottom.
+    """Pictorial chrome: transparent Streamlit page, no land photo.
 
-    The JPEG is width-locked with ``aspect-ratio`` so ``background-size`` never
-    collapses to a height-stretching ``100%``.  No opaque fill above the art —
-    when the nav scrolls off-screen the top of the page is transparent, not a
-    black bar.  Scrim is a matching ``::after`` strip, not a second bg layer.
+    The JPEG lives inside the land iframe (``render_pictorial_stage``) so
+    Streamlit cannot mangle ``background-size`` and so a fixed photo-band
+    cannot leave a dark body gap above it.  ``max_width`` is unused (kept
+    for callers).
     """
-    uri = _data_uri_jpeg(image_path, max_width=max_width)
-    if not uri:
-        return ""
     pal = read_palette(image_path)
-    # Ground JPEG aspect (Okhema ground ≈ 800×378). Keeps the land band height
-    # in sync with width without cover-zoom or a viewport-tall stretch.
-    aspect = "800 / 378"
-    try:
-        from PIL import Image
-        p = Path(image_path)
-        if p.is_file():
-            with Image.open(p) as im:
-                aspect = f"{im.width} / {im.height}"
-    except Exception:
-        pass
     return f"""
 <style>
-.stApp {{ background: transparent !important; }}
-[data-testid="stAppViewContainer"] {{
+html, body {{
   background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
 }}
-section[data-testid="stMain"] {{
+.stApp {{
   background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
 }}
-/* Land photo band — fixed to the window bottom (ground line). */
-[data-testid="stAppViewContainer"]::before {{
-  content: "";
-  position: fixed;
-  left: 0; right: 0; bottom: 0;
-  width: 100%;
-  aspect-ratio: {aspect};
-  max-height: 72vh;
-  z-index: 0;
-  pointer-events: none;
-  background-color: transparent;
-  background-image: url('{uri}');
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  background-size: 100% auto;
+[data-testid="stAppViewContainer"],
+section[data-testid="stMain"],
+[data-testid="stAppViewContainer"] > .main {{
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
 }}
+[data-testid="stAppViewContainer"]::before,
 [data-testid="stAppViewContainer"]::after {{
-  content: "";
-  position: fixed;
-  left: 0; right: 0; bottom: 0;
-  width: 100%;
-  aspect-ratio: {aspect};
-  max-height: 72vh;
-  z-index: 0;
-  pointer-events: none;
-  background: {pal["scrim"]};
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  background-image: none !important;
+}}
+[data-testid="stHeader"],
+[data-testid="stToolbar"],
+[data-testid="stDecoration"],
+[data-testid="stAppToolbar"] {{
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
 }}
 [data-testid="stHeader"] {{
-  background: rgba(10,8,20,.22) !important;
   z-index: 60 !important;
   pointer-events: auto !important;
 }}
@@ -673,7 +657,11 @@ section[data-testid="stSidebar"] {{
 .stCaption, .stAlert {{
   text-shadow: {pal["shadow"]};
 }}
+html.amp-land-off,
+html.amp-land-off body,
+html.amp-land-off .stApp,
 html.amp-land-off [data-testid="stAppViewContainer"] {{
+  background: #0b0a14 !important;
   background-color: #0b0a14 !important;
 }}
 html.amp-land-off [data-testid="stAppViewContainer"]::before,

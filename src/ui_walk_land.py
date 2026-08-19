@@ -1,7 +1,7 @@
 """Walk the Land — stand in a region of Amphoreus (no Heir dialogue).
 
-The region art is the page itself (cropped to the live viewport). Figures
-and weather live on that full picture. Glass panels hold clock / stage text.
+The region postcard is the land plane (full window, ground at the sill).
+Figures and weather live on that picture. Glass panels hold clock / stage text.
 Care that needs an Heir's voice stays on Visit.
 """
 from __future__ import annotations
@@ -68,9 +68,6 @@ def region_options() -> List[Tuple[str, str, Optional[object]]]:
                 path = p
         if path is None:
             path = bg_path_for_place(place)
-        if path is not None:
-            from src.ui_backgrounds import land_art_path
-            path = land_art_path(path)
         out.append((label, place, path))
     return out
 

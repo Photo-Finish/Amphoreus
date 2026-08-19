@@ -957,8 +957,8 @@ with main_tab:
     # Pictures look: the place art fills the page.
     # Classic: solid colour; a small weather window shows the place.
     try:
-        from src.ui_backgrounds import bg_path as _loc_bg, current_location as _loc_now, land_art_path
-        _chat_bg = land_art_path(_loc_bg(selected))
+        from src.ui_backgrounds import bg_path as _loc_bg, current_location as _loc_now
+        _chat_bg = _loc_bg(selected)
         _chat_place = _loc_now(selected)
     except Exception:
         _chat_bg = BG_IMAGE if BG_IMAGE.exists() else None
