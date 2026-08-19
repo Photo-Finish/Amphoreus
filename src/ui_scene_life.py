@@ -234,6 +234,33 @@ _AMBIENT_STAGE = frozenset({
     "bath", "hearth", "loom", "scroll", "lamp",
 })
 _SKY_KINDS = frozenset({"kite", "courier", "dawn", "thief_star", "wind"})
+# Built structures & fixtures — no bob, no roam.
+_STATIONARY_KINDS = frozenset({
+    "well", "fountain", "shrine", "market_stall", "forge", "gate",
+    "mill", "pillar", "incense", "pearl", "pebble", "net", "tidepool",
+    "banner", "laundry", "siren", "maze", "mosaic",
+})
+
+
+def _sprite_motion_class(kind: str) -> str:
+    """CSS class: cat (film only), still, sky, or mobile (ground roam)."""
+    if kind == "hearth_cat":
+        return " cat"
+    if kind in _STATIONARY_KINDS:
+        return " still"
+    if kind in _SKY_KINDS:
+        return " sky"
+    return " mobile"
+
+
+def _sprite_roam_style(kind: str, oid: str) -> str:
+    """Per-sprite horizontal path along the ground line."""
+    seed = abs(hash(oid))
+    span = 55 if kind in ("chimera", "dromas") else 34
+    a = -(span + seed % 36)
+    b = span + seed % 36
+    dur = 10 + seed % 14
+    return f"--amp-roam-a:{a}px;--amp-roam-b:{b}px;--amp-roam-dur:{dur}s;"
 
 
 def _page_window_bottom(kind: str, hotspot_bottom: str) -> str:
@@ -382,11 +409,26 @@ def _css() -> str:
   0%,100% { transform: rotate(-6deg); }
   50% { transform: rotate(7deg); }
 }
-@keyframes amp-sprite-breathe {
-  0%,100% { transform: translateY(0); filter: drop-shadow(0 0 6px rgba(232,213,163,.35)); }
-  50% { transform: translateY(-3px); filter: drop-shadow(0 0 12px rgba(232,213,163,.65)); }
+@keyframes amp-sprite-roam {
+  0%, 100% { transform: translateX(var(--amp-roam-a, -36px)); }
+  50% { transform: translateX(var(--amp-roam-b, 36px)); }
 }
-.amp-life-layer { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.amp-sprite {
+  --amp-cell: 92px;
+  position: absolute;
+  width: var(--amp-cell); height: var(--amp-cell);
+  margin-left: calc(var(--amp-cell) / -2); margin-bottom: -12px;
+  padding: 0; border: none; background: transparent;
+  cursor: pointer; z-index: 8;
+  animation: none;
+  pointer-events: auto;
+}
+.amp-sprite.mobile {
+  animation: amp-sprite-roam var(--amp-roam-dur, 12s) ease-in-out infinite;
+}
+.amp-sprite.still, .amp-sprite.cat {
+  animation: none;
+}
 .amp-grass-blade {
   position:absolute; bottom:0; width:3px; height:18px;
   background: linear-gradient(180deg, rgba(120,160,80,.0), rgba(90,130,55,.75));
@@ -443,17 +485,7 @@ def _css() -> str:
 @keyframes amp-film {
   to { background-position: calc(var(--amp-frames, 4) * var(--amp-cell, 92px) * -1) 0; }
 }
-.amp-pict-inset .amp-sprite { --amp-cell: 58px; }
-.amp-sprite {
-  --amp-cell: 92px;
-  position: absolute;
-  width: var(--amp-cell); height: var(--amp-cell);
-  margin-left: calc(var(--amp-cell) / -2); margin-bottom: -12px;
-  padding: 0; border: none; background: transparent;
-  cursor: pointer; z-index: 8;
-  animation: amp-sprite-breathe 3.2s ease-in-out infinite;
-  pointer-events: auto;
-}
+.amp-life-layer { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
 .amp-sprite::after {
   content: "";
   position: absolute; left: 18%; right: 18%; bottom: 6%;
@@ -474,7 +506,9 @@ def _css() -> str:
   filter: drop-shadow(0 2px 5px rgba(0,0,0,.55));
   animation: amp-film var(--amp-film-dur, .8s) steps(var(--amp-frames, 4)) infinite;
 }
-.amp-sprite:hover { transform: scale(1.12); filter: drop-shadow(0 0 14px rgba(240,230,200,.85)); }
+.amp-pict-inset .amp-sprite { --amp-cell: 58px; }
+.amp-sprite:hover { filter: drop-shadow(0 0 14px rgba(240,230,200,.85)); }
+.amp-sprite.mobile:hover { animation-play-state: paused; }
 .amp-sprite.ailing svg, .amp-sprite.ailing img, .amp-sprite.ailing .amp-sprite-film {
   filter: saturate(.55) brightness(.85);
 }
@@ -626,12 +660,14 @@ def pictorial_stage_html(
         oid = _html.escape(str(b.get("id")), quote=True)
         title = _html.escape(str(b.get("name") or kind or "life"), quote=True)
         ailing = " ailing" if b.get("status") == "ailing" else ""
+        motion = _sprite_motion_class(kind)
         sky = " sky" if kind in _SKY_KINDS else ""
         delay = abs(hash(oid)) % 17 / 10.0
+        roam = _sprite_roam_style(kind, str(b.get("id") or oid)) if motion == " mobile" else ""
         sprites.append(
-            f'<button type="button" class="amp-sprite{ailing}{sky}" data-oid="{oid}" '
+            f'<button type="button" class="amp-sprite{motion}{ailing}{sky}" data-oid="{oid}" '
             f'title="{title}" aria-label="{title}" '
-            f'style="left:{left};bottom:{bottom};animation-delay:{delay:.1f}s;">'
+            f'style="left:{left};bottom:{bottom};animation-delay:{delay:.1f}s;{roam}">'
             f'<span class="amp-sprite-halo"></span>'
             f'{_sprite_markup(kind)}'
             f"</button>"

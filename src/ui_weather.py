@@ -432,37 +432,63 @@ def read_palette(image_path) -> dict:
 
 
 def page_backdrop_css(image_path, max_width=1920) -> str:
-    """CSS that paints region art on the page window.
+    """CSS that paints region art fixed to the viewport bottom.
 
-    The JPEG is width-locked (``100% auto``) and pinned to the **bottom** of
-    the viewport — the lower border is the ground. ``cover`` on a tall land
-    plane zoomed wide ground-crops; a solid black band above ``--amp-land-top``
-    stayed glued while ``stMain`` scrolled. Art now fills under translucent
-    chrome so that ribbon is gone.
+    The JPEG is width-locked with ``aspect-ratio`` so ``background-size`` never
+    collapses to a height-stretching ``100%``.  No opaque fill above the art —
+    when the nav scrolls off-screen the top of the page is transparent, not a
+    black bar.  Scrim is a matching ``::after`` strip, not a second bg layer.
     """
     uri = _data_uri_jpeg(image_path, max_width=max_width)
     if not uri:
         return ""
     pal = read_palette(image_path)
+    # Ground JPEG aspect (Okhema ground ≈ 800×378). Keeps the land band height
+    # in sync with width without cover-zoom or a viewport-tall stretch.
+    aspect = "800 / 378"
+    try:
+        from PIL import Image
+        p = Path(image_path)
+        if p.is_file():
+            with Image.open(p) as im:
+                aspect = f"{im.width} / {im.height}"
+    except Exception:
+        pass
     return f"""
 <style>
 .stApp {{ background: transparent !important; }}
 [data-testid="stAppViewContainer"] {{
-  background-image: none !important;
-  background-color: #0a0814 !important;
+  background: transparent !important;
 }}
-/* Land art: full window, ground on the lower border, no cover-zoom. */
+section[data-testid="stMain"] {{
+  background: transparent !important;
+}}
+/* Land photo band — fixed to the window bottom (ground line). */
 [data-testid="stAppViewContainer"]::before {{
   content: "";
   position: fixed;
-  inset: 0;
+  left: 0; right: 0; bottom: 0;
+  width: 100%;
+  aspect-ratio: {aspect};
+  max-height: 72vh;
   z-index: 0;
   pointer-events: none;
-  background-color: #0a0814;
-  background-image: {pal["scrim"]}, url('{uri}');
-  background-size: auto, 100% auto;
-  background-repeat: no-repeat, no-repeat;
-  background-position: 0 0, center bottom;
+  background-color: transparent;
+  background-image: url('{uri}');
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 100% auto;
+}}
+[data-testid="stAppViewContainer"]::after {{
+  content: "";
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  width: 100%;
+  aspect-ratio: {aspect};
+  max-height: 72vh;
+  z-index: 0;
+  pointer-events: none;
+  background: {pal["scrim"]};
 }}
 [data-testid="stHeader"] {{
   background: rgba(10,8,20,.22) !important;
@@ -483,7 +509,7 @@ section[data-testid="stSidebar"] {{
   z-index: 90 !important;
   pointer-events: auto !important;
 }}
-/* Look picker + tabs: glass over the land — no opaque black ribbon. */
+/* Look picker + tabs: glass over the land while they are on screen. */
 [data-testid="stTabs"],
 [data-testid="stTab"],
 [role="tablist"],
@@ -504,16 +530,12 @@ section[data-testid="stSidebar"] {{
   background: transparent !important;
   pointer-events: none;
 }}
-section[data-testid="stMain"] {{
-  background: transparent !important;
-}}
 .block-container {{
   position: relative;
   z-index: 2;
   background: transparent !important;
   pointer-events: none;
 }}
-/* Land-look radio / Life switch sit in the main column above the tabs. */
 .block-container [role="radiogroup"],
 .block-container [data-testid="stRadio"],
 .block-container [role="switch"],
@@ -652,10 +674,10 @@ section[data-testid="stSidebar"] {{
   text-shadow: {pal["shadow"]};
 }}
 html.amp-land-off [data-testid="stAppViewContainer"] {{
-  background-image: none !important;
   background-color: #0b0a14 !important;
 }}
-html.amp-land-off [data-testid="stAppViewContainer"]::before {{
+html.amp-land-off [data-testid="stAppViewContainer"]::before,
+html.amp-land-off [data-testid="stAppViewContainer"]::after {{
   display: none !important;
 }}
 html.amp-land-off iframe[data-amp-land="1"],
