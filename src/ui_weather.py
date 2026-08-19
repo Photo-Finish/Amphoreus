@@ -432,40 +432,40 @@ def read_palette(image_path) -> dict:
 
 
 def page_backdrop_css(image_path, max_width=1920) -> str:
-    """CSS that paints ground-framed region art on the land plane.
+    """CSS that paints region art on the page window.
 
-    Art lives on a ``position:fixed`` layer from ``--amp-land-top`` to the
-    bottom of the viewport — the same rectangle as the pictorial iframe —
-    with uniform ``cover``. Painting ``cover`` + ``background-attachment:
-    fixed`` on the whole ``stAppViewContainer`` sized the JPEG to the full
-    viewport (chrome included), which zoomed wide ground-crops.
+    The JPEG is width-locked (``100% auto``) and pinned to the **bottom** of
+    the viewport — the lower border is the ground. ``cover`` on a tall land
+    plane zoomed wide ground-crops; a solid black band above ``--amp-land-top``
+    stayed glued while ``stMain`` scrolled. Art now fills under translucent
+    chrome so that ribbon is gone.
     """
     uri = _data_uri_jpeg(image_path, max_width=max_width)
     if not uri:
         return ""
     pal = read_palette(image_path)
-    pos = ground_css_position(image_path)
     return f"""
 <style>
-html {{ --amp-land-top: 8.5rem; }}
 .stApp {{ background: transparent !important; }}
 [data-testid="stAppViewContainer"] {{
   background-image: none !important;
   background-color: #0a0814 !important;
 }}
+/* Land art: full window, ground on the lower border, no cover-zoom. */
 [data-testid="stAppViewContainer"]::before {{
   content: "";
   position: fixed;
-  inset: var(--amp-land-top, 8.5rem) 0 0 0;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
+  background-color: #0a0814;
   background-image: {pal["scrim"]}, url('{uri}');
-  background-size: auto, cover;
+  background-size: auto, 100% auto;
   background-repeat: no-repeat, no-repeat;
-  background-position: 0 0, {pos};
+  background-position: 0 0, center bottom;
 }}
 [data-testid="stHeader"] {{
-  background: rgba(10,8,20,.28) !important;
+  background: rgba(10,8,20,.22) !important;
   z-index: 60 !important;
   pointer-events: auto !important;
 }}
@@ -483,6 +483,7 @@ section[data-testid="stSidebar"] {{
   z-index: 90 !important;
   pointer-events: auto !important;
 }}
+/* Look picker + tabs: glass over the land — no opaque black ribbon. */
 [data-testid="stTabs"],
 [data-testid="stTab"],
 [role="tablist"],
@@ -495,16 +496,33 @@ section[data-testid="stSidebar"] {{
 }}
 [role="tablist"] {{
   isolation: isolate;
+  background: rgba(10, 8, 20, 0.42) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }}
 [data-testid="stAppViewContainer"] > .main {{
   background: transparent !important;
   pointer-events: none;
+}}
+section[data-testid="stMain"] {{
+  background: transparent !important;
 }}
 .block-container {{
   position: relative;
   z-index: 2;
   background: transparent !important;
   pointer-events: none;
+}}
+/* Land-look radio / Life switch sit in the main column above the tabs. */
+.block-container [role="radiogroup"],
+.block-container [data-testid="stRadio"],
+.block-container [role="switch"],
+.block-container [data-testid="stCheckbox"] {{
+  background: rgba(10, 8, 20, 0.42) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 10px;
+  padding: 0.15rem 0.45rem;
 }}
 /* Empty page area clicks the land; widgets stay usable. */
 .block-container .stButton,
@@ -549,9 +567,9 @@ section[data-testid="stSidebar"] {{
 }}
 [data-amp-land-wrap="1"] {{
   position: fixed !important;
-  inset: var(--amp-land-top, 8.5rem) 0 0 0 !important;
+  inset: 0 !important;
   width: 100vw !important;
-  height: calc(100vh - var(--amp-land-top, 8.5rem)) !important;
+  height: 100vh !important;
   margin: 0 !important;
   padding: 0 !important;
   overflow: visible !important;
@@ -562,11 +580,11 @@ section[data-testid="stSidebar"] {{
 }}
 iframe[data-amp-land="1"] {{
   position: fixed !important;
-  inset: var(--amp-land-top, 8.5rem) 0 0 0 !important;
+  inset: 0 !important;
   width: 100vw !important;
-  height: calc(100vh - var(--amp-land-top, 8.5rem)) !important;
+  height: 100vh !important;
   min-width: 100% !important;
-  min-height: calc(100vh - var(--amp-land-top, 8.5rem)) !important;
+  min-height: 100% !important;
   max-width: none !important;
   max-height: none !important;
   border: none !important;

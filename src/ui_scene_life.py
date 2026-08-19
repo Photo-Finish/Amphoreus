@@ -235,6 +235,27 @@ _AMBIENT_STAGE = frozenset({
 })
 _SKY_KINDS = frozenset({"kite", "courier", "dawn", "thief_star", "wind"})
 
+
+def _page_window_bottom(kind: str, hotspot_bottom: str) -> str:
+    """Lower border of the page window is the ground for page-layer life."""
+    if kind in _SKY_KINDS:
+        return hotspot_bottom or "72%"
+    if kind == "laundry":
+        return "18%"
+    if kind == "banner":
+        return "22%"
+    if kind in ("cicada", "grove_leaf"):
+        return hotspot_bottom or "42%"
+    # Slight depth variety, still on the sill.
+    table = {
+        "dromas": "1%", "chimera": "2%", "hearth_cat": "2%", "resident": "2%",
+        "well": "1%", "fountain": "1%", "forge": "1%", "gate": "1%",
+        "shrine": "2%", "market_stall": "2%", "mill": "1%", "pillar": "1%",
+        "olive": "2%", "incense": "2%", "boat": "0%", "siren": "1%",
+        "pearl": "1%", "pebble": "0%", "net": "0%", "tidepool": "0%",
+    }
+    return table.get(kind, "2%")
+
 # Painted walk/fly cycles — consecutive frames stitched L→R.
 _FILM_DUR = {
     "chimera": "0.64s",
@@ -516,11 +537,11 @@ def life_overlay_html(scene: List[dict], place: str = "", *, dense: bool = False
 
     if "fountain" in kinds:
         parts.append(
-            '<div class="amp-fountain" style="left:46%;bottom:16%;"></div>'
+            '<div class="amp-fountain" style="left:46%;bottom:2%;"></div>'
         )
     if "laundry" in kinds:
         parts.append(
-            '<div class="amp-laundry" style="left:78%;bottom:34%;"></div>'
+            '<div class="amp-laundry" style="left:78%;bottom:18%;"></div>'
         )
     if "courier" in kinds:
         parts.append('<div class="amp-courier"></div>')
@@ -600,6 +621,8 @@ def pictorial_stage_html(
         hs = b.get("hotspot") or {}
         left = hs.get("left") or "50%"
         bottom = hs.get("bottom") or "20%"
+        if page_layer:
+            bottom = _page_window_bottom(kind, str(bottom))
         oid = _html.escape(str(b.get("id")), quote=True)
         title = _html.escape(str(b.get("name") or kind or "life"), quote=True)
         ailing = " ailing" if b.get("status") == "ailing" else ""
@@ -662,36 +685,19 @@ def pictorial_stage_html(
 
     pin_js = ""
     if page_layer:
+        # Full page window: lower border is the ground (sprites use bottom ~0–2%).
         pin_js = (
             "  var f = window.frameElement;\n"
             "  if (f) {\n"
             "    f.setAttribute('data-amp-land', '1');\n"
             "    f.removeAttribute('width'); f.removeAttribute('height');\n"
-            "    var topPx = 136;\n"
-            "    try {\n"
-            "      var doc = window.parent.document;\n"
-            "      var sels = ['[data-testid=\"stTabs\"]','[role=\"tablist\"]',\n"
-            "        '[role=\"radiogroup\"]','[role=\"switch\"]'];\n"
-            "      for (var s = 0; s < sels.length; s++) {\n"
-            "        var els = doc.querySelectorAll(sels[s]);\n"
-            "        for (var i = 0; i < els.length; i++) {\n"
-            "          var b = els[i].getBoundingClientRect().bottom;\n"
-            "          if (b > 48 && b < 320) topPx = Math.max(topPx, Math.ceil(b + 8));\n"
-            "        }\n"
-            "      }\n"
-            "      doc.documentElement.style.setProperty('--amp-land-top', topPx + 'px');\n"
-            "    } catch (e) {}\n"
-            "    var top = topPx + 'px';\n"
-            "    var h = 'calc(100vh - ' + top + ')';\n"
-            "    f.style.cssText = 'position:fixed;top:'+top+';left:0;right:0;bottom:0;"
-            "width:100vw;height:'+h+';border:0;z-index:0;"
-            "background:transparent;pointer-events:auto;"
+            "    f.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;"
+            "border:0;z-index:0;background:transparent;pointer-events:auto;"
             "max-width:none;max-height:none;';\n"
             "    var p = f.parentElement;\n"
             "    if (p) {\n"
             "      p.setAttribute('data-amp-land-wrap', '1');\n"
-            "      p.style.cssText = 'position:fixed;top:'+top+';left:0;right:0;bottom:0;"
-            "width:100vw;height:'+h+';"
+            "      p.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;"
             "margin:0;padding:0;overflow:visible;z-index:0;border:none;"
             "background:transparent;pointer-events:none;';\n"
             "    }\n"
