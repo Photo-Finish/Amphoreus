@@ -647,44 +647,51 @@ def _css() -> str:
   pointer-events: none;
 }
 .amp-notice {
-  position: absolute; left: 0; right: 12px; bottom: 4.5%;
-  transform: none;
+  position: absolute; right: 14px; bottom: 16%;
+  left: auto; top: auto;
   z-index: 24; pointer-events: none;
-  display: flex; justify-content: center;
-  max-width: none; width: auto;
-  box-sizing: border-box;
-  padding-left: var(--amp-main-left, 0px);
+  max-width: min(300px, 32vw);
+  width: max-content;
 }
 .amp-notice[hidden] { display: none !important; }
 .amp-notice-card {
   position: relative;
   pointer-events: auto;
-  max-width: min(420px, 92%);
-  width: max-content;
-  background: rgba(10, 8, 20, 0.78);
-  border: 1px solid rgba(232, 213, 163, 0.28);
-  border-radius: 12px;
-  padding: 0.7rem 1.9rem 0.75rem 0.95rem;
+  background: rgba(8, 6, 16, 0.52);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: none;
+  border-left: 2px solid rgba(232, 213, 163, 0.42);
+  border-radius: 0 10px 10px 0;
+  padding: 0.55rem 1.65rem 0.6rem 0.7rem;
   color: #f0e6c8;
-  text-shadow: 0 1px 8px rgba(0,0,0,.65);
-  font: 15px/1.45 Georgia, "Palatino Linotype", serif;
-  box-shadow: 0 10px 28px rgba(0,0,0,.35);
+  text-shadow: 0 1px 6px rgba(0,0,0,.55);
+  font: 14px/1.45 Georgia, "Palatino Linotype", serif;
+  box-shadow: 0 8px 24px rgba(0,0,0,.28);
 }
 .amp-notice-x {
-  position: absolute; top: 6px; right: 8px;
-  border: 0; background: transparent; color: #b8a97f;
-  cursor: pointer; font-size: 18px; line-height: 1; padding: 2px 6px;
+  position: absolute; top: 4px; right: 6px;
+  border: 0; background: transparent; color: #9a9078;
+  cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 5px;
 }
-.amp-notice-name { font-weight: 700; letter-spacing: .02em; margin: 0 0 .25rem 0; }
-.amp-notice-line { color: #e8d5a3; font-style: italic; }
-.amp-notice-acts { margin-top: .45rem; display: flex; flex-wrap: wrap; gap: .35rem; }
+.amp-notice-x:hover { color: #e8d5a3; }
+.amp-notice-name {
+  font-weight: 600; letter-spacing: .02em;
+  margin: 0 0 .2rem 0; color: #e8d5a3; font-size: 13px;
+}
+.amp-notice-line { color: #f0e6c8; font-style: italic; font-size: 14px; }
+.amp-notice-acts {
+  margin-top: .35rem; display: flex; flex-wrap: wrap;
+  gap: .15rem .55rem; align-items: center;
+}
 .amp-notice-act {
-  border: 1px solid rgba(232, 213, 163, 0.28);
-  background: rgba(232, 213, 163, 0.08);
-  color: #f0e6c8; border-radius: 8px;
-  padding: .2rem .55rem; cursor: pointer; font: 13px/1.2 Georgia, serif;
+  border: none; background: transparent;
+  color: #b8a97f; border-radius: 0;
+  padding: 0; cursor: pointer;
+  font: 12px/1.3 Georgia, serif;
+  text-decoration: underline; text-underline-offset: 2px;
 }
-.amp-notice-act:hover { background: rgba(232, 213, 163, 0.18); }
+.amp-notice-act:hover { color: #f0e6c8; }
 .amp-stage-read {
   position: absolute; left: 12px; right: 12px; top: 44px; z-index: 7;
   max-width: 420px;
@@ -1139,7 +1146,7 @@ def pictorial_stage_html(
         + "</script>"
     )
     notice_ui = (
-        '<div id="amp-notice" hidden>'
+        '<div id="amp-notice" class="amp-notice" hidden>'
         '<div class="amp-notice-card">'
         '<button type="button" class="amp-notice-x" aria-label="close">×</button>'
         '<div class="amp-notice-name"></div>'
@@ -1173,33 +1180,10 @@ def pictorial_stage_html(
         "  var nameEl = card ? card.querySelector('.amp-notice-name') : null;\n"
         "  var lineEl = card ? card.querySelector('.amp-notice-line') : null;\n"
         "  var actsEl = card ? card.querySelector('.amp-notice-acts') : null;\n"
-        "  function mainLeft(){\n"
-        "    try {\n"
-        "      var sb = window.parent.document.querySelector('[data-testid=\"stSidebar\"]');\n"
-        "      var r = sb && sb.getBoundingClientRect();\n"
-        "      if (r && r.width > 48 && r.right > 8) return Math.round(r.right);\n"
-        "    } catch (e) {}\n"
-        "    return 0;\n"
-        "  }\n"
-        "  function placeNotice(){\n"
-        "    if (!card || !root) return;\n"
-        "    root.style.setProperty('--amp-main-left', mainLeft() + 'px');\n"
-        "  }\n"
-        "  placeNotice();\n"
-        "  try { window.parent.addEventListener('resize', placeNotice); } catch (e) {}\n"
-        "  window.addEventListener('resize', placeNotice);\n"
-        "  setTimeout(placeNotice, 400);\n"
-        "  try {\n"
-        "    var sbEl = window.parent.document.querySelector('[data-testid=\"stSidebar\"]');\n"
-        "    if (sbEl && window.parent.MutationObserver) {\n"
-        "      new window.parent.MutationObserver(placeNotice).observe(sbEl, {attributes:true, subtree:true});\n"
-        "    }\n"
-        "  } catch (e) {}\n"
         "  function hideNotice(){ if (card) card.hidden = true; }\n"
         "  function showNotice(oid){\n"
         "    var n = book[oid];\n"
         "    if (!n || !card || !nameEl || !lineEl || !actsEl) return;\n"
-        "    placeNotice();\n"
         "    nameEl.textContent = n.name || oid;\n"
         "    lineEl.textContent = n.line || '';\n"
         "    actsEl.innerHTML = '';\n"

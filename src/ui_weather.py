@@ -723,72 +723,6 @@ iframe[data-amp-land="1"] {{
 [data-testid="stChatInput"] [data-testid="stChatInputSubmitButton"] {{
   color: {pal["heading"]} !important;
 }}
-/* Pictorial Visit: hour actions + speech sit on the right as one quiet rail,
-   not a stack of full-width black stripes. */
-html:not(.amp-land-off) [data-testid="stMain"] [data-testid="stExpander"] {{
-  width: min(22.5rem, 38vw) !important;
-  max-width: 100% !important;
-  margin-left: auto !important;
-  margin-right: 0 !important;
-  margin-bottom: 0 !important;
-  background: transparent !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  border-bottom: 1px solid rgba(232, 213, 163, 0.12) !important;
-}}
-html:not(.amp-land-off) [data-testid="stMain"] [data-testid="stExpander"] details,
-html:not(.amp-land-off) [data-testid="stMain"] [data-testid="stExpander"] > div {{
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}}
-html:not(.amp-land-off) [data-testid="stMain"] [data-testid="stExpander"] summary {{
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0.28rem 0.1rem !important;
-  color: {pal["heading"]} !important;
-  text-shadow: {pal["shadow"]};
-}}
-html:not(.amp-land-off) [data-testid="stMain"] [data-testid="stExpander"] [data-testid="stExpanderDetails"],
-html:not(.amp-land-off) [data-testid="stMain"] [data-testid="stExpander"] details[open] > div:nth-child(2) {{
-  background: rgba(10, 8, 20, 0.42) !important;
-  border: 1px solid rgba(232, 213, 163, 0.14) !important;
-  border-radius: 10px !important;
-  padding: 0.45rem 0.7rem !important;
-  margin: 0.15rem 0 0.45rem 0 !important;
-}}
-html:not(.amp-land-off) [data-testid="stMain"] [data-testid="stChatMessage"] {{
-  width: min(24rem, 40vw) !important;
-  max-width: 100% !important;
-  margin-left: auto !important;
-  margin-right: 0 !important;
-  background: rgba(10, 8, 20, 0.52) !important;
-  border: 1px solid rgba(232, 213, 163, 0.16) !important;
-  border-radius: 14px !important;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
-}}
-html:not(.amp-land-off) [data-testid="stMain"] .amp-travelbar,
-html:not(.amp-land-off) [data-testid="stMain"] .amp-travelnote {{
-  width: min(22.5rem, 38vw) !important;
-  max-width: 100% !important;
-  margin-left: auto !important;
-  margin-right: 0 !important;
-  background: transparent !important;
-  border: none !important;
-  border-bottom: 1px solid rgba(232, 213, 163, 0.12) !important;
-  border-radius: 0 !important;
-  padding: 0.35rem 0.1rem !important;
-}}
-html:not(.amp-land-off) [data-testid="stMain"] hr {{
-  width: min(22.5rem, 38vw) !important;
-  margin-left: auto !important;
-  border: none !important;
-  border-top: 1px solid rgba(232, 213, 163, 0.12) !important;
-}}
 section[data-testid="stSidebar"] {{
   background: rgba(12, 10, 22, 0.92) !important;
 }}
@@ -818,14 +752,6 @@ html.amp-land-off [data-testid="stMainBlockContainer"],
 html.amp-land-off .block-container {{
   background: transparent !important;
   pointer-events: auto !important;
-}}
-html.amp-land-off [data-testid="stMain"] [data-testid="stExpander"],
-html.amp-land-off [data-testid="stMain"] [data-testid="stChatMessage"],
-html.amp-land-off [data-testid="stMain"] .amp-travelbar,
-html.amp-land-off [data-testid="stMain"] .amp-travelnote,
-html.amp-land-off [data-testid="stMain"] hr {{
-  width: auto !important;
-  margin-left: 0 !important;
 }}
 </style>
 """
