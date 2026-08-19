@@ -667,15 +667,31 @@ def pictorial_stage_html(
             "  if (f) {\n"
             "    f.setAttribute('data-amp-land', '1');\n"
             "    f.removeAttribute('width'); f.removeAttribute('height');\n"
-            "    f.style.cssText = 'position:fixed;top:5.75rem;left:0;right:0;bottom:0;"
-            "width:100vw;height:calc(100vh - 5.75rem);border:0;z-index:0;"
+            "    var topPx = 136;\n"
+            "    try {\n"
+            "      var doc = window.parent.document;\n"
+            "      var sels = ['[data-testid=\"stTabs\"]','[role=\"tablist\"]',\n"
+            "        '[role=\"radiogroup\"]','[role=\"switch\"]'];\n"
+            "      for (var s = 0; s < sels.length; s++) {\n"
+            "        var els = doc.querySelectorAll(sels[s]);\n"
+            "        for (var i = 0; i < els.length; i++) {\n"
+            "          var b = els[i].getBoundingClientRect().bottom;\n"
+            "          if (b > 48 && b < 320) topPx = Math.max(topPx, Math.ceil(b + 8));\n"
+            "        }\n"
+            "      }\n"
+            "      doc.documentElement.style.setProperty('--amp-land-top', topPx + 'px');\n"
+            "    } catch (e) {}\n"
+            "    var top = topPx + 'px';\n"
+            "    var h = 'calc(100vh - ' + top + ')';\n"
+            "    f.style.cssText = 'position:fixed;top:'+top+';left:0;right:0;bottom:0;"
+            "width:100vw;height:'+h+';border:0;z-index:0;"
             "background:transparent;pointer-events:auto;"
             "max-width:none;max-height:none;';\n"
             "    var p = f.parentElement;\n"
             "    if (p) {\n"
             "      p.setAttribute('data-amp-land-wrap', '1');\n"
-            "      p.style.cssText = 'position:fixed;top:5.75rem;left:0;right:0;bottom:0;"
-            "width:100vw;height:calc(100vh - 5.75rem);"
+            "      p.style.cssText = 'position:fixed;top:'+top+';left:0;right:0;bottom:0;"
+            "width:100vw;height:'+h+';"
             "margin:0;padding:0;overflow:visible;z-index:0;border:none;"
             "background:transparent;pointer-events:none;';\n"
             "    }\n"
@@ -832,8 +848,6 @@ def render_inset_window(
     )
     if html:
         st.markdown(html, unsafe_allow_html=True)
-    else:
-        st.image(str(image_path), use_container_width=True)
 
 
 def _do_notice(*, oid: str, heir_id: str, place: Optional[str],

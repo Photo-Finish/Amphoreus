@@ -28,6 +28,7 @@ enforce_auth()
 from src.ui_look import render_look_picker  # noqa: E402
 
 st.sidebar.title("The Sanctuary")
+st.sidebar.caption("Operator tools.")
 render_look_picker()
 
 manager = get_manager()

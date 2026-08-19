@@ -28,6 +28,7 @@ enforce_auth()
 from src.ui_look import render_look_picker  # noqa: E402
 
 st.sidebar.title("The Sanctuary")
+st.sidebar.caption("Stand in a region — no Heir dialogue.")
 render_look_picker()
 
 from src.ui_walk_land import render_walk_page  # noqa: E402

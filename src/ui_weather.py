@@ -482,11 +482,11 @@ def page_backdrop_css(image_path, max_width=1920) -> str:
 [data-testid="stSidebarNavItems"],
 [data-testid="stSidebarCollapsedControl"],
 [data-testid="stLogoSpacer"] {{
-  z-index: 60 !important;
+  z-index: 90 !important;
   pointer-events: auto !important;
 }}
 section[data-testid="stSidebar"] {{
-  z-index: 50 !important;
+  z-index: 90 !important;
   pointer-events: auto !important;
 }}
 [data-testid="stTabs"],
@@ -521,6 +521,9 @@ section[data-testid="stSidebar"] {{
 .block-container .stTextArea,
 .block-container .stNumberInput,
 .block-container .stRadio,
+.block-container [role="radiogroup"],
+.block-container [role="switch"],
+.block-container [data-testid="stCheckbox"],
 .block-container .stExpander,
 .block-container .stAlert,
 .block-container .stImage,
@@ -552,9 +555,9 @@ section[data-testid="stSidebar"] {{
 }}
 [data-amp-land-wrap="1"] {{
   position: fixed !important;
-  inset: 5.75rem 0 0 0 !important;
+  inset: var(--amp-land-top, 8.5rem) 0 0 0 !important;
   width: 100vw !important;
-  height: calc(100vh - 5.75rem) !important;
+  height: calc(100vh - var(--amp-land-top, 8.5rem)) !important;
   margin: 0 !important;
   padding: 0 !important;
   overflow: visible !important;
@@ -565,11 +568,11 @@ section[data-testid="stSidebar"] {{
 }}
 iframe[data-amp-land="1"] {{
   position: fixed !important;
-  inset: 5.75rem 0 0 0 !important;
+  inset: var(--amp-land-top, 8.5rem) 0 0 0 !important;
   width: 100vw !important;
-  height: calc(100vh - 5.75rem) !important;
+  height: calc(100vh - var(--amp-land-top, 8.5rem)) !important;
   min-width: 100% !important;
-  min-height: calc(100vh - 5.75rem) !important;
+  min-height: calc(100vh - var(--amp-land-top, 8.5rem)) !important;
   max-width: none !important;
   max-height: none !important;
   border: none !important;

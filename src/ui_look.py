@@ -78,13 +78,18 @@ def _write_life_query(on: bool) -> None:
 
 
 def classic_page_css() -> str:
-    """Drop full-bleed art and click-through so Streamlit chrome works."""
+    """Solid sanctuary colour — no location photo behind the page."""
     return """
 <style>
-.stApp { background: #0b0a14 !important; }
+html.amp-classic .stApp,
+.stApp {
+  background: linear-gradient(160deg, #0b0a14 0%, #131022 45%, #0d0b18 100%) !important;
+}
+html.amp-classic [data-testid="stAppViewContainer"],
 [data-testid="stAppViewContainer"] {
   background-image: none !important;
   background-color: #0b0a14 !important;
+  background: linear-gradient(160deg, #0b0a14 0%, #131022 45%, #0d0b18 100%) !important;
 }
 [data-testid="stAppViewContainer"]::before { display: none !important; }
 [data-testid="stAppViewContainer"] > .main,
@@ -94,15 +99,17 @@ def classic_page_css() -> str:
 }
 iframe[data-amp-land="1"],
 [data-amp-land-wrap="1"] { display: none !important; }
-section[data-testid="stSidebar"] {
-  z-index: 50 !important;
+section[data-testid="stSidebar"],
+[data-testid="stSidebarCollapsedControl"] {
+  z-index: 90 !important;
   pointer-events: auto !important;
 }
 [data-testid="stHeader"],
 [data-testid="stSidebarNav"],
 [data-testid="stTabs"],
-[data-baseweb="tab-list"] {
-  z-index: 40 !important;
+[data-baseweb="tab-list"],
+[role="tablist"] {
+  z-index: 90 !important;
   pointer-events: auto !important;
 }
 </style>
@@ -158,22 +165,39 @@ _WATCHER = """
 
 
 def render_look_picker() -> None:
-    """Sidebar radio — switch looks without losing guest auth."""
+    """Land look + Life — sit in the main top bar so they stay visible."""
     import streamlit as st
 
     current = land_look()
     if _RADIO not in st.session_state:
         st.session_state[_RADIO] = _NAME_FOR[current]
-    pick = st.sidebar.radio(
-        "Land look",
-        list(_VALUE_FOR.keys()),
-        key=_RADIO,
-        help=(
-            "Pictures on the land: the area art fills the page. "
-            "Classic: a 16:9 weather window — no full-page art. "
-            "Named Presence only while Life on the land is on."
-        ),
-    )
+    if _LIFE_KEY not in st.session_state:
+        st.session_state[_LIFE_KEY] = show_entities()
+
+    left, right = st.columns([3, 2])
+    with left:
+        pick = st.radio(
+            "Land look",
+            list(_VALUE_FOR.keys()),
+            key=_RADIO,
+            horizontal=True,
+            help=(
+                "Pictures on the land: the area art fills the page. "
+                "Classic: a 16:9 weather window on a solid page — no full-page art. "
+                "Named Presence only while Life on the land is on."
+            ),
+        )
+    with right:
+        _toggle = getattr(st, "toggle", None) or st.checkbox
+        life_pick = _toggle(
+            "Life on the land",
+            key=_LIFE_KEY,
+            help=(
+                "On: chimera, grass, stalls, and the rest are painted on the picture. "
+                "Off: the place only."
+            ),
+        )
+
     value = _VALUE_FOR.get(pick, LOOK_PICTORIAL)
     st.session_state[_STATE] = value
     try:
@@ -184,17 +208,6 @@ def render_look_picker() -> None:
         _write_query(value)
 
     life_now = show_entities()
-    if _LIFE_KEY not in st.session_state:
-        st.session_state[_LIFE_KEY] = life_now
-    _toggle = getattr(st.sidebar, "toggle", None) or st.sidebar.checkbox
-    life_pick = _toggle(
-        "Life on the land",
-        key=_LIFE_KEY,
-        help=(
-            "On: chimera, grass, stalls, and the rest are painted on the picture. "
-            "Off: the place only."
-        ),
-    )
     st.session_state[_LIFE_STATE] = bool(life_pick)
     try:
         lq = str(st.query_params.get(_LIFE_Q) or "")
@@ -205,6 +218,13 @@ def render_look_picker() -> None:
         _write_life_query(bool(life_pick))
 
     if value == LOOK_CLASSIC:
+        try:
+            st.markdown(
+                '<script>document.documentElement.classList.add("amp-classic");</script>',
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            pass
         st.markdown(classic_page_css(), unsafe_allow_html=True)
     else:
         try:
