@@ -378,7 +378,8 @@ check("Matrix no market picnic", "market_stall" not in kum and "olive" not in ku
 ws_ws = mk(2, "Warbling Shores")
 kws = {b["kind"] for b in eco.derive_scene(ws_ws, place="Warbling Shores")}
 check("Warbling shore life", bool(kws & {"shore", "siren", "boat"}), str(kws))
-check("Warbling civic market or well", bool(kws & {"market_stall", "well"}), str(kws))
+check("Warbling civic market or fountain", bool(kws & {"market_stall", "fountain"}), str(kws))
+check("Warbling no well (fountain place)", "well" not in kws, str(kws))
 
 ws_rs = mk(2, "Radiant Scarwood")
 krs = {b["kind"] for b in eco.derive_scene(ws_rs, place="Radiant Scarwood")}
@@ -394,6 +395,34 @@ ws_eh = mk(2, "Eternal Holy City")
 keh = {b["kind"] for b in eco.derive_scene(ws_eh, place="Eternal Holy City")}
 check("Eternal Holy chimera civic", "chimera" in keh, str(keh))
 check("Eternal Holy laundry or mosaic", bool(keh & {"laundry", "mosaic"}), str(keh))
+
+print("== Fountain vs well place fitness ==")
+check("fountain/well sets disjoint",
+      not (eco.FOUNTAIN_PLACES & eco.WELL_CITIES),
+      str(eco.FOUNTAIN_PLACES & eco.WELL_CITIES))
+for place, want_f, want_w in (
+    ("Okhema", True, False),
+    ("Janusopolis", True, False),
+    ("Warbling Shores", True, False),
+    ("Radiant Scarwood", True, False),
+    ("Demigod Council", True, False),
+    ("Aedes Elysiae", False, True),
+    ("Aidonia", False, True),
+    ("Castrum Kremnos", False, True),
+    ("Eye of Twilight", False, False),
+):
+    kinds = {b["kind"] for b in eco.derive_scene(mk(2, place), place=place)}
+    has_f, has_w = "fountain" in kinds, "well" in kinds
+    check(f"{place} fountain={'yes' if want_f else 'no'}", has_f == want_f,
+          f"kinds={kinds}")
+    check(f"{place} well={'yes' if want_w else 'no'}", has_w == want_w,
+          f"kinds={kinds}")
+    check(f"{place} not both water", not (has_f and has_w), f"kinds={kinds}")
+wl = eco.hotspot_for("well", 1)
+ft = eco.hotspot_for("fountain", 1)
+check("well/fountain different spots",
+      (wl.get("left"), wl.get("bottom")) != (ft.get("left"), ft.get("bottom")),
+      f"well={wl} fountain={ft}")
 
 print("== Place art variants + stall counts ==")
 from pathlib import Path as _P

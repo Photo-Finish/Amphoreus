@@ -17,6 +17,7 @@ in-game stills and pull the generator into CGI.
 - Classical lion–goat–snake chimera
 - Mermaid (siren is song, not a figure)
 - Named Chrysos Heirs
+- Human hands / arms / sleeves in pet films (reaction pose only; no petting hand)
 
 ## On-stage (land UI)
 

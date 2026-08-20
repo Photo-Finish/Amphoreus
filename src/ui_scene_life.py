@@ -1285,7 +1285,7 @@ def life_overlay_html(scene: List[dict], place: str = "", *, dense: bool = False
 
     if "fountain" in kinds:
         parts.append(
-            '<div class="amp-fountain" style="left:46%;bottom:2%;"></div>'
+            '<div class="amp-fountain" style="left:48%;bottom:2%;"></div>'
         )
     if "laundry" in kinds:
         parts.append(

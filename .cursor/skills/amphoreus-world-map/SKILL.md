@@ -66,6 +66,8 @@ Special: **The Nether** under Styxia (Thanatos-blessed). Cross-era rules in `tim
 | Forge / banner | Kremnos family |
 | Market stall | Market cities (not Grove) |
 | Mill | Field places (e.g. Aedes) |
+| Fountain | Civic plazas only (`FOUNTAIN_PLACES`): Okhema family, Janus/Sanctum, Styxia/Warbling, Grove/Scarwood, Demigod Council — never with a well |
+| Well | Practical cisterns only (`WELL_CITIES`): Aedes, Aidonia, Castrum Kremnos — never with a fountain |
 
 Forbidden statuses: dead / starving / plague. Grove: no chimera or shore life. Vortex: no fishing-shore clutter. Never author Heir speech from the ecosystem layer.
 

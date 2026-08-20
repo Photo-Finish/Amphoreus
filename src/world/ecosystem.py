@@ -64,11 +64,21 @@ MARKET_CITIES = {
     "Castrum Kremnos", "Styxia", "Warbling Shores",
     "Aedes Elysiae", "Aedes Elysiae, of old",
 }
-# Public wells / cisterns of settlement life.
+# Practical wells / cisterns — village, snow, martial camp. Never co-located
+# with a civic fountain (see FOUNTAIN_PLACES).
 WELL_CITIES = {
-    "Okhema", "Eternal Holy City", "Dawncloud", "Janusopolis",
-    "Castrum Kremnos", "Styxia", "Warbling Shores", "Aidonia",
-    "Aedes Elysiae", "Aedes Elysiae, of old", "Sanctum of Prophecy",
+    "Aedes Elysiae", "Aedes Elysiae, of old",
+    "Aidonia",
+    "Castrum Kremnos",
+}
+# Ornamental / civic fountains — plazas, prophecy, remembrance, grove court.
+# Disjoint from WELL_CITIES: one water feature per place family.
+FOUNTAIN_PLACES = {
+    "Okhema", "Eternal Holy City", "Dawncloud",
+    "Janusopolis", "Sanctum of Prophecy",
+    "Styxia", "Warbling Shores",
+    "Grove of Epiphany", "Radiant Scarwood",
+    "Demigod Council",
 }
 # Truly sparse: long-abandoned / death / sacred nexus — NOT thriving Dawn peaks.
 # Fortress of Dome (intact sky castrum) and Bloodbathed Battlefront (active war) are inhabited.
@@ -1085,7 +1095,7 @@ def hotspot_for(kind: str, idx: int) -> dict:
         "hearth_cat": ("58%", "12%"),
         "dawn": ("48%", "76%"),
         "thief_star": ("82%", "80%"),
-        "well": ("64%", "12%"),
+        "well": ("24%", "11%"),   # yard / village side — not plaza-center
         "shrine": ("12%", "14%"),
         "market_stall": ("36%", "14%"),
         "forge": ("78%", "12%"),
@@ -1094,7 +1104,7 @@ def hotspot_for(kind: str, idx: int) -> dict:
         "maze": ("28%", "8%"),
         "pebble": ("16%", "5%"),
         "pearl": ("62%", "6%"),
-        "fountain": ("46%", "12%"),
+        "fountain": ("48%", "10%"),  # civic plaza center
         "olive": ("20%", "16%"),
         "cicada": ("34%", "42%"),
         "laundry": ("86%", "28%"),
@@ -1284,7 +1294,6 @@ def derive_scene(world, place: Optional[str] = None,
     elif place == "Demigod Council":
         out.append(_mk_being("incense", place, 1, world, flags, character_id))
         out.append(_mk_being("pillar", place, 1, world, flags, character_id))
-        out.append(_mk_being("fountain", place, 1, world, flags, character_id))
     if place in le.FORGE:
         out.append(_mk_being("forge", place, 1, world, flags, character_id))
         out.append(_mk_being("banner", place, 1, world, flags, character_id))
@@ -1298,15 +1307,16 @@ def derive_scene(world, place: Optional[str] = None,
         out.append(_mk_being("pebble", place, 1, world, flags, character_id))
 
     # Regional texture — different places, not the same Okhema list everywhere.
+    # Civic fountain vs practical well: one water feature, never both (see sets).
+    if place in FOUNTAIN_PLACES:
+        out.append(_mk_being("fountain", place, 1, world, flags, character_id))
     if place in {"Okhema", "Eternal Holy City", "Dawncloud"}:
         out.append(_mk_being("mosaic", place, 1, world, flags, character_id))
-        out.append(_mk_being("fountain", place, 1, world, flags, character_id))
         out.append(_mk_being("pillar", place, 1, world, flags, character_id))
         if not (flags.get("resting") or period in (0, 4)):
             out.append(_mk_being("laundry", place, 1, world, flags, character_id))
             out.append(_mk_being("courier", place, 1, world, flags, character_id))
     if place in ART_FAMILY_JANUS:
-        out.append(_mk_being("fountain", place, 1, world, flags, character_id))
         out.append(_mk_being("incense", place, 1, world, flags, character_id))
         out.append(_mk_being("ribbon", place, 1, world, flags, character_id))
         if not (flags.get("resting") or period in (0, 4)):
@@ -1323,7 +1333,6 @@ def derive_scene(world, place: Optional[str] = None,
         if not (flags.get("resting") or period in (0, 4)):
             out.append(_mk_being("courier", place, 1, world, flags, character_id))
     if place in ART_FAMILY_STYXIA:
-        out.append(_mk_being("fountain", place, 1, world, flags, character_id))
         out.append(_mk_being("incense", place, 1, world, flags, character_id))
         if not (flags.get("resting") or period in (0, 4)):
             out.append(_mk_being("courier", place, 1, world, flags, character_id))
@@ -1334,7 +1343,6 @@ def derive_scene(world, place: Optional[str] = None,
     if place in LIVING_GROVE:
         out.append(_mk_being("olive", place, 1, world, flags, character_id))
         out.append(_mk_being("cicada", place, 1, world, flags, character_id))
-        out.append(_mk_being("fountain", place, 1, world, flags, character_id))
         out.append(_mk_being("wind", place, 1, world, flags, character_id))
         out.append(_mk_being("grass", place, 1, world, flags, character_id))
         out.append(_mk_being("pebble", place, 1, world, flags, character_id))
@@ -1512,6 +1520,12 @@ def logic_faults(scene: List[dict], place: str) -> List[str]:
         faults.append("Mill outside field places")
     if "market_stall" in kinds and place not in MARKET_CITIES:
         faults.append("Market stall outside market cities")
+    if "well" in kinds and place not in WELL_CITIES:
+        faults.append("Well outside practical well places")
+    if "fountain" in kinds and place not in FOUNTAIN_PLACES:
+        faults.append("Fountain outside civic fountain places")
+    if "well" in kinds and "fountain" in kinds:
+        faults.append("Well and fountain must not share a place")
     if "dromas" in kinds and place not in DROMAS_ROADS:
         faults.append("Dromas outside road places")
     if place == "Vortex of Genesis" and (
