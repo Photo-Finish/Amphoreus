@@ -333,6 +333,66 @@ def main():
               "Heh. That's a thing to say in this company.",
           ))
 
+    print("== Ambient Heir-to-Heir talk without a user line ==")
+    ws = _ws()
+    ws.set_location("aglaea", "Okhema")
+    ws.set_location("phainon", "Okhema")
+    ws.save()
+    store = {}
+    gc.send_invitations(
+        ws, "aglaea", ["phainon"],
+        name_of=lambda c: c, speak=_speak_accept, store=store,
+    )
+    # Fresh gathering is not due yet (activity just marked).
+    check("ambient not due immediately after invite",
+          gc.ambient_due(store) is False)
+    # Force idle on the session object (store may nest under STATE_KEY).
+    gc.as_session(store)["last_activity_ts"] = 0.0
+    check("ambient due after idle", gc.ambient_due(store) is True)
+
+    amb = gc.generate_ambient_turn(
+        None, store, world=ws, name_of=lambda c: c, speak=_speak_group,
+    )
+    check("ambient turn produces Heir lines", len(amb) >= 1, str(amb))
+    check("ambient lines have speakers, no user role",
+          all(m.get("role") == "assistant" and m.get("speaker")
+              for m in amb), str(amb))
+    check("ambient speakers are gathering members",
+          all(m.get("speaker") in {"aglaea", "phainon"} for m in amb),
+          str(amb))
+    # No new user message was appended.
+    sess_msgs = gc.as_session(store).get("messages") or []
+    user_msgs = [m for m in sess_msgs if m.get("role") == "user"]
+    check("ambient does not invent a user message",
+          len(user_msgs) == 0, str(user_msgs))
+
+    amb_cast = gc.who_speaks(
+        ["aglaea", "phainon", "cipher"], "aglaea", "",
+        lambda c: {"aglaea": "Aglaea", "phainon": "Phainon",
+                   "cipher": "Cipher"}[c],
+        turn_index=1, ambient=True,
+    )
+    check("ambient cast stays small (1–2 of 3)",
+          1 <= len(amb_cast) <= 2, str(amb_cast))
+
+    a_line = gc.fallback_group_line(
+        "cipher", "", ["Aglaea"], turn_index=0, ambient=True,
+    )
+    b_line = gc.fallback_group_line(
+        "cipher", "", ["Aglaea"], avoid=[a_line], turn_index=1, ambient=True,
+    )
+    check("ambient offline lines can differ",
+          a_line != b_line, f"{a_line!r} vs {b_line!r}")
+
+    # Force while not due still works.
+    gc.as_session(store)["last_activity_ts"] = __import__("time").time()
+    forced = gc.generate_ambient_turn(
+        None, store, world=ws, name_of=lambda c: c, speak=_speak_group,
+        force=True,
+    )
+    check("force ambient runs even when not idle",
+          len(forced) >= 1, str(forced))
+
     print("== End on leaving Visit (not on closing the site) ==")
     check("leaving Walk the Land tab ends the gathering",
           gc.should_end_for_tab("Walk the Land"))

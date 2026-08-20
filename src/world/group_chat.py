@@ -3,6 +3,7 @@
 When two or more Heirs stand in the same place, the operator may invite a
 gathering. Invitations are answered in each Heir's own voice. The session is
 a UI gathering: it lives in the Visit conversation and ends when Visit is left.
+While the star-stranger is quiet, gathered Heirs may continue among themselves.
 
 Uses existing world location APIs (`location_name`, `agents_at`, `travel_info`,
 `companions_here`). Does not invent a second map. Does not author Heir speech
@@ -13,12 +14,16 @@ silent backend.
 from __future__ import annotations
 
 import re
+import time
 from typing import Callable, Dict, Iterable, List, Optional
 
 from src.world import vivid_stage2 as v2
 
 STATE_KEY = "amp_group"
 VISIT_TAB = "Visit an Heir"
+# Ambient Heir-to-Heir talk while the star-stranger is quiet.
+AMBIENT_IDLE_AFTER_S = 28.0
+AMBIENT_MIN_GAP_S = 22.0
 
 # Tokens the invite prompt asks the model to append (stripped before display).
 _VERDICT = re.compile(r"\b(ACCEPT|DECLINE)\b", re.IGNORECASE)
@@ -43,6 +48,8 @@ def blank_session() -> dict:
         "members": [],
         "messages": [],
         "kind": "individual",
+        "last_activity_ts": 0.0,
+        "ambient_count": 0,
     }
 
 
@@ -53,12 +60,42 @@ def as_session(store) -> dict:
     if isinstance(store, dict) and "members" in store and "active" in store:
         if "messages" not in store:
             store["messages"] = []
+        store.setdefault("last_activity_ts", 0.0)
+        store.setdefault("ambient_count", 0)
         return store
     sess = store.setdefault(STATE_KEY, blank_session())
     if not isinstance(sess, dict):
         sess = blank_session()
         store[STATE_KEY] = sess
+    sess.setdefault("last_activity_ts", 0.0)
+    sess.setdefault("ambient_count", 0)
     return sess
+
+
+def touch_activity(store, *, when: Optional[float] = None) -> None:
+    """Mark the gathering as recently active (user turn or ambient beat)."""
+    sess = as_session(store)
+    if not sess.get("active"):
+        return
+    sess["last_activity_ts"] = float(when if when is not None else time.time())
+
+
+def ambient_due(
+    store,
+    *,
+    now: Optional[float] = None,
+    idle_after: float = AMBIENT_IDLE_AFTER_S,
+    min_gap: float = AMBIENT_MIN_GAP_S,
+) -> bool:
+    """True when the gathering may continue among Heirs without a user line."""
+    sess = as_session(store)
+    if not sess.get("active") or len(sess.get("members") or []) < 2:
+        return False
+    t = float(now if now is not None else time.time())
+    last = float(sess.get("last_activity_ts") or 0.0)
+    if last <= 0:
+        return True
+    return (t - last) >= max(float(idle_after), float(min_gap))
 
 
 def session_active(store) -> bool:
@@ -82,16 +119,20 @@ def session_start(store, *, host: str, place: str, invited: List[str],
         if cid and cid not in members:
             members.append(cid)
     sess = as_session(store)
+    started = len(members) >= 2 and len(accepted) >= 1
     sess.update({
-        "active": len(members) >= 2 and len(accepted) >= 1,
+        "active": started,
         "host": host,
         "place": place or "",
         "invited": list(invited),
         "accepted": list(accepted),
         "declined": list(declined),
-        "members": members if len(members) >= 2 and accepted else [],
+        "members": members if started else [],
         "messages": [],
-        "kind": "active" if (len(members) >= 2 and accepted) else "individual",
+        "kind": "active" if started else "individual",
+        "ambient_count": 0,
+        # Delay the first ambient beat until idle — do not talk over invitations.
+        "last_activity_ts": time.time() if started else 0.0,
     })
     return sess
 
@@ -273,6 +314,7 @@ def fallback_group_line(
     *,
     avoid: Optional[Iterable[str]] = None,
     turn_index: int = 0,
+    ambient: bool = False,
 ) -> str:
     """Offline / silent-backend stand-in — varies so rounds do not parrot."""
     others = [o for o in others if o]
@@ -280,13 +322,22 @@ def fallback_group_line(
     said = (user_message or "").strip()
     snippet = said[:72] if said else "that"
     avoid_set = {_compact_line(x) for x in (avoid or []) if x}
-    pool = list(_FALLBACK_GROUP_POOL.get(character_id) or [])
-    generic = [
-        "I hear you. ({company} are here with us.)",
-        "Go on — we are listening, here together.",
-        "Say it again another way if you must; I am still with you.",
-        "That lands differently in this company. Speak on.",
-    ]
+    if ambient:
+        pool = list(_FALLBACK_AMBIENT_POOL.get(character_id) or [])
+        generic = [
+            "While we wait — {company}, are you still with this hour?",
+            "The star-stranger is quiet. Softly, among ourselves…",
+            "A breath between words. {company} — what do you keep?",
+            "Company holds even in silence. I am still here with you.",
+        ]
+    else:
+        pool = list(_FALLBACK_GROUP_POOL.get(character_id) or [])
+        generic = [
+            "I hear you. ({company} are here with us.)",
+            "Go on — we are listening, here together.",
+            "Say it again another way if you must; I am still with you.",
+            "That lands differently in this company. Speak on.",
+        ]
     candidates = pool + generic
     # Rotate starting index by turn so consecutive offline rounds differ.
     start = (turn_index + sum(ord(ch) for ch in character_id)) % max(1, len(candidates))
@@ -302,7 +353,8 @@ def fallback_group_line(
             line = tmpl
         if _compact_line(line) not in avoid_set:
             return line
-    # Last resort: fold a unique scrap of the visitor's words in.
+    if ambient:
+        return f"Among ourselves, then — {company}, I am still here."
     tag = snippet[:40] or character_id
     return f"About “{tag}” — I hear you, with {company}."
 
@@ -391,11 +443,13 @@ def who_speaks(
     name_of: NameFn,
     *,
     turn_index: int = 0,
+    ambient: bool = False,
 ) -> List[str]:
-    """Natural multi-voice cast for one user turn.
+    """Natural multi-voice cast for one turn.
 
-    Small gatherings tend to speak together; larger ones rotate a subset so
-    the scene stays alive without a parrot chorus. Named Heirs always speak.
+    User turns: small gatherings speak together; larger ones rotate a subset.
+    Ambient turns (no visitor line): fewer voices — Heirs talk among themselves.
+    Named Heirs always speak on user turns.
     """
     members = [m for m in members if m]
     if not members:
@@ -403,16 +457,27 @@ def who_speaks(
     n = len(members)
     text = (user_message or "").lower()
     addressed: List[str] = []
-    for cid in members:
-        try:
-            nm = (name_of(cid) or "").lower()
-        except Exception:
-            nm = cid.lower()
-        if nm and len(nm) >= 3 and nm in text:
-            addressed.append(cid)
+    if not ambient:
+        for cid in members:
+            try:
+                nm = (name_of(cid) or "").lower()
+            except Exception:
+                nm = cid.lower()
+            if nm and len(nm) >= 3 and nm in text:
+                addressed.append(cid)
 
     # How many voices this turn — scale with the gathering, vary by turn.
-    if n <= 2:
+    if ambient:
+        if n <= 2:
+            k = 2 if (turn_index % 3) else 1
+            k = min(n, k)
+        elif n == 3:
+            k = 2 if (turn_index % 2) else 1
+        else:
+            k = 1 + (turn_index % 2)  # 1–2
+            if turn_index % 6 == 0:
+                k = min(n, 3)
+    elif n <= 2:
         k = n
     elif n == 3:
         k = 3 if (turn_index % 3) != 2 else 2
@@ -431,15 +496,13 @@ def who_speaks(
 
     rest = [m for m in members if m not in order]
     # Prefer the host early when nobody was named, then rotate by turn.
-    if host_id in rest and not addressed:
+    if host_id in rest and not addressed and not ambient:
         rest = [host_id] + [m for m in rest if m != host_id]
     if rest:
         rot = turn_index % len(rest)
         rest = rest[rot:] + rest[:rot]
-        # Message-stable shuffle among the rotated rest so similar prompts
-        # still vary who joins after the first seat.
         seed = (
-            sum(ord(ch) for ch in (user_message or "x"))
+            sum(ord(ch) for ch in (user_message or ("ambient" if ambient else "x")))
             + len(user_message or "")
             + turn_index * 17
         )
@@ -452,7 +515,6 @@ def who_speaks(
             break
         order.append(cid)
 
-    # Named Heirs always keep a seat even if k was small.
     for cid in addressed:
         if cid not in order:
             order.append(cid)
@@ -818,6 +880,168 @@ def generate_group_turn(
                 manager._witness_realization(cid, text)
         except Exception:
             pass
+    touch_activity(store)
+    return out
+
+
+def generate_ambient_turn(
+    manager,
+    store,
+    *,
+    world=None,
+    name_of: Optional[NameFn] = None,
+    speak: Optional[SpeakFn] = None,
+    force: bool = False,
+) -> List[dict]:
+    """Heir-to-Heir beat while the star-stranger is quiet.
+
+    Does not append a user message. Skips when the gathering is not idle
+    unless ``force`` (manual “let them speak”).
+    """
+    sess = as_session(store)
+    if not sess.get("active") or len(sess.get("members") or []) < 2:
+        return []
+    if not force and not ambient_due(store):
+        return []
+
+    members = list(sess.get("members") or [])
+    host_id = sess.get("host") or (members[0] if members else "")
+    place = sess.get("place") or ""
+    prior = list(sess.get("messages") or [])
+    turn_index = int(sess.get("ambient_count") or 0)
+
+    def _nm(cid):
+        if name_of:
+            try:
+                return name_of(cid)
+            except Exception:
+                pass
+        try:
+            return manager.get_character_info(cid)["name"]
+        except Exception:
+            return cid
+
+    speakers = who_speaks(
+        members, host_id, "", _nm, turn_index=turn_index, ambient=True,
+    )
+    out: List[dict] = []
+    said_so_far: List[str] = []
+    used_by: Dict[str, List[str]] = {}
+    for m in prior:
+        sp = m.get("speaker") or ""
+        if sp and m.get("role") == "assistant":
+            used_by.setdefault(sp, []).append(m.get("content") or "")
+
+    company_names = [_nm(m) for m in members]
+    for cid in speakers:
+        own_prior = list(used_by.get(cid) or [])
+        others = [_nm(m) for m in members if m != cid]
+        company = ", ".join(others) if others else "the others"
+        extra = group_prompt_block(
+            cid, members, place, _nm,
+            recent=prior + out,
+            own_prior=own_prior,
+        )
+        extra += (
+            "\n# Among yourselves\n"
+            "The star-stranger is quiet for a moment. Speak to the other "
+            "Heirs who share this place — a brief natural beat between you. "
+            "Do not wait for the visitor. Do not narrate. One or two spoken "
+            "sentences, or [quiet]."
+        )
+        if said_so_far:
+            extra += (
+                "\nAnother Heir already spoke this beat. Add only what is "
+                "yours — a reply to them, a small disagreement, or [quiet]."
+            )
+        prompt = (
+            f"The gathering continues in {place}. The star-stranger says "
+            f"nothing. Speak to {company} — keep the hour among yourselves."
+        )
+        gathering_so_far = ""
+        if prior or out:
+            lines = []
+            for m in (prior + out)[-10:]:
+                who = m.get("speaker") or (
+                    "the star-stranger" if m.get("role") == "user" else "someone"
+                )
+                if m.get("speaker") == cid:
+                    who = "you"
+                try:
+                    if m.get("speaker") and m.get("speaker") != cid:
+                        who = _nm(m["speaker"])
+                except Exception:
+                    pass
+                line = (m.get("content") or "").strip().replace("\n", " ")
+                if line:
+                    lines.append(f"- {who}: {line[:220]}")
+            if lines:
+                gathering_so_far = (
+                    "Gathering so far (do not repeat your own lines):\n"
+                    + "\n".join(lines)
+                )
+        text = ""
+        if speak:
+            try:
+                text = (speak(cid, prompt) or "").strip()
+            except Exception:
+                text = ""
+        elif manager is not None:
+            text = (
+                heir_speak(
+                    manager, cid, prompt,
+                    extra_system=extra,
+                    gathering_so_far=gathering_so_far,
+                ) or ""
+            ).strip()
+        if not text or looks_offline(text) or _QUIET.match(text):
+            if _QUIET.match(text or ""):
+                continue
+            text = fallback_group_line(
+                cid, "", others,
+                avoid=own_prior + [m.get("content") or "" for m in out],
+                turn_index=turn_index,
+                ambient=True,
+            )
+        if said_so_far and any(lines_too_similar(text, prev) for prev in said_so_far):
+            continue
+        if any(lines_too_similar(text, prev) for prev in own_prior):
+            alt = fallback_group_line(
+                cid, "", others,
+                avoid=own_prior + said_so_far + [text],
+                turn_index=turn_index + 1,
+                ambient=True,
+            )
+            if any(lines_too_similar(alt, prev) for prev in own_prior + said_so_far):
+                continue
+            text = alt
+        msg = append_message(store, role="assistant", content=text, speaker=cid)
+        out.append(msg)
+        said_so_far.append(_compact_line(text))
+        used_by.setdefault(cid, []).append(text)
+        try:
+            if manager is not None:
+                snippet = re.sub(r"\s+", " ", text).strip()[:120]
+                manager.memory.add_memory(
+                    cid,
+                    mtype="social",
+                    content=(
+                        f"In a gathering in {place} with "
+                        f"{', '.join(n for n in company_names if n != _nm(cid))}, "
+                        f"you told the company (visitor quiet): {snippet}"
+                    ),
+                    importance=1,
+                )
+        except Exception:
+            pass
+        try:
+            if manager is not None:
+                manager._witness_realization(cid, text)
+        except Exception:
+            pass
+
+    sess["ambient_count"] = turn_index + 1
+    touch_activity(store)
     return out
 
 
@@ -938,3 +1162,86 @@ _FALLBACK_GROUP_POOL: Dict[str, List[str]] = {
         "About “{said}” — go on.",
     ],
 }
+
+# Heir-to-Heir beats when the visitor is quiet (offline / silent backend).
+_FALLBACK_AMBIENT_POOL: Dict[str, List[str]] = {
+    "phainon": [
+        "{company} — while they pause, what do you make of this hour?",
+        "Hah. Quiet from our guest. Say something, {company}.",
+        "We're still here. Don't freeze up on me.",
+        "Between us — this place still holds.",
+    ],
+    "aglaea": [
+        "The weave does not wait on silence. {company}, how does the thread feel?",
+        "A pause is still gold. Softly, among us…",
+        "Company without a question can still speak. {company}?",
+        "The hour keeps its shape. I remain with you.",
+    ],
+    "mydei": [
+        "Quiet. Fine. {company} — anything to say?",
+        "They can listen. We do not need their words every breath.",
+        "Watch holds. Speak if you have something.",
+        "Between us, then.",
+    ],
+    "castorice": [
+        "I… {company}, are you still warm in this quiet?",
+        "Silence is not empty. Softly — I am here.",
+        "If no one asks… I can still sit with you.",
+        "A small word, if you wish it.",
+    ],
+    "cipher": [
+        "Well? Guest went quiet. {company}, gossip's fair game.",
+        "Heh. Awkward pause — fill it, or I will.",
+        "Don't look at me like that. Say something fun.",
+        "Among ourselves? Fine. I'm listening.",
+    ],
+    "anaxa": [
+        "A pause is data too. {company}, your claim while we wait?",
+        "Silence need not halt reason. Continue among us.",
+        "I remain. Speak a clean thought.",
+        "Between peers, then — briefly.",
+    ],
+    "hyacine": [
+        "{company}, breathe — we can talk softly while they rest.",
+        "I'm still with you. No rush from our guest.",
+        "A gentle word between us?",
+        "Company holds. Tell me something small.",
+    ],
+    "tribbie": [
+        "We can chat! {company}, tell us a tiny thing!",
+        "Quiet visitor — we still like talking!",
+        "Psst — between us!",
+        "We stay! We stay!",
+    ],
+    "cerydra": [
+        "Council does not dissolve for a pause. {company} — report.",
+        "I will hear you among yourselves.",
+        "Speak. A ruler listens to her own as well.",
+        "Between us, then. Briefly.",
+    ],
+    "hysilens": [
+        "{company} — the tide still turns. A word?",
+        "Silence at the shore. I remain.",
+        "Duty waits; company need not.",
+        "Softly, among us.",
+    ],
+    "cyrene": [
+        "♪ A rest in the song. {company}, hum with me?",
+        "♪ The visitor quiets — we keep a verse.",
+        "♪ Between us, a soft line.",
+        "♪ The hour still sings.",
+    ],
+    "evernight": [
+        "♭ Quiet is kind. {company}… still here?",
+        "♭ Softly among ourselves.",
+        "♭ The night does not mind a pause.",
+        "♭ I stay. Speak if you wish.",
+    ],
+    "dan-heng-permansor-terrae": [
+        "{company} — while they pause, stay alert.",
+        "I remain. Speak if you need to.",
+        "Quiet is fine. Company still stands.",
+        "Between us, then.",
+    ],
+}
+

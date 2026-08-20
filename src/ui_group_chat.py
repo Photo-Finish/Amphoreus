@@ -456,13 +456,46 @@ def _run_group_chat_fragment(manager, host_name: str, *,
     from src.ui_role import is_visitor
 
     avatar_fn = avatar_fn or avatar_path
+
+    # Heirs continue among themselves when the visitor is quiet.
+    try:
+        if group_is_active() and gc.ambient_due(store()):
+            gc.generate_ambient_turn(
+                manager, _ss(),
+                world=_world(),
+                name_of=lambda c: _name_of(manager, c),
+            )
+    except Exception:
+        pass
+
     render_group_transcript(user_avatar=user_avatar, avatar_fn=avatar_fn)
     if is_visitor():
         st.caption(
             "Read-only view — sign in as the operator to speak with "
-            "the gathering."
+            "the gathering. Heirs may still talk among themselves."
         )
         return
+
+    cols = st.columns([1, 1])
+    with cols[0]:
+        if st.button(
+            "Let them speak among themselves",
+            key="amp_gc_ambient_now",
+            help="Ask the gathered Heirs to continue without your words.",
+        ):
+            try:
+                gc.generate_ambient_turn(
+                    manager, _ss(),
+                    world=_world(),
+                    name_of=lambda c: _name_of(manager, c),
+                    force=True,
+                )
+            except Exception:
+                pass
+            st.rerun(scope="fragment")
+    with cols[1]:
+        st.caption("They keep talking on their own when you are quiet.")
+
     prompt = st.chat_input(
         group_input_placeholder(host_name),
         key="visit_group_chat_input",
@@ -487,8 +520,10 @@ def render_group_conversation(
     """Active gathering: transcript + docked input in a fragment.
 
     Fragment-scoped sends keep the land iframe mounted (no white page blink).
+    ``run_every`` lets Heirs continue among themselves while the visitor is quiet.
     """
     import streamlit as st
+    from datetime import timedelta
 
     host_name = (info or {}).get("name") or selected
     fragment = getattr(st, "fragment", None)
@@ -497,7 +532,7 @@ def render_group_conversation(
         render_group_transcript(user_avatar=user_avatar, avatar_fn=avatar_fn)
         return
 
-    @fragment
+    @fragment(run_every=timedelta(seconds=15))
     def _group_chat_fragment():
         _run_group_chat_fragment(
             manager, host_name,
