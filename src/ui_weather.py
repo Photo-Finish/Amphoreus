@@ -388,11 +388,15 @@ def ground_css_position(image_path) -> str:
     }.get(slug, "center 78%")
 
 
-def read_palette(image_path) -> dict:
-    """Body/heading/glass/scrim for words over this backdrop."""
+def read_palette(image_path, heir_id=None) -> dict:
+    """Body/heading/glass/scrim for words over this backdrop.
+
+    ``heir_id`` tints overlay *text* toward that Heir's accent (Visit).
+    Shadow / glass / hairlines stay; omit ``heir_id`` to keep land-gold.
+    """
     slug = backdrop_slug(image_path)
     if slug in _INK_SLUGS:
-        return {
+        pal = {
             "body": "#1a140c",
             "heading": "#3d2a12",
             "sub": "#5c4030",
@@ -409,44 +413,88 @@ def read_palette(image_path) -> dict:
             "shadow": "0 1px 0 rgba(248,242,228,.6)",
             "chat_bg": "rgba(248, 242, 228, 0.86)",
         }
-    thick = slug in _THICK_GOLD_SLUGS
-    a0, a1 = ("0.58", "0.28") if thick else ("0.52", "0.20")
-    glass = "rgba(10, 8, 20, 0.88)" if thick else "rgba(10, 8, 20, 0.78)"
-    return {
-        "body": "#f0e6c8",
-        "heading": "#e8d5a3",
-        "sub": "#b8a97f",
-        "meta": "#c9b896",
-        "beat": "#e8dcc0",
-        "glass": glass,
-        "border": "rgba(232, 213, 163, 0.22)",
-        "scrim": (
-            f"linear-gradient(105deg,"
-            f"rgba(8, 6, 16, {a0}) 0%,"
-            f"rgba(8, 6, 16, {a1}) 34%,"
-            f"rgba(8, 6, 16, 0.08) 100%)"
-        ),
-        "shadow": (
-            "0 0 1px rgba(0,0,0,.95),"
-            "0 1px 2px rgba(0,0,0,.88),"
-            "0 2px 8px rgba(0,0,0,.72),"
-            "0 0 14px rgba(0,0,0,.5)"
-        ),
-        "chat_bg": "rgba(10, 8, 20, 0.84)",
-    }
+    else:
+        thick = slug in _THICK_GOLD_SLUGS
+        a0, a1 = ("0.58", "0.28") if thick else ("0.52", "0.20")
+        glass = "rgba(10, 8, 20, 0.88)" if thick else "rgba(10, 8, 20, 0.78)"
+        pal = {
+            "body": "#f0e6c8",
+            "heading": "#e8d5a3",
+            "sub": "#b8a97f",
+            "meta": "#c9b896",
+            "beat": "#e8dcc0",
+            "glass": glass,
+            "border": "rgba(232, 213, 163, 0.22)",
+            "scrim": (
+                f"linear-gradient(105deg,"
+                f"rgba(8, 6, 16, {a0}) 0%,"
+                f"rgba(8, 6, 16, {a1}) 34%,"
+                f"rgba(8, 6, 16, 0.08) 100%)"
+            ),
+            "shadow": (
+                "0 0 1px rgba(0,0,0,.95),"
+                "0 1px 2px rgba(0,0,0,.88),"
+                "0 2px 8px rgba(0,0,0,.72),"
+                "0 0 14px rgba(0,0,0,.5)"
+            ),
+            "chat_bg": "rgba(10, 8, 20, 0.84)",
+        }
+    if heir_id:
+        from src.ui_heir_tint import apply_heir_text_tint
+        pal = apply_heir_text_tint(pal, heir_id)
+    return pal
 
 
-def page_backdrop_css(image_path, max_width=1920) -> str:
+def page_backdrop_css(image_path, max_width=1920, heir_id=None) -> str:
     """Pictorial chrome: transparent Streamlit page, no land photo.
 
     The JPEG lives inside the land iframe (``render_pictorial_stage``) so
     Streamlit cannot mangle ``background-size`` and so a fixed photo-band
     cannot leave a dark body gap above it.  ``max_width`` is unused (kept
-    for callers).
+    for callers).  ``heir_id`` tints overlay text (Visit); omit on Walk.
+
+    Visit and Walk both mount ``page_backdrop_css`` inside Streamlit tab
+    panels (all tabs render every run). Walk's panel comes *after* Visit in
+    the DOM, so a shared ``:root`` text palette would always lose to Walk's
+    land-gold. Visit therefore scopes tint vars to ``html.amp-mode-visit``;
+    Walk keeps ``:root`` / ``html.amp-mode-walk``. The look-tab watcher
+    toggles those classes from the selected tab.
     """
-    pal = read_palette(image_path)
+    pal = read_palette(image_path, heir_id=heir_id)
+    heir_key = (str(heir_id).strip().lower() if heir_id else "") or "land"
+    if heir_id:
+        # Higher specificity than Walk's :root so tint wins while Visit is open.
+        var_scope = "html.amp-mode-visit"
+    else:
+        var_scope = ":root, html.amp-mode-walk"
+    # Tiny boot: set mode from the active tab (or assume Visit if tabs not ready).
+    boot = ""
+    if heir_id:
+        boot = """
+<script>
+(function(){
+  try {
+    var d = window.parent.document;
+    var t = d.querySelector('[role="tab"][aria-selected="true"]');
+    var name = ((t && t.innerText) || '').replace(/\\s+/g, ' ').trim();
+    if (!t || name === 'Visit an Heir') {
+      d.documentElement.classList.add('amp-mode-visit');
+      d.documentElement.classList.remove('amp-mode-walk');
+    }
+  } catch (e) {}
+})();
+</script>
+"""
     return f"""
-<style>
+{boot}<style data-amp-backdrop="{heir_key}">
+{var_scope} {{
+  --amp-text-body: {pal["body"]};
+  --amp-text-heading: {pal["heading"]};
+  --amp-text-sub: {pal["sub"]};
+  --amp-text-meta: {pal["meta"]};
+  --amp-text-beat: {pal["beat"]};
+  --amp-text-shadow: {pal["shadow"]};
+}}
 html, body {{
   background: transparent !important;
   background-color: transparent !important;
@@ -497,7 +545,15 @@ section[data-testid="stSidebar"] {{
   z-index: 90 !important;
   pointer-events: auto !important;
 }}
-/* Look picker + tabs: glass over the land while they are on screen. */
+/* Look picker + tabs: glass over the land while they are on screen.
+   stTabs is z-index 80 (land iframe lives inside it). Look chrome must
+   sit higher or the full-viewport land paints over Land look / Life. */
+.st-key-amp_look_chrome {{
+  position: relative !important;
+  z-index: 120 !important;
+  pointer-events: auto !important;
+  isolation: isolate;
+}}
 [data-testid="stTabs"],
 [data-testid="stTab"],
 [role="tablist"],
@@ -515,12 +571,12 @@ section[data-testid="stSidebar"] {{
   -webkit-backdrop-filter: blur(8px);
 }}
 [role="tab"] {{
-  color: {pal["sub"]} !important;
-  text-shadow: {pal["shadow"]};
+  color: var(--amp-text-sub) !important;
+  text-shadow: var(--amp-text-shadow);
 }}
 [role="tab"][aria-selected="true"] {{
-  color: {pal["heading"]} !important;
-  border-bottom-color: {pal["heading"]} !important;
+  color: var(--amp-text-heading) !important;
+  border-bottom-color: var(--amp-text-heading) !important;
 }}
 section[data-testid="stMain"] {{
   pointer-events: none;
@@ -535,8 +591,10 @@ section[data-testid="stMain"] {{
 }}
 .block-container [role="radiogroup"],
 .block-container [data-testid="stRadio"],
+.block-container [data-testid="stRadioGroup"],
 .block-container [role="switch"],
-.block-container [data-testid="stCheckbox"] {{
+.block-container [data-testid="stCheckbox"],
+.block-container [data-testid="stToggle"] {{
   background: {pal["glass"]} !important;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -546,9 +604,10 @@ section[data-testid="stMain"] {{
 }}
 .block-container [data-testid="stWidgetLabel"] p,
 .block-container [role="radiogroup"] label,
-.block-container [role="switch"] label {{
-  color: {pal["body"]} !important;
-  text-shadow: {pal["shadow"]};
+.block-container [role="switch"] label,
+.block-container [data-testid="stRadioOption"] {{
+  color: var(--amp-text-body) !important;
+  text-shadow: var(--amp-text-shadow);
 }}
 /* Empty page area clicks the land; widgets stay usable. */
 .block-container .stButton,
@@ -561,7 +620,10 @@ section[data-testid="stMain"] {{
 .block-container .stRadio,
 .block-container [role="radiogroup"],
 .block-container [role="switch"],
+.block-container [data-testid="stRadio"],
+.block-container [data-testid="stRadioGroup"],
 .block-container [data-testid="stCheckbox"],
+.block-container [data-testid="stToggle"],
 .block-container .stExpander,
 .block-container .stAlert,
 .block-container .stImage,
@@ -637,31 +699,31 @@ iframe[data-amp-land="1"] {{
   border: none !important;
   border-radius: 0 !important;
   padding: 0.35rem 0 0.55rem 0;
-  color: {pal["body"]};
+  color: var(--amp-text-body);
   margin: 0.25rem 0 0.55rem 0;
 }}
 .amp-read strong,
 .amp-read .sub,
 .amp-read .meta,
 .amp-read .beat {{
-  text-shadow: {pal["shadow"]};
+  text-shadow: var(--amp-text-shadow);
 }}
 .amp-read h1, .amp-read h2, .amp-read h3 {{
-  color: {pal["heading"]}; margin-top: 0;
+  color: var(--amp-text-heading); margin-top: 0;
 }}
-.amp-read .sub {{ color: {pal["sub"]}; }}
-.amp-read .meta {{ color: {pal["meta"]}; font-size: 0.9rem; letter-spacing: 0.03em; }}
+.amp-read .sub {{ color: var(--amp-text-sub); }}
+.amp-read .meta {{ color: var(--amp-text-meta); font-size: 0.9rem; letter-spacing: 0.03em; }}
 .amp-read .beat {{
   font-family: Georgia, "Palatino Linotype", serif;
   font-size: 1.1rem; line-height: 1.55; font-style: italic;
-  color: {pal["beat"]}; margin: 0.35rem 0 0 0;
+  color: var(--amp-text-beat); margin: 0.35rem 0 0 0;
 }}
 [data-testid="stMain"] h1,
 [data-testid="stMain"] h2,
 [data-testid="stMain"] h3,
 [data-testid="stMain"] [data-testid="stHeading"] {{
-  color: {pal["heading"]} !important;
-  text-shadow: {pal["shadow"]};
+  color: var(--amp-text-heading) !important;
+  text-shadow: var(--amp-text-shadow);
 }}
 [data-testid="stMain"] p,
 [data-testid="stMain"] li,
@@ -672,14 +734,14 @@ iframe[data-amp-land="1"] {{
 [data-testid="stMain"] [data-testid="stMarkdownContainer"] p,
 [data-testid="stMain"] [data-testid="stWidgetLabel"],
 [data-testid="stMain"] .stCaption {{
-  color: {pal["body"]} !important;
-  text-shadow: {pal["shadow"]};
+  color: var(--amp-text-body) !important;
+  text-shadow: var(--amp-text-shadow);
 }}
 [data-testid="stMain"] [data-testid="stCaptionContainer"],
 [data-testid="stMain"] [data-testid="stCaptionContainer"] p,
 [data-testid="stMain"] [data-testid="stCaptionContainer"] span {{
-  color: {pal["sub"]} !important;
-  text-shadow: {pal["shadow"]};
+  color: var(--amp-text-sub) !important;
+  text-shadow: var(--amp-text-shadow);
 }}
 [data-testid="stMain"] [data-testid="stAlert"] {{
   background: transparent !important;
@@ -688,14 +750,14 @@ iframe[data-amp-land="1"] {{
   border: none !important;
   border-left: 2px solid rgba(232, 213, 163, 0.35) !important;
   border-radius: 0 !important;
-  color: {pal["body"]} !important;
+  color: var(--amp-text-body) !important;
   padding-left: 0.55rem !important;
 }}
 [data-testid="stMain"] [data-testid="stAlert"] p,
 [data-testid="stMain"] [data-testid="stAlert"] span,
 [data-testid="stMain"] [data-testid="stAlert"] div {{
-  color: {pal["body"]} !important;
-  text-shadow: {pal["shadow"]};
+  color: var(--amp-text-body) !important;
+  text-shadow: var(--amp-text-shadow);
 }}
 [data-testid="stMain"] [data-testid="stExpander"] {{
   background: transparent !important;
@@ -723,55 +785,74 @@ iframe[data-amp-land="1"] {{
 [data-testid="stMain"] [data-testid="stExpander"] summary,
 [data-testid="stMain"] [data-testid="stExpander"] p,
 [data-testid="stMain"] [data-testid="stExpander"] li {{
-  color: {pal["body"]} !important;
-  text-shadow: {pal["shadow"]};
+  color: var(--amp-text-body) !important;
+  text-shadow: var(--amp-text-shadow);
 }}
 [data-testid="stMain"] .stButton > button,
 [data-testid="stMain"] [data-testid^="stBaseButton"] {{
   background: transparent !important;
-  color: {pal["body"]} !important;
+  color: var(--amp-text-body) !important;
   border: none !important;
   border-bottom: 1px solid rgba(232, 213, 163, 0.32) !important;
   border-radius: 0 !important;
   box-shadow: none !important;
-  text-shadow: {pal["shadow"]};
+  text-shadow: var(--amp-text-shadow);
 }}
 [data-testid="stMain"] .stButton > button:hover,
 [data-testid="stMain"] [data-testid^="stBaseButton"]:hover {{
-  color: {pal["heading"]} !important;
+  color: var(--amp-text-heading) !important;
   border-bottom-color: rgba(232, 213, 163, 0.7) !important;
   background: transparent !important;
 }}
+[data-testid="stMain"] [data-testid="stSelectbox"],
+[data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="select"],
 [data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+[data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
+[data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
+[data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="input"],
+[data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="base-input"],
+[data-testid="stMain"] [data-testid="stSelectbox"] input,
+[data-testid="stMain"] [data-testid="stSelectbox"] [role="combobox"],
+[data-testid="stMain"] [data-testid="stSelectbox"] [role="group"],
+[data-testid="stMain"] [data-testid="stSelectbox"] .react-aria-Group,
+[data-testid="stMain"] [data-testid="stSelectbox"] :has(> input) {{
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  color: var(--amp-text-body) !important;
+  text-shadow: var(--amp-text-shadow);
+}}
+[data-testid="stMain"] [data-testid="stSelectbox"] [role="group"],
+[data-testid="stMain"] [data-testid="stSelectbox"] .react-aria-Group,
+[data-testid="stMain"] [data-testid="stSelectbox"] :has(> input) {{
+  border: none !important;
+  border-bottom: 1px solid rgba(232, 213, 163, 0.4) !important;
+  border-radius: 0 !important;
+}}
 [data-testid="stMain"] [data-baseweb="select"] > div {{
   background: transparent !important;
   background-color: transparent !important;
-  color: {pal["body"]} !important;
+  color: var(--amp-text-body) !important;
   border: none !important;
   border-bottom: 1px solid rgba(232, 213, 163, 0.32) !important;
   border-radius: 0 !important;
   box-shadow: none !important;
-  text-shadow: {pal["shadow"]};
-}}
-[data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-[data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="select"] span {{
-  background: transparent !important;
-  color: {pal["body"]} !important;
-  text-shadow: {pal["shadow"]};
+  text-shadow: var(--amp-text-shadow);
 }}
 [data-testid="stChatMessage"],
 [data-testid="stChatMessageContent"],
 [data-testid="stChatMessage"] > div {{
   background: transparent !important;
-  color: {pal["body"]} !important;
+  color: var(--amp-text-body) !important;
   border: none !important;
   box-shadow: none !important;
 }}
 [data-testid="stChatMessage"] p,
 [data-testid="stChatMessage"] span,
 [data-testid="stChatMessage"] li {{
-  color: {pal["body"]} !important;
-  text-shadow: {pal["shadow"]};
+  color: var(--amp-text-body) !important;
+  text-shadow: var(--amp-text-shadow);
 }}
 [data-testid="stMain"] .amp-travelbar {{
   background: transparent !important;
@@ -780,27 +861,50 @@ iframe[data-amp-land="1"] {{
   border-radius: 0 !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
-  text-shadow: {pal["shadow"]};
+  text-shadow: var(--amp-text-shadow);
 }}
 [data-testid="stMain"] .amp-travelnote {{
   background: transparent !important;
   border: none !important;
-  text-shadow: {pal["shadow"]};
+  text-shadow: var(--amp-text-shadow);
 }}
 [data-testid="stMain"] [data-testid="stFileUploader"],
-[data-testid="stMain"] [data-testid="stFileUploaderDropzone"],
-[data-testid="stMain"] [data-testid="stFileUploaderDropzoneInstructions"],
-[data-testid="stMain"] [data-testid="stFileUploader"] section,
-[data-testid="stMain"] [data-testid="stFileUploader"] button {{
+[data-testid="stMain"] [data-testid="stFileUploaderDropzoneInstructions"] {{
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;
-  text-shadow: {pal["shadow"]};
+  text-shadow: var(--amp-text-shadow);
 }}
-[data-testid="stMain"] [data-testid="stFileUploaderDropzone"] {{
-  border: none !important;
-  border-bottom: 1px dashed rgba(232, 213, 163, 0.28) !important;
-  border-radius: 0 !important;
+[data-testid="stMain"] [data-testid="stFileUploaderDropzone"],
+[data-testid="stMain"] [data-testid="stFileUploader"] section {{
+  background: rgba(232, 213, 163, 0.10) !important;
+  background-color: rgba(232, 213, 163, 0.10) !important;
+  border: 1px solid rgba(232, 213, 163, 0.42) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22) !important;
+}}
+[data-testid="stMain"] [data-testid="stFileUploader"] button,
+[data-testid="stMain"] [data-testid="stFileUploaderDropzone"] button,
+[data-testid="stMain"] [data-testid="stFileUploader"] [data-testid^="stBaseButton"] {{
+  background: #e8d5a3 !important;
+  background-color: #e8d5a3 !important;
+  color: #1a140c !important;
+  border: 1px solid #f0e6c8 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-shadow: none !important;
+  min-height: 2.15rem !important;
+  padding: 0.35rem 0.9rem !important;
+}}
+[data-testid="stMain"] [data-testid="stFileUploader"] button:hover,
+[data-testid="stMain"] [data-testid="stFileUploaderDropzone"] button:hover,
+[data-testid="stMain"] [data-testid="stFileUploader"] [data-testid^="stBaseButton"]:hover {{
+  background: #f0e6c8 !important;
+  background-color: #f0e6c8 !important;
+  color: #120e08 !important;
+  border-color: #f7f1dc !important;
 }}
 [data-testid="stMain"] [data-testid="stAudioInput"],
 [data-testid="stMain"] [data-testid="stAudioInput"] > div,
@@ -825,17 +929,17 @@ iframe[data-amp-land="1"] {{
 [data-testid="stChatInput"] textarea,
 [data-testid="stChatInput"] input,
 [data-testid="stChatInputTextArea"] {{
-  color: {pal["body"]} !important;
+  color: var(--amp-text-body) !important;
   background: transparent !important;
-  caret-color: {pal["heading"]} !important;
-  text-shadow: {pal["shadow"]};
+  caret-color: var(--amp-text-heading) !important;
+  text-shadow: var(--amp-text-shadow);
   border: none !important;
   border-bottom: 1px solid rgba(232, 213, 163, 0.32) !important;
   border-radius: 0 !important;
   box-shadow: none !important;
 }}
 [data-testid="stChatInput"] [data-testid="stChatInputSubmitButton"] {{
-  color: {pal["heading"]} !important;
+  color: var(--amp-text-heading) !important;
   background: transparent !important;
   box-shadow: none !important;
 }}
@@ -846,10 +950,21 @@ iframe[data-amp-land="1"] {{
 [data-testid="stBottomBlockContainer"] {{
   --secondary-background-color: transparent !important;
   --st-secondary-background-color: transparent !important;
+  --st-emotion-theme-secondaryBackgroundColor: transparent !important;
+  --background-color: transparent !important;
 }}
-[data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="select"] div {{
+[data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="select"],
+[data-testid="stMain"] [data-testid="stSelectbox"] [data-baseweb="select"] *,
+[data-testid="stMain"] [data-testid="stSelectbox"] [role="group"],
+[data-testid="stMain"] [data-testid="stSelectbox"] .react-aria-Group {{
   background: transparent !important;
   background-color: transparent !important;
+}}
+[data-testid="stSelectboxVirtualDropdown"] {{
+  background: rgba(18, 16, 28, 0.94) !important;
+  background-color: rgba(18, 16, 28, 0.94) !important;
+  border: 1px solid rgba(232, 213, 163, 0.28) !important;
+  color: var(--amp-text-body) !important;
 }}
 [data-testid="stChatInput"] div {{
   background: transparent !important;
@@ -870,7 +985,7 @@ section[data-testid="stSidebar"] {{
 [data-testid="stMarkdownContainer"],
 [data-testid="stChatMessage"],
 .stCaption, .stAlert {{
-  text-shadow: {pal["shadow"]};
+  text-shadow: var(--amp-text-shadow);
 }}
 html.amp-land-off,
 html.amp-land-off body,
@@ -893,6 +1008,13 @@ html.amp-land-off [data-testid="stMainBlockContainer"],
 html.amp-land-off .block-container {{
   background: transparent !important;
   pointer-events: auto !important;
+}}
+/* Last so no earlier pictorial rule can bury Land look / Life under the land. */
+.st-key-amp_look_chrome {{
+  position: relative !important;
+  z-index: 120 !important;
+  pointer-events: auto !important;
+  isolation: isolate;
 }}
 </style>
 """

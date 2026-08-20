@@ -24,6 +24,11 @@ st.set_page_config(
 from src.ui_gate import enforce_auth, get_manager  # noqa: E402
 
 enforce_auth()
+try:
+    from src.ui_group_chat import end_if_left_visit_page
+    end_if_left_visit_page()
+except Exception:
+    pass
 
 from src.ui_look import render_look_picker  # noqa: E402
 

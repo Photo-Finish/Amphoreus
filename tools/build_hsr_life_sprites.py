@@ -278,6 +278,261 @@ def pack_pet_films() -> None:
         print("wrote", dest.name, strip.size)
 
 
+# ---------------------------------------------------------------------------
+# Profession outfits — recolor/composite from civilian resident still + walk
+# ---------------------------------------------------------------------------
+
+# Recipes keyed by sprite stem (matches resident_npcs.ROLE_OUTFIT values).
+# fabric: chiton + drape near-whites. gold: optional trim retint. sash/apron:
+# simple overlays so professions read at land scale without new source art.
+OUTFIT_RECIPES: dict[str, dict] = {
+    "resident_guard": {
+        "fabric": (132, 46, 52),
+        "gold": (210, 168, 78),
+        "sash": (36, 32, 40),
+        "sash_y": 0.42,
+    },
+    "resident_merchant": {
+        "fabric": (236, 224, 196),
+        "cloak": (74, 96, 148),
+        "gold": (220, 176, 72),
+        "pouch": True,
+    },
+    "resident_scholar": {
+        "fabric": (78, 84, 118),
+        "gold": (196, 170, 96),
+        "scroll": True,
+    },
+    "resident_smith": {
+        "fabric": (86, 72, 62),
+        "gold": (168, 132, 72),
+        "apron": (42, 36, 32),
+    },
+    "resident_weaver": {
+        "fabric": (198, 176, 204),
+        "gold": (188, 148, 92),
+        "sash": (148, 72, 108),
+        "sash_y": 0.44,
+    },
+    "resident_shrine": {
+        "fabric": (248, 244, 232),
+        "gold": (228, 188, 72),
+        "laurel": True,
+    },
+    "resident_healer": {
+        "fabric": (196, 224, 204),
+        "gold": (180, 160, 88),
+        "sash": (86, 138, 112),
+        "sash_y": 0.45,
+    },
+    "resident_harbor": {
+        "fabric": (82, 112, 142),
+        "gold": (176, 148, 84),
+    },
+    "resident_field": {
+        "fabric": (152, 132, 84),
+        "gold": (156, 128, 64),
+        "apron": (112, 100, 64),
+    },
+    "resident_handler": {
+        "fabric": (156, 128, 100),
+        "gold": (188, 148, 72),
+        "harness": True,
+    },
+    "resident_baker": {
+        "fabric": (244, 236, 220),
+        "gold": (196, 156, 84),
+        "apron": (226, 218, 200),
+    },
+}
+
+
+def _is_skin(r: int, g: int, b: int, sat: float, lum: float) -> bool:
+    return (
+        r > 110
+        and g > 70
+        and b > 45
+        and r >= g >= b - 8
+        and 85 < lum < 200
+        and 0.12 < sat < 0.55
+        and (r - b) > 25
+    )
+
+
+def _is_gold(r: int, g: int, b: int, sat: float, lum: float) -> bool:
+    return r > 145 and g > 100 and b < 120 and sat > 0.20 and lum > 105
+
+
+def _is_fabric(r: int, g: int, b: int, sat: float, lum: float) -> bool:
+    if _is_skin(r, g, b, sat, lum) or _is_gold(r, g, b, sat, lum):
+        return False
+    # Near-white / cream drapery (incl. warm folds).
+    if lum >= 155 and sat <= 0.28:
+        return True
+    # Lit cream with a little warm bias.
+    if lum >= 140 and sat <= 0.35 and r >= g >= b - 6 and (r - b) < 70:
+        return True
+    return False
+
+
+def _shade_rgb(rgb: tuple[int, int, int], lum: float) -> tuple[int, int, int]:
+    shade = 0.48 + 0.52 * (lum / 255.0)
+    return (
+        int(min(255, rgb[0] * shade)),
+        int(min(255, rgb[1] * shade)),
+        int(min(255, rgb[2] * shade)),
+    )
+
+
+def _recolor_outfit(im: Image.Image, recipe: dict) -> Image.Image:
+    """Recolor civilian near-white drapery; preserve skin / hair / sandals."""
+    out = im.convert("RGBA").copy()
+    px = out.load()
+    w, h = out.size
+    fabric = recipe.get("fabric")
+    cloak = recipe.get("cloak")
+    gold = recipe.get("gold")
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if a < 40:
+                continue
+            mx, mn = max(r, g, b), min(r, g, b)
+            sat = (mx - mn) / mx if mx else 0.0
+            lum = (r + g + b) / 3.0
+            if _is_gold(r, g, b, sat, lum):
+                if gold:
+                    px[x, y] = (*_shade_rgb(gold, lum), a)
+                continue
+            if not _is_fabric(r, g, b, sat, lum):
+                continue
+            # Cloak bias: left side of figure (drape over shoulder/arm).
+            use_cloak = bool(cloak) and x < int(w * 0.48) and y < int(h * 0.72)
+            target = cloak if use_cloak else fabric
+            if not target:
+                continue
+            px[x, y] = (*_shade_rgb(target, lum), a)
+    return out
+
+
+def _overlay_band(
+    im: Image.Image,
+    rgb: tuple[int, int, int],
+    *,
+    y_frac: float,
+    thickness: float = 0.045,
+    x0_frac: float = 0.30,
+    x1_frac: float = 0.72,
+    alpha: int = 150,
+) -> None:
+    """Paint a soft sash/apron band across the torso (in-place)."""
+    from PIL import ImageDraw, ImageFilter, ImageChops
+
+    w, h = im.size
+    y = int(h * y_frac)
+    th = max(2, int(h * thickness))
+    overlay = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(overlay)
+    x0, x1 = int(w * x0_frac), int(w * x1_frac)
+    draw.rounded_rectangle(
+        [x0, y - th, x1, y + th],
+        radius=max(2, th),
+        fill=(*rgb, alpha),
+    )
+    overlay = overlay.filter(ImageFilter.GaussianBlur(radius=1.2))
+    base_a = im.split()[-1]
+    band_a = overlay.split()[-1]
+    overlay.putalpha(ImageChops.multiply(band_a, base_a))
+    im.alpha_composite(overlay)
+
+
+def _overlay_marks(im: Image.Image, recipe: dict) -> Image.Image:
+    """Profession marks: sash, apron, pouch, scroll, laurel, harness."""
+    from PIL import ImageDraw, ImageChops
+
+    out = im.convert("RGBA").copy()
+    w, h = out.size
+    if recipe.get("sash"):
+        _overlay_band(
+            out,
+            recipe["sash"],
+            y_frac=float(recipe.get("sash_y", 0.45)),
+            thickness=0.028,
+            alpha=135,
+        )
+    if recipe.get("apron"):
+        _overlay_band(
+            out,
+            recipe["apron"],
+            y_frac=0.58,
+            thickness=0.09,
+            x0_frac=0.34,
+            x1_frac=0.68,
+            alpha=160,
+        )
+    draw_layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(draw_layer)
+    if recipe.get("pouch"):
+        cx, cy = int(w * 0.58), int(h * 0.55)
+        d.ellipse([cx - 7, cy - 9, cx + 7, cy + 9], fill=(92, 64, 40, 200))
+        d.rectangle([cx - 2, cy - 12, cx + 2, cy - 6], fill=(160, 128, 64, 210))
+    if recipe.get("scroll"):
+        x0, y0 = int(w * 0.62), int(h * 0.48)
+        d.rounded_rectangle(
+            [x0, y0, x0 + 9, y0 + 26],
+            radius=3,
+            fill=(236, 224, 196, 210),
+            outline=(168, 140, 88, 230),
+        )
+    if recipe.get("laurel"):
+        cx, cy = int(w * 0.50), int(h * 0.14)
+        d.arc([cx - 18, cy - 8, cx + 18, cy + 14], 200, 340, fill=(168, 188, 96, 210), width=3)
+        d.arc([cx - 16, cy - 6, cx + 16, cy + 12], 200, 340, fill=(210, 176, 72, 200), width=2)
+    if recipe.get("harness"):
+        _overlay_band(
+            out, (72, 56, 44), y_frac=0.36, thickness=0.022, x0_frac=0.32, x1_frac=0.70, alpha=170
+        )
+        _overlay_band(
+            out, (72, 56, 44), y_frac=0.52, thickness=0.020, x0_frac=0.34, x1_frac=0.68, alpha=160
+        )
+    base_a = out.split()[-1]
+    marks_a = draw_layer.split()[-1]
+    draw_layer.putalpha(ImageChops.multiply(marks_a, base_a))
+    out.alpha_composite(draw_layer)
+    return out
+
+
+def _load_resident_bases() -> tuple[Image.Image, list[Image.Image]]:
+    still = Image.open(OUT / "resident.png").convert("RGBA")
+    frames = [Image.open(OUT / f"resident_f{i}.png").convert("RGBA") for i in range(1, 5)]
+    return still, frames
+
+
+def build_profession_outfits() -> None:
+    """Derive full still + walk film sets for each special profession outfit."""
+    still, frames = _load_resident_bases()
+    for stem, recipe in OUTFIT_RECIPES.items():
+        new_still = _overlay_marks(_recolor_outfit(still, recipe), recipe)
+        new_still.save(OUT / f"{stem}.png")
+        print("wrote", f"{stem}.png", new_still.size)
+
+        out_frames: list[Image.Image] = []
+        for i, fr in enumerate(frames, start=1):
+            nf = _overlay_marks(_recolor_outfit(fr, recipe), recipe)
+            nf.save(OUT / f"{stem}_f{i}.png")
+            out_frames.append(nf)
+            print("wrote", f"{stem}_f{i}.png", nf.size)
+
+        cell = out_frames[0].size[0]
+        strip = Image.new("RGBA", (cell * len(out_frames), cell), (0, 0, 0, 0))
+        for i, fr in enumerate(out_frames):
+            strip.paste(fr, (i * cell, 0), fr)
+        dest = OUT / f"{stem}_film.png"
+        strip.save(dest)
+        print("wrote", dest.name, strip.size)
+    print("done — profession outfits:", ", ".join(OUTFIT_RECIPES))
+
+
 def main() -> None:
     if not WALK.is_dir():
         raise FileNotFoundError(f"missing walk frame dir: {WALK}")
@@ -290,5 +545,7 @@ if __name__ == "__main__":
     import sys
     if "pet" in sys.argv:
         pack_pet_films()
+    elif "outfits" in sys.argv:
+        build_profession_outfits()
     else:
         main()

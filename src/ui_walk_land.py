@@ -148,7 +148,7 @@ def _render_walk_classic(
 
 
 def render_walk_page(*, key_prefix: str = "walk") -> None:
-    """Pick a region and stand in it. Look follows the sidebar Land look radio."""
+    """Pick a region and stand in it. Look follows the Land look radio."""
     import html as _html
     import streamlit as st
     from src.world.world_state import WorldState

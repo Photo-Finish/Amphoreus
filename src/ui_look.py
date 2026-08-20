@@ -10,6 +10,7 @@ _RADIO = "amp_land_look_radio"
 _LIFE_Q = "amp_life"
 _LIFE_STATE = "amp_land_life"
 _LIFE_KEY = "amp_land_life_check"
+_CHROME_KEY = "amp_look_chrome"
 
 _LABELS = (
     ("Pictures on the land", LOOK_PICTORIAL),
@@ -77,6 +78,45 @@ def _write_life_query(on: bool) -> None:
         pass
 
 
+def look_chrome_css() -> str:
+    """Keep Land look + Life above the full-viewport land iframe.
+
+    Pictorial CSS raises ``[data-testid=stTabs]`` (and the land iframe inside
+    it) to z-index 80. The picker sits *above* the tabs in the document, so
+    without its own stacking context it is painted over and looks missing.
+    """
+    return """
+<style>
+.st-key-amp_look_chrome {
+  position: relative !important;
+  z-index: 120 !important;
+  pointer-events: auto !important;
+  isolation: isolate;
+}
+.st-key-amp_look_chrome [data-testid="stHorizontalBlock"],
+.st-key-amp_look_chrome [data-testid="stElementContainer"],
+.st-key-amp_look_chrome [data-testid="stRadio"],
+.st-key-amp_look_chrome [data-testid="stRadioGroup"],
+.st-key-amp_look_chrome [data-testid="stCheckbox"],
+.st-key-amp_look_chrome [data-testid="stToggle"],
+.st-key-amp_look_chrome [role="radiogroup"],
+.st-key-amp_look_chrome [role="switch"] {
+  pointer-events: auto !important;
+}
+.st-key-amp_look_chrome [data-testid="stWidgetLabel"] p,
+.st-key-amp_look_chrome [data-testid="stRadio"] label,
+.st-key-amp_look_chrome [data-testid="stRadioOption"],
+.st-key-amp_look_chrome [role="radiogroup"] label,
+.st-key-amp_look_chrome [role="switch"] label,
+.st-key-amp_look_chrome [data-testid="stCheckbox"] label {
+  color: #f0e6c8 !important;
+  text-shadow: 0 0 1px rgba(0,0,0,.95), 0 1px 2px rgba(0,0,0,.88),
+    0 2px 8px rgba(0,0,0,.72);
+}
+</style>
+"""
+
+
 def classic_page_css() -> str:
     """Solid sanctuary colour — no location photo behind the page."""
     return """
@@ -120,8 +160,10 @@ _WATCHER = """
 <script>
 (function(){
   var doc = window.parent.document;
+  function tabName(el){
+    return ((el && el.innerText) || '').replace(/\\s+/g, ' ').trim();
+  }
   function isLand(name){
-    name = (name || '').replace(/\\s+/g, ' ').trim();
     return name === 'Visit an Heir' || name === 'Walk the Land';
   }
   function pathLand(){
@@ -135,13 +177,24 @@ _WATCHER = """
   function sync(){
     var forced = pathLand();
     var on;
-    if (forced === true) on = true;
-    else if (forced === false) on = false;
-    else {
+    var visit = false;
+    var walk = false;
+    if (forced === true) {
+      on = true;
+      walk = true;
+    } else if (forced === false) {
+      on = false;
+    } else {
       var t = doc.querySelector('[role="tab"][aria-selected="true"]');
-      on = isLand(t && t.innerText);
+      var name = tabName(t);
+      visit = name === 'Visit an Heir';
+      walk = name === 'Walk the Land';
+      on = isLand(name);
     }
     doc.documentElement.classList.toggle('amp-land-off', !on);
+    /* Visit Heir-tint vs Walk land-gold — both CSS blocks stay mounted. */
+    doc.documentElement.classList.toggle('amp-mode-visit', visit);
+    doc.documentElement.classList.toggle('amp-mode-walk', walk);
   }
   sync();
   doc.addEventListener('click', function(){ setTimeout(sync, 40); }, true);
@@ -165,29 +218,31 @@ def render_look_picker() -> None:
     if _LIFE_KEY not in st.session_state:
         st.session_state[_LIFE_KEY] = show_entities()
 
-    left, right = st.columns([3, 2])
-    with left:
-        pick = st.radio(
-            "Land look",
-            list(_VALUE_FOR.keys()),
-            key=_RADIO,
-            horizontal=True,
-            help=(
-                "Pictures on the land: the area art fills the page. "
-                "Classic: a wide weather window on a solid page — no full-page art. "
-                "Named Presence only while Life on the land is on."
-            ),
-        )
-    with right:
-        _toggle = getattr(st, "toggle", None) or st.checkbox
-        life_pick = _toggle(
-            "Life on the land",
-            key=_LIFE_KEY,
-            help=(
-                "On: chimera, grass, stalls, and the rest are painted on the picture. "
-                "Off: the place only."
-            ),
-        )
+    st.markdown(look_chrome_css(), unsafe_allow_html=True)
+    with st.container(key=_CHROME_KEY):
+        left, right = st.columns([3, 2])
+        with left:
+            pick = st.radio(
+                "Land look",
+                list(_VALUE_FOR.keys()),
+                key=_RADIO,
+                horizontal=True,
+                help=(
+                    "Pictures on the land: the area art fills the page. "
+                    "Classic: a wide weather window on a solid page — no full-page art. "
+                    "Named Presence only while Life on the land is on."
+                ),
+            )
+        with right:
+            _toggle = getattr(st, "toggle", None) or st.checkbox
+            life_pick = _toggle(
+                "Life on the land",
+                key=_LIFE_KEY,
+                help=(
+                    "On: chimera, grass, stalls, and the rest are painted on the picture. "
+                    "Off: the place only."
+                ),
+            )
 
     value = _VALUE_FOR.get(pick, LOOK_PICTORIAL)
     st.session_state[_STATE] = value

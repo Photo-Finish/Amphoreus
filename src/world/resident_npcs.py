@@ -100,6 +100,48 @@ _ROLE_PLACE = {
     "wind-watcher": "road",
 }
 
+# Land sprite stem for named residents. Generic street roles keep the civilian
+# chiton; special professions map to distinct outfit packs (still + walk film).
+OUTFIT_CIVILIAN = "resident"
+ROLE_OUTFIT = {
+    "gate-warden": "resident_guard",
+    "sentry": "resident_guard",
+    "merchant": "resident_merchant",
+    "scribe": "resident_scholar",
+    "quiet scholar": "resident_scholar",
+    "grove-student": "resident_scholar",
+    "council-clerk": "resident_scholar",
+    "smith": "resident_smith",
+    "weaver": "resident_weaver",
+    "loom-hand": "resident_weaver",
+    "shrine-tender": "resident_shrine",
+    "stone-warden": "resident_shrine",
+    "healer's aide": "resident_healer",
+    "fisher": "resident_harbor",
+    "harbor-hand": "resident_harbor",
+    "boat-hand": "resident_harbor",
+    "sailor": "resident_harbor",
+    "field-hand": "resident_field",
+    "dromas-handler": "resident_handler",
+    "baker": "resident_baker",
+    # Civilian / non-special — shared Okhema chiton art:
+    "water-carrier": OUTFIT_CIVILIAN,
+    "courier": OUTFIT_CIVILIAN,
+    "wind-watcher": OUTFIT_CIVILIAN,
+    "timber-warden": OUTFIT_CIVILIAN,
+    "leaf-binder": OUTFIT_CIVILIAN,
+}
+
+OUTFIT_STEMS = frozenset({OUTFIT_CIVILIAN}) | frozenset(ROLE_OUTFIT.values())
+
+
+def outfit_for_role(role: Optional[str]) -> str:
+    """Sprite stem for a resident profession (falls back to civilian)."""
+    r = (role or "").strip().lower()
+    if not r or r in {"resident", "a resident", "passerby"}:
+        return OUTFIT_CIVILIAN
+    return ROLE_OUTFIT.get(r, OUTFIT_CIVILIAN)
+
 _RESERVED_NAMES = {
     "phainon", "aglaea", "mydei", "castorice", "anaxa", "hyacine", "cipher",
     "cerydra", "tribbie", "cyrene", "hysilens", "evernight", "dan heng",

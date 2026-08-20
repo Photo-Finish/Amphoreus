@@ -71,6 +71,15 @@ def main():
     check("template fields present",
           all(fields <= set(n) for n in gen[:5]))
 
+    print("== Profession outfits ==")
+    check("gate-warden is guard", rn.outfit_for_role("gate-warden") == "resident_guard")
+    check("merchant is merchant", rn.outfit_for_role("merchant") == "resident_merchant")
+    check("scribe is scholar", rn.outfit_for_role("scribe") == "resident_scholar")
+    check("water-carrier civilian", rn.outfit_for_role("water-carrier") == "resident")
+    check("unknown role civilian", rn.outfit_for_role("mystery-job") == "resident")
+    stems = {rn.outfit_for_role(r) for city_roles in rn._CITY_ROLES.values() for r in city_roles}
+    check("all city roles map to known stems", stems <= rn.OUTFIT_STEMS, str(stems - rn.OUTFIT_STEMS))
+
     print("== Copilot NPCS untouched + merge ==")
     copilot_names = [n["name"] for n in wev.NPCS]
     check("Copilot roster still six",

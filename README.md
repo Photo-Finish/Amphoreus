@@ -1070,5 +1070,41 @@ tide / letter / weather / co-location / aftermath features):
   rewrite is frozen at git tag `ui-pre-pictorial` (`113d7c2`) and as copies in
   `docs/ui-archive/pre-pictorial-113d7c2/`. How to restore:
   `docs/UI-ORIGINALS.md`.
+- **Pictorial land** (`8a8aad1`, `9268614`) — Visit and Walk the Land read as a
+  place, not a button grid: full-bleed area art, clickable 2D life on the
+  pavement, painted walk cycles, outdoor beings you can actually touch.
+  Fixtures stay still; roamers walk the ground line. Classic keeps its small
+  weather window. Painted life can be hidden.
+
+### 2026-08-20
+- **Pictorial overlay** (`4e910ce`, `src/ui_weather.py`) — opaque glass stripes
+  are gone so land figures stay visible; copy keeps a stronger text halo.
+  Travel/gift selectbox closed-controls are no longer a black bar (Streamlit
+  1.61 React Aria group). File-uploader Browse buttons are gold/standout;
+  Give and Set-out stay hairline.
+- **Land click notices** (`18cee39`) — right-anchored lighter panel inside the
+  land iframe (no page reload).
+- **Sprite scale and roam films** (`8bbd051`, `cf81acd`) — per-kind stage
+  height (chimera a mascot you could pick up, resident human-scale, dromas a
+  ridden earth-beast). Chimera and dromas use true side-walk films from
+  distinct poses, not a bobbed still; roamers cross and leave the view.
+- **Pet and trade caravan** (`985964e`) — the visitor can pet chimera, hearth
+  cat, and dromas (reaction films); sometimes a dromas-and-people trade
+  caravan crosses the road (`src/world/ecosystem.py`).
+- **Profession NPC outfits** (`src/world/resident_npcs.py`) — 11 special
+  stems from the real `_CITY_ROLES` (guard, merchant, scholar, smith,
+  weaver, shrine, healer, harbor, field, dromas-handler, baker); civilian
+  roles keep the existing chiton. Full set per outfit: still + walk f1–f4
+  + packed film (`tools/build_hsr_life_sprites.py outfits`). Runtime:
+  `visual` / `_sprite_asset_key` (`src/world/ecosystem.py`,
+  `src/ui_scene_life.py`). Honest: recolor/composite of the civilian
+  figure, not new painted profession art.
+- **Co-presence group chat** (`src/world/group_chat.py`, `src/ui_group_chat.py`,
+  `tools/test_group_chat.py`; Visit wiring in `src/ui_app.py`) — when two or
+  more Heirs share the selected Heir's place, Visit offers Individual vs
+  Group chat. The operator invites by button; Heirs accept or decline in
+  character, and a gathering starts if at least one accepts. Guests may see
+  Heirs together but cannot invite. The gathering ends on leaving Visit an
+  Heir (tab or page), not on closing localhost:8501.
 
 

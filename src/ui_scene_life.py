@@ -258,6 +258,25 @@ _ROAMER_DUR = {
     "resident": (10, 17),
     "cicada": (7, 12),
 }
+# Paint order is depth, not sprite size. Gates/columns are the tallest
+# cells; using height as z-index stacked them over wells, fountains, life.
+_FAR_ARCH_KINDS = frozenset({"pillar", "gate", "banner", "mill"})
+_LIFE_KINDS = frozenset({
+    "chimera", "dromas", "hearth_cat", "resident", "cicada",
+})
+_ELEVATED_KINDS = _SKY_KINDS | frozenset({
+    "laundry", "banner", "cicada", "grove_leaf",
+})
+_BAND_BIAS = {
+    "far": 0,
+    "sky": 6,
+    "mid": 6,
+    "life": 10,
+}
+_SPRITE_Z_FLOOR = 10
+_SPRITE_Y_SCALE = 2
+_UI_NOTICE_Z = 280
+_UI_READ_Z = 260
 # Display height on the full pictorial stage. Resident is human scale.
 # Little chimera is a mascot you could pick up; dromas is a ridden earth-beast.
 _SPRITE_CELL: Dict[str, int] = {
@@ -352,6 +371,53 @@ def _page_window_bottom(kind: str, hotspot_bottom: str) -> str:
     }
     return table.get(kind, "2%")
 
+
+def _parse_bottom_pct(bottom: str, default: float = 2.0) -> float:
+    raw = str(bottom or "").strip().rstrip("%").rstrip("px")
+    try:
+        return float(raw)
+    except ValueError:
+        return default
+
+
+def _sprite_band(kind: str) -> str:
+    if kind in _SKY_KINDS:
+        return "sky"
+    if kind in _FAR_ARCH_KINDS:
+        return "far"
+    if kind in _LIFE_KINDS:
+        return "life"
+    return "mid"
+
+
+def _ground_depth_pct(kind: str, bottom: str) -> float:
+    """Camera depth on the ground plane. Hanging/flying height is not depth."""
+    if kind in _ELEVATED_KINDS:
+        if kind in _SKY_KINDS:
+            return 22.0
+        if kind in _FAR_ARCH_KINDS:
+            return 12.0
+        return 2.0
+    return max(0.0, min(100.0, _parse_bottom_pct(bottom)))
+
+
+def _sprite_z_index(kind: str, bottom: str) -> int:
+    """Y-sort plus a modest kind band.
+
+    Far architecture sits behind same-depth fixtures and life. A nearer
+    column (lower CSS bottom) can still occlude a farther figure. Sprite
+    pixel size is not used.
+    """
+    depth = _ground_depth_pct(kind, bottom)
+    y = int(round((100.0 - depth) * _SPRITE_Y_SCALE))
+    return _SPRITE_Z_FLOOR + y + int(_BAND_BIAS[_sprite_band(kind)])
+
+
+def _resolved_bottom(kind: str, hotspot_bottom: str, *, page_layer: bool) -> str:
+    if page_layer:
+        return _page_window_bottom(kind, str(hotspot_bottom or ""))
+    return str(hotspot_bottom or "20%")
+
 # Painted walk/fly cycles — consecutive frames stitched L→R.
 _FILM_DUR = {
     "chimera": "0.64s",
@@ -400,21 +466,39 @@ def sprite_pet_film_uri(kind: str) -> str:
     return "data:image/png;base64," + base64.b64encode(p.read_bytes()).decode("ascii")
 
 
-def _sprite_markup(kind: str, *, mobile: bool = True) -> str:
+def _sprite_asset_key(being_or_kind, kind: str = "") -> str:
+    """PNG/film stem: prefer profession outfit ``visual`` when assets exist."""
+    if isinstance(being_or_kind, dict):
+        visual = str(being_or_kind.get("visual") or "").strip()
+        kind = str(being_or_kind.get("kind") or kind or "")
+    else:
+        visual = ""
+        kind = str(being_or_kind or kind or "")
+    if visual and visual != kind:
+        if (_SPRITE_DIR / f"{visual}.png").is_file() or (
+            _SPRITE_DIR / f"{visual}_film.png"
+        ).is_file():
+            return visual
+    return kind
+
+
+def _sprite_markup(kind: str, *, mobile: bool = True, asset: str = "") -> str:
     # Painted PNGs/films only for outdoor figures you can actually touch.
-    if kind in _PAINTED_INTERACTIVE:
+    key = asset or kind
+    painted = kind in _PAINTED_INTERACTIVE or key.startswith("resident")
+    if painted:
         # Profile-walk kinds: side film while roaming, front still otherwise.
         use_film = mobile if kind in _PROFILE_WALK_KINDS else True
         if use_film:
-            film = sprite_film_uri(kind)
+            film = sprite_film_uri(key)
             if film:
-                dur = _FILM_DUR.get(kind, "0.8s")
+                dur = _FILM_DUR.get(kind, _FILM_DUR.get(key, "0.8s"))
                 return (
                     f'<span class="amp-sprite-film" style="'
                     f"background-image:url('{film}');"
                     f"--amp-frames:4;--amp-film-dur:{dur};\"></span>"
                 )
-        uri = sprite_png_uri(kind)
+        uri = sprite_png_uri(key)
         if uri:
             return f'<img src="{uri}" alt="" draggable="false" />'
     inner = _SPRITE_PATHS.get(kind) or _DEFAULT_SPRITE
@@ -564,7 +648,7 @@ def _css() -> str:
   margin-left: calc(var(--amp-cell) / -2);
   margin-bottom: calc(var(--amp-cell) * -0.12);
   padding: 0; border: none; background: transparent;
-  cursor: pointer; z-index: 8;
+  cursor: pointer; z-index: 10;
   animation: none;
   pointer-events: auto;
 }
@@ -647,7 +731,7 @@ def _css() -> str:
   from { background-position: 0 0; }
   to { background-position: calc(var(--amp-frames, 4) * var(--amp-cell, 92px) * -1) 0; }
 }
-.amp-life-layer { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.amp-life-layer { position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index: 4; }
 .amp-sprite::after {
   content: "";
   position: absolute; left: 18%; right: 18%; bottom: 6%;
@@ -720,7 +804,7 @@ def _css() -> str:
 .amp-notice {
   position: absolute; right: 14px; top: 14%;
   left: auto; bottom: auto;
-  z-index: 24; pointer-events: none;
+  z-index: 280; pointer-events: none;
   max-width: min(300px, 32vw);
   width: max-content;
 }
@@ -764,7 +848,7 @@ def _css() -> str:
 }
 .amp-notice-act:hover { color: #f0e6c8; }
 .amp-stage-read {
-  position: absolute; left: 12px; right: 12px; top: 44px; z-index: 7;
+  position: absolute; left: 12px; right: 12px; top: 44px; z-index: 260;
   max-width: 420px;
   background: rgba(10,8,20,.72);
   backdrop-filter: blur(8px);
@@ -802,9 +886,7 @@ def _sprite_button_html(
     kind = str(b.get("kind") or "")
     hs = b.get("hotspot") or {}
     left = hs.get("left") or "50%"
-    bottom = hs.get("bottom") or "20%"
-    if page_layer:
-        bottom = _page_window_bottom(kind, str(bottom))
+    bottom = _resolved_bottom(kind, str(hs.get("bottom") or "20%"), page_layer=page_layer)
     oid_raw = str(b.get("id") or "")
     oid = _html.escape(oid_raw, quote=True)
     title = _html.escape(str(b.get("name") or kind or "life"), quote=True)
@@ -819,14 +901,15 @@ def _sprite_button_html(
     )
     roamer_cls = " amp-roamer" if roamer else ""
     cell = _sprite_cell_px(kind, page_layer=page_layer)
-    z = 8 + cell // 40
+    z = _sprite_z_index(kind, bottom)
+    asset = _sprite_asset_key(b, kind)
     return (
         f'<button type="button" class="amp-sprite{motion}{facing}{ailing}{sky}{roamer_cls}" '
         f'data-oid="{oid}" data-kind="{_html.escape(kind, quote=True)}" '
         f'title="{title}" aria-label="{title}" '
         f'style="left:{left};bottom:{bottom};--amp-cell:{cell}px;z-index:{z};{roam}">'
         f'<span class="amp-sprite-halo"></span>'
-            f'<span class="amp-sprite-body">{_sprite_markup(kind, mobile=(motion == " mobile"))}</span>'
+            f'<span class="amp-sprite-body">{_sprite_markup(kind, mobile=(motion == " mobile"), asset=asset)}</span>'
         f"</button>"
     )
 
@@ -839,10 +922,9 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
         if kind not in _ROAMER_KINDS or not b.get("clickable") or not b.get("id"):
             continue
         hs = b.get("hotspot") or {}
-        bottom = hs.get("bottom") or "20%"
-        if page_layer:
-            bottom = _page_window_bottom(kind, str(bottom))
+        bottom = _resolved_bottom(kind, str(hs.get("bottom") or "20%"), page_layer=page_layer)
         oid = str(b.get("id"))
+        asset = _sprite_asset_key(b, kind)
         pool.append({
             "oid": oid,
             "kind": kind,
@@ -851,13 +933,17 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
             "bottom": bottom,
             "dur": _roamer_cross_secs(kind, oid),
             "cell": _sprite_cell_px(kind, page_layer=page_layer),
-            "body": _sprite_markup(kind),
+            "body": _sprite_markup(kind, asset=asset),
             "face": _SPRITE_FACING.get(kind, "right"),
             "notice": _notice_entry(b),
             "caravanId": str(b.get("caravan_id") or ""),
             "caravanRole": str(b.get("caravan_role") or ""),
             "caravanMate": False,
             "mates": [],
+            "bandBias": int(_BAND_BIAS[_sprite_band(kind)]),
+            "elevated": kind in _ELEVATED_KINDS,
+            "depthPct": _ground_depth_pct(kind, bottom),
+            "z": _sprite_z_index(kind, bottom),
         })
     by_cid: Dict[str, List[dict]] = {}
     for row in pool:
@@ -884,6 +970,10 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
                 "face": mate["face"],
                 "notice": mate["notice"],
                 "offsetPct": -5.6 if i == 0 else -9.4,
+                "bandBias": mate.get("bandBias", 10),
+                "elevated": mate.get("elevated", False),
+                "depthPct": mate.get("depthPct", 2),
+                "z": mate.get("z", 20),
             })
         mount["mates"] = packed
     return pool
@@ -915,6 +1005,27 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
       var v = getComputedStyle(probe).getPropertyValue('--amp-cell');
       return parseFloat(v) || 92;
     }}
+    function parsePct(s, d) {{
+      if (s == null || s === '') return d;
+      var n = parseFloat(String(s));
+      return isNaN(n) ? d : n;
+    }}
+    function spriteZ(ent, bottomPct) {{
+      var depth = ent.elevated ? Number(ent.depthPct) : bottomPct;
+      if (isNaN(depth)) depth = 2;
+      if (depth < 0) depth = 0;
+      if (depth > 100) depth = 100;
+      var bias = (ent.bandBias != null) ? ent.bandBias : {_BAND_BIAS["life"]};
+      return {_SPRITE_Z_FLOOR} + Math.round((100 - depth) * {_SPRITE_Y_SCALE}) + bias;
+    }}
+    function depthLane(ent) {{
+      var bottomPct = parsePct(ent.bottom, 2);
+      if (ent.elevated) return bottomPct;
+      var lane = Math.random();
+      if (lane < 0.32) return Math.min(16, bottomPct + 8 + Math.random() * 5);
+      if (lane < 0.5) return Math.max(0, bottomPct - Math.random());
+      return bottomPct;
+    }}
     function pick() {{
       var avail = pool.filter(function(p) {{ return !busy[p.oid] && !p.caravanMate; }});
       if (!avail.length) {{
@@ -944,10 +1055,11 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
       btn.setAttribute('title', ent.name);
       btn.setAttribute('aria-label', ent.name);
       if (ent.notice && typeof book !== 'undefined') book[ent.oid] = ent.notice;
+      var bottomPct = (opts.bottomPct != null) ? opts.bottomPct : parsePct(ent.bottom, 2);
       btn.style.left = anchorPct + '%';
-      btn.style.bottom = ent.bottom;
+      btn.style.bottom = bottomPct + '%';
       btn.style.setProperty('--amp-cell', cell + 'px');
-      btn.style.zIndex = String(8 + Math.floor(cell / 40));
+      btn.style.zIndex = String(spriteZ(ent, bottomPct));
       btn.style.setProperty('--amp-cross-from', fromPx + 'px');
       btn.style.setProperty('--amp-cross-to', toPx + 'px');
       btn.style.setProperty('--amp-cross-dur', (opts.dur || ent.dur || 14) + 's');
@@ -1000,6 +1112,7 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
           setTimeout(function() {{ spawn(false); }}, rand(400, 2800));
         }}
       }}
+      var bottomPct = depthLane(ent);
       var dirMates = mates.map(function(m) {{
         var copy = {{}};
         Object.keys(m).forEach(function(k) {{ copy[k] = m[k]; }});
@@ -1007,9 +1120,9 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
         copy.offsetPct = fromLeft ? off : -off;
         return copy;
       }});
-      mountSprite(ent, {{w:w, anchorPct:anchorPct, fromPx:fromPx, toPx:toPx, goRight:goRight, dur:dur, onDone:oneDone}});
+      mountSprite(ent, {{w:w, anchorPct:anchorPct, fromPx:fromPx, toPx:toPx, goRight:goRight, dur:dur, bottomPct:bottomPct, onDone:oneDone}});
       dirMates.forEach(function(m) {{
-        mountSprite(m, {{w:w, anchorPct:anchorPct, fromPx:fromPx, toPx:toPx, goRight:goRight, dur:dur, onDone:oneDone}});
+        mountSprite(m, {{w:w, anchorPct:anchorPct, fromPx:fromPx, toPx:toPx, goRight:goRight, dur:dur, bottomPct:bottomPct, onDone:oneDone}});
       }});
     }}
 
@@ -1150,12 +1263,21 @@ def pictorial_stage_html(
         for b in clickable
         if b.get("id")
     }
-    sprites = []
+    still = []
     for b in ranked[:max_sprites]:
         kind = str(b.get("kind") or "")
         if kind in _ROAMER_KINDS:
             continue
-        sprites.append(_sprite_button_html(b, page_layer=page_layer))
+        still.append(b)
+
+    def _paint_key(b: dict):
+        kind = str(b.get("kind") or "")
+        hs = b.get("hotspot") or {}
+        bottom = _resolved_bottom(kind, str(hs.get("bottom") or "20%"), page_layer=page_layer)
+        return (_sprite_z_index(kind, bottom), str(b.get("id") or ""))
+
+    still.sort(key=_paint_key)
+    sprites = [_sprite_button_html(b, page_layer=page_layer) for b in still]
 
     read_block = ""
     if read_line:
@@ -1177,6 +1299,10 @@ def pictorial_stage_html(
             place or "Amphoreus", place or "Amphoreus",
             show_place_tag=not page_layer,
         )
+    wx = (
+        '<div class="amp-wx-stack" style="position:absolute;inset:0;'
+        f'z-index:2;pointer-events:none;">{wx}</div>'
+    )
 
     if page_layer:
         shell = (
@@ -1184,7 +1310,8 @@ def pictorial_stage_html(
             'background:transparent;overflow:hidden;}'
             '.amp-land-photo{position:absolute;inset:0;width:100%;height:100%;'
             'object-fit:cover;object-position:center bottom;pointer-events:none;'
-            'z-index:0;display:block;}</style>'
+            'z-index:0;display:block;}'
+            '#amp-pict-stage{isolation:isolate;}</style>'
             '<div id="amp-pict-stage" style="position:fixed;inset:0;width:100%;'
             'height:100%;overflow:hidden;background:transparent;pointer-events:none;">'
         )

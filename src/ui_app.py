@@ -511,6 +511,11 @@ st.sidebar.caption("*The Sanctuary of the Chrysos Heirs*")
 # Land look + Life sit above the tabs so they stay visible (not in the sidebar).
 from src.ui_look import render_look_picker  # noqa: E402
 render_look_picker()
+try:
+    from src.ui_group_chat import mount_visit_session_guard
+    mount_visit_session_guard()
+except Exception:
+    pass
 
 # Main Area — first-timer: Visit is first; Walk the Land is a first-class tab.
 from src.ui_role import is_visitor as _is_vis_tabs
@@ -983,7 +988,7 @@ with main_tab:
             from src.ui_role import is_visitor as _is_vis_stage
             _bg_ok = False
             try:
-                _bg_css = page_backdrop_css(_chat_bg, max_width=1600)
+                _bg_css = page_backdrop_css(_chat_bg, max_width=1600, heir_id=selected)
                 if _bg_css:
                     st.markdown(_bg_css, unsafe_allow_html=True)
                     _bg_ok = True
@@ -1049,6 +1054,11 @@ with main_tab:
                 pass
     if _chat_place:
         st.caption(f"{info['name']} is in **{_chat_place}**.")
+    try:
+        from src.ui_group_chat import render_group_chat_controls
+        render_group_chat_controls(manager, selected, info, _chat_place or "")
+    except Exception:
+        pass
     hero_l, hero_r = st.columns([1, 3], gap="large")
     with hero_l:
         if _selected_portrait:
@@ -1277,9 +1287,18 @@ with main_tab:
     # Display chat history (the Heir's own square avatar — never a generic bot)
     _assistant_avatar = str(avatar_for(selected)) if avatar_for(selected) else None
     _user_avatar = user_avatar_path()
-    for msg in st.session_state.messages[selected]:
-        with st.chat_message(msg["role"], avatar=_assistant_avatar if msg["role"] == "assistant" else _user_avatar):
-            st.markdown(msg["content"])
+    _gc_live = False
+    try:
+        from src.ui_group_chat import group_is_active, render_group_transcript
+        _gc_live = group_is_active()
+    except Exception:
+        _gc_live = False
+    if _gc_live:
+        render_group_transcript(user_avatar=_user_avatar, avatar_fn=avatar_for)
+    else:
+        for msg in st.session_state.messages[selected]:
+            with st.chat_message(msg["role"], avatar=_assistant_avatar if msg["role"] == "assistant" else _user_avatar):
+                st.markdown(msg["content"])
 
     # Senses: eyesight (picture / video) and hearing (speak) — operator only
     if not is_visitor():
@@ -1358,10 +1377,35 @@ with main_tab:
             st.info(result.get("reason", "Hearing is not yet available."))
 
     # Chat input (operator only; visitors read)
+    _gc_ph = f"Speak to {info['name']}..."
+    try:
+        from src.ui_group_chat import group_input_placeholder as _gc_ph_fn
+        _gc_ph = _gc_ph_fn(info["name"])
+    except Exception:
+        pass
     if is_visitor():
         st.caption("Read-only view — sign in as the operator to speak with "
                    f"{info['name']}.")
-    elif prompt := st.chat_input(f"Speak to {info['name']}..."):
+    elif prompt := st.chat_input(_gc_ph, key="visit_chat_input"):
+        _gc_hgp = None
+        _gc_on = None
+        try:
+            from src.ui_group_chat import (
+                group_is_active as _gc_on,
+                handle_group_prompt as _gc_hgp,
+            )
+        except Exception:
+            _gc_hgp = None
+            _gc_on = None
+        if _gc_hgp and _gc_on and _gc_on():
+            try:
+                _gc_hgp(
+                    manager, prompt,
+                    user_avatar=_user_avatar, avatar_fn=avatar_for,
+                )
+            except Exception as _gc_err:
+                st.caption(f"The gathering could not answer this hour. ({_gc_err})")
+            st.stop()
         # Let the world know the visitor is here
         try:
             from src.world.world_state import WorldState

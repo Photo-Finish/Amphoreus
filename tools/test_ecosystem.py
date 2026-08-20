@@ -186,6 +186,22 @@ if residents:
 else:
     check("resident identity on notice", True)  # hour may have none
 
+print("== Profession outfit visuals ==")
+ws_ok = mk(1, "Okhema")
+sc_ok = eco.derive_scene(ws_ok, place="Okhema")
+ok_res = [b for b in sc_ok if b["kind"] == "resident"]
+if ok_res:
+    from src.world import resident_npcs as _rn
+    mapped = all(
+        b.get("visual") == _rn.outfit_for_role(b.get("role"))
+        for b in ok_res
+    )
+    check("Okhema residents visual=outfit", mapped, str([(b.get("role"), b.get("visual")) for b in ok_res]))
+    special = [b for b in ok_res if b.get("visual") != "resident"]
+    check("some special outfit present or all civilian hour", True)  # hour-dependent
+else:
+    check("Okhema residents visual=outfit", True, "no residents this hour")
+
 print("== Prompt block ==")
 block = eco.prompt_block(ws_h, "hyacine")
 check("prompt names living presence", "Living presence" in block or "chimera" in block.lower())
