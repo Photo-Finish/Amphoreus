@@ -27,9 +27,12 @@ _SPRITE_PATHS: Dict[str, str] = {
         '<circle cx="25" cy="15" r="1.2" fill="#1a1428"/>'
     ),
     "dromas": (
-        '<ellipse cx="20" cy="26" rx="14" ry="9" fill="#7a8fb8"/>'
-        '<rect x="28" y="10" width="5" height="16" rx="2" fill="#9aa8c4"/>'
-        '<circle cx="31" cy="9" r="3.5" fill="#c8d0e0"/>'
+        '<ellipse cx="18" cy="26" rx="13" ry="9" fill="#8a9bb8"/>'
+        '<ellipse cx="18" cy="28" rx="10" ry="5" fill="#e8eef4"/>'
+        '<rect x="26" y="11" width="6" height="15" rx="3" fill="#9aa8c4"/>'
+        '<circle cx="30" cy="9" r="5" fill="#b8c4d8"/>'
+        '<ellipse cx="30" cy="10" rx="3" ry="2.5" fill="#e8eef4"/>'
+        '<circle cx="31" cy="8" r="1.2" fill="#6a90c0"/>'
     ),
     "hearth_cat": (
         '<ellipse cx="20" cy="26" rx="10" ry="7" fill="#d8c8a8"/>'

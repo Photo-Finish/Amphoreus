@@ -4,10 +4,12 @@ Front still PNGs for stationary display; side-profile *walk films* for roam.
 Walk frames are distinct poses under assets/life_sprites/_hsr_src/walk/
 (not bobbed copies of one still).
 
-Dromas canon (HSR Okhema): dusty periwinkle / muted blue hide, cream-white
-throat + belly plates, white head ruff — NOT clay-brown. Walk/pet sources
-under _hsr_src must stay blue-dominant; packing also runs a residual
-tan→blue safeguard so older brown drafts cannot slip through.
+Dromas canon (HSR Okhema / 大地兽): cute soft earth-beast companion —
+round blunt head, soft eyes, white petal ruff (not blade spikes), smooth
+dusty periwinkle hide with almost no small squama, cream throat with only
+a few large rounded plates, limb white shells. NOT a sharp photoreal
+sauropod. Walk/pet sources under _hsr_src must match that soft silhouette;
+packing also runs a residual tan→blue safeguard + cute smooth pass.
 
 Rebuild:
   python tools/build_hsr_life_sprites.py              # chimera + dromas stills/walk
@@ -261,9 +263,58 @@ def _recolor_dromas_hide(im: Image.Image, target_hue: float = DROMAS_HIDE_HUE) -
     return out
 
 
+def _cuteify_dromas(im: Image.Image) -> Image.Image:
+    """Soften silhouette toward HSR cute 大地兽: smooth hide, rounder frills.
+
+    Walk/pet art must not read as a sharp scaled sauropod. Soften blue-hide
+    mottling, round cream frill tips, and slightly blur plate edges while
+    keeping harness colors.
+    """
+    src = im.convert("RGBA")
+    w, h = src.size
+    px = src.load()
+    # Masks: blue hide vs cream/white vs keep (tack).
+    hide = Image.new("L", (w, h), 0)
+    cream = Image.new("L", (w, h), 0)
+    hp, cp = hide.load(), cream.load()
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if a < 16:
+                continue
+            rf, gf, bf = r / 255.0, g / 255.0, b / 255.0
+            hh, ss, vv = colorsys.rgb_to_hsv(rf, gf, bf)
+            hue = hh * 360.0
+            is_cream = vv > 0.55 and ss < 0.30 and (r + g + b) / 3 > 140 and r >= b - 10
+            is_blue = 165 <= hue <= 255 and ss > 0.05 and vv > 0.18 and not is_cream
+            if is_blue:
+                hp[x, y] = 255
+            elif is_cream:
+                cp[x, y] = 255
+    # Smooth blue hide — kill small-scale mottling.
+    smooth = src.filter(ImageFilter.MedianFilter(size=5)).filter(
+        ImageFilter.GaussianBlur(radius=1.1)
+    )
+    out = src.copy()
+    out.paste(smooth, mask=hide)
+    # Soften / round cream frill and plate edges.
+    cream_blur = out.filter(ImageFilter.GaussianBlur(radius=1.6))
+    cream_m = cream.filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.MinFilter(3))
+    out.paste(cream_blur, mask=cream_m)
+    # Light overall cel soften on opaque area.
+    alpha = out.split()[-1]
+    soft = out.filter(ImageFilter.SMOOTH_MORE)
+    mixed = Image.blend(out.convert("RGBA"), soft.convert("RGBA"), 0.35)
+    mixed.putalpha(alpha)
+    return mixed
+
+
 def _prepare_dromas(im: Image.Image) -> Image.Image:
-    """HSR blue coat pass before keying (walk / pet / still)."""
-    return _recolor_dromas_hide(im)
+    """HSR blue coat + light soft pass before keying (walk / pet / still)."""
+    # Cute sources already carry round-head / smooth-hide silhouette; only a
+    # light soften after the tan→blue safeguard so we do not mush good art.
+    blue = _recolor_dromas_hide(im)
+    return Image.blend(blue, _cuteify_dromas(blue), 0.45)
 
 
 def _key_still(path: Path, *, dromas: bool = False) -> Image.Image:
