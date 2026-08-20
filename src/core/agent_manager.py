@@ -242,10 +242,25 @@ class AgentManager:
             _oplora_path = False
 
         # Enrich the system prompt with RAG-grounded canon context
+        _skills_on = False
+        try:
+            from src.core.amp_skills import skills_enabled as _skills_enabled
+            _skills_on = bool(_skills_enabled()) and not _oplora_path
+        except Exception:
+            _skills_on = False
         if self.use_rag and not _oplora_path:
             system_prompt = self.context_builder.retrieve_for_chat(
-                character_id, system_prompt, user_message
+                character_id,
+                system_prompt,
+                user_message,
+                voice_bias=_skills_on,
             )
+            if _skills_on:
+                try:
+                    from src.core.amp_skills import maybe_inject as _skills_inject
+                    system_prompt = _skills_inject(system_prompt, character_id)
+                except Exception:
+                    pass
 
         # Enrich with the Heir's bond + memories of the visitor and the world
         system_prompt = self._inject_memory_context(character_id, system_prompt)
@@ -424,10 +439,25 @@ class AgentManager:
         self._restore_session(character_id)
 
         # Ground the exchange (RAG + memory + world + preferences + ledger)
+        _skills_on = False
+        try:
+            from src.core.amp_skills import skills_enabled as _skills_enabled
+            _skills_on = bool(_skills_enabled())
+        except Exception:
+            _skills_on = False
         if self.use_rag:
             system_prompt = self.context_builder.retrieve_for_chat(
-                character_id, system_prompt, user_message
+                character_id,
+                system_prompt,
+                user_message,
+                voice_bias=_skills_on,
             )
+            if _skills_on:
+                try:
+                    from src.core.amp_skills import maybe_inject as _skills_inject
+                    system_prompt = _skills_inject(system_prompt, character_id)
+                except Exception:
+                    pass
         system_prompt = self._inject_memory_context(character_id, system_prompt)
         system_prompt = self._inject_world_context(character_id, system_prompt)
         try:

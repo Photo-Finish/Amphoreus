@@ -44,7 +44,7 @@ CITYISH = {
     "Aidonia", "Grove of Epiphany", "Aedes Elysiae", "Eye of Twilight",
     "Eternal Holy City", "Demigod Council", "Sanctum of Prophecy",
     "Radiant Scarwood", "Bloodbathed Battlefront", "Warbling Shores",
-    "Fortress of Dome",
+    "Fortress of Dome", "Aedes Elysiae, of old",
 }
 
 # Coarse catalog: id, display name, how it acts on a day, where it is *local*.

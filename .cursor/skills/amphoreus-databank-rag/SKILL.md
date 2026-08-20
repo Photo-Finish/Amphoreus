@@ -84,6 +84,26 @@ pattern: Coreflame           path: databank/chrysos-heirs
 - Do not edit Copilot-era databank/cards without the user's explicit verbal OK; new Stage-2 work goes elsewhere.
 - If Chroma returns low-confidence (`below_threshold`), prefer the Heir card + profile over weak hits.
 
+## Voice fidelity (do not flatten into lore-bot)
+
+Skills help **retrieval strategy**, not persona replacement. When grounding Heir speech:
+
+1. **Style first** — match the Heir's measured speech (length, rhythm, tics, register) already on the card / voice digest.
+2. Prefer **mission dialogue chunks** (`kind: mission`) for how they talk; use profile/global for facts only.
+3. Never answer as an encyclopedia, tour guide, or summary of the databank.
+4. Short plain spoken lines beat pretty analysis. Eloquence that is not theirs is a miss.
+5. If a fact would force a long lecture that does not sound like them, stay brief in their voice or admit not knowing.
+
+Also see charter skill `amphoreus-charter` (voice fidelity is a pillar under lived society).
+
+Runtime optional switch (sanctuary RAG chat, default **OFF**):
+
+- Control Panel → **Skills aid (optional)**
+- Env: `AMP_SKILLS=1` / `AMP_SKILLS=0`
+- File: `world_runtime/amp_skills.json` → `{"enabled": true}`
+
+A/B eval: `python tools/eval_rag_skills_style.py`
+
 ## Additional resources
 
 - Indexed source map and aliases: [reference.md](reference.md)

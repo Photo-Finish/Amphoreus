@@ -29,7 +29,8 @@ Ambient grass / wind / wheat / dawn is CSS or SVG, not a painted sprite.
 
 - **Little Chimera:** tiny quadruped, huge round head, short body, fur collar,
   blush cheeks, smile, ram horns; Okhema mascot (Felys/Canis/Terrazard mix).
-- **Dromas:** Georios earth-beast, long neck, plated hide with pale shell
-  patches, clay-brown, ridden in Okhema.
+- **Dromas:** Georios earth-beast, long neck, dusty periwinkle / muted blue
+  hide, cream-white throat + belly plates, white head ruff; ridden in Okhema
+  (NOT clay-brown — earth-tone dyes are cosmetics, not the street default).
 - **Civilian:** white chiton, gold border, sandals — not a Heir.
 - **Shrine:** marble stele + Greek pediment, not a torii.

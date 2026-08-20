@@ -47,15 +47,40 @@ class ContextBuilder:
         except Exception:
             return []
 
-    def format_context(self, hits: List[dict]) -> str:
+    @staticmethod
+    def prefer_voice_hits(hits: List[dict]) -> List[dict]:
+        """Stable-reorder: mission dialogue first (voice anchors), then profile, then rest.
+
+        Used when optional skills aid is ON — retrieval strategy for speech style,
+        not a persona rewrite.
+        """
+        if not hits:
+            return hits
+        rank = {"mission": 0, "profile": 1, "global": 2}
+
+        def _key(h: dict):
+            kind = str(h.get("kind") or "").lower()
+            return (rank.get(kind, 3), -float(h.get("score") or 0.0))
+
+        return sorted(hits, key=_key)
+
+    def format_context(self, hits: List[dict], *, voice_bias: bool = False) -> str:
         """Format retrieved excerpts into a 'Knowledge' block for the prompt."""
         if not hits:
             return ""
+        if voice_bias:
+            hits = self.prefer_voice_hits(hits)
         lines = [
             "# Knowledge excerpts (canon lore retrieved for this reply)",
             "# Use these only to ground your answer — never contradict them.",
             "",
         ]
+        if voice_bias:
+            lines.insert(
+                2,
+                "# VOICE: prefer mission dialogue rhythm/diction when speaking; "
+                "do not dump lore as an encyclopedia. Match your measured speech first.",
+            )
         any_low = any(h.get("below_threshold") for h in hits)
         if any_low:
             lines.insert(
@@ -63,7 +88,9 @@ class ContextBuilder:
                 "# NOTE: the following excerpts are low-confidence matches — prefer your own persona knowledge if they seem irrelevant.",
             )
         for i, hit in enumerate(hits, start=1):
-            lines.append(f"[{i}] (source: {hit.get('source', 'unknown')})")
+            kind = hit.get("kind")
+            kind_bit = f", kind: {kind}" if kind else ""
+            lines.append(f"[{i}] (source: {hit.get('source', 'unknown')}{kind_bit})")
             lines.append(hit.get("text", ""))
             lines.append("")
         return "\n".join(lines)
@@ -74,9 +101,18 @@ class ContextBuilder:
             return system_prompt
         return f"{system_prompt}\n\n{context_text}"
 
-    def retrieve_for_chat(self, character_id: str, system_prompt: str, question: str) -> str:
+    def retrieve_for_chat(
+        self,
+        character_id: str,
+        system_prompt: str,
+        question: str,
+        *,
+        voice_bias: bool = False,
+    ) -> str:
         """One-call helper: retrieve + format + inject. Returns the enriched prompt."""
         if not self.is_available(character_id):
             return system_prompt
         hits = self.retrieve(character_id, question)
-        return self.inject_context(system_prompt, self.format_context(hits))
+        return self.inject_context(
+            system_prompt, self.format_context(hits, voice_bias=voice_bias)
+        )

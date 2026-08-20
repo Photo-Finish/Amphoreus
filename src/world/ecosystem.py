@@ -21,6 +21,23 @@ from . import eco_voice as voice
 # Place families for living kinds
 # --------------------------------------------------------------------------- #
 CHIMERA_CITIES = {"Okhema", "Eternal Holy City", "Dawncloud"}
+
+# HSR pet colors + Okhema classic still. Horn style is flavor metadata for names.
+# Stems must match assets/life_sprites/chimera*.png (see build_hsr_life_sprites).
+CHIMERA_VISUALS = (
+    "chimera",         # classic lilac / curved horns (Okhema still)
+    "chimera_blue",    # teal + single spiral horn
+    "chimera_pink",    # pink + twin cream horns
+    "chimera_orange",  # orange + ram horns
+    "chimera_purple",  # violet NPC + curved crimson horns
+)
+CHIMERA_VARIANT_META = {
+    "chimera": {"color": "", "horn": "curved", "phrase": "little chimera"},
+    "chimera_blue": {"color": "blue", "horn": "spiral", "phrase": "blue spiral-horn chimera"},
+    "chimera_pink": {"color": "pink", "horn": "twin", "phrase": "pink twin-horn chimera"},
+    "chimera_orange": {"color": "orange", "horn": "ram", "phrase": "orange ram-horn chimera"},
+    "chimera_purple": {"color": "purple", "horn": "curved", "phrase": "purple chimera"},
+}
 # Road beasts on inhabited roads — not sky forts, tombs, or sacred nexuses.
 DROMAS_ROADS = {
     "Okhema", "Eternal Holy City", "Dawncloud", "Janusopolis",
@@ -39,9 +56,11 @@ GROVE = set(le.GROVE)
 LIVING_GROVE = {"Grove of Epiphany", "Radiant Scarwood"}
 TOMB_PLACES = {"Great Tomb", "Universal Matrix"}
 FIELDS = set(le.FIELDS)
-# Ordinary civic markets — not council chambers, battlefronts, sky ruins, or death-snow.
+# Ordinary civic markets — not council chambers, warfronts, sky forts, tombs, or death-snow.
+# Dawn past-forms that were peak cities keep markets; long-ruined present twins do not share that list.
 MARKET_CITIES = {
     "Okhema", "Eternal Holy City", "Dawncloud", "Janusopolis",
+    "Sanctum of Prophecy",  # Dawn prophetic city (present Abyss is the long ruin)
     "Castrum Kremnos", "Styxia", "Warbling Shores",
     "Aedes Elysiae", "Aedes Elysiae, of old",
 }
@@ -51,11 +70,15 @@ WELL_CITIES = {
     "Castrum Kremnos", "Styxia", "Warbling Shores", "Aidonia",
     "Aedes Elysiae", "Aedes Elysiae, of old", "Sanctum of Prophecy",
 }
-# Sky castrum / battlefront / council chamber — sparse outdoor texture only.
+# Truly sparse: long-abandoned / death / sacred nexus — NOT thriving Dawn peaks.
+# Fortress of Dome (intact sky castrum) and Bloodbathed Battlefront (active war) are inhabited.
 SPARSE_CITIES = {
-    "Eye of Twilight", "Fortress of Dome", "Bloodbathed Battlefront",
-    "Demigod Council", "The Nether", "Beyond Time", "Vortex of Genesis",
+    "Eye of Twilight",  # Cloudedge Bastion Ruins — fallen, long abandoned
+    "Demigod Council",  # ceremonial council seat, not a street market
+    "The Nether", "Beyond Time", "Vortex of Genesis",
 }
+# Skyfolk banners fly at the intact Dawn fortress as well as Kremnos forges.
+BANNER_PLACES = set(le.FORGE) | {"Fortress of Dome"}
 
 # Indoor furniture lives in lore / mechanisms. The land UI is outdoors.
 INDOOR_LAND = frozenset({"bath", "hearth", "loom", "scroll", "lamp"})
@@ -161,6 +184,20 @@ def place_visual_for(kind: str, place: str) -> str:
     if family == "civic":
         return base
     return f"{prefix}_{family}"
+
+
+def chimera_visual_for(place: str, idx: int, seed: str) -> str:
+    """Deterministic chimera color/horn stem for this place + hour seed + slot.
+
+    Multiple chimeras in one scene walk distinct variants (idx offset), not chaos.
+    """
+    n = len(CHIMERA_VISUALS)
+    base = _h(f"{seed}|{place}|chimera-vis") % n
+    return CHIMERA_VISUALS[(base + max(1, idx) - 1) % n]
+
+
+def chimera_variant_meta(visual: str) -> dict:
+    return dict(CHIMERA_VARIANT_META.get(visual) or CHIMERA_VARIANT_META["chimera"])
 
 # Whitelist: only these Heir → action → kind transitions may mutate state.
 # Anything else is refused. No clock, location, bond, or other Heir writes.
@@ -881,6 +918,12 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
             if ov.get("doing"):
                 doing = ov["doing"]
 
+    visual = place_visual_for(kind, place)
+    chimera_meta = None
+    if kind == "chimera":
+        visual = chimera_visual_for(place, idx, seed)
+        chimera_meta = chimera_variant_meta(visual)
+
     name = {
         "chimera": "a little chimera",
         "dromas": "a dromas of the road",
@@ -923,8 +966,9 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
         "tidepool": "a tide pool",
         "pillar": "a public column",
     }.get(kind, kind)
-    if kind == "chimera" and idx > 1:
-        name = "another little chimera"
+    if kind == "chimera" and chimera_meta:
+        phrase = chimera_meta.get("phrase") or "little chimera"
+        name = f"another {phrase}" if idx > 1 else f"a {phrase}"
     if kind == "dromas" and idx > 1:
         name = "another dromas"
     elif kind == "dromas_calf":
@@ -949,7 +993,9 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
                 doing = f"Action Hour — {doing}"
 
     if place and kind != "dawn":
-        name = voice.flavor_name(place, kind, idx, name)
+        name = voice.flavor_name(
+            place, kind, idx, name, visual=visual if kind == "chimera" else ""
+        )
         doing = voice.flavor_doing(place, kind, status, doing, period, idx)
 
     sound = None
@@ -1012,13 +1058,16 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
         "status": status,
         "doing": doing,
         "sound": sound,
-        "visual": place_visual_for(kind, place),
+        "visual": visual,
         "art_family": art_family_for(place),
         "clickable": True,
         "care_hint": _care_hint(status, kind),
         "hotspot": hotspot_for(kind, idx),
         "visitor_acts": visitor_acts_for(kind),
     }
+    if chimera_meta:
+        being["chimera_color"] = chimera_meta.get("color") or ""
+        being["chimera_horn"] = chimera_meta.get("horn") or ""
     return being
 
 
@@ -1190,15 +1239,22 @@ def derive_scene(world, place: Optional[str] = None,
         if place in WELL_CITIES:
             out.append(_mk_being("well", place, 1, world, flags, character_id))
         if flags.get("market_open") and place in MARKET_CITIES:
-            # Okhema is the densest square; other living markets get a pair.
+            # Okhema densest; Dawn Eternal Holy City stays near-peak civic.
+            # Dawn Sanctum / Warbling (peak cities) keep a pair; present twins match.
+            # Aedes / Kremnos stay spare (village / martial ration).
             if place == "Okhema":
                 n_stalls = 4
-            elif place in {"Eternal Holy City", "Dawncloud"}:
+            elif place == "Eternal Holy City":
+                n_stalls = 3
+            elif place == "Dawncloud":
                 n_stalls = 2
-            elif place in ART_FAMILY_JANUS | ART_FAMILY_STYXIA:
+            elif place in {
+                "Janusopolis", "Sanctum of Prophecy",
+                "Styxia", "Warbling Shores",
+            }:
                 n_stalls = 2
             elif place in ART_FAMILY_AEDES | ART_FAMILY_KREMNOS:
-                n_stalls = 2 if place in ART_FAMILY_AEDES else 1
+                n_stalls = 1
             else:
                 n_stalls = 1
             for i in range(1, n_stalls + 1):
@@ -1207,10 +1263,10 @@ def derive_scene(world, place: Optional[str] = None,
                 ))
 
     # Sparse / high / sacred places still feel air and ground underfoot.
-    if place in {"Eye of Twilight", "Fortress of Dome", "Vortex of Genesis"}:
+    if place in {"Eye of Twilight", "Vortex of Genesis"}:
         out.append(_mk_being("wind", place, 1, world, flags, character_id))
         out.append(_mk_being("pebble", place, 1, world, flags, character_id))
-    if place in {"Bloodbathed Battlefront", "Demigod Council"}:
+    if place == "Demigod Council":
         out.append(_mk_being("wind", place, 1, world, flags, character_id))
         out.append(_mk_being("grass", place, 1, world, flags, character_id))
     if place == "The Nether":
@@ -1240,9 +1296,6 @@ def derive_scene(world, place: Optional[str] = None,
         and place not in SPARSE_CITIES
     ):
         out.append(_mk_being("pebble", place, 1, world, flags, character_id))
-    if place == "Bloodbathed Battlefront":
-        out.append(_mk_being("pebble", place, 1, world, flags, character_id))
-        out.append(_mk_being("pillar", place, 1, world, flags, character_id))
 
     # Regional texture — different places, not the same Okhema list everywhere.
     if place in {"Okhema", "Eternal Holy City", "Dawncloud"}:
@@ -1260,6 +1313,13 @@ def derive_scene(world, place: Optional[str] = None,
             out.append(_mk_being("courier", place, 1, world, flags, character_id))
     if place == "Castrum Kremnos":
         out.append(_mk_being("pillar", place, 1, world, flags, character_id))
+        if not (flags.get("resting") or period in (0, 4)):
+            out.append(_mk_being("courier", place, 1, world, flags, character_id))
+    if place == "Bloodbathed Battlefront":
+        # Dawn Kremnos at war — active castrum, not Strife Ruins emptiness.
+        out.append(_mk_being("pillar", place, 1, world, flags, character_id))
+        out.append(_mk_being("grass", place, 1, world, flags, character_id))
+        out.append(_mk_being("wind", place, 1, world, flags, character_id))
         if not (flags.get("resting") or period in (0, 4)):
             out.append(_mk_being("courier", place, 1, world, flags, character_id))
     if place in ART_FAMILY_STYXIA:
@@ -1288,13 +1348,26 @@ def derive_scene(world, place: Optional[str] = None,
         out.append(_mk_being("mill", place, 1, world, flags, character_id))
         out.append(_mk_being("kite", place, 1, world, flags, character_id))
         out.append(_mk_being("cicada", place, 1, world, flags, character_id))
-    if place in {"Eye of Twilight", "Fortress of Dome"}:
+    if place == "Eye of Twilight":
+        # Cloudedge Bastion Ruins — wind, stone, a lonely kite.
         out.append(_mk_being("pillar", place, 1, world, flags, character_id))
         out.append(_mk_being("kite", place, 1, world, flags, character_id))
         out.append(_mk_being("grass", place, 1, world, flags, character_id))
+    if place == "Fortress of Dome":
+        # Intact Dawn sky castrum — garrison life under Aquila, not a fallen ruin.
+        out.append(_mk_being("pillar", place, 1, world, flags, character_id))
+        out.append(_mk_being("banner", place, 1, world, flags, character_id))
+        out.append(_mk_being("incense", place, 1, world, flags, character_id))
+        out.append(_mk_being("kite", place, 1, world, flags, character_id))
+        out.append(_mk_being("grass", place, 1, world, flags, character_id))
+        out.append(_mk_being("wind", place, 1, world, flags, character_id))
+        if not (flags.get("resting") or period in (0, 4)):
+            out.append(_mk_being("laundry", place, 1, world, flags, character_id))
+            out.append(_mk_being("courier", place, 1, world, flags, character_id))
     if place == "Vortex of Genesis":
         out.append(_mk_being("pillar", place, 1, world, flags, character_id))
-    if place in {"Castrum Kremnos", "Bloodbathed Battlefront"} and place not in GROVE:
+    # Extra banner pass for present Kremnos (forge block already plants one; keep color dense).
+    if place == "Castrum Kremnos":
         out.append(_mk_being("banner", place, 1, world, flags, character_id))
 
     # Named residents as interactive ambient (cap 3) — identity on click.
@@ -1342,9 +1415,17 @@ def derive_scene(world, place: Optional[str] = None,
             "shore", "siren", "pearl", "boat", "net", "tidepool", "market_stall",
             "well", "dromas", "dromas_calf", "laundry", "chimera",
         }]
-    if place in {"Eye of Twilight", "Fortress of Dome"}:
+    if place == "Eye of Twilight":
+        # Fallen Cloudedge Bastion — no civic or road life.
         out = [b for b in out if b["kind"] not in {
             "market_stall", "well", "dromas", "dromas_calf", "laundry",
+            "chimera", "shore", "siren", "boat", "net", "forge", "banner",
+            "courier", "incense",
+        }]
+    if place == "Fortress of Dome":
+        # Intact sky castrum — garrison banners/laundry OK; no street market or road beasts.
+        out = [b for b in out if b["kind"] not in {
+            "market_stall", "well", "dromas", "dromas_calf",
             "chimera", "shore", "siren", "boat", "net", "forge",
         }]
     if place == "Aidonia":
@@ -1352,7 +1433,8 @@ def derive_scene(world, place: Optional[str] = None,
             "market_stall", "laundry", "chimera", "shore", "siren", "net",
             "tidepool", "mill", "kite", "maze", "wheat",
         }]
-    if place in {"Bloodbathed Battlefront", "Demigod Council", "Sanctum of Prophecy"}:
+    if place in {"Bloodbathed Battlefront", "Demigod Council"}:
+        # Warfront / council chamber — no fruit stalls or holy-city laundry.
         out = [b for b in out if b["kind"] not in {
             "market_stall", "laundry", "chimera", "shore", "siren", "net",
             "tidepool", "mill", "kite",
@@ -1424,8 +1506,8 @@ def logic_faults(scene: List[dict], place: str) -> List[str]:
         faults.append("Chimera outside holy-city family")
     if "forge" in kinds and place not in le.FORGE:
         faults.append("Forge outside Kremnos family")
-    if "banner" in kinds and place not in le.FORGE:
-        faults.append("Banner outside Kremnos family")
+    if "banner" in kinds and place not in BANNER_PLACES:
+        faults.append("Banner outside banner places")
     if "mill" in kinds and place not in FIELDS:
         faults.append("Mill outside field places")
     if "market_stall" in kinds and place not in MARKET_CITIES:

@@ -348,7 +348,9 @@ check("Aidonia no laundry", "laundry" not in kaid, str(kaid))
 ws_bb = mk(2, "Bloodbathed Battlefront")
 kbb = {b["kind"] for b in eco.derive_scene(ws_bb, place="Bloodbathed Battlefront")}
 check("Battlefront forge", "forge" in kbb, str(kbb))
+check("Battlefront banner", "banner" in kbb, str(kbb))
 check("Battlefront no fruit market", "market_stall" not in kbb, str(kbb))
+check("Battlefront courier or dromas", bool(kbb & {"courier", "dromas"}), str(kbb))
 
 ws_tomb = mk(2, "Great Tomb")
 kt = {b["kind"] for b in eco.derive_scene(ws_tomb, place="Great Tomb")}
@@ -358,6 +360,140 @@ check("Tomb no market", "market_stall" not in kt, str(kt))
 ws_eye = mk(2, "Eye of Twilight")
 ke = {b["kind"] for b in eco.derive_scene(ws_eye, place="Eye of Twilight")}
 check("Eye no dromas market", "dromas" not in ke and "market_stall" not in ke, str(ke))
+check("Eye no laundry garrison", "laundry" not in ke and "banner" not in ke, str(ke))
+
+ws_fd = mk(2, "Fortress of Dome")
+kf = {b["kind"] for b in eco.derive_scene(ws_fd, place="Fortress of Dome")}
+check("Fortress banner", "banner" in kf, str(kf))
+check("Fortress no market", "market_stall" not in kf, str(kf))
+check("Fortress no dromas", "dromas" not in kf, str(kf))
+check("Fortress denser than Eye", len(kf) > len(ke), f"fort={len(kf)} eye={len(ke)}")
+check("Fortress faults clean", not eco.logic_faults(
+    eco.derive_scene(ws_fd, place="Fortress of Dome"), "Fortress of Dome"))
+
+ws_um = mk(2, "Universal Matrix")
+kum = {b["kind"] for b in eco.derive_scene(ws_um, place="Universal Matrix")}
+check("Matrix no market picnic", "market_stall" not in kum and "olive" not in kum, str(kum))
+
+ws_ws = mk(2, "Warbling Shores")
+kws = {b["kind"] for b in eco.derive_scene(ws_ws, place="Warbling Shores")}
+check("Warbling shore life", bool(kws & {"shore", "siren", "boat"}), str(kws))
+check("Warbling civic market or well", bool(kws & {"market_stall", "well"}), str(kws))
+
+ws_rs = mk(2, "Radiant Scarwood")
+krs = {b["kind"] for b in eco.derive_scene(ws_rs, place="Radiant Scarwood")}
+check("Radiant living grove", bool(krs & {"olive", "cicada", "grove_leaf"}), str(krs))
+check("Radiant no market", "market_stall" not in krs, str(krs))
+
+ws_dc = mk(2, "Demigod Council")
+kdc = {b["kind"] for b in eco.derive_scene(ws_dc, place="Demigod Council")}
+check("Demigod ceremonial", bool(kdc & {"incense", "pillar", "fountain"}), str(kdc))
+check("Demigod no market", "market_stall" not in kdc, str(kdc))
+
+ws_eh = mk(2, "Eternal Holy City")
+keh = {b["kind"] for b in eco.derive_scene(ws_eh, place="Eternal Holy City")}
+check("Eternal Holy chimera civic", "chimera" in keh, str(keh))
+check("Eternal Holy laundry or mosaic", bool(keh & {"laundry", "mosaic"}), str(keh))
+
+print("== Place art variants + stall counts ==")
+from pathlib import Path as _P
+_spr = _P(__file__).resolve().parent.parent / "assets" / "life_sprites"
+for stem in (
+    "stall_okhema", "stall_aedes", "stall_janus", "stall_kremnos", "stall_styxia",
+    "well_okhema", "well_aedes", "well_aidonia", "fountain_grove",
+    "gate_janus", "boat_styxia", "boat_aedes", "ribbon_janus", "ribbon_aidonia",
+    "forge_kremnos", "banner_kremnos", "pillar_okhema", "mosaic_okhema",
+):
+    check(f"sprite on disk: {stem}", (_spr / f"{stem}.png").is_file())
+
+check("art_family Okhema", eco.art_family_for("Okhema") == "okhema")
+check("art_family Aedes", eco.art_family_for("Aedes Elysiae") == "aedes")
+check("art_family Janus", eco.art_family_for("Janusopolis") == "janus")
+check("art_family Kremnos", eco.art_family_for("Castrum Kremnos") == "kremnos")
+check("art_family Styxia", eco.art_family_for("Styxia") == "styxia")
+check("art_family Grove", eco.art_family_for("Grove of Epiphany") == "grove")
+check("art_family Aidonia", eco.art_family_for("Aidonia") == "aidonia")
+
+check("visual stall Okhema", eco.place_visual_for("market_stall", "Okhema") == "stall_okhema")
+check("visual stall Aedes", eco.place_visual_for("market_stall", "Aedes Elysiae") == "stall_aedes")
+check("visual stall Janus", eco.place_visual_for("market_stall", "Janusopolis") == "stall_janus")
+check("visual stall Kremnos", eco.place_visual_for("market_stall", "Castrum Kremnos") == "stall_kremnos")
+check("visual stall Styxia", eco.place_visual_for("market_stall", "Styxia") == "stall_styxia")
+check("visual well Aidonia", eco.place_visual_for("well", "Aidonia") == "well_aidonia")
+check("visual fountain Grove", eco.place_visual_for("fountain", "Grove of Epiphany") == "fountain_grove")
+check("visual boat Styxia", eco.place_visual_for("boat", "Styxia") == "boat_styxia")
+
+# Stall counts when market is open (period 2 Action Hour typically).
+def _stall_count(place: str) -> int:
+    ws = mk(2, place)
+    return sum(1 for b in eco.derive_scene(ws, place=place) if b["kind"] == "market_stall")
+
+n_ok = _stall_count("Okhema")
+n_ae = _stall_count("Aedes Elysiae")
+n_jn = _stall_count("Janusopolis")
+n_kr = _stall_count("Castrum Kremnos")
+n_st = _stall_count("Styxia")
+n_eh = _stall_count("Eternal Holy City")
+if n_ok:
+    check("Okhema stall count 4", n_ok == 4, str(n_ok))
+else:
+    check("Okhema stall count 4", False, "market closed")
+if n_ae:
+    check("Aedes stall count 1", n_ae == 1, str(n_ae))
+    ae_vis = next(
+        b["visual"] for b in eco.derive_scene(mk(2, "Aedes Elysiae"), place="Aedes Elysiae")
+        if b["kind"] == "market_stall"
+    )
+    check("Aedes stall visual rustic", ae_vis == "stall_aedes", ae_vis)
+else:
+    check("Aedes stall count 1", False, "market closed")
+if n_jn:
+    check("Janusopolis stall count 2", n_jn == 2, str(n_jn))
+if n_kr:
+    check("Kremnos stall count 1", n_kr == 1, str(n_kr))
+    kr_vis = next(
+        b["visual"] for b in eco.derive_scene(mk(2, "Castrum Kremnos"), place="Castrum Kremnos")
+        if b["kind"] == "market_stall"
+    )
+    check("Kremnos stall visual martial", kr_vis == "stall_kremnos", kr_vis)
+if n_st:
+    check("Styxia stall count 2", n_st == 2, str(n_st))
+if n_eh:
+    check("Eternal Holy City stall count 3", n_eh == 3, str(n_eh))
+
+# Grove: no markets. Sanctum (Dawn prophetic city) keeps pilgrim stalls.
+check("Grove no market", "market_stall" not in {
+    b["kind"] for b in eco.derive_scene(mk(2, "Grove of Epiphany"), place="Grove of Epiphany")
+})
+n_san = _stall_count("Sanctum of Prophecy")
+if n_san:
+    check("Sanctum pilgrim stall count 2", n_san == 2, str(n_san))
+else:
+    check("Sanctum pilgrim stall count 2", False, "market closed")
+n_ae_old = _stall_count("Aedes Elysiae, of old")
+if n_ae_old:
+    check("Aedes of old stall count 1", n_ae_old == 1, str(n_ae_old))
+else:
+    check("Aedes of old stall count 1", False, "market closed")
+n_ws = _stall_count("Warbling Shores")
+if n_ws:
+    check("Warbling Shores stall count 2", n_ws == 2, str(n_ws))
+else:
+    check("Warbling Shores stall count 2", False, "market closed")
+
+# Visit sprite picker uses visual stem
+from src import ui_scene_life as usl
+ok_stall = {
+    "kind": "market_stall",
+    "visual": "stall_okhema",
+}
+ae_stall = {
+    "kind": "market_stall",
+    "visual": "stall_aedes",
+}
+check("Visit picks stall_okhema", usl._sprite_asset_key(ok_stall) == "stall_okhema")
+check("Visit picks stall_aedes", usl._sprite_asset_key(ae_stall) == "stall_aedes")
+check("Visit PNG uri stall_aedes", bool(usl.sprite_png_uri("stall_aedes")))
 
 from src.ui_backgrounds import DEFAULT_BG, bg_path_for_place
 from src.world.world_state import LOCATIONS
@@ -377,6 +513,128 @@ for place in LOCATIONS:
     if not slug or not (GALGAME_DIR / f"{slug}.jpg").exists():
         fallback_only.append(place)
 check("every LOCATIONS place resolves to a galgame JPEG", not fallback_only, str(fallback_only))
+
+print("== Regional voice (Okhema-standard energy) ==")
+from src.world import eco_voice as ev
+
+def _notice(place, kind):
+    ws_v = mk(2, place)
+    sc_v = eco.derive_scene(ws_v, place=place)
+    b = next((x for x in sc_v if x["kind"] == kind), None)
+    if not b:
+        return None
+    return eco.interact(ws_v, b["id"], place=place).get("line") or ""
+
+for place, kind, needle in (
+    ("Okhema", "fountain", "free concert"),
+    ("Janusopolis", "gate", "door"),
+    ("Castrum Kremnos", "forge", "Iron"),
+    ("Grove of Epiphany", "cicada", "brass"),
+    ("Styxia", "shore", "Pearl"),
+    ("Aidonia", "pillar", "Patience"),
+    ("Aedes Elysiae", "wheat", "childhood"),
+    ("Vortex of Genesis", "pillar", "Genesis"),
+    ("Great Tomb", "pillar", "Ruin"),
+    ("Eye of Twilight", "kite", "sun"),
+):
+    line = _notice(place, kind)
+    check(f"voice {place}/{kind}", bool(line and needle.lower() in line.lower()), str(line)[:80])
+
+# Density: living cities should feel as staged as Okhema (kind variety).
+for place, min_kinds in (
+    ("Janusopolis", 10),
+    ("Castrum Kremnos", 9),
+    ("Grove of Epiphany", 8),
+    ("Styxia", 12),
+    ("Aidonia", 9),
+    ("Aedes Elysiae", 12),
+    ("Dawncloud", 10),
+):
+    kinds = {b["kind"] for b in eco.derive_scene(mk(2, place), place=place)}
+    check(f"density {place}", len(kinds) >= min_kinds, f"{len(kinds)}:{sorted(kinds)}")
+
+# Sparse / death / nexus places stay place-fit but still voiced.
+for place in ("Vortex of Genesis", "Great Tomb", "Eye of Twilight", "The Nether"):
+    sc = eco.derive_scene(mk(2, place), place=place)
+    check(f"faults clean {place}", not eco.logic_faults(sc, place), str(eco.logic_faults(sc, place)))
+    wind = next((b for b in sc if b["kind"] == "wind"), None)
+    if wind:
+        check(f"voice wind {place}", bool(ev.flavor_notice(place, "wind", wind)))
+
+# Dawn peaks stay inhabited in voice (not blunt ruin copy of present twins).
+check("voice Fortress not ruin", "fallen" not in (
+    ev.flavor_notice("Fortress of Dome", "wind", {"status": "well"}) or ""
+).lower())
+check("voice Eye names cloudedge", "cloudedge" in (
+    ev.flavor_notice("Eye of Twilight", "wind", {"status": "well"}) or ""
+).lower() or "fallen" in (
+    ev.flavor_notice("Eye of Twilight", "wind", {"status": "well"}) or ""
+).lower())
+check("voice Matrix ordered memory", "ruin" not in (
+    ev.flavor_notice("Universal Matrix", "pillar", {"status": "well"}) or ""
+).lower())
+check("voice Battlefront on duty", "stood down" in (
+    ev.flavor_notice("Bloodbathed Battlefront", "banner", {"status": "open"}) or ""
+).lower() or "duty" in (
+    ev.flavor_notice("Bloodbathed Battlefront", "banner", {"status": "open"}) or ""
+).lower())
+
+print("== Chimera color / horn variants ==")
+from pathlib import Path as _Path
+_sprites = _Path(__file__).resolve().parents[1] / "assets" / "life_sprites"
+for stem in eco.CHIMERA_VISUALS:
+    check(f"sprite still {stem}", (_sprites / f"{stem}.png").is_file())
+    if stem == "chimera":
+        check(f"sprite film {stem}", (_sprites / f"{stem}_film.png").is_file())
+        check(f"sprite pet film {stem}", (_sprites / f"{stem}_pet_film.png").is_file())
+    else:
+        check(f"sprite film {stem}", (_sprites / f"{stem}_film.png").is_file())
+        check(f"sprite pet film {stem}", (_sprites / f"{stem}_pet_film.png").is_file())
+
+# Deterministic pick + slot offset so two chimeras differ in one scene.
+v1 = eco.chimera_visual_for("Okhema", 1, "4933-9-1-6-p2")
+v2 = eco.chimera_visual_for("Okhema", 2, "4933-9-1-6-p2")
+check("chimera visual in catalog", v1 in eco.CHIMERA_VISUALS, v1)
+check("chimera visual deterministic", v1 == eco.chimera_visual_for("Okhema", 1, "4933-9-1-6-p2"))
+check("chimera idx offsets visual", v1 != v2, f"{v1} vs {v2}")
+
+# Action Hour Okhema: two chimeras with distinct visuals when art allows.
+ws_cv = mk(2, "Okhema")
+sc_cv = eco.derive_scene(ws_cv, place="Okhema")
+chims = [b for b in sc_cv if b["kind"] == "chimera"]
+check("Okhema day has 2 chimeras", len(chims) >= 2, str(len(chims)))
+vis_set = {b.get("visual") for b in chims}
+check("Okhema chimera visuals mixed", len(vis_set) >= 2, str(sorted(vis_set)))
+for b in chims:
+    check(
+        f"chimera visual asset exists ({b.get('visual')})",
+        bool(usl.sprite_png_uri(str(b.get("visual") or ""))),
+        str(b.get("visual")),
+    )
+    check(
+        f"Visit picks chimera visual ({b.get('visual')})",
+        usl._sprite_asset_key(b) == b.get("visual"),
+        usl._sprite_asset_key(b),
+    )
+    meta = eco.chimera_variant_meta(str(b.get("visual") or ""))
+    if meta.get("color"):
+        check(
+            "chimera name reflects color",
+            meta["color"] in str(b.get("name") or "").lower(),
+            str(b.get("name")),
+        )
+
+# Dawncloud / Eternal Holy City also use the catalog.
+for place in ("Dawncloud", "Eternal Holy City"):
+    sc_p = eco.derive_scene(mk(2, place), place=place)
+    ch_p = [b for b in sc_p if b["kind"] == "chimera"]
+    check(f"{place} has chimera", bool(ch_p))
+    if ch_p:
+        check(
+            f"{place} chimera visual in catalog",
+            ch_p[0].get("visual") in eco.CHIMERA_VISUALS,
+            str(ch_p[0].get("visual")),
+        )
 
 print("== Engine hook import ==")
 import inspect

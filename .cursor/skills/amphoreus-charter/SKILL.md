@@ -68,6 +68,7 @@ When producing content:
 3. Place / travel / eco fitness — skill `amphoreus-world-map`
 4. No famine/plague/war/storm-as-entity as "today's lived work" (see `docs/LIVED-WORLD.md`)
 5. Ecosystem and residents never author Heir speech
+6. Optional runtime **skills aid** (default OFF) — Control Panel / `AMP_SKILLS`; see `amphoreus-databank-rag`
 
 ## Quick pointers
 

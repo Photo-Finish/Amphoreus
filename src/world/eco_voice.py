@@ -16,7 +16,9 @@ def voice_key(place: str) -> str:
         return "dawncloud"
     if p in {"Janusopolis", "Sanctum of Prophecy"}:
         return "janus"
-    if p in {"Castrum Kremnos", "Bloodbathed Battlefront"}:
+    if p == "Bloodbathed Battlefront":
+        return "battlefront"
+    if p == "Castrum Kremnos":
         return "kremnos"
     if p in {"Grove of Epiphany", "Radiant Scarwood"}:
         return "grove"
@@ -28,9 +30,13 @@ def voice_key(place: str) -> str:
         return "aedes"
     if p == "Vortex of Genesis":
         return "vortex"
-    if p in {"Great Tomb", "Universal Matrix"}:
+    if p == "Universal Matrix":
+        return "matrix"
+    if p == "Great Tomb":
         return "tomb"
-    if p in {"Eye of Twilight", "Fortress of Dome"}:
+    if p == "Fortress of Dome":
+        return "sky_fort"
+    if p == "Eye of Twilight":
         return "sky"
     if p == "The Nether":
         return "nether"
@@ -120,15 +126,12 @@ _STALLS: Dict[str, Tuple[Tuple[str, ...], Tuple[str, ...], Tuple[str, ...]]] = {
     "aedes": (
         (
             "a village fruit crate",
-            "a honey-and-wheat stall",
         ),
         (
             "fruit that grew up with the same kids who left and came home",
-            "honey cakes practicing being legendary",
         ),
         (
             "Village fruit — no gold awning required, just sun.",
-            "Honey and wheat: childhood's favorite side quest.",
         ),
     ),
 }
@@ -162,6 +165,8 @@ _NAMES: Dict[str, Dict[str, str]] = {
         "laundry": "council robes airing their opinions",
         "courier": "a bird carrying tomorrow's motion",
         "chimera": "a little chimera with a seat at the table",
+        "dromas": "a council-road dromas",
+        "dromas_calf": "a calf waiting out the vote",
     },
     "janus": {
         "grass": "threshold grass (both sides)",
@@ -188,6 +193,17 @@ _NAMES: Dict[str, Dict[str, str]] = {
         "courier": "a bird that delivers like a challenge accepted",
         "dromas": "a war-road dromas currently on errands of peace",
         "dromas_calf": "a calf learning the road without the roar",
+    },
+    "battlefront": {
+        "grass": "parade-ground grass still on duty",
+        "wind": "a dry wind carrying forge-heat and cooler heads",
+        "forge": "an anvil ringing the Dawn war awake",
+        "banner": "a battlefront banner that has not yet learned rest",
+        "pebble": "a stone that remembers boots mid-stride",
+        "pillar": "a spear-monument that has not stood down",
+        "courier": "a bird flying orders between spear-lines",
+        "dromas": "a war-road dromas hauling the hour's supplies",
+        "dromas_calf": "a calf learning the road beside the battlefront",
     },
     "grove": {
         "grove_leaf": "Cerces' leaf with footnotes",
@@ -256,12 +272,29 @@ _NAMES: Dict[str, Dict[str, str]] = {
         "wind": "air circulating like thought",
         "pebble": "a data-stone (metaphorically; still a pebble)",
     },
+    "matrix": {
+        "grove_leaf": "a leaf visiting the Universal Matrix",
+        "pillar": "a pillar of ordered memory",
+        "wind": "air circulating like a tidy thought",
+        "pebble": "a data-stone practicing being a pebble",
+    },
     "sky": {
-        "wind": "Aquila's leftover draft",
-        "pillar": "a sky-column practicing altitude",
+        "wind": "Aquila's leftover draft over fallen cloudedge",
+        "pillar": "a sky-column holding empty altitude",
         "kite": "a kite that thinks it is a small sun",
-        "grass": "terrace grass above the world",
+        "grass": "terrace grass above a long-abandoned rumor",
         "pebble": "a stone that fell up somehow",
+    },
+    "sky_fort": {
+        "wind": "Aquila's living draft over the Fortress of Dome",
+        "pillar": "a sky-column practicing inhabited altitude",
+        "banner": "a Skyfolk banner that still has somewhere to fly",
+        "incense": "incense for Aquila's mood, not a ruin's apology",
+        "kite": "a kite practicing sun over a living castrum",
+        "grass": "terrace grass above a city that has not fallen yet",
+        "pebble": "a stone that rose with the fortress",
+        "laundry": "garrison cloth airing in thin sky",
+        "courier": "a bird cutting altitude like late mail",
     },
     "nether": {
         "wind": "a breeze among pale blossoms",
@@ -273,14 +306,51 @@ _NAMES: Dict[str, Dict[str, str]] = {
 }
 
 
-def _chimera_name(key: str, idx: int) -> Optional[str]:
+def _chimera_name(key: str, idx: int, visual: str = "") -> Optional[str]:
+    """Place voice for chimeras — weave color/horn lightly when a variant is set."""
+    color = ""
+    horn = ""
+    if visual and visual != "chimera":
+        # chimera_blue → blue; chimera_pink → pink
+        color = visual.rsplit("_", 1)[-1] if "_" in visual else ""
+    horn_word = {
+        "chimera_blue": "spiral-horn",
+        "chimera_pink": "twin-horn",
+        "chimera_orange": "ram-horn",
+        "chimera_purple": "",
+    }.get(visual or "", "")
+
+    def _with_variety(base_one: str, base_more: str) -> str:
+        # Keep Okhema/Dawncloud voice; tuck color/horn into the nickname.
+        if key == "okhema":
+            if idx > 1:
+                if color:
+                    return f"another {color} little chaos-cloud"
+                return base_more
+            if color and horn_word:
+                return f"a {color} {horn_word} chaos-cloud"
+            if color:
+                return f"a {color} little chaos-cloud"
+            return base_one
+        if key == "dawncloud":
+            if idx > 1:
+                if color:
+                    return f"another {color} council-chimera"
+                return base_more
+            if color:
+                return f"a {color} chimera with a seat at the table"
+            return base_one
+        return ""
+
     if key == "okhema":
-        return "another little chaos-cloud" if idx > 1 else "a little chimera"
+        named = _with_variety("a little chimera", "another little chaos-cloud")
+        return named or None
     if key == "dawncloud":
-        return (
-            "another little council-chimera" if idx > 1
-            else "a little chimera with a seat at the table"
+        named = _with_variety(
+            "a little chimera with a seat at the table",
+            "another little council-chimera",
         )
+        return named or None
     return None
 
 
@@ -301,12 +371,12 @@ def _dromas_name(key: str, idx: int, kind: str) -> Optional[str]:
     return base
 
 
-def flavor_name(place: str, kind: str, idx: int, name: str) -> str:
+def flavor_name(place: str, kind: str, idx: int, name: str, visual: str = "") -> str:
     if kind == "dawn":
         return name
     key = voice_key(place)
     if kind == "chimera":
-        return _chimera_name(key, idx) or name
+        return _chimera_name(key, idx, visual=visual) or name
     if kind in {"dromas", "dromas_calf"}:
         return _dromas_name(key, idx, kind) or name
     if kind == "market_stall":
@@ -391,6 +461,18 @@ def flavor_doing(place: str, kind: str, status: str, doing: str,
             "pillar:any": "commemorating strength that chose rest today",
             "courier:flying": "carrying word faster than a challenge",
         },
+        "battlefront": {
+            "dromas:busy": "hauling spear-line supplies without apology",
+            "dromas_calf:day": "learning stride beside the front",
+            "grass:day": "standing at attention between drills",
+            "wind:day": "drying banner-cloth over live forge-heat",
+            "forge:ringing": "turning ore into the hour's needed iron",
+            "forge:day": "keeping the battlefront honest",
+            "banner:open": "flying color that has not stood down",
+            "pebble:any": "remembering boots mid-stride",
+            "pillar:any": "commemorating strength still on duty",
+            "courier:flying": "carrying orders between spear-lines",
+        },
         "grove": {
             "grove_leaf:day": "annotating sunlight in the margins",
             "olive:day": "offering shade and unsolicited critique",
@@ -459,12 +541,29 @@ def flavor_doing(place: str, kind: str, status: str, doing: str,
             "wind:day": "circulating like a long thought",
             "pebble:any": "being a pebble in a place that thinks in matrices",
         },
+        "matrix": {
+            "grove_leaf:day": "reminding the matrix that green still visits",
+            "pillar:any": "ordering memory into something walkable",
+            "wind:day": "circulating like a tidy thought",
+            "pebble:any": "being a pebble in a place that remembers in order",
+        },
         "sky": {
-            "wind:day": "drafting weather from memory",
-            "pillar:any": "holding altitude with manners",
-            "kite:day": "pretending to be a smaller sun",
-            "grass:day": "growing on a terrace above rumor",
+            "wind:day": "drafting weather from a fallen memory",
+            "pillar:any": "holding empty altitude with manners",
+            "kite:day": "pretending to be a smaller sun over ruins",
+            "grass:day": "growing on a terrace above long abandonment",
             "pebble:any": "refusing to fall the ordinary way",
+        },
+        "sky_fort": {
+            "wind:day": "drafting weather for a living sky city",
+            "pillar:any": "holding inhabited altitude with manners",
+            "banner:open": "flying Skyfolk color that has not fallen",
+            "incense:day": "sweetening Aquila's terrace air",
+            "kite:day": "pretending to be a smaller sun over the Dome",
+            "grass:day": "growing on a terrace above a city still awake",
+            "pebble:any": "rising with the fortress, not falling from it",
+            "laundry:hanging": "drying garrison shirts in thin sky",
+            "courier:flying": "cutting altitude like late mail with confidence",
         },
         "nether": {
             "wind:day": "moving among pale blossoms without hurry",
@@ -574,6 +673,29 @@ def flavor_notice(place: str, kind: str, being: dict) -> Optional[str]:
         notices = _STALLS[key][2]
         return notices[(max(1, idx) - 1) % len(notices)]
 
+    if kind == "chimera":
+        color = str(being.get("chimera_color") or "").strip()
+        horn = str(being.get("chimera_horn") or "").strip()
+        pack = {
+            "okhema": (
+                "It locks eyes with you and delivers a proud Awoo — "
+                "half greeting, half press conference."
+            ),
+            "dawncloud": (
+                "It Awoos like a point of order. The chamber is briefly improved."
+            ),
+        }.get(key)
+        if pack and color:
+            horn_bit = {
+                "spiral": " spiral-horn",
+                "twin": " twin-horn",
+                "ram": " ram-horn",
+            }.get(horn, "")
+            return f"A {color}{horn_bit} little one. {pack}"
+        if pack:
+            return pack
+        # Eternal Holy City / others: fall through to notices pack.
+
     notices = {
         "okhema": {
             "chimera": (
@@ -657,6 +779,20 @@ def flavor_notice(place: str, kind: str, being: dict) -> Optional[str]:
             "pillar": "Strength commemorated as stillness. Shade included.",
             "courier": "Delivers like a challenge you already won.",
         },
+        "battlefront": {
+            "dromas": (
+                "War-road posture, battlefront cargo. "
+                "Pets accepted between spear-lines."
+            ),
+            "dromas_calf": "Small plates learning stride beside the front.",
+            "grass": "Standing at attention. Do not ask it to picnic.",
+            "wind": "Dry forge-heat; banner-cloth stays honest.",
+            "forge": "Iron rings the Dawn war awake — tools, not a recruitment drive.",
+            "banner": "Color on the wind — a battlefront that has not stood down.",
+            "pebble": "It remembers boots mid-stride. Still a pebble.",
+            "pillar": "Strength still on duty. Shade included.",
+            "courier": "Orders between spear-lines; confidence included.",
+        },
         "grove": {
             "grove_leaf": "Leaf with footnotes. Shade with syllabus.",
             "olive": "Silver leaves; unsolicited critique included free.",
@@ -725,12 +861,29 @@ def flavor_notice(place: str, kind: str, being: dict) -> Optional[str]:
             "wind": "Air circulating like a long thought.",
             "pebble": "A pebble in a matrix. Still pocketable.",
         },
+        "matrix": {
+            "grove_leaf": "Green visiting the Universal Matrix. Soft contradiction.",
+            "pillar": "Memory, organized. Walkable. Slightly smug.",
+            "wind": "Air circulating like a tidy thought.",
+            "pebble": "A pebble in ordered memory. Still pocketable.",
+        },
         "sky": {
-            "wind": "Aquila's leftover draft. Weather with memory.",
-            "pillar": "Altitude with manners.",
-            "kite": "A small sun on a string. Ambitious.",
-            "grass": "Terrace grass above rumor.",
+            "wind": "Aquila's leftover draft over fallen cloudedge.",
+            "pillar": "Empty altitude with manners.",
+            "kite": "A small sun on a string. Ambitious over ruins.",
+            "grass": "Terrace grass above long abandonment.",
             "pebble": "Fell up. Do not ask how.",
+        },
+        "sky_fort": {
+            "wind": "Aquila's living draft. Weather with a city under it.",
+            "pillar": "Inhabited altitude with manners.",
+            "banner": "Skyfolk color that has not fallen.",
+            "incense": "Terrace smoke for Aquila's mood.",
+            "kite": "A small sun on a string over a living castrum.",
+            "grass": "Terrace grass above a city still awake.",
+            "pebble": "Rose with the fortress. Do not ask how.",
+            "laundry": "Garrison cloth living its best thin-sky life.",
+            "courier": "Altitude mail with confidence.",
         },
         "nether": {
             "wind": "Pale blossoms move. No hurry. No grave-work.",
@@ -813,6 +966,17 @@ def flavor_touch(place: str, action_id: str, kind: str) -> Optional[str]:
                 "banner-cloth speaks color and weather, not march orders"
             ),
         },
+        "battlefront": {
+            ("pet", "dromas"): (
+                "neck plates warm; the beast accepts pets between spear-lines"
+            ),
+            ("listen_iron", ""): (
+                "iron sings the Dawn war awake — still tools, not a draft notice"
+            ),
+            ("read_cloth", ""): (
+                "banner-cloth speaks color that has not stood down"
+            ),
+        },
         "grove": {
             ("rest_shade", ""): (
                 "olive shade holds a minute; the Grove grades your posture kindly"
@@ -863,10 +1027,21 @@ def flavor_touch(place: str, action_id: str, kind: str) -> Optional[str]:
         },
         "sky": {
             ("touch_air", "wind"): (
-                "altitude draft; your hair briefly joins the Skyfolk"
+                "altitude draft over fallen cloudedge; your hair briefly joins the Skyfolk"
             ),
             ("rest_shade", ""): (
-                "sky-column shade; rent paid in wonder"
+                "sky-column shade over ruins; rent paid in wonder"
+            ),
+        },
+        "sky_fort": {
+            ("touch_air", "wind"): (
+                "living altitude draft; your hair briefly joins the Skyfolk"
+            ),
+            ("rest_shade", ""): (
+                "sky-column shade over an intact fortress; rent paid in wonder"
+            ),
+            ("read_cloth", ""): (
+                "garrison cloth debates thin sky; you decline to referee"
             ),
         },
         "vortex": {
@@ -884,6 +1059,13 @@ def flavor_touch(place: str, action_id: str, kind: str) -> Optional[str]:
                 "a data-pebble (still a pebble); the tomb does not invoice"
             ),
             ("rest_shade", ""): "ordered ruin shade; walkable, slightly smug",
+        },
+        "matrix": {
+            ("touch_air", "wind"): "ordered matrix air; tidy thoughts optional",
+            ("pick_keepsake", ""): (
+                "a data-pebble (still a pebble); the matrix does not invoice"
+            ),
+            ("rest_shade", ""): "ordered memory shade; walkable, slightly smug",
         },
     }.get(key, {})
 

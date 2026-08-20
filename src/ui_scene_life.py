@@ -27,9 +27,9 @@ _SPRITE_PATHS: Dict[str, str] = {
         '<circle cx="25" cy="15" r="1.2" fill="#1a1428"/>'
     ),
     "dromas": (
-        '<ellipse cx="20" cy="26" rx="14" ry="9" fill="#c9a86a"/>'
-        '<rect x="28" y="10" width="5" height="16" rx="2" fill="#b8955a"/>'
-        '<circle cx="31" cy="9" r="3.5" fill="#d4b87a"/>'
+        '<ellipse cx="20" cy="26" rx="14" ry="9" fill="#7a8fb8"/>'
+        '<rect x="28" y="10" width="5" height="16" rx="2" fill="#9aa8c4"/>'
+        '<circle cx="31" cy="9" r="3.5" fill="#c8d0e0"/>'
     ),
     "hearth_cat": (
         '<ellipse cx="20" cy="26" rx="10" ry="7" fill="#d8c8a8"/>'
@@ -992,9 +992,10 @@ def _sprite_button_html(
     z = _sprite_z_index(kind, bottom)
     asset = _sprite_asset_key(b, kind)
     pettable = ' data-pettable="1"' if kind in _PET_KINDS else ""
+    asset_attr = f' data-asset="{_html.escape(asset, quote=True)}"' if asset else ""
     return (
         f'<button type="button" class="amp-sprite{motion}{facing}{ailing}{sky}{roamer_cls}" '
-        f'data-oid="{oid}" data-kind="{_html.escape(kind, quote=True)}"{pettable} '
+        f'data-oid="{oid}" data-kind="{_html.escape(kind, quote=True)}"{pettable}{asset_attr} '
         f'title="{title}" aria-label="{title}" '
         f'style="left:{left};bottom:{bottom};--amp-cell:{cell}px;z-index:{z};{roam}">'
         f'<span class="amp-sprite-halo"></span>'
@@ -1018,6 +1019,7 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
             "oid": oid,
             "kind": kind,
             "name": str(b.get("name") or kind),
+            "asset": asset,
             "ailing": b.get("status") == "ailing",
             "bottom": bottom,
             "dur": _roamer_cross_secs(kind, oid),
@@ -1161,6 +1163,7 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
         + (keepNative ? ' face-r' : ' face-l');
       btn.setAttribute('data-oid', ent.oid);
       btn.setAttribute('data-kind', ent.kind || '');
+      if (ent.asset) btn.setAttribute('data-asset', ent.asset);
       if (ent.notice && ent.notice.pettable) btn.setAttribute('data-pettable', '1');
       btn.setAttribute('title', ent.name);
       btn.setAttribute('aria-label', ent.name);
@@ -1349,6 +1352,7 @@ def pictorial_stage_html(
         "well", "fountain", "forge", "boat", "siren", "olive", "cicada",
         "pearl", "shrine", "gate", "market_stall",
         "laundry", "mill", "kite", "courier", "banner", "pillar", "incense",
+        "mosaic", "ribbon",
         "dawn", "thief_star",
     )
     clickable = [
@@ -1529,6 +1533,19 @@ def pictorial_stage_html(
         for kind in _PET_KINDS
         if sprite_pet_film_uri(kind)
     }
+    # Variant stems (chimera_blue, …) used by this scene's sprites / roamers.
+    for b in scene or []:
+        stem = _sprite_asset_key(b)
+        if stem and stem not in pet_book:
+            uri = sprite_pet_film_uri(stem)
+            if uri:
+                pet_book[stem] = uri
+    for row in roamer_pool or []:
+        stem = str(row.get("asset") or "")
+        if stem and stem not in pet_book:
+            uri = sprite_pet_film_uri(stem)
+            if uri:
+                pet_book[stem] = uri
     pet_json = (
         '<script type="application/json" id="amp-pet-films">'
         + json.dumps(pet_book, ensure_ascii=False)
@@ -1578,9 +1595,10 @@ def pictorial_stage_html(
         "  var actsEl = card ? card.querySelector('.amp-notice-acts') : null;\n"
         "  function hideNotice(){ if (card) card.hidden = true; }\n"
         "  function playPet(oid, kind, note){\n"
-        "    var src = petFilms[kind];\n"
-        "    if (!src || !root) return false;\n"
         "    var btn = root.querySelector('.amp-sprite[data-oid=\"'+oid+'\"]');\n"
+        "    var asset = (btn && btn.getAttribute('data-asset')) || '';\n"
+        "    var src = petFilms[asset] || petFilms[kind];\n"
+        "    if (!src || !root) return false;\n"
         "    if (!btn) return false;\n"
         "    var film = btn.querySelector('.amp-sprite-film');\n"
         "    var body = btn.querySelector('.amp-sprite-body');\n"
@@ -1839,7 +1857,7 @@ def render_presence_chips(
     _render_pocket()
 
     skip = {
-        "grass", "wind", "wheat", "grove_leaf", "shore", "mosaic",
+        "grass", "wind", "wheat", "grove_leaf", "shore",
         "bath", "hearth", "loom", "scroll", "lamp",
     }
     beings = [

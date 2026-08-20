@@ -317,6 +317,43 @@ def render_control_panel(manager, characters):
                     st.write(_oc.stop_server())
                     st.rerun()
 
+    # Optional Cursor-skills aid (RAG path) — default OFF
+    st.markdown("### Skills aid (optional)")
+    try:
+        from src.core import amp_skills as _ask
+        _skills_cur = _ask.skills_enabled()
+        st.caption(
+            "When **ON**, RAG chat injects Amphoreus skill guidance "
+            "(`.cursor/skills/`) — voice-first retrieval discipline, not a "
+            "lore-bot rewrite. Default **OFF**. Env override: `AMP_SKILLS=1|0`."
+        )
+        _skills_choice = st.radio(
+            "Apply Amphoreus skills in RAG mode?",
+            [False, True],
+            index=1 if _skills_cur else 0,
+            format_func=lambda on: (
+                "ON — skills aid (voice + retrieval)"
+                if on
+                else "OFF — classic RAG (default)"
+            ),
+            key="ctl_amp_skills",
+            disabled=(_cur_path != _vp.PATH_RAG),
+        )
+        if _cur_path != _vp.PATH_RAG:
+            st.info("Skills aid applies only on the **RAG** voice path.")
+        elif _skills_choice != _skills_cur:
+            if st.button(
+                f"Set skills aid {'ON' if _skills_choice else 'OFF'}",
+                key="ctl_amp_skills_btn",
+            ):
+                _ask.set_skills_enabled(bool(_skills_choice))
+                st.success(_ask.label())
+                st.rerun()
+        else:
+            st.success(f"Active: **{_ask.label()}**.")
+    except Exception as e:
+        st.caption(f"Skills aid unavailable ({e}).")
+
     st.markdown("---")
 
     # ---------------- 1. Experience mode ----------------

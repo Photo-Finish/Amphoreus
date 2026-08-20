@@ -322,6 +322,14 @@ if not is_visitor():
             st.sidebar.warning("📚 RAG: Disabled")
     except Exception as e:
         st.sidebar.warning(f"📚 RAG: Unavailable ({e})")
+    try:
+        from src.core.amp_skills import skills_enabled, label as _skills_label
+        if skills_enabled():
+            st.sidebar.info(f"🧩 {_skills_label()}")
+        else:
+            st.sidebar.caption(f"🧩 {_skills_label()} — Control Panel to enable")
+    except Exception:
+        pass
 
 characters = manager.list_available_characters()
 if not characters:

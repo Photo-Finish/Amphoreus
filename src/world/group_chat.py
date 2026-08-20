@@ -661,6 +661,13 @@ def send_invitations(
 def enrich_system(manager, character_id: str) -> str:
     """Same sanctuary injectors as 1:1 chat — voice fidelity, knowledge wall."""
     system_prompt = manager.loader.build_system_prompt(character_id)
+    # Optional skills aid (default OFF): voice-biased RAG note is chat-turn
+    # specific; here we only inject the skills speech block when enabled.
+    try:
+        from src.core.amp_skills import maybe_inject
+        system_prompt = maybe_inject(system_prompt, character_id)
+    except Exception:
+        pass
     for fn_name in (
         "_inject_memory_context",
         "_inject_world_context",
