@@ -315,6 +315,10 @@ _SPRITE_Z_FLOOR = 10
 _SPRITE_Y_SCALE = 2
 _UI_NOTICE_Z = 280
 _UI_READ_Z = 260
+# Page-layer stacking vs Streamlit chrome (see ui_weather page_backdrop_css):
+# photo behind copy; life/popups above copy; chat/tabs stay higher still.
+_PAGE_PHOTO_Z = 0
+_PAGE_LIFE_Z = 25
 # Display height on the full pictorial stage. Resident is human scale.
 # Little chimera is a mascot you could pick up; dromas is a ridden earth-beast.
 _SPRITE_CELL: Dict[str, int] = {
@@ -1329,9 +1333,35 @@ def pictorial_stage_html(
     """Weather + ambient + clickable sprites.
 
     ``page_layer=True`` pins figures to the viewport. The cinematic postcard
-    is an ``<img>`` inside this iframe (not a page ``::before``), so Streamlit
-    cannot mangle ``background-size``.
+    is an ``<img>`` inside a low photo iframe; life / popups sit in a higher
+    iframe so they paint above Streamlit page text (see ``_PAGE_LIFE_Z``).
     """
+    docs = pictorial_stage_documents(
+        image_path, place, effect, sky, scene,
+        height=height, max_width=max_width, read_line=read_line,
+        dense=dense, page_layer=page_layer, entities=entities,
+        inset_max_width=inset_max_width, inset_height=inset_height,
+    )
+    return docs[-1] if docs else ""
+
+
+def pictorial_stage_documents(
+    image_path,
+    place: str,
+    effect: str,
+    sky: str,
+    scene: List[dict],
+    *,
+    height: int = 520,
+    max_width: int = 1920,
+    read_line: str = "",
+    dense: bool = True,
+    page_layer: bool = False,
+    entities: bool = True,
+    inset_max_width: int = 960,
+    inset_height: int = 0,
+) -> List[str]:
+    """HTML document(s) for ``components.html`` — photo then life when page-layered."""
     from src.ui_weather import image_data_uri, overlay_for
 
     art_path = image_path
@@ -1346,7 +1376,7 @@ def pictorial_stage_html(
     if art_path:
         uri = image_data_uri(art_path, max_width=max_width) or ""
         if not uri and not page_layer:
-            return ""
+            return []
 
     ambient = life_overlay_html(scene, place, dense=dense) if entities else ""
     # Cap on-stage figures so the art stays readable (full list lives in eco).
@@ -1454,22 +1484,47 @@ def pictorial_stage_html(
 
     pin_js = ""
     if page_layer:
-        # Full page window: lower border is the ground (sprites use bottom ~0–2%).
+        # Full page: promote the JPEG into the parent at z=0 (behind copy),
+        # keep this iframe transparent at _PAGE_LIFE_Z (above copy) for
+        # figures, ambient env, and notice popups.
         pin_js = (
             "  var f = window.frameElement;\n"
             "  if (f) {\n"
             "    f.setAttribute('data-amp-land', '1');\n"
+            "    f.setAttribute('data-amp-land-life', '1');\n"
             "    f.removeAttribute('width'); f.removeAttribute('height');\n"
-            "    f.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;"
-            "border:0;z-index:0;background:transparent;pointer-events:auto;"
+            f"    f.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;"
+            f"border:0;z-index:{_PAGE_LIFE_Z};background:transparent;pointer-events:auto;"
             "max-width:none;max-height:none;';\n"
             "    var p = f.parentElement;\n"
             "    if (p) {\n"
             "      p.setAttribute('data-amp-land-wrap', '1');\n"
+            "      p.setAttribute('data-amp-land-life-wrap', '1');\n"
             "      p.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;"
-            "margin:0;padding:0;overflow:visible;z-index:0;border:none;"
+            f"margin:0;padding:0;overflow:visible;z-index:{_PAGE_LIFE_Z};border:none;"
             "background:transparent;pointer-events:none;';\n"
             "    }\n"
+            "    try {\n"
+            "      var pdoc = f.ownerDocument;\n"
+            "      var shot = document.querySelector('.amp-land-photo');\n"
+            "      var src = shot ? (shot.getAttribute('src') || '') : '';\n"
+            "      if (pdoc && src) {\n"
+            "        var host = pdoc.getElementById('amp-land-photo-host');\n"
+            "        if (!host) {\n"
+            "          host = pdoc.createElement('div');\n"
+            "          host.id = 'amp-land-photo-host';\n"
+            "          host.setAttribute('data-amp-land-photo-wrap', '1');\n"
+            "          (pdoc.body || pdoc.documentElement).appendChild(host);\n"
+            "        }\n"
+            f"        host.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;"
+            f"margin:0;padding:0;overflow:hidden;z-index:{_PAGE_PHOTO_Z};border:none;"
+            "background:#0b0a14;pointer-events:none;';\n"
+            "        host.innerHTML = '<img alt=\"\" src=\"'+src+'\" style=\""
+            "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
+            "object-position:center bottom;pointer-events:none;display:block;\">';\n"
+            "        if (shot) shot.style.display = 'none';\n"
+            "      }\n"
+            "    } catch (e) {}\n"
             "  }\n"
         )
     else:
@@ -1722,7 +1777,7 @@ def pictorial_stage_html(
         "})();\n"
         "</script>\n"
     )
-    return body
+    return [body]
 
 
 def render_pictorial_stage(
@@ -1745,19 +1800,20 @@ def render_pictorial_stage(
     """Render the land overlay. ``page_layer`` pins figures and the postcard to the viewport."""
     from streamlit.components.v1 import html as components_html
 
-    html = pictorial_stage_html(
+    docs = pictorial_stage_documents(
         image_path, place, effect, sky, scene,
         height=height, max_width=max_width, read_line=read_line,
         dense=dense, page_layer=page_layer, entities=entities,
         inset_max_width=inset_max_width, inset_height=inset_height,
     )
-    if not html:
+    if not docs:
         return False
     if page_layer:
         slot = 1
     else:
         slot = max(120, int(inset_height or height or 405))
-    components_html(html, height=slot, scrolling=False)
+    for doc in docs:
+        components_html(doc, height=slot, scrolling=False)
     return True
 
 

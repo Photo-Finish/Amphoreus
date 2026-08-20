@@ -3,11 +3,11 @@
 Separate from Copilot’s Stage-1 `conversation-archive.md`. This file records the **Cursor** chat window dialogues only.
 
 - **Chat id:** `fefecb77-99f5-4c57-8a9c-95d79fefddb6`
-- **Rounds (user turns):** 358
-- **Assistant replies:** 2326
-- **Tool calls:** 4266
-- **From:** Tuesday, Aug 18, 2026, 12:33 AM (UTC+8)  **to:** Thursday, Aug 20, 2026, 5:39 PM (UTC+8)
-- **Exported:** 2026-08-20 17:41 UTC+8
+- **Rounds (user turns):** 361
+- **Assistant replies:** 2356
+- **Tool calls:** 4318
+- **From:** Tuesday, Aug 18, 2026, 12:33 AM (UTC+8)  **to:** Thursday, Aug 20, 2026, 6:27 PM (UTC+8)
+- **Exported:** 2026-08-20 18:35 UTC+8
 - **Source:** agent transcript JSONL for this window
 
 ---
@@ -17686,5 +17686,198 @@ The only leftovers are untracked drafts (`dromas_walk_v2_f*.png` and `_hsr_src/`
 ### You
 
 Now record the COMPLETE Dialogues of chats in this window in a different file to what Copilot has generated.
+
+### Cursor
+
+I'll find Copilot's dialogue archive so we don't touch it, then write this window's full chat into a separate file.
+
+> 🔧 **Glob** — `{"glob_pattern": "**/*{dialog,dialogue,chat,transcript,conversation}*", "target_directory": "D:\\Workspace\\Amphoreus"}`
+> 🔧 **Grep** — `{"path": "D:\\Workspace\\Amphoreus", "pattern": "Copilot.*(dialog|chat|transcript)|dialogues? of chats|COMPLETE Dialog", "glob": "*.{md,txt,json}", "head_limit": 40}`
+> 🔧 **Shell** — `{"command": "Get-ChildItem -Path \"D:\\Workspace\\Amphoreus\" -Recurse -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -match 'dialog|chat|copilot|archive|transcript|conversation' } | Select-Object -ExpandProperty FullN…`
+
+### Cursor
+
+> 🔧 **Read** — `{"limit": 80, "path": "D:\\Workspace\\Amphoreus\\conversation-archive.md"}`
+> 🔧 **Glob** — `{"glob_pattern": "**/*cursor*archive*", "target_directory": "D:\\Workspace\\Amphoreus"}`
+> 🔧 **Grep** — `{"path": "D:\\Workspace\\Amphoreus\\README.md", "pattern": "conversation-archive|Cursor.*chat|Stage.?2.*dialog"}`
+> 🔧 **Shell** — `{"command": "(Get-Item \"C:\\Users\\17501\\.cursor\\projects\\d-Workspace-Amphoreus\\agent-transcripts\\fefecb77-99f5-4c57-8a9c-95d79fefddb6\\fefecb77-99f5-4c57-8a9c-95d79fefddb6.jsonl\").Length; (Get-Content \"C:\\Users\\17501\\.cursor\…`
+
+### Cursor
+
+> 🔧 **Shell** — `{"command": "& \"d:\\Workspace\\.venv\\Scripts\\python.exe\" -c \"\nimport json\nfrom pathlib import Path\np=Path(r'C:\\Users\\17501\\.cursor\\projects\\d-Workspace-Amphoreus\\agent-transcripts\\fefecb77-99f5-4c57-8a9c-95d79fefddb6\\fefe…`
+> 🔧 **Grep** — `{"path": "D:\\Workspace\\Amphoreus\\tools", "pattern": "export.*transcript|conversation-archive|Export a VS Code Copilot"}`
+> 🔧 **Glob** — `{"glob_pattern": "**/export*conversation*", "target_directory": "D:\\Workspace\\Amphoreus"}`
+
+### Cursor
+
+> 🔧 **Shell** — `{"command": "& \"d:\\Workspace\\.venv\\Scripts\\python.exe\" -c \"\nimport json\nfrom collections import Counter\nfrom pathlib import Path\np=Path(r'C:\\Users\\17501\\.cursor\\projects\\d-Workspace-Amphoreus\\agent-transcripts\\fefecb77-…`
+
+### Cursor
+
+Exporting this Cursor chat window into a new archive file, leaving Copilot's `conversation-archive.md` untouched.
+
+> 🔧 **Shell** — `{"command": "& \"d:\\Workspace\\.venv\\Scripts\\python.exe\" -c @'\n# -*- coding: utf-8 -*-\n\"\"\"Export this Cursor chat window to cursor-conversation-archive.md (not Copilot's file).\"\"\"\nfrom __future__ import annotations\n\nimport…`
+
+### Cursor
+
+> 🔧 **Read** — `{"limit": 60, "path": "D:\\Workspace\\Amphoreus\\cursor-conversation-archive.md"}`
+> 🔧 **Shell** — `{"command": "git status --porcelain conversation-archive.md cursor-conversation-archive.md; Get-Item \"D:\\Workspace\\Amphoreus\\cursor-conversation-archive.md\",\"D:\\Workspace\\Amphoreus\\conversation-archive.md\" | Select-Object Name,…`
+
+### Cursor
+
+> 🔧 **StrReplace** — `{"path": "D:\\Workspace\\Amphoreus\\cursor-conversation-archive.md", "old_string": "- **Exported:** 2026-08-20 17:41 Chine", "new_string": "- **Exported:** 2026-08-20 17:41 UTC+8"}`
+
+### Cursor
+
+Recorded this Cursor window in **`cursor-conversation-archive.md`** (new file — Copilot’s `conversation-archive.md` was not touched).
+
+- **358** user rounds · **2326** assistant replies · **4266** tool calls  
+- Span: Aug 18 → Aug 20, 2026
+
+---
+
+## Round 359 — Thursday, Aug 20, 2026, 5:42 PM (UTC+8)
+
+### You
+
+Execute the selected diff-tab commit-and-push action.
+
+### Cursor
+
+> 🔧 **Shell** — `{"command": "git status -sb; Write-Host '---'; git diff --stat; Write-Host '---'; git status --porcelain; Write-Host '---'; git log -5 --oneline", "description": "Inspect status, diffs, recent commits"}`
+
+### Cursor
+
+> 🔧 **Shell** — `{"command": "git add -- \"cursor-conversation-archive.md\"; $msg = @'\nAdd Cursor Stage-2 chat archive separate from Copilot conversation-archive.\n\n'@; $msg | Out-File -Encoding utf8NoBOM -FilePath .git\\COMMIT_EDITMSG_TMP.txt; git com…`
+
+### Cursor
+
+Pushed **`edbbb5d`** — `cursor-conversation-archive.md` only. Drafts and `_hsr_src/` left untracked.
+
+---
+
+## Round 360 — Thursday, Aug 20, 2026, 5:45 PM (UTC+8)
+
+### You
+
+Execute the selected diff-tab commit-and-push action.
+
+### Cursor
+
+> 🔧 **Shell** — `{"command": "git status -sb; Write-Host '---'; git diff --stat; Write-Host '---'; git status --porcelain; Write-Host '---'; git log -3 --oneline", "description": "Check for commitable changes"}`
+
+### Cursor
+
+Nothing to commit — `main` already matches `origin/main` at `edbbb5d`.
+
+Only leftover untracked drafts (`dromas_walk_v2_f*.png`, `_hsr_src/`) remain, and those stay excluded.
+
+---
+
+## Round 361 — Thursday, Aug 20, 2026, 6:27 PM (UTC+8)
+
+### You
+
+Now one problem: the environment elements and the pop-ups are below all the text on the page. I need the former to be above the latter. FIx this.
+
+### Cursor
+
+I'll check how the land scene stacks sprites, pop-ups, and page text, then raise the environment layer above the copy.
+
+> 🔧 **Grep** — `{"path": "D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py", "pattern": "z-index|amp-sprite|popup|pop-up|overlay|scene-life"}`
+> 🔧 **Grep** — `{"path": "D:\\Workspace\\Amphoreus\\src", "glob": "ui_*.py", "pattern": "z-index|amp-life|life-overlay|hotspot|popup|notice|flavor"}`
+> 🔧 **Read** — `{"limit": 80, "path": "D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py", "offset": 280}`
+
+### Cursor
+
+> 🔧 **Read** — `{"limit": 200, "offset": 1380, "path": "D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py"}`
+> 🔧 **Read** — `{"limit": 120, "offset": 1720, "path": "D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py"}`
+> 🔧 **Grep** — `{"path": "D:\\Workspace\\Amphoreus\\src\\ui_weather.py", "pattern": "page_layer|amp-page|z-index|stMarkdown|iframe"}`
+> 🔧 **Grep** — `{"glob": "ui_*.py", "path": "D:\\Workspace\\Amphoreus\\src", "pattern": "page_layer|render_pictorial|inject.*land|components\\.v1\\.html"}`
+
+### Cursor
+
+> 🔧 **Read** — `{"limit": 120, "offset": 480, "path": "D:\\Workspace\\Amphoreus\\src\\ui_weather.py"}`
+> 🔧 **Read** — `{"limit": 120, "offset": 680, "path": "D:\\Workspace\\Amphoreus\\src\\ui_weather.py"}`
+> 🔧 **Read** — `{"limit": 100, "offset": 1040, "path": "D:\\Workspace\\Amphoreus\\src\\ui_weather.py"}`
+
+### Cursor
+
+> 🔧 **Read** — `{"limit": 80, "path": "D:\\Workspace\\Amphoreus\\src\\ui_weather.py", "offset": 430}`
+> 🔧 **Grep** — `{"path": "D:\\Workspace\\Amphoreus\\src", "pattern": "amp-land|page_layer|backdrop|z-index.*[0-9]+|land.?iframe|split", "glob": "*.{py,md}", "head_limit": 60}`
+> 🔧 **Read** — `{"limit": 40, "path": "D:\\Workspace\\Amphoreus\\src\\ui_app.py", "offset": 990}`
+
+### Cursor
+
+Land iframe sits at z-index 0 while page text is at 10, so sprites and pop-ups paint under the copy. Splitting the photo (behind text) from the life/notice layer (above text).
+
+> 🔧 **Read** — `{"limit": 100, "offset": 700, "path": "D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py"}`
+> 🔧 **Read** — `{"limit": 50, "offset": 1310, "path": "D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py"}`
+> 🔧 **Grep** — `{"path": "D:\\Workspace\\Amphoreus\\tools", "pattern": "amp-land|page_layer|pictorial_stage|z-index"}`
+
+### Cursor
+
+> 🔧 **Read** — `{"limit": 50, "offset": 650, "path": "D:\\Workspace\\Amphoreus\\src\\ui_weather.py"}`
+> 🔧 **Read** — `{"limit": 30, "path": "D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py"}`
+
+### Cursor
+
+> 🔧 **Read** — `{"limit": 220, "offset": 1418, "path": "D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py"}`
+
+### Cursor
+
+> 🔧 **Grep** — `{"path": "D:\\Workspace\\Amphoreus", "pattern": "pictorial_stage_html"}`
+
+### Cursor
+
+> 🔧 **StrReplace** — `{"path": "D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py", "old_string": "_SPRITE_Z_FLOOR = 10\n_SPRITE_Y_SCALE = 2\n_UI_NOTICE_Z = 280\n_UI_READ_Z = 260", "new_string": "_SPRITE_Z_FLOOR = 10\n_SPRITE_Y_SCALE = 2\n_UI_NOTICE_Z = 280\n_U…`
+> 🔧 **StrReplace** — `{"path": "D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py", "old_string": "    ``page_layer=True`` pins figures to the viewport. The cinematic postcard\n    is an ``<img>`` inside this iframe (not a page ``::before``), so Streamlit\n    …`
+
+### Cursor
+
+> 🔧 **Read** — `{"limit": 100, "offset": 1310, "path": "D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py"}`
+
+### Cursor
+
+> 🔧 **StrReplace** — `{"new_string": "    wx = (\n        '<div class=\"amp-wx-stack\" style=\"position:absolute;inset:0;'\n        f'z-index:2;pointer-events:none;\">{wx}</div>'\n    )\n\n    def _page_pin_js(*, role: str, z: int, iframe_pe: str) -> str:\n  …`
+
+### Cursor
+
+The big replace didn't land cleanly. Taking a smaller, safer path: raise the life iframe z-index and split photo vs life with a focused script.
+
+> 🔧 **Read** — `{"limit": 40, "offset": 1445, "path": "D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py"}`
+> 🔧 **Shell** — `{"command": "& \"d:\\Workspace\\.venv\\Scripts\\python.exe\" -c \"import ast; ast.parse(open(r'D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py',encoding='utf-8').read()); print('syntax ok')\"", "description": "Verify ui_scene_life.py par…`
+
+### Cursor
+
+> 🔧 **Read** — `{"limit": 30, "offset": 1745, "path": "D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py"}`
+> 🔧 **Shell** — `{"command": "& \"d:\\Workspace\\.venv\\Scripts\\python.exe\" -c \"\nfrom src.ui_scene_life import pictorial_stage_html, pictorial_stage_documents\nh = pictorial_stage_html(None, 'Okhema', 'none', '', [{'id':'w1','kind':'well','name':'wel…`
+
+### Cursor
+
+Using a parent-page photo host behind the copy, and raising the life iframe (sprites + pop-ups) above the text.
+
+> 🔧 **StrReplace** — `{"new_string": "    if page_layer:\n        # Full page: promote the JPEG into the parent at z=0 (behind copy),\n        # keep this iframe transparent at _PAGE_LIFE_Z (above copy) for\n        # figures, ambient env, and notice popups.\…`
+> 🔧 **StrReplace** — `{"new_string": "        \"</script>\\n\"\n    )\n    return [body]\n\n\ndef render_pictorial_stage(\n    image_path,\n    place: str,\n    effect: str,\n    sky: str,\n    scene: List[dict],\n    *,\n    height: int = 520,\n    max_width…`
+
+### Cursor
+
+> 🔧 **StrReplace** — `{"new_string": "/* Empty page area lets land life show through; widgets stay above life. */\n.block-container .stMarkdown,\n.block-container .amp-read,\n.block-container .stMarkdown:has(.amp-read),\n.block-container [data-testid=\"stCapt…`
+> 🔧 **StrReplace** — `{"new_string": "html.amp-land-off iframe[data-amp-land=\"1\"],\nhtml.amp-land-off [data-amp-land-wrap=\"1\"],\nhtml.amp-land-off #amp-land-photo-host,\nhtml.amp-land-off [data-amp-land-photo-wrap=\"1\"] {{\n  display: none !important;\n …`
+
+### Cursor
+
+> 🔧 **StrReplace** — `{"new_string": "    The JPEG is promoted into a parent ``#amp-land-photo-host`` at z-index 0\n    (behind page copy). Life sprites and notice popups stay in the land iframe\n    at z-index 25 (above copy, below tabs/look chrome). ``max_w…`
+> 🔧 **Shell** — `{"command": "& \"d:\\Workspace\\.venv\\Scripts\\python.exe\" -c \"\nimport ast\nast.parse(open(r'D:\\Workspace\\Amphoreus\\src\\ui_scene_life.py',encoding='utf-8').read())\nast.parse(open(r'D:\\Workspace\\Amphoreus\\src\\ui_weather.py',e…`
+
+### Cursor
+
+Fixed. Stacking is now:
+
+- **Photo** — behind page copy (`z-index: 0`)
+- **Env figures + notice pop-ups** — above that copy (`z-index: 25`)
+- **Chat / buttons / tabs / look chrome** — still higher, so controls stay usable
+
+Reload Visit or Walk the Land to see it.
 
 ---

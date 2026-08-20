@@ -448,10 +448,10 @@ def read_palette(image_path, heir_id=None) -> dict:
 def page_backdrop_css(image_path, max_width=1920, heir_id=None) -> str:
     """Pictorial chrome: transparent Streamlit page, no land photo.
 
-    The JPEG lives inside the land iframe (``render_pictorial_stage``) so
-    Streamlit cannot mangle ``background-size`` and so a fixed photo-band
-    cannot leave a dark body gap above it.  ``max_width`` is unused (kept
-    for callers).  ``heir_id`` tints overlay text (Visit); omit on Walk.
+    The JPEG is promoted into a parent ``#amp-land-photo-host`` at z-index 0
+    (behind page copy). Life sprites and notice popups stay in the land iframe
+    at z-index 25 (above copy, below tabs/look chrome). ``max_width`` is unused
+    (kept for callers).  ``heir_id`` tints overlay text (Visit); omit on Walk.
 
     Visit and Walk both mount ``page_backdrop_css`` inside Streamlit tab
     panels (all tabs render every run). Walk's panel comes *after* Visit in
@@ -675,7 +675,15 @@ section[data-testid="stMain"] {{
   --st-secondary-background-color: transparent !important;
   --st-emotion-theme-secondaryBackgroundColor: transparent !important;
 }}
-/* Empty page area clicks the land; widgets stay usable. */
+/* Empty page area lets land life show through; widgets stay above life. */
+.block-container .stMarkdown,
+.block-container .amp-read,
+.block-container .stMarkdown:has(.amp-read),
+.block-container [data-testid="stCaptionContainer"] {{
+  position: relative !important;
+  z-index: 10 !important;
+  pointer-events: auto !important;
+}}
 .block-container .stButton,
 .block-container .stCheckbox,
 .block-container .stSelectbox,
@@ -695,15 +703,12 @@ section[data-testid="stMain"] {{
 .block-container .stImage,
 .block-container .stChatInput,
 .block-container [data-testid="stChatMessage"],
-.block-container [data-testid="stCaptionContainer"],
 .block-container [data-testid="stTooltipHoverTarget"],
 .block-container [data-testid="stTabs"],
 .block-container [data-testid="stFileUploader"],
-.block-container [data-testid="stAudioInput"],
-.block-container .amp-read,
-.block-container .stMarkdown:has(.amp-read) {{
+.block-container [data-testid="stAudioInput"] {{
   position: relative !important;
-  z-index: 10 !important;
+  z-index: 40 !important;
   pointer-events: auto !important;
 }}
 [data-testid="stBottomBlockContainer"],
@@ -719,14 +724,15 @@ section[data-testid="stSidebar"] {{
 }}
 [data-testid="stBottomBlockContainer"] {{
   position: relative;
-  z-index: 6;
+  z-index: 40 !important;
   background: transparent !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border-top: 1px solid rgba(232, 213, 163, 0.16) !important;
   box-shadow: none !important;
 }}
-[data-amp-land-wrap="1"] {{
+[data-amp-land-wrap="1"],
+[data-amp-land-life-wrap="1"] {{
   position: fixed !important;
   inset: 0 !important;
   width: 100vw !important;
@@ -734,12 +740,26 @@ section[data-testid="stSidebar"] {{
   margin: 0 !important;
   padding: 0 !important;
   overflow: visible !important;
-  z-index: 0 !important;
+  z-index: 25 !important;
   border: none !important;
   background: transparent !important;
   pointer-events: none !important;
 }}
-iframe[data-amp-land="1"] {{
+#amp-land-photo-host,
+[data-amp-land-photo-wrap="1"] {{
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  z-index: 0 !important;
+  border: none !important;
+  pointer-events: none !important;
+}}
+iframe[data-amp-land="1"],
+iframe[data-amp-land-life="1"] {{
   position: fixed !important;
   inset: 0 !important;
   width: 100vw !important;
@@ -749,12 +769,14 @@ iframe[data-amp-land="1"] {{
   max-width: none !important;
   max-height: none !important;
   border: none !important;
-  z-index: 0 !important;
+  z-index: 25 !important;
   background: transparent !important;
   pointer-events: auto !important;
 }}
 [data-testid="stTabPanel"][hidden] iframe[data-amp-land="1"],
-[data-testid="stTabPanel"][hidden] [data-amp-land-wrap="1"] {{
+[data-testid="stTabPanel"][hidden] [data-amp-land-wrap="1"],
+[data-testid="stTabPanel"][hidden] #amp-land-photo-host,
+[data-testid="stTabPanel"][hidden] [data-amp-land-photo-wrap="1"] {{
   display: none !important;
   pointer-events: none !important;
 }}
@@ -1065,7 +1087,9 @@ html.amp-land-off [data-testid="stAppViewContainer"]::after {{
   display: none !important;
 }}
 html.amp-land-off iframe[data-amp-land="1"],
-html.amp-land-off [data-amp-land-wrap="1"] {{
+html.amp-land-off [data-amp-land-wrap="1"],
+html.amp-land-off #amp-land-photo-host,
+html.amp-land-off [data-amp-land-photo-wrap="1"] {{
   display: none !important;
   pointer-events: none !important;
 }}
