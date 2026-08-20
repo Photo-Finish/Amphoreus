@@ -108,6 +108,39 @@ _SPRITE_PATHS: Dict[str, str] = {
         '<line x1="10" y1="16" x2="10" y2="32" stroke="#6a5a48" stroke-width="2"/>'
         '<line x1="30" y1="16" x2="30" y2="32" stroke="#6a5a48" stroke-width="2"/>'
     ),
+    # Place-family SVG fallbacks when a PNG stem is missing.
+    "stall_okhema": (
+        '<path d="M6 16 L20 8 L34 16" fill="#c94a4a"/>'
+        '<path d="M6 16 L34 16 L34 18 L6 18 Z" fill="#e8c86a"/>'
+        '<rect x="10" y="16" width="20" height="14" fill="#e8dcc0"/>'
+        '<line x1="10" y1="16" x2="10" y2="32" stroke="#6a5a48" stroke-width="2"/>'
+        '<line x1="30" y1="16" x2="30" y2="32" stroke="#6a5a48" stroke-width="2"/>'
+        '<circle cx="16" cy="24" r="2" fill="#7a3a8a"/><circle cx="24" cy="24" r="2" fill="#4a9a48"/>'
+    ),
+    "stall_aedes": (
+        '<path d="M8 18 L20 10 L32 18" fill="#a88a64"/>'
+        '<rect x="12" y="18" width="16" height="12" fill="#967850"/>'
+        '<line x1="12" y1="18" x2="12" y2="32" stroke="#5a4030" stroke-width="2"/>'
+        '<line x1="28" y1="18" x2="28" y2="32" stroke="#5a4030" stroke-width="2"/>'
+    ),
+    "stall_janus": (
+        '<path d="M6 16 L20 8 L34 16" fill="#b4a8c4"/>'
+        '<rect x="10" y="16" width="20" height="14" fill="#c6bcd0"/>'
+        '<line x1="10" y1="16" x2="10" y2="32" stroke="#787090" stroke-width="2"/>'
+        '<line x1="30" y1="16" x2="30" y2="32" stroke="#787090" stroke-width="2"/>'
+    ),
+    "stall_kremnos": (
+        '<path d="M6 16 L20 8 L34 16" fill="#782828"/>'
+        '<rect x="10" y="16" width="20" height="14" fill="#605e62"/>'
+        '<line x1="10" y1="16" x2="10" y2="32" stroke="#46484e" stroke-width="2"/>'
+        '<line x1="30" y1="16" x2="30" y2="32" stroke="#46484e" stroke-width="2"/>'
+    ),
+    "stall_styxia": (
+        '<path d="M6 16 L20 8 L34 16" fill="#d2e0e6"/>'
+        '<rect x="10" y="16" width="20" height="14" fill="#dce6ea"/>'
+        '<line x1="10" y1="16" x2="10" y2="32" stroke="#96a0a8" stroke-width="2"/>'
+        '<line x1="30" y1="16" x2="30" y2="32" stroke="#96a0a8" stroke-width="2"/>'
+    ),
     "gate": (
         '<path d="M8 34 L8 12 Q20 4 32 12 L32 34" fill="none" stroke="#c9b896" stroke-width="3"/>'
         '<line x1="20" y1="10" x2="20" y2="34" stroke="#a89070" stroke-width="2"/>'
@@ -228,10 +261,10 @@ _PAINTED_INTERACTIVE = frozenset({
     "chimera", "dromas", "dromas_calf", "hearth_cat", "resident",
     "well", "fountain", "shrine", "market_stall", "forge", "gate",
     "courier", "boat", "kite", "olive", "cicada", "pearl", "pebble",
-    "mill", "laundry", "banner", "incense", "pillar",
+    "mill", "laundry", "banner", "incense", "pillar", "ribbon", "mosaic",
 })
 _AMBIENT_STAGE = frozenset({
-    "grass", "wind", "wheat", "grove_leaf", "shore", "mosaic",
+    "grass", "wind", "wheat", "grove_leaf", "shore",
     "bath", "hearth", "loom", "scroll", "lamp",
 })
 _SKY_KINDS = frozenset({"kite", "courier", "dawn", "thief_star", "wind"})
@@ -473,25 +506,55 @@ def sprite_pet_film_uri(kind: str) -> str:
 
 
 def _sprite_asset_key(being_or_kind, kind: str = "") -> str:
-    """PNG/film stem: prefer profession outfit ``visual`` when assets exist."""
+    """PNG/film stem: prefer place-family ``visual``, then base stem, then kind."""
     if isinstance(being_or_kind, dict):
         visual = str(being_or_kind.get("visual") or "").strip()
         kind = str(being_or_kind.get("kind") or kind or "")
     else:
         visual = ""
         kind = str(being_or_kind or kind or "")
-    if visual and visual != kind:
-        if (_SPRITE_DIR / f"{visual}.png").is_file() or (
-            _SPRITE_DIR / f"{visual}_film.png"
-        ).is_file():
-            return visual
-    return kind
+
+    def _exists(stem: str) -> bool:
+        if not stem:
+            return False
+        return (_SPRITE_DIR / f"{stem}.png").is_file() or (
+            _SPRITE_DIR / f"{stem}_film.png"
+        ).is_file()
+
+    candidates = []
+    if visual:
+        candidates.append(visual)
+        if "_" in visual:
+            # stall_okhema → stall; well_aedes → well
+            candidates.append(visual.rsplit("_", 1)[0])
+    if kind and kind not in candidates:
+        candidates.append(kind)
+    for stem in candidates:
+        if _exists(stem):
+            return stem
+    return visual or kind
 
 
 def _sprite_markup(kind: str, *, mobile: bool = True, asset: str = "") -> str:
     # Painted PNGs/films only for outdoor figures you can actually touch.
     key = asset or kind
-    painted = kind in _PAINTED_INTERACTIVE or key.startswith("resident")
+    painted = (
+        kind in _PAINTED_INTERACTIVE
+        or key.startswith("resident")
+        or key.startswith("stall_")
+        or key.startswith("well_")
+        or key.startswith("fountain_")
+        or key.startswith("shrine_")
+        or key.startswith("gate_")
+        or key.startswith("boat_")
+        or key.startswith("ribbon_")
+        or key.startswith("pillar_")
+        or key.startswith("mosaic_")
+        or key.startswith("laundry_")
+        or key.startswith("banner_")
+        or key.startswith("forge_")
+        or key.startswith("mill_")
+    )
     if painted:
         # Profile-walk kinds: side film while roaming, front still otherwise.
         use_film = mobile if kind in _PROFILE_WALK_KINDS else True
@@ -507,7 +570,7 @@ def _sprite_markup(kind: str, *, mobile: bool = True, asset: str = "") -> str:
         uri = sprite_png_uri(key)
         if uri:
             return f'<img src="{uri}" alt="" draggable="false" />'
-    inner = _SPRITE_PATHS.get(kind) or _DEFAULT_SPRITE
+    inner = _SPRITE_PATHS.get(key) or _SPRITE_PATHS.get(kind) or _DEFAULT_SPRITE
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" '
         f'aria-hidden="true">{inner}</svg>'

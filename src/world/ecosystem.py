@@ -15,6 +15,7 @@ import hashlib
 from typing import Any, Dict, List, Optional, Tuple
 
 from . import lived_entities as le
+from . import eco_voice as voice
 
 # --------------------------------------------------------------------------- #
 # Place families for living kinds
@@ -103,6 +104,63 @@ KIND_VISUAL = {
     "tidepool": "tidepool",
     "pillar": "pillar",
 }
+
+# Place-family art stems (Visit loads ``{stem}_{family}.png`` when present).
+ART_FAMILY_OKHEMA = frozenset({"Okhema", "Eternal Holy City", "Dawncloud"})
+ART_FAMILY_AEDES = frozenset({"Aedes Elysiae", "Aedes Elysiae, of old"})
+ART_FAMILY_JANUS = frozenset({"Janusopolis", "Sanctum of Prophecy"})
+ART_FAMILY_KREMNOS = frozenset({"Castrum Kremnos", "Bloodbathed Battlefront"})
+ART_FAMILY_STYXIA = frozenset({"Styxia", "Warbling Shores"})
+ART_FAMILY_GROVE = frozenset({"Grove of Epiphany", "Radiant Scarwood"})
+ART_FAMILY_AIDONIA = frozenset({"Aidonia"})
+
+# Kinds that meaningfully differ by place family → asset prefix (stall_okhema…).
+_PLACE_ART_PREFIX = {
+    "market_stall": "stall",
+    "well": "well",
+    "fountain": "fountain",
+    "shrine": "shrine",
+    "gate": "gate",
+    "forge": "forge",
+    "banner": "banner",
+    "laundry": "laundry",
+    "boat": "boat",
+    "ribbon": "ribbon",
+    "pillar": "pillar",
+    "mosaic": "mosaic",
+    "mill": "mill",
+}
+
+
+def art_family_for(place: str) -> str:
+    """Map a location to a pictorial family for env sprites."""
+    if place in ART_FAMILY_OKHEMA:
+        return "okhema"
+    if place in ART_FAMILY_AEDES:
+        return "aedes"
+    if place in ART_FAMILY_JANUS:
+        return "janus"
+    if place in ART_FAMILY_KREMNOS:
+        return "kremnos"
+    if place in ART_FAMILY_STYXIA:
+        return "styxia"
+    if place in ART_FAMILY_GROVE:
+        return "grove"
+    if place in ART_FAMILY_AIDONIA:
+        return "aidonia"
+    return "civic"
+
+
+def place_visual_for(kind: str, place: str) -> str:
+    """Sprite asset stem for a being — place family when art can differ."""
+    base = KIND_VISUAL.get(kind, "life")
+    prefix = _PLACE_ART_PREFIX.get(kind)
+    if not prefix:
+        return base
+    family = art_family_for(place)
+    if family == "civic":
+        return base
+    return f"{prefix}_{family}"
 
 # Whitelist: only these Heir → action → kind transitions may mutate state.
 # Anything else is refused. No clock, location, bond, or other Heir writes.
@@ -345,205 +403,6 @@ VISITOR_ACT: Dict[str, dict] = {
         "note": "a line the Grove already wrote; you do not finish the argument",
     },
 }
-
-
-# Okhema-only land voice — funny, vibrant; Dawn Device left alone.
-_OKHEMA_STALL_NAMES = (
-    "a fruit stall with main-character grapes",
-    "a cloth stall of dangerous taste",
-    "a sweet stall of moral hazard",
-    "a pottery stall of well-behaved jars",
-)
-_OKHEMA_STALL_DOING = (
-    "purple grapes posing harder than the Heirs",
-    "selling dye that will absolutely start an argument",
-    "honey cakes weaponized for friendship",
-    "bowls waiting to become someone's favorite mistake",
-)
-_OKHEMA_STALL_NOTICE = (
-    "Gold awning, loud fruit, vendor smiling like the grapes pay rent.",
-    "Fabrics flutter like they have side quests. Blue-and-gold is winning today.",
-    "Sugar in small packages. Resistance is optional and discouraged.",
-    "Clay that survived the kiln and now wants a kitchen drama.",
-)
-
-
-def _okhema_flavor_name(kind: str, idx: int, name: str) -> str:
-    if kind == "chimera":
-        return "another little chaos-cloud" if idx > 1 else "a little chimera"
-    if kind == "dromas":
-        return "another blue road-beast" if idx > 1 else "a blue road-beast"
-    if kind == "dromas_calf":
-        return "a blue calf of the square"
-    table = {
-        "grass": "the gossiping grass",
-        "wind": "Okhema's restless air",
-        "well": "the gossip well",
-        "shrine": "a shrine of thanks (not a guilt booth)",
-        "incense": "a stick of household sweetness",
-        "gate": "Janus's ordinary door (with main-quest lighting)",
-        "pebble": "a thumb-sized road celebrity",
-        "mosaic": "a floor that remembers everyone's footsteps",
-        "fountain": "the square's chatty water",
-        "pillar": "a column practicing good posture",
-        "laundry": "wash on the line, living its best life",
-        "courier": "an errand-bird on a deadline",
-    }
-    return table.get(kind, name)
-
-
-def _okhema_flavor_doing(kind: str, status: str, doing: str, period: int,
-                         idx: int) -> str:
-    quiet = status in {"resting", "quiet", "down", "in", "withdrawn", "ailing"}
-    if kind == "chimera" and status == "wandering":
-        return "doing laps of the baths like it owns the spa membership"
-    if kind == "dromas" and status in {"hauling", "well", "vigorous", "restless"}:
-        return "hauling today's gossip and tomorrow's cargo with equal dignity"
-    if kind == "dromas_calf" and not quiet:
-        return "practicing dignity near the adult beasts"
-    if kind == "grass" and status == "stirring":
-        return "whispering about everyone's shoes"
-    if kind == "grass" and not quiet:
-        return "ready to gossip about everyone's shoes"
-    if kind == "wind" and status == "stirring":
-        return "rearranging hairstyles without consent"
-    if kind == "wind" and not quiet:
-        return "shopping for opinions to rearrange"
-    if kind == "well" and status == "open":
-        return "serving cold drinks and colder takes"
-    if kind == "shrine" and status in {"quiet", "open"}:
-        return "collecting quiet gratitude like spare coins"
-    if kind == "incense" and status in {"well", "open"}:
-        return "smelling expensive on a street-food budget"
-    if kind == "gate" and status == "open":
-        return "open, dramatic, still just a door"
-    if kind == "pebble":
-        return "surviving chariot traffic like a tiny legend"
-    if kind == "mosaic" and not quiet:
-        return "public art doing overtime under sandals"
-    if kind == "fountain" and status == "open":
-        return "gossiping with stone at full volume"
-    if kind == "pillar":
-        return "holding up the hour's light (and its own reputation)"
-    if kind == "laundry" and status == "hanging":
-        return "drying shirts that have opinions about the wind"
-    if kind == "courier" and status == "flying":
-        return "cutting the sky like late mail with confidence"
-    if kind == "market_stall" and status == "open":
-        line = _OKHEMA_STALL_DOING[(max(1, idx) - 1) % len(_OKHEMA_STALL_DOING)]
-        if period == 2:
-            return f"Action Hour — {line}"
-        return line
-    return doing
-
-
-def _okhema_notice(kind: str, being: dict) -> Optional[str]:
-    """Click/notice lines for Okhema. Dawn Device intentionally omitted."""
-    status = being.get("status") or ""
-    if kind == "chimera":
-        return (
-            "It locks eyes with you and delivers a proud Awoo — "
-            "half greeting, half press conference."
-        )
-    if kind == "dromas":
-        if being.get("caravan_id"):
-            return (
-                "A blue mountain with legs leads the train — "
-                "warm earth, judgmental patience, excellent schedule."
-            )
-        return (
-            "A blue mountain with legs. It smells like warm earth "
-            "and slightly judgmental patience."
-        )
-    if kind == "dromas_calf":
-        return (
-            "Small blue plates, full curiosity. The calf is auditioning "
-            "for road-beast seriousness."
-        )
-    if kind == "grass":
-        return (
-            "Edge-grass doing jazz hands in the breeze. "
-            "Very unprofessional. Very alive."
-        )
-    if kind == "wind":
-        return "The hour has opinions, and they are breezy."
-    if kind == "well":
-        if status == "open":
-            return (
-                "The well is open for business: hydration first, drama second."
-            )
-        return "The gossip well is off-duty; cisterns keep the night's drink."
-    if kind == "market_stall":
-        oid = being.get("id") or ""
-        try:
-            idx = int(str(oid).rsplit(":", 1)[-1])
-        except ValueError:
-            idx = 1
-        return _OKHEMA_STALL_NOTICE[(max(1, idx) - 1) % len(_OKHEMA_STALL_NOTICE)]
-    if kind == "shrine":
-        return "Stone, gold, and zero lectures. Leave thanks; leave lighter."
-    if kind == "incense":
-        return "Soft smoke doing interior design in midair."
-    if kind == "gate":
-        return 'Threshold energy: half farewell, half "bring snacks back."'
-    if kind == "pebble":
-        return "A pebble the size of a promise. Pocketable. Iconic."
-    if kind == "mosaic":
-        return (
-            "Gold geometry underfoot — the city's scrapbook, polished daily."
-        )
-    if kind == "fountain":
-        return "Splash, sparkle, zero chill. Okhema's best free concert."
-    if kind == "pillar":
-        return (
-            "Tall, gold-trimmed, slightly smug. Excellent shade sponsorship."
-        )
-    if kind == "laundry":
-        return "Cloth flags of the ordinary — heroic in a domestic way."
-    if kind == "courier":
-        return "Feathers, purpose, zero small talk. You are not CC'd."
-    return None
-
-
-def _okhema_touch_note(action_id: str, kind: str) -> Optional[str]:
-    if action_id == "pet":
-        return {
-            "chimera": "soft head, softer ego; the Awoo upgrades to deluxe",
-            "dromas": (
-                "neck plates warm under your palm; "
-                "it accepts pets as a civic duty"
-            ),
-            "dromas_calf": (
-                "the calf bumps your hand — soft plates, big future ego"
-            ),
-        }.get(kind)
-    if action_id == "greet_dromas":
-        return "it blows warm dust at your sleeve — considered a five-star review"
-    if action_id == "drink":
-        return "cool water; your dignity remains mostly intact"
-    if action_id == "touch_air" and kind == "grass":
-        return "cool blades tickle; they refuse to take you seriously"
-    if action_id == "touch_air" and kind == "wind":
-        return "it slips through your fingers like a joke you almost caught"
-    if action_id == "leave_offering":
-        return "a scrap of thanks lands; the shrine does not invoice you"
-    if action_id == "breathe_incense":
-        return "sweet, brief, not a summons — just good manners for the nose"
-    if action_id == "step_through":
-        return "you cross; the gate pretends it invented walking"
-    if action_id == "pick_keepsake":
-        return "you take the stone; the road does not file a complaint"
-    if action_id == "trace_mosaic":
-        return "your fingertip follows a pattern; the mosaic pretends not to blush"
-    if action_id == "watch_water":
-        return "water works; you watch it win"
-    if action_id == "rest_shade":
-        return "cool stone; the column does not charge rent"
-    if action_id == "read_cloth":
-        return "shirts on the line debate the wind; you decline to referee"
-    if action_id == "follow_bird":
-        return "the bird is already gone; your invite was never in the thread"
-    return None
 
 
 # Hard bans — never writable via care API.
@@ -1089,12 +948,9 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
             if period == 2:
                 doing = f"Action Hour — {doing}"
 
-    if place == "Okhema" and kind != "dawn":
-        if kind == "market_stall":
-            name = _OKHEMA_STALL_NAMES[(max(1, idx) - 1) % len(_OKHEMA_STALL_NAMES)]
-        else:
-            name = _okhema_flavor_name(kind, idx, name)
-        doing = _okhema_flavor_doing(kind, status, doing, period, idx)
+    if place and kind != "dawn":
+        name = voice.flavor_name(place, kind, idx, name)
+        doing = voice.flavor_doing(place, kind, status, doing, period, idx)
 
     sound = None
     if kind == "chimera":
@@ -1156,7 +1012,8 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
         "status": status,
         "doing": doing,
         "sound": sound,
-        "visual": KIND_VISUAL.get(kind, "life"),
+        "visual": place_visual_for(kind, place),
+        "art_family": art_family_for(place),
         "clickable": True,
         "care_hint": _care_hint(status, kind),
         "hotspot": hotspot_for(kind, idx),
@@ -1333,9 +1190,15 @@ def derive_scene(world, place: Optional[str] = None,
         if place in WELL_CITIES:
             out.append(_mk_being("well", place, 1, world, flags, character_id))
         if flags.get("market_open") and place in MARKET_CITIES:
-            # Okhema's square is a row of vendor stalls, not a lone booth.
-            if place in {"Okhema", "Eternal Holy City", "Dawncloud"}:
-                n_stalls = 4 if place == "Okhema" else 2
+            # Okhema is the densest square; other living markets get a pair.
+            if place == "Okhema":
+                n_stalls = 4
+            elif place in {"Eternal Holy City", "Dawncloud"}:
+                n_stalls = 2
+            elif place in ART_FAMILY_JANUS | ART_FAMILY_STYXIA:
+                n_stalls = 2
+            elif place in ART_FAMILY_AEDES | ART_FAMILY_KREMNOS:
+                n_stalls = 2 if place in ART_FAMILY_AEDES else 1
             else:
                 n_stalls = 1
             for i in range(1, n_stalls + 1):
@@ -1346,11 +1209,17 @@ def derive_scene(world, place: Optional[str] = None,
     # Sparse / high / sacred places still feel air and ground underfoot.
     if place in {"Eye of Twilight", "Fortress of Dome", "Vortex of Genesis"}:
         out.append(_mk_being("wind", place, 1, world, flags, character_id))
+        out.append(_mk_being("pebble", place, 1, world, flags, character_id))
     if place in {"Bloodbathed Battlefront", "Demigod Council"}:
         out.append(_mk_being("wind", place, 1, world, flags, character_id))
         out.append(_mk_being("grass", place, 1, world, flags, character_id))
     if place == "The Nether":
         out.append(_mk_being("wind", place, 1, world, flags, character_id))
+    if place == "Beyond Time":
+        out.append(_mk_being("wind", place, 1, world, flags, character_id))
+    if place in TOMB_PLACES:
+        out.append(_mk_being("wind", place, 1, world, flags, character_id))
+        out.append(_mk_being("pebble", place, 1, world, flags, character_id))
 
     if place in le.SHRINE and place not in {"Demigod Council"}:
         # Demigod Council keeps incense without a street shrine booth.
@@ -1359,6 +1228,7 @@ def derive_scene(world, place: Optional[str] = None,
     elif place == "Demigod Council":
         out.append(_mk_being("incense", place, 1, world, flags, character_id))
         out.append(_mk_being("pillar", place, 1, world, flags, character_id))
+        out.append(_mk_being("fountain", place, 1, world, flags, character_id))
     if place in le.FORGE:
         out.append(_mk_being("forge", place, 1, world, flags, character_id))
         out.append(_mk_being("banner", place, 1, world, flags, character_id))
@@ -1372,6 +1242,7 @@ def derive_scene(world, place: Optional[str] = None,
         out.append(_mk_being("pebble", place, 1, world, flags, character_id))
     if place == "Bloodbathed Battlefront":
         out.append(_mk_being("pebble", place, 1, world, flags, character_id))
+        out.append(_mk_being("pillar", place, 1, world, flags, character_id))
 
     # Regional texture — different places, not the same Okhema list everywhere.
     if place in {"Okhema", "Eternal Holy City", "Dawncloud"}:
@@ -1381,10 +1252,32 @@ def derive_scene(world, place: Optional[str] = None,
         if not (flags.get("resting") or period in (0, 4)):
             out.append(_mk_being("laundry", place, 1, world, flags, character_id))
             out.append(_mk_being("courier", place, 1, world, flags, character_id))
+    if place in ART_FAMILY_JANUS:
+        out.append(_mk_being("fountain", place, 1, world, flags, character_id))
+        out.append(_mk_being("incense", place, 1, world, flags, character_id))
+        out.append(_mk_being("ribbon", place, 1, world, flags, character_id))
+        if not (flags.get("resting") or period in (0, 4)):
+            out.append(_mk_being("courier", place, 1, world, flags, character_id))
+    if place == "Castrum Kremnos":
+        out.append(_mk_being("pillar", place, 1, world, flags, character_id))
+        if not (flags.get("resting") or period in (0, 4)):
+            out.append(_mk_being("courier", place, 1, world, flags, character_id))
+    if place in ART_FAMILY_STYXIA:
+        out.append(_mk_being("fountain", place, 1, world, flags, character_id))
+        out.append(_mk_being("incense", place, 1, world, flags, character_id))
+        if not (flags.get("resting") or period in (0, 4)):
+            out.append(_mk_being("courier", place, 1, world, flags, character_id))
+    if place in ART_FAMILY_AIDONIA:
+        out.append(_mk_being("incense", place, 1, world, flags, character_id))
+        out.append(_mk_being("pillar", place, 1, world, flags, character_id))
+        out.append(_mk_being("ribbon", place, 1, world, flags, character_id))
     if place in LIVING_GROVE:
         out.append(_mk_being("olive", place, 1, world, flags, character_id))
         out.append(_mk_being("cicada", place, 1, world, flags, character_id))
         out.append(_mk_being("fountain", place, 1, world, flags, character_id))
+        out.append(_mk_being("wind", place, 1, world, flags, character_id))
+        out.append(_mk_being("grass", place, 1, world, flags, character_id))
+        out.append(_mk_being("pebble", place, 1, world, flags, character_id))
     if place in WORKING_SHORE:
         out.append(_mk_being("boat", place, 1, world, flags, character_id))
         out.append(_mk_being("net", place, 1, world, flags, character_id))
@@ -1395,13 +1288,10 @@ def derive_scene(world, place: Optional[str] = None,
         out.append(_mk_being("mill", place, 1, world, flags, character_id))
         out.append(_mk_being("kite", place, 1, world, flags, character_id))
         out.append(_mk_being("cicada", place, 1, world, flags, character_id))
-    if place in {"Janusopolis", "Sanctum of Prophecy"}:
-        out.append(_mk_being("ribbon", place, 1, world, flags, character_id))
-    if place in {"Aidonia"}:
-        out.append(_mk_being("ribbon", place, 1, world, flags, character_id))
     if place in {"Eye of Twilight", "Fortress of Dome"}:
         out.append(_mk_being("pillar", place, 1, world, flags, character_id))
         out.append(_mk_being("kite", place, 1, world, flags, character_id))
+        out.append(_mk_being("grass", place, 1, world, flags, character_id))
     if place == "Vortex of Genesis":
         out.append(_mk_being("pillar", place, 1, world, flags, character_id))
     if place in {"Castrum Kremnos", "Bloodbathed Battlefront"} and place not in GROVE:
@@ -1474,6 +1364,29 @@ def derive_scene(world, place: Optional[str] = None,
 
     out = [b for b in out if b.get("kind") not in INDOOR_LAND]
 
+    # Prefer signature texture over generic duplicates when capping the stage.
+    _SIGNATURE = {
+        "chimera", "market_stall", "forge", "banner", "shore", "siren",
+        "grove_leaf", "olive", "cicada", "wheat", "maze", "mill", "kite",
+        "mosaic", "fountain", "pillar", "laundry", "courier", "gate",
+        "ribbon", "incense", "shrine", "boat", "net", "tidepool", "pearl",
+        "dromas", "dromas_calf", "pebble", "well", "grass", "wind",
+    }
+
+    def _rank(b: dict) -> Tuple[int, int]:
+        k = b.get("kind") or ""
+        if b.get("caravan_id"):
+            return (0, 0)
+        if k == "dawn":
+            return (1, 0)
+        if k in _SIGNATURE:
+            return (2, 0)
+        if k == "resident":
+            return (3, 0)
+        return (4, 0)
+
+    out.sort(key=_rank)
+
     # Keep a readable stage, not a census — but never truncate a trade caravan.
     preferred = []
     seen_kinds = set()
@@ -1492,8 +1405,8 @@ def derive_scene(world, place: Optional[str] = None,
     if len(caravan) >= 4:
         head = preferred[: len(caravan)]
         tail = [b for b in preferred[len(caravan):] if not b.get("caravan_id")]
-        return head + tail[: max(0, 18 - len(head))]
-    return preferred[:18]
+        return head + tail[: max(0, 20 - len(head))]
+    return preferred[:20]
 
 
 def logic_faults(scene: List[dict], place: str) -> List[str]:
@@ -1616,8 +1529,8 @@ def interact(world, object_id: str,
     kind = being.get("kind")
     sound = being.get("sound")
     line = ""
-    if being.get("place") == "Okhema" and kind != "dawn":
-        flavored = _okhema_notice(kind, being)
+    if being.get("place") and kind != "dawn":
+        flavored = voice.flavor_notice(being.get("place") or "", kind, being)
         if flavored:
             return {
                 "ok": True,
@@ -1901,14 +1814,13 @@ def visitor_touch(world, object_id: str, action_id: str,
 
 
 def touch_note_for(place: Optional[str], action_id: str, kind: str) -> str:
-    """Visitor act copy — Okhema uses the lively sheet; elsewhere the calm default."""
+    """Visitor act copy — regional lively sheets; calm default when none fit."""
     action_id = _ACT_ALIASES.get(action_id, action_id)
     spec = VISITOR_ACT.get(action_id) or {}
     note = (spec.get("notes") or {}).get(kind) or spec.get("note") or ""
-    if place == "Okhema":
-        flavored = _okhema_touch_note(action_id, kind)
-        if flavored:
-            return flavored
+    flavored = voice.flavor_touch(place or "", action_id, kind)
+    if flavored:
+        return flavored
     return note
 
 
