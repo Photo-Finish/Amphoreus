@@ -1289,12 +1289,19 @@ with main_tab:
     _user_avatar = user_avatar_path()
     _gc_live = False
     try:
-        from src.ui_group_chat import group_is_active, render_group_transcript
+        from src.ui_group_chat import group_is_active, render_group_conversation
         _gc_live = group_is_active()
     except Exception:
         _gc_live = False
     if _gc_live:
-        render_group_transcript(user_avatar=_user_avatar, avatar_fn=avatar_for)
+        # Fragment owns transcript + docked input so sends don't remount the land.
+        try:
+            render_group_conversation(
+                manager, selected, info,
+                user_avatar=_user_avatar, avatar_fn=avatar_for,
+            )
+        except Exception as _gc_err:
+            st.caption(f"The gathering could not answer this hour. ({_gc_err})")
     else:
         for msg in st.session_state.messages[selected]:
             with st.chat_message(msg["role"], avatar=_assistant_avatar if msg["role"] == "assistant" else _user_avatar):
@@ -1376,36 +1383,20 @@ with main_tab:
         else:
             st.info(result.get("reason", "Hearing is not yet available."))
 
-    # Chat input (operator only; visitors read)
+    # Chat input (operator only; visitors read). Group chat owns its input
+    # inside a fragment so sends do not remount the land / flash white.
     _gc_ph = f"Speak to {info['name']}..."
     try:
         from src.ui_group_chat import group_input_placeholder as _gc_ph_fn
         _gc_ph = _gc_ph_fn(info["name"])
     except Exception:
         pass
-    if is_visitor():
+    if _gc_live:
+        pass
+    elif is_visitor():
         st.caption("Read-only view — sign in as the operator to speak with "
                    f"{info['name']}.")
     elif prompt := st.chat_input(_gc_ph, key="visit_chat_input"):
-        _gc_hgp = None
-        _gc_on = None
-        try:
-            from src.ui_group_chat import (
-                group_is_active as _gc_on,
-                handle_group_prompt as _gc_hgp,
-            )
-        except Exception:
-            _gc_hgp = None
-            _gc_on = None
-        if _gc_hgp and _gc_on and _gc_on():
-            try:
-                _gc_hgp(
-                    manager, prompt,
-                    user_avatar=_user_avatar, avatar_fn=avatar_for,
-                )
-            except Exception as _gc_err:
-                st.caption(f"The gathering could not answer this hour. ({_gc_err})")
-            st.stop()
         # Let the world know the visitor is here
         try:
             from src.world.world_state import WorldState

@@ -495,9 +495,11 @@ def page_backdrop_css(image_path, max_width=1920, heir_id=None) -> str:
   --amp-text-beat: {pal["beat"]};
   --amp-text-shadow: {pal["shadow"]};
 }}
+/* Dark body fallback — when the land iframe remounts, never flash Streamlit's
+   default white. .stApp stays transparent so the land shows through. */
 html, body {{
-  background: transparent !important;
-  background-color: transparent !important;
+  background: #0b0a14 !important;
+  background-color: #0b0a14 !important;
   background-image: none !important;
 }}
 .stApp {{
@@ -510,6 +512,26 @@ section[data-testid="stMain"] {{
   background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
+}}
+/* Spinners / status overlays — no white card over the land. */
+[data-testid="stSpinner"],
+.stSpinner,
+[data-testid="stSpinner"] > div,
+[data-testid="stStatusWidget"],
+.stStatusWidget,
+[data-testid="stStatusWidget"] > div {{
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}}
+[data-testid="stSpinner"] p,
+[data-testid="stSpinner"] span,
+[data-testid="stStatusWidget"] p,
+[data-testid="stStatusWidget"] span {{
+  color: var(--amp-text-body) !important;
+  text-shadow: var(--amp-text-shadow);
 }}
 [data-testid="stAppViewContainer"]::before,
 [data-testid="stAppViewContainer"]::after {{
@@ -589,9 +611,21 @@ section[data-testid="stMain"] {{
 [data-testid="stMainBlockContainer"] {{
   background: transparent !important;
 }}
+/* Radios (incl. Individual/Group): transparent + hairline gold — no black card.
+   Checkbox / Life toggle keep a light glass so they stay readable. */
 .block-container [role="radiogroup"],
 .block-container [data-testid="stRadio"],
-.block-container [data-testid="stRadioGroup"],
+.block-container [data-testid="stRadioGroup"] {{
+  background: transparent !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(232, 213, 163, 0.32) !important;
+  border-radius: 0 !important;
+  padding: 0.1rem 0 !important;
+  box-shadow: none !important;
+}}
 .block-container [role="switch"],
 .block-container [data-testid="stCheckbox"],
 .block-container [data-testid="stToggle"] {{
@@ -608,6 +642,38 @@ section[data-testid="stMain"] {{
 .block-container [data-testid="stRadioOption"] {{
   color: var(--amp-text-body) !important;
   text-shadow: var(--amp-text-shadow);
+  background: transparent !important;
+}}
+[data-testid="stMain"] [data-testid="stRadio"],
+[data-testid="stMain"] [data-testid="stRadio"] > div,
+[data-testid="stMain"] [data-testid="stRadioGroup"],
+[data-testid="stMain"] [role="radiogroup"],
+[data-testid="stMain"] [data-testid="stRadio"] label,
+[data-testid="stMain"] [data-testid="stRadioOption"],
+[data-testid="stMain"] [data-testid="stRadio"] [data-baseweb="radio"],
+[data-testid="stMain"] [data-testid="stMultiSelect"],
+[data-testid="stMain"] [data-testid="stMultiSelect"] [data-baseweb="select"],
+[data-testid="stMain"] [data-testid="stMultiSelect"] [data-baseweb="select"] > div,
+[data-testid="stMain"] [data-testid="stMultiSelect"] [role="combobox"],
+[data-testid="stMain"] [data-testid="stMultiSelect"] [role="group"] {{
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  color: var(--amp-text-body) !important;
+  text-shadow: var(--amp-text-shadow);
+}}
+[data-testid="stMain"] [data-testid="stMultiSelect"] [role="group"],
+[data-testid="stMain"] [data-testid="stMultiSelect"] [data-baseweb="select"] > div {{
+  border: none !important;
+  border-bottom: 1px solid rgba(232, 213, 163, 0.4) !important;
+  border-radius: 0 !important;
+}}
+[data-testid="stMain"] [data-testid="stRadio"],
+[data-testid="stMain"] [data-testid="stMultiSelect"] {{
+  --secondary-background-color: transparent !important;
+  --st-secondary-background-color: transparent !important;
+  --st-emotion-theme-secondaryBackgroundColor: transparent !important;
 }}
 /* Empty page area clicks the land; widgets stay usable. */
 .block-container .stButton,

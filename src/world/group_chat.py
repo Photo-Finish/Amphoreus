@@ -266,14 +266,45 @@ def fallback_invite_line(character_id: str, accepted: bool,
     return f"Not this hour. I remain aside, here in {place}."
 
 
-def fallback_group_line(character_id: str, user_message: str,
-                        others: Iterable[str]) -> str:
+def fallback_group_line(
+    character_id: str,
+    user_message: str,
+    others: Iterable[str],
+    *,
+    avoid: Optional[Iterable[str]] = None,
+    turn_index: int = 0,
+) -> str:
+    """Offline / silent-backend stand-in — varies so rounds do not parrot."""
     others = [o for o in others if o]
     company = ", ".join(others) if others else "those gathered"
-    base = _FALLBACK_GROUP.get(character_id)
-    if base:
-        return base.format(company=company, said=(user_message or "").strip()[:80])
-    return f"I hear you. ({company} are here with us.)"
+    said = (user_message or "").strip()
+    snippet = said[:72] if said else "that"
+    avoid_set = {_compact_line(x) for x in (avoid or []) if x}
+    pool = list(_FALLBACK_GROUP_POOL.get(character_id) or [])
+    generic = [
+        "I hear you. ({company} are here with us.)",
+        "Go on — we are listening, here together.",
+        "Say it again another way if you must; I am still with you.",
+        "That lands differently in this company. Speak on.",
+    ]
+    candidates = pool + generic
+    # Rotate starting index by turn so consecutive offline rounds differ.
+    start = (turn_index + sum(ord(ch) for ch in character_id)) % max(1, len(candidates))
+    ordered = candidates[start:] + candidates[:start]
+    for tmpl in ordered:
+        try:
+            line = tmpl.format(
+                company=company,
+                said=snippet,
+                place="this place",
+            )
+        except Exception:
+            line = tmpl
+        if _compact_line(line) not in avoid_set:
+            return line
+    # Last resort: fold a unique scrap of the visitor's words in.
+    tag = snippet[:40] or character_id
+    return f"About “{tag}” — I hear you, with {company}."
 
 
 def invite_prompt(host_name: str, place: str, company: List[str]) -> str:
@@ -288,8 +319,38 @@ def invite_prompt(host_name: str, place: str, company: List[str]) -> str:
     )
 
 
-def group_prompt_block(character_id: str, members: List[str], place: str,
-                       name_of: NameFn, recent: Optional[List[dict]] = None) -> str:
+def _compact_line(text: str) -> str:
+    return re.sub(r"\s+", " ", (text or "")).strip().lower()
+
+
+def lines_too_similar(a: str, b: str) -> bool:
+    """True when two spoken lines are the same beat reused."""
+    ca, cb = _compact_line(a), _compact_line(b)
+    if not ca or not cb:
+        return False
+    if ca == cb:
+        return True
+    if ca in cb or cb in ca:
+        shorter = min(len(ca), len(cb))
+        if shorter >= 24:
+            return True
+    wa, wb = set(ca.split()), set(cb.split())
+    if len(wa) >= 4 and len(wb) >= 4:
+        overlap = len(wa & wb) / float(max(len(wa), len(wb)))
+        if overlap >= 0.72:
+            return True
+    return False
+
+
+def group_prompt_block(
+    character_id: str,
+    members: List[str],
+    place: str,
+    name_of: NameFn,
+    recent: Optional[List[dict]] = None,
+    *,
+    own_prior: Optional[List[str]] = None,
+) -> str:
     names = [name_of(c) for c in members if c != character_id]
     company = ", ".join(names) if names else "the others"
     bits = [
@@ -298,33 +359,50 @@ def group_prompt_block(character_id: str, members: List[str], place: str,
         "This is social co-presence: a conversation in the world, not a test.",
         "Speak only your own words. Never narrate another Heir's thoughts, "
         "never put words in their mouth, never make the gathering a chorus.",
+        "Answer this turn freshly — do not reuse a line you already spoke "
+        "in this gathering, and do not echo another Heir's beat.",
         "If you have nothing of your own to add this turn, reply with [quiet].",
         "Keep to the knowledge of Amphoreus; do not reach past the wall.",
     ]
+    if own_prior:
+        bits.append("Lines you already spoke here (do not repeat):")
+        for line in own_prior[-4:]:
+            clipped = (line or "").strip().replace("\n", " ")
+            if clipped:
+                bits.append(f"- {clipped[:200]}")
     if recent:
         bits.append("Recent words in this gathering:")
         for m in recent[-8:]:
             who = m.get("speaker") or (
                 "the star-stranger" if m.get("role") == "user" else "someone"
             )
+            if m.get("speaker") == character_id:
+                who = "you"
             line = (m.get("content") or "").strip().replace("\n", " ")
             if line:
                 bits.append(f"- {who}: {line[:240]}")
     return "\n".join(bits)
 
 
-def who_speaks(members: List[str], host_id: str, user_message: str,
-               name_of: NameFn) -> List[str]:
-    """One or two voices — never a parrot circle.
+def who_speaks(
+    members: List[str],
+    host_id: str,
+    user_message: str,
+    name_of: NameFn,
+    *,
+    turn_index: int = 0,
+) -> List[str]:
+    """Natural multi-voice cast for one user turn.
 
-    Addressed Heirs speak first. Otherwise the host speaks, and at most one
-    other may add a beat (stable from the message, not random).
+    Small gatherings tend to speak together; larger ones rotate a subset so
+    the scene stays alive without a parrot chorus. Named Heirs always speak.
     """
     members = [m for m in members if m]
     if not members:
         return []
+    n = len(members)
     text = (user_message or "").lower()
-    addressed = []
+    addressed: List[str] = []
     for cid in members:
         try:
             nm = (name_of(cid) or "").lower()
@@ -332,27 +410,53 @@ def who_speaks(members: List[str], host_id: str, user_message: str,
             nm = cid.lower()
         if nm and len(nm) >= 3 and nm in text:
             addressed.append(cid)
-    if addressed:
-        out = []
-        for cid in addressed:
-            if cid not in out:
-                out.append(cid)
-        return out[:2]
 
-    order = []
-    if host_id in members:
-        order.append(host_id)
-    others = [c for c in members if c != host_id]
-    if not others:
-        return order
-    if len(members) == 2:
-        order.append(others[0])
-        return list(dict.fromkeys(order))
-    seed = sum(ord(ch) for ch in (user_message or "x")) + len(user_message or "")
-    # Four in five turns, a second Heir adds a line; otherwise the host alone.
-    if seed % 5 != 0:
-        order.append(others[seed % len(others)])
-    return list(dict.fromkeys(order))[:2]
+    # How many voices this turn — scale with the gathering, vary by turn.
+    if n <= 2:
+        k = n
+    elif n == 3:
+        k = 3 if (turn_index % 3) != 2 else 2
+    elif n == 4:
+        k = 4 if (turn_index % 4) == 0 else 3
+    else:
+        # 5+: usually 3–4; occasional full company.
+        k = min(n, 3 + (turn_index % 2))
+        if turn_index % 5 == 0:
+            k = n
+
+    order: List[str] = []
+    for cid in addressed:
+        if cid not in order:
+            order.append(cid)
+
+    rest = [m for m in members if m not in order]
+    # Prefer the host early when nobody was named, then rotate by turn.
+    if host_id in rest and not addressed:
+        rest = [host_id] + [m for m in rest if m != host_id]
+    if rest:
+        rot = turn_index % len(rest)
+        rest = rest[rot:] + rest[:rot]
+        # Message-stable shuffle among the rotated rest so similar prompts
+        # still vary who joins after the first seat.
+        seed = (
+            sum(ord(ch) for ch in (user_message or "x"))
+            + len(user_message or "")
+            + turn_index * 17
+        )
+        if len(rest) > 1:
+            pivot = seed % len(rest)
+            rest = rest[pivot:] + rest[:pivot]
+
+    for cid in rest:
+        if len(order) >= k:
+            break
+        order.append(cid)
+
+    # Named Heirs always keep a seat even if k was small.
+    for cid in addressed:
+        if cid not in order:
+            order.append(cid)
+    return order
 
 
 def should_end_for_tab(tab_name: str) -> bool:
@@ -527,7 +631,9 @@ def enrich_system(manager, character_id: str) -> str:
 
 
 def heir_speak(manager, character_id: str, user_message: str,
-               extra_system: str = "") -> str:
+               extra_system: str = "",
+               *,
+               gathering_so_far: str = "") -> str:
     """A short in-character line that does not write the 1:1 session."""
     from src.core.speech_sanitize import spoken_words
 
@@ -535,9 +641,18 @@ def heir_speak(manager, character_id: str, user_message: str,
     if extra_system:
         system_prompt = f"{system_prompt}\n\n{extra_system}"
     manager._oplora_character_id = character_id
+    # Keep gathering history in the user turn (not as fake assistant turns)
+    # so the model does not treat other Heirs' lines as its own speech.
+    if gathering_so_far:
+        user_content = (
+            f"{gathering_so_far.strip()}\n\n"
+            f"Now answer in your own voice only:\n{user_message}"
+        )
+    else:
+        user_content = user_message
     messages = [
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_message},
+        {"role": "user", "content": user_content},
     ]
     try:
         manager._sanitize_history_for_llm(messages)
@@ -566,6 +681,7 @@ def generate_group_turn(
     members = list(sess.get("members") or [])
     host_id = sess.get("host") or (members[0] if members else "")
     place = sess.get("place") or ""
+    all_msgs = list(sess.get("messages") or [])
 
     def _nm(cid):
         if name_of:
@@ -578,14 +694,34 @@ def generate_group_turn(
         except Exception:
             return cid
 
-    speakers = who_speaks(members, host_id, user_message, _nm)
-    recent = list(sess.get("messages") or [])
+    # Current user line is already appended by the UI — do not feed it twice.
+    prior = list(all_msgs)
+    if (
+        prior
+        and prior[-1].get("role") == "user"
+        and (prior[-1].get("content") or "").strip() == (user_message or "").strip()
+    ):
+        prior = prior[:-1]
+    user_turns = [m for m in all_msgs if m.get("role") == "user"]
+    turn_index = max(0, len(user_turns) - 1)
+
+    speakers = who_speaks(
+        members, host_id, user_message, _nm, turn_index=turn_index,
+    )
     out: List[dict] = []
     said_so_far: List[str] = []
+    used_by: Dict[str, List[str]] = {}
+    for m in prior:
+        sp = m.get("speaker") or ""
+        if sp and m.get("role") == "assistant":
+            used_by.setdefault(sp, []).append(m.get("content") or "")
 
     for cid in speakers:
+        own_prior = list(used_by.get(cid) or [])
         extra = group_prompt_block(
-            cid, members, place, _nm, recent=recent + out,
+            cid, members, place, _nm,
+            recent=prior + out,
+            own_prior=own_prior,
         )
         if said_so_far:
             extra += (
@@ -596,6 +732,28 @@ def generate_group_turn(
         prompt = (
             f"The star-stranger says, here in {place}: {user_message}"
         )
+        gathering_so_far = ""
+        if prior or out:
+            lines = []
+            for m in (prior + out)[-10:]:
+                who = m.get("speaker") or (
+                    "the star-stranger" if m.get("role") == "user" else "someone"
+                )
+                if m.get("speaker") == cid:
+                    who = "you"
+                try:
+                    if m.get("speaker") and m.get("speaker") != cid:
+                        who = _nm(m["speaker"])
+                except Exception:
+                    pass
+                line = (m.get("content") or "").strip().replace("\n", " ")
+                if line:
+                    lines.append(f"- {who}: {line[:220]}")
+            if lines:
+                gathering_so_far = (
+                    "Gathering so far (do not repeat your own lines):\n"
+                    + "\n".join(lines)
+                )
         text = ""
         if speak:
             try:
@@ -603,28 +761,53 @@ def generate_group_turn(
             except Exception:
                 text = ""
         elif manager is not None:
-            text = (heir_speak(manager, cid, prompt, extra_system=extra) or "").strip()
+            text = (
+                heir_speak(
+                    manager, cid, prompt,
+                    extra_system=extra,
+                    gathering_so_far=gathering_so_far,
+                ) or ""
+            ).strip()
         if not text or looks_offline(text) or _QUIET.match(text):
-            if not text or looks_offline(text):
-                others = [_nm(m) for m in members if m != cid]
-                text = fallback_group_line(cid, user_message, others)
-            else:
+            if _QUIET.match(text or ""):
                 continue
-        # Drop a parrot of the previous line.
-        compact = re.sub(r"\s+", " ", text).strip().lower()
-        if said_so_far and compact == said_so_far[-1]:
+            others = [_nm(m) for m in members if m != cid]
+            avoid = own_prior + [
+                m.get("content") or "" for m in out
+            ]
+            text = fallback_group_line(
+                cid, user_message, others,
+                avoid=avoid, turn_index=turn_index,
+            )
+        # Drop a parrot of this turn or of this Heir's earlier words.
+        compact = _compact_line(text)
+        if said_so_far and any(lines_too_similar(text, prev) for prev in said_so_far):
             continue
+        if any(lines_too_similar(text, prev) for prev in own_prior):
+            others = [_nm(m) for m in members if m != cid]
+            alt = fallback_group_line(
+                cid, user_message, others,
+                avoid=own_prior + said_so_far + [text],
+                turn_index=turn_index + 1,
+            )
+            if any(lines_too_similar(alt, prev) for prev in own_prior + said_so_far):
+                continue
+            text = alt
+            compact = _compact_line(text)
         msg = append_message(store, role="assistant", content=text, speaker=cid)
         out.append(msg)
         said_so_far.append(compact)
+        used_by.setdefault(cid, []).append(text)
         try:
             if manager is not None:
+                snippet = re.sub(r"\s+", " ", text).strip()[:120]
                 manager.memory.add_memory(
                     cid,
                     mtype="social",
                     content=(
-                        f"You spoke with the star-stranger in {place} "
-                        f"together with {', '.join(_nm(m) for m in members if m != cid)}."
+                        f"In a gathering in {place} with "
+                        f"{', '.join(_nm(m) for m in members if m != cid)}, "
+                        f"you told the star-stranger: {snippet}"
                     ),
                     importance=1,
                 )
@@ -640,7 +823,8 @@ def generate_group_turn(
 
 # --------------------------------------------------------------------------- #
 # Offline stand-in speech (tests / silent backend) — not used when the Heir
-# voice answers. Kept short and in-world.
+# voice answers. Kept short and in-world. Multiple lines per Heir so consecutive
+# offline turns do not parrot the same beat.
 # --------------------------------------------------------------------------- #
 _FALLBACK_ACCEPT: Dict[str, str] = {
     "phainon": "Hah. If you're gathering here in {place}, I'm not sitting it out.",
@@ -674,18 +858,83 @@ _FALLBACK_DECLINE: Dict[str, str] = {
     "dan-heng-permansor-terrae": "I will stand aside. Continue without me.",
 }
 
-_FALLBACK_GROUP: Dict[str, str] = {
-    "phainon": "I'm listening. Say it plainly — we're all here.",
-    "aglaea": "The gold of this hour is company. Speak; I am attending.",
-    "mydei": "Go on. I have ears.",
-    "castorice": "I am here. You may speak.",
-    "cipher": "Well? Don't leave a girl hanging — out with it.",
-    "anaxa": "Proceed. I will judge the claim, not the volume.",
-    "hyacine": "We're with you. Tell us what's on your mind.",
-    "tribbie": "We hear you! Tell us, tell us.",
-    "cerydra": "Speak. A ruler listens when the hour asks it.",
-    "hysilens": "I hear you. Say what you came to say.",
-    "cyrene": "♪ The hour leans in. We are listening.",
-    "evernight": "♭ I am still here. Go on.",
-    "dan-heng-permansor-terrae": "Go on. I am listening.",
+_FALLBACK_GROUP_POOL: Dict[str, List[str]] = {
+    "phainon": [
+        "I'm listening. Say it plainly — we're all here.",
+        "Hah. That lands. Speak on — I won't look away.",
+        "With this company? Fine. Say what you came to say.",
+        "I heard “{said}”. Go on — I'm still with you.",
+    ],
+    "aglaea": [
+        "The gold of this hour is company. Speak; I am attending.",
+        "The weave holds. I hear you — continue.",
+        "Company steadies the thread. Say it again if you must; I am here.",
+        "About “{said}” — the gold listens with you.",
+    ],
+    "mydei": [
+        "Go on. I have ears.",
+        "Speak. I am not leaving.",
+        "Short words. I am listening.",
+        "“{said}” — say the rest.",
+    ],
+    "castorice": [
+        "I am here. You may speak.",
+        "I… I hear you. Go on, if you wish.",
+        "Still with you. Softly — I am listening.",
+        "About that… I stay.",
+    ],
+    "cipher": [
+        "Well? Don't leave a girl hanging — out with it.",
+        "Heh. That's a thing to say in this company.",
+        "I'm listening. Make it worth my ears.",
+        "Oho — “{said}”? Keep talking.",
+    ],
+    "anaxa": [
+        "Proceed. I will judge the claim, not the volume.",
+        "A claim, then. State it cleanly.",
+        "I remain. Continue the argument.",
+        "Regarding “{said}” — elaborate.",
+    ],
+    "hyacine": [
+        "We're with you. Tell us what's on your mind.",
+        "I'm here. Take your time.",
+        "Breathe — we're listening.",
+        "About “{said}” — go on, I'm with you.",
+    ],
+    "tribbie": [
+        "We hear you! Tell us, tell us.",
+        "We like this! Say more!",
+        "We're listening — together!",
+        "“{said}”! Tell us the rest!",
+    ],
+    "cerydra": [
+        "Speak. A ruler listens when the hour asks it.",
+        "I will hear it. Continue.",
+        "Council is seated. State your case.",
+        "On “{said}” — proceed.",
+    ],
+    "hysilens": [
+        "I hear you. Say what you came to say.",
+        "I stand with you. Go on.",
+        "The hour is still. Speak.",
+        "“{said}” — I am listening.",
+    ],
+    "cyrene": [
+        "♪ The hour leans in. We are listening.",
+        "♪ Keep the melody — I hear you.",
+        "♪ Another verse, if you will.",
+        "♪ On “{said}” — the song waits.",
+    ],
+    "evernight": [
+        "♭ I am still here. Go on.",
+        "♭ Softly — I hear you.",
+        "♭ The night holds. Speak.",
+        "♭ “{said}”… continue, if you wish.",
+    ],
+    "dan-heng-permansor-terrae": [
+        "Go on. I am listening.",
+        "I remain. Speak as you need.",
+        "Understood. Continue.",
+        "About “{said}” — go on.",
+    ],
 }

@@ -262,16 +262,54 @@ def render_group_chat_controls(manager, selected: str, info: dict,
 
     if "amp_gc_kind_radio" not in st.session_state:
         st.session_state["amp_gc_kind_radio"] = "Individual chat"
-    kind = st.radio(
-        "How will you speak?",
-        ("Individual chat", "Group chat"),
-        horizontal=True,
-        key="amp_gc_kind_radio",
-        help=(
-            "Individual: the current conversation. Group: invite Heirs who are "
-            "already here. The gathering ends when you leave Visit an Heir."
-        ),
+    # Scoped chrome: transparent / hairline gold (matches Visit selectboxes).
+    st.markdown(
+        """
+<style>
+.st-key-amp_gc_mode_chrome,
+.st-key-amp_gc_mode_chrome [data-testid="stRadio"],
+.st-key-amp_gc_mode_chrome [data-testid="stRadioGroup"],
+.st-key-amp_gc_mode_chrome [role="radiogroup"],
+.st-key-amp_gc_mode_chrome [data-testid="stElementContainer"],
+.st-key-amp_gc_mode_chrome [data-testid="stHorizontalBlock"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+.st-key-amp_gc_mode_chrome [data-testid="stRadio"],
+.st-key-amp_gc_mode_chrome [role="radiogroup"] {
+  border: none !important;
+  border-bottom: 1px solid rgba(232, 213, 163, 0.32) !important;
+  padding: 0.1rem 0 !important;
+}
+.st-key-amp_gc_mode_chrome [data-testid="stWidgetLabel"] p,
+.st-key-amp_gc_mode_chrome [data-testid="stRadio"] label,
+.st-key-amp_gc_mode_chrome [data-testid="stRadioOption"],
+.st-key-amp_gc_mode_chrome [role="radiogroup"] label {
+  background: transparent !important;
+  color: var(--amp-text-body, #f0e6c8) !important;
+  text-shadow: var(--amp-text-shadow,
+    0 0 1px rgba(0,0,0,.95), 0 1px 2px rgba(0,0,0,.88),
+    0 2px 8px rgba(0,0,0,.72)) !important;
+}
+</style>
+        """,
+        unsafe_allow_html=True,
     )
+    with st.container(key="amp_gc_mode_chrome"):
+        kind = st.radio(
+            "How will you speak?",
+            ("Individual chat", "Group chat"),
+            horizontal=True,
+            key="amp_gc_kind_radio",
+            help=(
+                "Individual: the current conversation. Group: invite Heirs who are "
+                "already here. The gathering ends when you leave Visit an Heir."
+            ),
+        )
     st.session_state[_MODE_KEY] = "group" if kind == "Group chat" else "individual"
     if kind != "Group chat":
         return
@@ -298,13 +336,14 @@ def render_group_chat_controls(manager, selected: str, info: dict,
             )
             return gc.heir_speak(manager, cid, prompt, extra_system=extra)
 
-        with st.spinner("Word goes out across the place..."):
-            result = gc.send_invitations(
-                ws, selected, invitees,
-                name_of=lambda c: _name_of(manager, c),
-                speak=_speak,
-                store=_ss(),
-            )
+        # No st.spinner — its overlay flashes white over the land.
+        st.caption("Word goes out across the place…")
+        result = gc.send_invitations(
+            ws, selected, invitees,
+            name_of=lambda c: _name_of(manager, c),
+            speak=_speak,
+            store=_ss(),
+        )
         # Keep a trace on the 1:1 thread so returning to individual still
         # remembers that the invitation happened.
         msgs = st.session_state.setdefault("messages", {})
@@ -364,8 +403,12 @@ def group_input_placeholder(host_name: str) -> str:
 
 def handle_group_prompt(manager, prompt: str, *,
                         user_avatar=None,
-                        avatar_fn: Optional[Callable] = None) -> None:
-    """Route a Visit chat_input turn into the active gathering."""
+                        avatar_fn: Optional[Callable] = None,
+                        display: bool = True) -> None:
+    """Route a Visit chat_input turn into the active gathering.
+
+    ``display=False`` when a fragment will rerun and redraw the transcript.
+    """
     import streamlit as st
 
     avatar_fn = avatar_fn or avatar_path
@@ -375,28 +418,90 @@ def handle_group_prompt(manager, prompt: str, *,
         pass
 
     gc.append_message(store(), role="user", content=prompt)
-    with st.chat_message("user", avatar=user_avatar):
-        st.markdown(prompt)
+    if display:
+        with st.chat_message("user", avatar=user_avatar):
+            st.markdown(prompt)
 
     def _nm(cid):
         return _name_of(manager, cid)
 
-    with st.spinner("The gathering answers..."):
-        lines = gc.generate_group_turn(
-            manager, _ss(), prompt, world=_world(), name_of=_nm,
-        )
-    for msg in lines:
-        speaker = msg.get("speaker") or ""
-        path = avatar_fn(speaker) if speaker else None
-        av = str(path) if path else None
-        with st.chat_message("assistant", avatar=av):
-            if speaker:
-                st.caption(_nm(speaker))
-            st.markdown(msg.get("content") or "")
+    # No spinner — keeps the land from flashing white during multi-voice turns.
+    lines = gc.generate_group_turn(
+        manager, _ss(), prompt, world=_world(), name_of=_nm,
+    )
+    if display:
+        for msg in lines:
+            speaker = msg.get("speaker") or ""
+            path = avatar_fn(speaker) if speaker else None
+            av = str(path) if path else None
+            with st.chat_message("assistant", avatar=av):
+                if speaker:
+                    st.caption(_nm(speaker))
+                st.markdown(msg.get("content") or "")
     if not lines:
         world_line = (
             "The gathering holds a quiet. No one adds a word this turn."
         )
         gc.append_message(store(), role="assistant", content=world_line)
-        with st.chat_message("assistant"):
-            st.markdown(world_line)
+        if display:
+            with st.chat_message("assistant"):
+                st.markdown(world_line)
+
+
+def _run_group_chat_fragment(manager, host_name: str, *,
+                             user_avatar=None,
+                             avatar_fn: Optional[Callable] = None) -> None:
+    """Body of the group-chat fragment (defined once for stable fragment ids)."""
+    import streamlit as st
+    from src.ui_role import is_visitor
+
+    avatar_fn = avatar_fn or avatar_path
+    render_group_transcript(user_avatar=user_avatar, avatar_fn=avatar_fn)
+    if is_visitor():
+        st.caption(
+            "Read-only view — sign in as the operator to speak with "
+            "the gathering."
+        )
+        return
+    prompt = st.chat_input(
+        group_input_placeholder(host_name),
+        key="visit_group_chat_input",
+    )
+    if prompt:
+        handle_group_prompt(
+            manager, prompt,
+            user_avatar=user_avatar, avatar_fn=avatar_fn,
+            display=False,
+        )
+        st.rerun(scope="fragment")
+
+
+def render_group_conversation(
+    manager,
+    selected: str,
+    info: dict,
+    *,
+    user_avatar=None,
+    avatar_fn: Optional[Callable] = None,
+) -> None:
+    """Active gathering: transcript + docked input in a fragment.
+
+    Fragment-scoped sends keep the land iframe mounted (no white page blink).
+    """
+    import streamlit as st
+
+    host_name = (info or {}).get("name") or selected
+    fragment = getattr(st, "fragment", None)
+    if fragment is None:
+        # Very old Streamlit — fall back to full-script path.
+        render_group_transcript(user_avatar=user_avatar, avatar_fn=avatar_fn)
+        return
+
+    @fragment
+    def _group_chat_fragment():
+        _run_group_chat_fragment(
+            manager, host_name,
+            user_avatar=user_avatar, avatar_fn=avatar_fn,
+        )
+
+    _group_chat_fragment()
