@@ -332,6 +332,52 @@ if wheat2:
 else:
     check("brush wheat", False, "no wheat")
 
+print("== Place fitness + backdrop coverage ==")
+ws_v = mk(2, "Vortex of Genesis")
+kv = {b["kind"] for b in eco.derive_scene(ws_v, place="Vortex of Genesis")}
+check("Vortex no fishing shore", not (kv & {"shore", "siren", "net", "tidepool", "boat"}), str(kv))
+check("Vortex no market", "market_stall" not in kv, str(kv))
+check("Vortex faults clean", not eco.logic_faults(
+    eco.derive_scene(ws_v, place="Vortex of Genesis"), "Vortex of Genesis"))
+
+ws_aid = mk(2, "Aidonia")
+kaid = {b["kind"] for b in eco.derive_scene(ws_aid, place="Aidonia")}
+check("Aidonia no market", "market_stall" not in kaid, str(kaid))
+check("Aidonia no laundry", "laundry" not in kaid, str(kaid))
+
+ws_bb = mk(2, "Bloodbathed Battlefront")
+kbb = {b["kind"] for b in eco.derive_scene(ws_bb, place="Bloodbathed Battlefront")}
+check("Battlefront forge", "forge" in kbb, str(kbb))
+check("Battlefront no fruit market", "market_stall" not in kbb, str(kbb))
+
+ws_tomb = mk(2, "Great Tomb")
+kt = {b["kind"] for b in eco.derive_scene(ws_tomb, place="Great Tomb")}
+check("Tomb no olive picnic", "olive" not in kt and "cicada" not in kt, str(kt))
+check("Tomb no market", "market_stall" not in kt, str(kt))
+
+ws_eye = mk(2, "Eye of Twilight")
+ke = {b["kind"] for b in eco.derive_scene(ws_eye, place="Eye of Twilight")}
+check("Eye no dromas market", "dromas" not in ke and "market_stall" not in ke, str(ke))
+
+from src.ui_backgrounds import DEFAULT_BG, bg_path_for_place
+from src.world.world_state import LOCATIONS
+missing_bg = []
+for place in LOCATIONS:
+    path = bg_path_for_place(place)
+    if path is None or path.resolve() == DEFAULT_BG.resolve():
+        # Only count as missing when the place failed to match a dedicated slug.
+        from src.ui_backgrounds import location_slug
+        if not location_slug(place):
+            missing_bg.append(place)
+check("every LOCATIONS place has a backdrop slug", not missing_bg, str(missing_bg))
+fallback_only = []
+for place in LOCATIONS:
+    from src.ui_backgrounds import location_slug, GALGAME_DIR
+    slug = location_slug(place)
+    if not slug or not (GALGAME_DIR / f"{slug}.jpg").exists():
+        fallback_only.append(place)
+check("every LOCATIONS place resolves to a galgame JPEG", not fallback_only, str(fallback_only))
+
 print("== Engine hook import ==")
 import inspect
 from src.world import world_engine as we

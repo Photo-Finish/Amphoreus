@@ -20,10 +20,41 @@ from . import lived_entities as le
 # Place families for living kinds
 # --------------------------------------------------------------------------- #
 CHIMERA_CITIES = {"Okhema", "Eternal Holy City", "Dawncloud"}
-DROMAS_STRONG = set(le.CITYISH) | {"Castrum Kremnos", "Bloodbathed Battlefront"}
+# Road beasts on inhabited roads — not sky forts, tombs, or sacred nexuses.
+DROMAS_ROADS = {
+    "Okhema", "Eternal Holy City", "Dawncloud", "Janusopolis",
+    "Castrum Kremnos", "Bloodbathed Battlefront", "Styxia", "Warbling Shores",
+    "Aidonia", "Aedes Elysiae", "Aedes Elysiae, of old", "Sanctum of Prophecy",
+    "Grove of Epiphany", "Radiant Scarwood",
+}
+DROMAS_STRONG = set(DROMAS_ROADS)
 SHORE = set(le.SEA)
+# Working seashore life (nets, sirens, tidepools) — Vortex is a Coreflame nexus, not a fishing quay.
+WORKING_SHORE = {
+    "Styxia", "Warbling Shores", "Aedes Elysiae", "Aedes Elysiae, of old",
+}
 GROVE = set(le.GROVE)
+# Living timber vs underground matrix / tomb of the Nameless Titan.
+LIVING_GROVE = {"Grove of Epiphany", "Radiant Scarwood"}
+TOMB_PLACES = {"Great Tomb", "Universal Matrix"}
 FIELDS = set(le.FIELDS)
+# Ordinary civic markets — not council chambers, battlefronts, sky ruins, or death-snow.
+MARKET_CITIES = {
+    "Okhema", "Eternal Holy City", "Dawncloud", "Janusopolis",
+    "Castrum Kremnos", "Styxia", "Warbling Shores",
+    "Aedes Elysiae", "Aedes Elysiae, of old",
+}
+# Public wells / cisterns of settlement life.
+WELL_CITIES = {
+    "Okhema", "Eternal Holy City", "Dawncloud", "Janusopolis",
+    "Castrum Kremnos", "Styxia", "Warbling Shores", "Aidonia",
+    "Aedes Elysiae", "Aedes Elysiae, of old", "Sanctum of Prophecy",
+}
+# Sky castrum / battlefront / council chamber — sparse outdoor texture only.
+SPARSE_CITIES = {
+    "Eye of Twilight", "Fortress of Dome", "Bloodbathed Battlefront",
+    "Demigod Council", "The Nether", "Beyond Time", "Vortex of Genesis",
+}
 
 # Indoor furniture lives in lore / mechanisms. The land UI is outdoors.
 INDOOR_LAND = frozenset({"bath", "hearth", "loom", "scroll", "lamp"})
@@ -314,6 +345,205 @@ VISITOR_ACT: Dict[str, dict] = {
         "note": "a line the Grove already wrote; you do not finish the argument",
     },
 }
+
+
+# Okhema-only land voice — funny, vibrant; Dawn Device left alone.
+_OKHEMA_STALL_NAMES = (
+    "a fruit stall with main-character grapes",
+    "a cloth stall of dangerous taste",
+    "a sweet stall of moral hazard",
+    "a pottery stall of well-behaved jars",
+)
+_OKHEMA_STALL_DOING = (
+    "purple grapes posing harder than the Heirs",
+    "selling dye that will absolutely start an argument",
+    "honey cakes weaponized for friendship",
+    "bowls waiting to become someone's favorite mistake",
+)
+_OKHEMA_STALL_NOTICE = (
+    "Gold awning, loud fruit, vendor smiling like the grapes pay rent.",
+    "Fabrics flutter like they have side quests. Blue-and-gold is winning today.",
+    "Sugar in small packages. Resistance is optional and discouraged.",
+    "Clay that survived the kiln and now wants a kitchen drama.",
+)
+
+
+def _okhema_flavor_name(kind: str, idx: int, name: str) -> str:
+    if kind == "chimera":
+        return "another little chaos-cloud" if idx > 1 else "a little chimera"
+    if kind == "dromas":
+        return "another blue road-beast" if idx > 1 else "a blue road-beast"
+    if kind == "dromas_calf":
+        return "a blue calf of the square"
+    table = {
+        "grass": "the gossiping grass",
+        "wind": "Okhema's restless air",
+        "well": "the gossip well",
+        "shrine": "a shrine of thanks (not a guilt booth)",
+        "incense": "a stick of household sweetness",
+        "gate": "Janus's ordinary door (with main-quest lighting)",
+        "pebble": "a thumb-sized road celebrity",
+        "mosaic": "a floor that remembers everyone's footsteps",
+        "fountain": "the square's chatty water",
+        "pillar": "a column practicing good posture",
+        "laundry": "wash on the line, living its best life",
+        "courier": "an errand-bird on a deadline",
+    }
+    return table.get(kind, name)
+
+
+def _okhema_flavor_doing(kind: str, status: str, doing: str, period: int,
+                         idx: int) -> str:
+    quiet = status in {"resting", "quiet", "down", "in", "withdrawn", "ailing"}
+    if kind == "chimera" and status == "wandering":
+        return "doing laps of the baths like it owns the spa membership"
+    if kind == "dromas" and status in {"hauling", "well", "vigorous", "restless"}:
+        return "hauling today's gossip and tomorrow's cargo with equal dignity"
+    if kind == "dromas_calf" and not quiet:
+        return "practicing dignity near the adult beasts"
+    if kind == "grass" and status == "stirring":
+        return "whispering about everyone's shoes"
+    if kind == "grass" and not quiet:
+        return "ready to gossip about everyone's shoes"
+    if kind == "wind" and status == "stirring":
+        return "rearranging hairstyles without consent"
+    if kind == "wind" and not quiet:
+        return "shopping for opinions to rearrange"
+    if kind == "well" and status == "open":
+        return "serving cold drinks and colder takes"
+    if kind == "shrine" and status in {"quiet", "open"}:
+        return "collecting quiet gratitude like spare coins"
+    if kind == "incense" and status in {"well", "open"}:
+        return "smelling expensive on a street-food budget"
+    if kind == "gate" and status == "open":
+        return "open, dramatic, still just a door"
+    if kind == "pebble":
+        return "surviving chariot traffic like a tiny legend"
+    if kind == "mosaic" and not quiet:
+        return "public art doing overtime under sandals"
+    if kind == "fountain" and status == "open":
+        return "gossiping with stone at full volume"
+    if kind == "pillar":
+        return "holding up the hour's light (and its own reputation)"
+    if kind == "laundry" and status == "hanging":
+        return "drying shirts that have opinions about the wind"
+    if kind == "courier" and status == "flying":
+        return "cutting the sky like late mail with confidence"
+    if kind == "market_stall" and status == "open":
+        line = _OKHEMA_STALL_DOING[(max(1, idx) - 1) % len(_OKHEMA_STALL_DOING)]
+        if period == 2:
+            return f"Action Hour — {line}"
+        return line
+    return doing
+
+
+def _okhema_notice(kind: str, being: dict) -> Optional[str]:
+    """Click/notice lines for Okhema. Dawn Device intentionally omitted."""
+    status = being.get("status") or ""
+    if kind == "chimera":
+        return (
+            "It locks eyes with you and delivers a proud Awoo — "
+            "half greeting, half press conference."
+        )
+    if kind == "dromas":
+        if being.get("caravan_id"):
+            return (
+                "A blue mountain with legs leads the train — "
+                "warm earth, judgmental patience, excellent schedule."
+            )
+        return (
+            "A blue mountain with legs. It smells like warm earth "
+            "and slightly judgmental patience."
+        )
+    if kind == "dromas_calf":
+        return (
+            "Small blue plates, full curiosity. The calf is auditioning "
+            "for road-beast seriousness."
+        )
+    if kind == "grass":
+        return (
+            "Edge-grass doing jazz hands in the breeze. "
+            "Very unprofessional. Very alive."
+        )
+    if kind == "wind":
+        return "The hour has opinions, and they are breezy."
+    if kind == "well":
+        if status == "open":
+            return (
+                "The well is open for business: hydration first, drama second."
+            )
+        return "The gossip well is off-duty; cisterns keep the night's drink."
+    if kind == "market_stall":
+        oid = being.get("id") or ""
+        try:
+            idx = int(str(oid).rsplit(":", 1)[-1])
+        except ValueError:
+            idx = 1
+        return _OKHEMA_STALL_NOTICE[(max(1, idx) - 1) % len(_OKHEMA_STALL_NOTICE)]
+    if kind == "shrine":
+        return "Stone, gold, and zero lectures. Leave thanks; leave lighter."
+    if kind == "incense":
+        return "Soft smoke doing interior design in midair."
+    if kind == "gate":
+        return 'Threshold energy: half farewell, half "bring snacks back."'
+    if kind == "pebble":
+        return "A pebble the size of a promise. Pocketable. Iconic."
+    if kind == "mosaic":
+        return (
+            "Gold geometry underfoot — the city's scrapbook, polished daily."
+        )
+    if kind == "fountain":
+        return "Splash, sparkle, zero chill. Okhema's best free concert."
+    if kind == "pillar":
+        return (
+            "Tall, gold-trimmed, slightly smug. Excellent shade sponsorship."
+        )
+    if kind == "laundry":
+        return "Cloth flags of the ordinary — heroic in a domestic way."
+    if kind == "courier":
+        return "Feathers, purpose, zero small talk. You are not CC'd."
+    return None
+
+
+def _okhema_touch_note(action_id: str, kind: str) -> Optional[str]:
+    if action_id == "pet":
+        return {
+            "chimera": "soft head, softer ego; the Awoo upgrades to deluxe",
+            "dromas": (
+                "neck plates warm under your palm; "
+                "it accepts pets as a civic duty"
+            ),
+            "dromas_calf": (
+                "the calf bumps your hand — soft plates, big future ego"
+            ),
+        }.get(kind)
+    if action_id == "greet_dromas":
+        return "it blows warm dust at your sleeve — considered a five-star review"
+    if action_id == "drink":
+        return "cool water; your dignity remains mostly intact"
+    if action_id == "touch_air" and kind == "grass":
+        return "cool blades tickle; they refuse to take you seriously"
+    if action_id == "touch_air" and kind == "wind":
+        return "it slips through your fingers like a joke you almost caught"
+    if action_id == "leave_offering":
+        return "a scrap of thanks lands; the shrine does not invoice you"
+    if action_id == "breathe_incense":
+        return "sweet, brief, not a summons — just good manners for the nose"
+    if action_id == "step_through":
+        return "you cross; the gate pretends it invented walking"
+    if action_id == "pick_keepsake":
+        return "you take the stone; the road does not file a complaint"
+    if action_id == "trace_mosaic":
+        return "your fingertip follows a pattern; the mosaic pretends not to blush"
+    if action_id == "watch_water":
+        return "water works; you watch it win"
+    if action_id == "rest_shade":
+        return "cool stone; the column does not charge rent"
+    if action_id == "read_cloth":
+        return "shirts on the line debate the wind; you decline to referee"
+    if action_id == "follow_bird":
+        return "the bird is already gone; your invite was never in the thread"
+    return None
 
 
 # Hard bans — never writable via care API.
@@ -859,6 +1089,13 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
             if period == 2:
                 doing = f"Action Hour — {doing}"
 
+    if place == "Okhema" and kind != "dawn":
+        if kind == "market_stall":
+            name = _OKHEMA_STALL_NAMES[(max(1, idx) - 1) % len(_OKHEMA_STALL_NAMES)]
+        else:
+            name = _okhema_flavor_name(kind, idx, name)
+        doing = _okhema_flavor_doing(kind, status, doing, period, idx)
+
     sound = None
     if kind == "chimera":
         sound = "Awoo"
@@ -1060,7 +1297,7 @@ def derive_scene(world, place: Optional[str] = None,
         if flags.get("resting") or period in (0, 4):
             out.append(_mk_being("hearth_cat", place, 1, world, flags, character_id))
 
-    if place in DROMAS_STRONG or place in le.CITYISH:
+    if place in DROMAS_ROADS:
         out.append(_mk_being("dromas", place, 1, world, flags, character_id))
         if month == 4 and period in (2, 3):
             out.append(_mk_being("dromas", place, 2, world, flags, character_id))
@@ -1074,19 +1311,28 @@ def derive_scene(world, place: Optional[str] = None,
         out.append(_mk_being("grass", place, 1, world, flags, character_id))
         out.append(_mk_being("maze", place, 1, world, flags, character_id))
 
-    if place in SHORE:
+    if place in WORKING_SHORE:
         out.append(_mk_being("shore", place, 1, world, flags, character_id))
         out.append(_mk_being("siren", place, 1, world, flags, character_id))
         out.append(_mk_being("pearl", place, 1, world, flags, character_id))
 
-    if place in GROVE:
+    if place in LIVING_GROVE:
         out.append(_mk_being("grove_leaf", place, 1, world, flags, character_id))
+    elif place in TOMB_PLACES:
+        # Nameless Titan matrix — solemn ruin texture, not a scholar's grove picnic.
+        out.append(_mk_being("grove_leaf", place, 1, world, flags, character_id))
+        out.append(_mk_being("pillar", place, 1, world, flags, character_id))
 
-    if place not in GROVE and place in le.CITYISH:
+    if (
+        place not in GROVE
+        and place not in SPARSE_CITIES
+        and place in le.CITYISH
+    ):
         out.append(_mk_being("grass", place, 1, world, flags, character_id))
         out.append(_mk_being("wind", place, 1, world, flags, character_id))
-        out.append(_mk_being("well", place, 1, world, flags, character_id))
-        if flags.get("market_open") and place not in GROVE:
+        if place in WELL_CITIES:
+            out.append(_mk_being("well", place, 1, world, flags, character_id))
+        if flags.get("market_open") and place in MARKET_CITIES:
             # Okhema's square is a row of vendor stalls, not a lone booth.
             if place in {"Okhema", "Eternal Holy City", "Dawncloud"}:
                 n_stalls = 4 if place == "Okhema" else 2
@@ -1097,15 +1343,34 @@ def derive_scene(world, place: Optional[str] = None,
                     "market_stall", place, i, world, flags, character_id,
                 ))
 
-    if place in le.SHRINE:
+    # Sparse / high / sacred places still feel air and ground underfoot.
+    if place in {"Eye of Twilight", "Fortress of Dome", "Vortex of Genesis"}:
+        out.append(_mk_being("wind", place, 1, world, flags, character_id))
+    if place in {"Bloodbathed Battlefront", "Demigod Council"}:
+        out.append(_mk_being("wind", place, 1, world, flags, character_id))
+        out.append(_mk_being("grass", place, 1, world, flags, character_id))
+    if place == "The Nether":
+        out.append(_mk_being("wind", place, 1, world, flags, character_id))
+
+    if place in le.SHRINE and place not in {"Demigod Council"}:
+        # Demigod Council keeps incense without a street shrine booth.
         out.append(_mk_being("shrine", place, 1, world, flags, character_id))
         out.append(_mk_being("incense", place, 1, world, flags, character_id))
+    elif place == "Demigod Council":
+        out.append(_mk_being("incense", place, 1, world, flags, character_id))
+        out.append(_mk_being("pillar", place, 1, world, flags, character_id))
     if place in le.FORGE:
         out.append(_mk_being("forge", place, 1, world, flags, character_id))
         out.append(_mk_being("banner", place, 1, world, flags, character_id))
     if place in le.GATES:
         out.append(_mk_being("gate", place, 1, world, flags, character_id))
-    if place in le.CITYISH and place not in GROVE:
+    if (
+        place in le.CITYISH
+        and place not in GROVE
+        and place not in SPARSE_CITIES
+    ):
+        out.append(_mk_being("pebble", place, 1, world, flags, character_id))
+    if place == "Bloodbathed Battlefront":
         out.append(_mk_being("pebble", place, 1, world, flags, character_id))
 
     # Regional texture — different places, not the same Okhema list everywhere.
@@ -1116,15 +1381,15 @@ def derive_scene(world, place: Optional[str] = None,
         if not (flags.get("resting") or period in (0, 4)):
             out.append(_mk_being("laundry", place, 1, world, flags, character_id))
             out.append(_mk_being("courier", place, 1, world, flags, character_id))
-    if place in GROVE:
+    if place in LIVING_GROVE:
         out.append(_mk_being("olive", place, 1, world, flags, character_id))
         out.append(_mk_being("cicada", place, 1, world, flags, character_id))
         out.append(_mk_being("fountain", place, 1, world, flags, character_id))
-    if place in SHORE:
+    if place in WORKING_SHORE:
         out.append(_mk_being("boat", place, 1, world, flags, character_id))
         out.append(_mk_being("net", place, 1, world, flags, character_id))
         out.append(_mk_being("tidepool", place, 1, world, flags, character_id))
-    elif place in le.RIVER:
+    elif place in le.RIVER and place not in TOMB_PLACES:
         out.append(_mk_being("boat", place, 1, world, flags, character_id))
     if place in FIELDS:
         out.append(_mk_being("mill", place, 1, world, flags, character_id))
@@ -1137,6 +1402,8 @@ def derive_scene(world, place: Optional[str] = None,
     if place in {"Eye of Twilight", "Fortress of Dome"}:
         out.append(_mk_being("pillar", place, 1, world, flags, character_id))
         out.append(_mk_being("kite", place, 1, world, flags, character_id))
+    if place == "Vortex of Genesis":
+        out.append(_mk_being("pillar", place, 1, world, flags, character_id))
     if place in {"Castrum Kremnos", "Bloodbathed Battlefront"} and place not in GROVE:
         out.append(_mk_being("banner", place, 1, world, flags, character_id))
 
@@ -1167,12 +1434,42 @@ def derive_scene(world, place: Optional[str] = None,
 
     _apply_trade_caravan(out, world, place, flags, period, month, traveling=False)
 
-    # Contradiction: strip sea/chimera if somehow in Grove
+    # Contradiction: strip sea/chimera if somehow in Grove / tomb
     if place in GROVE:
         out = [b for b in out if b["kind"] not in {
             "chimera", "shore", "hearth_cat", "siren", "bath", "market_stall",
             "pearl", "forge", "laundry", "mosaic", "boat", "net", "tidepool",
-            "banner",
+            "banner", "well",
+        }]
+    if place in TOMB_PLACES:
+        out = [b for b in out if b["kind"] not in {
+            "olive", "cicada", "fountain", "market_stall", "well", "laundry",
+            "chimera", "shore", "siren", "boat", "net", "tidepool", "dromas",
+            "dromas_calf", "kite", "mill", "maze", "wheat", "banner", "forge",
+        }]
+    if place == "Vortex of Genesis":
+        out = [b for b in out if b["kind"] not in {
+            "shore", "siren", "pearl", "boat", "net", "tidepool", "market_stall",
+            "well", "dromas", "dromas_calf", "laundry", "chimera",
+        }]
+    if place in {"Eye of Twilight", "Fortress of Dome"}:
+        out = [b for b in out if b["kind"] not in {
+            "market_stall", "well", "dromas", "dromas_calf", "laundry",
+            "chimera", "shore", "siren", "boat", "net", "forge",
+        }]
+    if place == "Aidonia":
+        out = [b for b in out if b["kind"] not in {
+            "market_stall", "laundry", "chimera", "shore", "siren", "net",
+            "tidepool", "mill", "kite", "maze", "wheat",
+        }]
+    if place in {"Bloodbathed Battlefront", "Demigod Council", "Sanctum of Prophecy"}:
+        out = [b for b in out if b["kind"] not in {
+            "market_stall", "laundry", "chimera", "shore", "siren", "net",
+            "tidepool", "mill", "kite",
+        }]
+    if place in {"The Nether", "Beyond Time"}:
+        out = [b for b in out if b["kind"] in {
+            "dawn", "thief_star", "wind",
         }]
 
     out = [b for b in out if b.get("kind") not in INDOOR_LAND]
@@ -1205,10 +1502,10 @@ def logic_faults(scene: List[dict], place: str) -> List[str]:
     if place in GROVE and ("chimera" in kinds or "shore" in kinds or "siren" in kinds
                            or "boat" in kinds or "net" in kinds or "tidepool" in kinds):
         faults.append("Grove scene must not hold chimera or shore life")
-    if place not in SHORE and ("shore" in kinds or "siren" in kinds or "pearl" in kinds
+    if place not in WORKING_SHORE and ("shore" in kinds or "siren" in kinds or "pearl" in kinds
                                or "tidepool" in kinds or "net" in kinds):
-        faults.append("Shore life outside a sea place")
-    if "boat" in kinds and place not in SHORE and place not in le.RIVER:
+        faults.append("Shore life outside a working seashore")
+    if "boat" in kinds and place not in WORKING_SHORE and place not in le.RIVER:
         faults.append("Boat outside river or sea")
     if place not in CHIMERA_CITIES and "chimera" in kinds:
         faults.append("Chimera outside holy-city family")
@@ -1218,6 +1515,16 @@ def logic_faults(scene: List[dict], place: str) -> List[str]:
         faults.append("Banner outside Kremnos family")
     if "mill" in kinds and place not in FIELDS:
         faults.append("Mill outside field places")
+    if "market_stall" in kinds and place not in MARKET_CITIES:
+        faults.append("Market stall outside market cities")
+    if "dromas" in kinds and place not in DROMAS_ROADS:
+        faults.append("Dromas outside road places")
+    if place == "Vortex of Genesis" and (
+        "siren" in kinds or "net" in kinds or "tidepool" in kinds
+    ):
+        faults.append("Vortex must not hold fishing-shore life")
+    if place in TOMB_PLACES and ("olive" in kinds or "cicada" in kinds or "fountain" in kinds):
+        faults.append("Tomb must not hold living-grove picnic life")
     indoor = kinds & INDOOR_LAND
     if indoor:
         faults.append("Indoor furniture on outdoor land: " + ", ".join(sorted(indoor)))
@@ -1309,6 +1616,17 @@ def interact(world, object_id: str,
     kind = being.get("kind")
     sound = being.get("sound")
     line = ""
+    if being.get("place") == "Okhema" and kind != "dawn":
+        flavored = _okhema_notice(kind, being)
+        if flavored:
+            return {
+                "ok": True,
+                "being": being,
+                "sound": sound,
+                "line": flavored,
+                "textbox": sound or flavored,
+                "care_hint": being.get("care_hint") or "",
+            }
     if kind == "chimera":
         line = f'{being["name"].capitalize()} looks up and howls: “{sound}!”'
     elif kind == "resident":
@@ -1573,13 +1891,25 @@ def visitor_touch(world, object_id: str, action_id: str,
             world.save()
         except Exception:
             pass
-    note = (spec.get("notes") or {}).get(being.get("kind")) or spec.get("note") or ""
+    note = touch_note_for(being.get("place") or place, action_id, being.get("kind") or "")
     return {
         "ok": True,
         "note": note,
         "being": being,
         "line": note,
     }
+
+
+def touch_note_for(place: Optional[str], action_id: str, kind: str) -> str:
+    """Visitor act copy — Okhema uses the lively sheet; elsewhere the calm default."""
+    action_id = _ACT_ALIASES.get(action_id, action_id)
+    spec = VISITOR_ACT.get(action_id) or {}
+    note = (spec.get("notes") or {}).get(kind) or spec.get("note") or ""
+    if place == "Okhema":
+        flavored = _okhema_touch_note(action_id, kind)
+        if flavored:
+            return flavored
+    return note
 
 
 def prompt_block(world, character_id: str, limit: int = 8) -> str:

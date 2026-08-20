@@ -31,31 +31,46 @@ PER_HEIR_BG = {
 }
 
 # world-location name substring -> bg slug. Matching is case-insensitive
-# substring and ORDERED: specific sub-areas come before their parent city so
-# e.g. "Abyss of Fate" Janusopolis gets its own backdrop, not the city's.
+# substring and ORDERED: specific sub-areas / Dawn-form names come before
+# parent cities so e.g. "Abyss of Fate" and "Eternal Holy City" hit their art.
+# Wiki Area files already cover every LOCATIONS key (Dawn forms reuse the
+# matching Area_* shot; The Nether shares Styxia's pale shore art).
 LOCATION_MATCHES = (
     ("abyss of fate", "bg-abyss-of-fate"),
+    ("eternal holy city", "bg-okhema"),
+    ("fallen twilight", "bg-okhema-evernight"),
+    ("okhema under evernight", "bg-okhema-evernight"),
+    ("demigod council", "bg-dawncloud"),
+    ("sanctum of prophecy", "bg-janusopolis"),
+    ("radiant scarwood", "bg-grove"),
+    ("murmuring woods", "bg-murmuring-woods"),
+    ("bloodbathed", "bg-kremnos"),
+    ("strife ruins", "bg-kremnos-ruins"),
+    ("warbling shores", "bg-styxia"),
+    ("dragonbone", "bg-dragonbone-city"),
+    ("fortress of dome", "bg-eye-of-twilight"),
+    ("cloudedge", "bg-cloudedge-bastion"),
+    ("universal matrix", "bg-great-tomb"),
+    ("nightmare", "bg-nightmare-echo"),
+    ("the nether", "bg-styxia"),
+    ("lightless", "bg-lightless-chapel"),
+    ("eye of twilight", "bg-eye-of-twilight"),
+    ("great tomb", "bg-great-tomb"),
+    ("memortis", "bg-memortis-shore"),
+    ("ruins of time", "bg-memortis-shore"),
+    ("beyond time", "bg-beyond-time"),
+    ("vortex", "bg-vortex-of-genesis"),
     ("okhema", "bg-okhema"),
     ("janusopolis", "bg-janusopolis"),
     ("murmuring", "bg-murmuring-woods"),
     ("grove", "bg-grove"),
     ("kremnos", "bg-kremnos"),
-    ("dragonbone", "bg-dragonbone-city"),
     ("styxia", "bg-styxia"),
     ("elysiae", "bg-aedes-elysiae"),
     ("aidonia", "bg-memortis-shore"),
-    ("lightless", "bg-lightless-chapel"),
     ("dawncloud", "bg-dawncloud"),
-    ("cloudedge", "bg-cloudedge-bastion"),
-    ("eye of twilight", "bg-eye-of-twilight"),
     ("twilight", "bg-eye-of-twilight"),
-    ("nightmare", "bg-nightmare-echo"),
-    ("great tomb", "bg-great-tomb"),
-    ("memortis", "bg-memortis-shore"),
-    ("ruins of time", "bg-memortis-shore"),
-    ("vortex", "bg-vortex-of-genesis"),
     ("abyss", "bg-abyss-of-fate"),
-    ("beyond time", "bg-beyond-time"),
 )
 
 

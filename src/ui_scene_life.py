@@ -566,9 +566,9 @@ def _notice_line(being: dict) -> str:
     return f"{name}: {doing}".strip(": ")
 
 
-def _notice_acts(kind: str) -> List[dict]:
+def _notice_acts(kind: str, place: str = "") -> List[dict]:
     try:
-        from src.world.ecosystem import VISITOR_ACT, visitor_acts_for
+        from src.world.ecosystem import VISITOR_ACT, touch_note_for, visitor_acts_for
         aids = visitor_acts_for(kind)
     except Exception:
         return []
@@ -577,22 +577,26 @@ def _notice_acts(kind: str) -> List[dict]:
         # Petting is gesture-on-sprite (press, hold, drag) — not a notice button.
         if aid in {"pet", "pet_cat", "scratch_ear"}:
             continue
-        spec = VISITOR_ACT.get(aid) or {}
+        try:
+            note = touch_note_for(place, aid, kind)
+        except Exception:
+            spec = VISITOR_ACT.get(aid) or {}
+            note = (spec.get("notes") or {}).get(kind) or spec.get("note") or ""
         out.append({
             "id": aid,
             "glyph": _ACT_GLYPH.get(aid, aid.replace("_", " ")),
-            "note": (spec.get("notes") or {}).get(kind) or spec.get("note") or "",
+            "note": note,
         })
     return out
 
 
 def _notice_entry(being: dict) -> dict:
     kind = str(being.get("kind") or "")
+    place = str(being.get("place") or "")
     pet_note = ""
     try:
-        from src.world.ecosystem import VISITOR_ACT
-        spec = VISITOR_ACT.get("pet") or {}
-        pet_note = (spec.get("notes") or {}).get(kind) or ""
+        from src.world.ecosystem import touch_note_for
+        pet_note = touch_note_for(place, "pet", kind)
     except Exception:
         pet_note = ""
     return {
@@ -600,7 +604,7 @@ def _notice_entry(being: dict) -> dict:
         "kind": kind,
         "status": str(being.get("status") or ""),
         "line": _notice_line(being),
-        "acts": _notice_acts(kind),
+        "acts": _notice_acts(kind, place),
         "pettable": kind in _PET_KINDS,
         "petNote": pet_note,
     }
