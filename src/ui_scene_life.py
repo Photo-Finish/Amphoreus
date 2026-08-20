@@ -225,7 +225,7 @@ _SPRITE_DIR = Path(__file__).resolve().parent.parent / "assets" / "life_sprites"
 # AI-painted sprites are only for outdoor beings you can walk up to and touch.
 # Ambient (grass, wind, wheat, dawn) is CSS/SVG. Indoor furniture is not staged.
 _PAINTED_INTERACTIVE = frozenset({
-    "chimera", "dromas", "hearth_cat", "resident",
+    "chimera", "dromas", "dromas_calf", "hearth_cat", "resident",
     "well", "fountain", "shrine", "market_stall", "forge", "gate",
     "courier", "boat", "kite", "olive", "cicada", "pearl", "pebble",
     "mill", "laundry", "banner", "incense", "pillar",
@@ -245,15 +245,17 @@ _STATIONARY_KINDS = frozenset({
 _SPRITE_FACING: Dict[str, str] = {
     "chimera": "right",
     "dromas": "right",
+    "dromas_calf": "right",
     "resident": "left",
     "cicada": "left",
 }
 # Mobile roam uses side walk film; still PNG is front-facing for these kinds.
-_PROFILE_WALK_KINDS = frozenset({"chimera", "dromas"})
+_PROFILE_WALK_KINDS = frozenset({"chimera", "dromas", "dromas_calf"})
 # Viewport traverse spawn/despawn — only these kinds leave and re-enter view.
-_ROAMER_KINDS = frozenset({"chimera", "dromas", "resident", "cicada"})
+_ROAMER_KINDS = frozenset({"chimera", "dromas", "dromas_calf", "resident", "cicada"})
 _ROAMER_DUR = {
     "dromas": (16, 24),
+    "dromas_calf": (12, 18),
     "chimera": (12, 20),
     "resident": (10, 17),
     "cicada": (7, 12),
@@ -262,7 +264,7 @@ _ROAMER_DUR = {
 # cells; using height as z-index stacked them over wells, fountains, life.
 _FAR_ARCH_KINDS = frozenset({"pillar", "gate", "banner", "mill"})
 _LIFE_KINDS = frozenset({
-    "chimera", "dromas", "hearth_cat", "resident", "cicada",
+    "chimera", "dromas", "dromas_calf", "hearth_cat", "resident", "cicada",
 })
 _ELEVATED_KINDS = _SKY_KINDS | frozenset({
     "laundry", "banner", "cicada", "grove_leaf",
@@ -288,6 +290,7 @@ _SPRITE_CELL: Dict[str, int] = {
     "kite": 46,
     "hearth_cat": 50,
     "chimera": 56,
+    "dromas_calf": 118,
     "laundry": 54,
     "net": 58,
     "banner": 62,
@@ -363,7 +366,7 @@ def _page_window_bottom(kind: str, hotspot_bottom: str) -> str:
         return hotspot_bottom or "42%"
     # Slight depth variety, still on the sill.
     table = {
-        "dromas": "1%", "chimera": "2%", "hearth_cat": "2%", "resident": "2%",
+        "dromas": "1%", "dromas_calf": "1%", "chimera": "2%", "hearth_cat": "2%", "resident": "2%",
         "well": "1%", "fountain": "1%", "forge": "1%", "gate": "1%",
         "shrine": "2%", "market_stall": "2%", "mill": "1%", "pillar": "1%",
         "olive": "2%", "incense": "2%", "boat": "0%", "siren": "1%",
@@ -422,6 +425,7 @@ def _resolved_bottom(kind: str, hotspot_bottom: str, *, page_layer: bool) -> str
 _FILM_DUR = {
     "chimera": "0.64s",
     "dromas": "1.35s",
+    "dromas_calf": "1.05s",
     "hearth_cat": "2.1s",
     "resident": "0.88s",
     "cicada": "0.28s",
@@ -432,8 +436,10 @@ _PET_FILM_DUR = {
     "chimera": "0.72s",
     "hearth_cat": "0.95s",
     "dromas": "1.15s",
+    "dromas_calf": "0.95s",
 }
-_PET_KINDS = frozenset({"chimera", "hearth_cat", "dromas"})
+_PET_KINDS = frozenset({"chimera", "hearth_cat", "dromas", "dromas_calf"})
+_MOUNT_KINDS = frozenset({"dromas", "dromas_calf"})
 
 
 @lru_cache(maxsize=64)
@@ -568,6 +574,9 @@ def _notice_acts(kind: str) -> List[dict]:
         return []
     out = []
     for aid in aids:
+        # Petting is gesture-on-sprite (press, hold, drag) — not a notice button.
+        if aid in {"pet", "pet_cat", "scratch_ear"}:
+            continue
         spec = VISITOR_ACT.get(aid) or {}
         out.append({
             "id": aid,
@@ -579,12 +588,21 @@ def _notice_acts(kind: str) -> List[dict]:
 
 def _notice_entry(being: dict) -> dict:
     kind = str(being.get("kind") or "")
+    pet_note = ""
+    try:
+        from src.world.ecosystem import VISITOR_ACT
+        spec = VISITOR_ACT.get("pet") or {}
+        pet_note = (spec.get("notes") or {}).get(kind) or ""
+    except Exception:
+        pet_note = ""
     return {
         "name": str(being.get("name") or kind or "life"),
         "kind": kind,
         "status": str(being.get("status") or ""),
         "line": _notice_line(being),
         "acts": _notice_acts(kind),
+        "pettable": kind in _PET_KINDS,
+        "petNote": pet_note,
     }
 
 
@@ -761,6 +779,9 @@ def _css() -> str:
   animation: amp-film-pet var(--amp-pet-dur, 0.9s) steps(var(--amp-frames, 4)) 2;
 }
 .amp-sprite:hover { filter: drop-shadow(0 0 14px rgba(240,230,200,.85)); }
+.amp-sprite[data-pettable="1"] { cursor: grab; touch-action: none; }
+.amp-sprite[data-pettable="1"]:active,
+.amp-sprite[data-petting="1"] { cursor: grabbing; }
 .amp-sprite.mobile:hover { animation-play-state: paused; }
 .amp-sprite.mobile.face-r:hover .amp-sprite-body,
 .amp-sprite.mobile.face-l:hover .amp-sprite-body { animation-play-state: paused; }
@@ -903,9 +924,10 @@ def _sprite_button_html(
     cell = _sprite_cell_px(kind, page_layer=page_layer)
     z = _sprite_z_index(kind, bottom)
     asset = _sprite_asset_key(b, kind)
+    pettable = ' data-pettable="1"' if kind in _PET_KINDS else ""
     return (
         f'<button type="button" class="amp-sprite{motion}{facing}{ailing}{sky}{roamer_cls}" '
-        f'data-oid="{oid}" data-kind="{_html.escape(kind, quote=True)}" '
+        f'data-oid="{oid}" data-kind="{_html.escape(kind, quote=True)}"{pettable} '
         f'title="{title}" aria-label="{title}" '
         f'style="left:{left};bottom:{bottom};--amp-cell:{cell}px;z-index:{z};{roam}">'
         f'<span class="amp-sprite-halo"></span>'
@@ -951,13 +973,33 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
         if cid:
             by_cid.setdefault(cid, []).append(row)
     for members in by_cid.values():
-        mounts = [m for m in members if m.get("kind") == "dromas"]
-        mates = [m for m in members if m.get("kind") != "dromas"]
+        mounts = [m for m in members if m.get("kind") in _MOUNT_KINDS]
+        mates = [m for m in members if m.get("kind") not in _MOUNT_KINDS]
         if not mounts or not mates:
             continue
         mount = mounts[0]
         packed = []
-        for i, mate in enumerate(mates[:2]):
+        # Trail extra mounts (second dromas / calf) behind the lead beast.
+        for i, extra in enumerate(mounts[1:3], start=1):
+            extra["caravanMate"] = True
+            packed.append({
+                "oid": extra["oid"],
+                "kind": extra["kind"],
+                "name": extra["name"],
+                "ailing": extra["ailing"],
+                "bottom": extra["bottom"],
+                "cell": extra["cell"],
+                "body": extra["body"],
+                "face": extra["face"],
+                "notice": extra["notice"],
+                "offsetPct": -7.2 * i,
+                "bandBias": extra.get("bandBias", 10),
+                "elevated": extra.get("elevated", False),
+                "depthPct": extra.get("depthPct", 2),
+                "z": extra.get("z", 20),
+            })
+        # People of the caravan — usually several walkers, not a lone handler.
+        for i, mate in enumerate(mates[:4]):
             mate["caravanMate"] = True
             packed.append({
                 "oid": mate["oid"],
@@ -969,7 +1011,7 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
                 "body": mate["body"],
                 "face": mate["face"],
                 "notice": mate["notice"],
-                "offsetPct": -5.6 if i == 0 else -9.4,
+                "offsetPct": -4.8 - 3.6 * i,
                 "bandBias": mate.get("bandBias", 10),
                 "elevated": mate.get("elevated", False),
                 "depthPct": mate.get("depthPct", 2),
@@ -1052,6 +1094,7 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
         + (keepNative ? ' face-r' : ' face-l');
       btn.setAttribute('data-oid', ent.oid);
       btn.setAttribute('data-kind', ent.kind || '');
+      if (ent.notice && ent.notice.pettable) btn.setAttribute('data-pettable', '1');
       btn.setAttribute('title', ent.name);
       btn.setAttribute('aria-label', ent.name);
       if (ent.notice && typeof book !== 'undefined') book[ent.oid] = ent.notice;
@@ -1082,8 +1125,8 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
       if (!force && Math.random() > spawnProb) return;
       var ent = pick();
       if (!ent) return;
-      var mates = (ent.mates && ent.mates.length && Math.random() < 0.62) ? ent.mates : [];
-      if (active + 1 + mates.length > maxActive + 2) mates = [];
+      var mates = (ent.mates && ent.mates.length && Math.random() < 0.78) ? ent.mates : [];
+      if (active + 1 + mates.length > maxActive + 5) mates = mates.slice(0, Math.max(0, maxActive + 3 - active));
       busy[ent.oid] = true;
       mates.forEach(function(m) {{ busy[m.oid] = true; }});
       active += 1 + mates.length;
@@ -1457,7 +1500,7 @@ def pictorial_stage_html(
         "    book = JSON.parse((nb && nb.textContent) || '{}');\n"
         "  } catch (e) { book = {}; }\n"
         "  var petFilms = {};\n"
-        "  var petDur = {chimera:'0.72s', hearth_cat:'0.95s', dromas:'1.15s'};\n"
+        "  var petDur = {chimera:'0.72s', hearth_cat:'0.95s', dromas:'1.15s', dromas_calf:'0.95s'};\n"
         "  try {\n"
         "    var pf = document.getElementById('amp-pet-films');\n"
         "    petFilms = JSON.parse((pf && pf.textContent) || '{}');\n"
@@ -1467,18 +1510,33 @@ def pictorial_stage_html(
         "  var lineEl = card ? card.querySelector('.amp-notice-line') : null;\n"
         "  var actsEl = card ? card.querySelector('.amp-notice-acts') : null;\n"
         "  function hideNotice(){ if (card) card.hidden = true; }\n"
-        "  function playPet(oid, kind){\n"
+        "  function playPet(oid, kind, note){\n"
         "    var src = petFilms[kind];\n"
-        "    if (!src || !root) return;\n"
+        "    if (!src || !root) return false;\n"
         "    var btn = root.querySelector('.amp-sprite[data-oid=\"'+oid+'\"]');\n"
-        "    if (!btn) return;\n"
+        "    if (!btn) return false;\n"
         "    var film = btn.querySelector('.amp-sprite-film');\n"
-        "    if (!film) return;\n"
-        "    if (btn.getAttribute('data-petting') === '1') return;\n"
+        "    var body = btn.querySelector('.amp-sprite-body');\n"
+        "    if (btn.getAttribute('data-petting') === '1') return true;\n"
         "    btn.setAttribute('data-petting', '1');\n"
         "    btn.style.setProperty('--amp-pet-film', 'url(\"'+src+'\")');\n"
         "    btn.style.setProperty('--amp-pet-dur', petDur[kind] || '0.9s');\n"
+        "    if (!film && body) {\n"
+        "      film = document.createElement('span');\n"
+        "      film.className = 'amp-sprite-film';\n"
+        "      film.style.setProperty('--amp-frames', '4');\n"
+        "      body.innerHTML = '';\n"
+        "      body.appendChild(film);\n"
+        "    }\n"
+        "    if (!film) { btn.removeAttribute('data-petting'); return false; }\n"
         "    btn.classList.add('petting');\n"
+        "    if (note && nameEl && lineEl && card) {\n"
+        "      var n = book[oid] || {};\n"
+        "      nameEl.textContent = n.name || oid;\n"
+        "      lineEl.textContent = note;\n"
+        "      if (actsEl) actsEl.innerHTML = '';\n"
+        "      card.hidden = false;\n"
+        "    }\n"
         "    function restore(ev){\n"
         "      if (ev && ev.target !== film) return;\n"
         "      film.removeEventListener('animationend', restore);\n"
@@ -1487,6 +1545,7 @@ def pictorial_stage_html(
         "    }\n"
         "    film.addEventListener('animationend', restore);\n"
         "    setTimeout(function(){ restore({target: film}); }, 2400);\n"
+        "    return true;\n"
         "  }\n"
         "  function showNotice(oid){\n"
         "    var n = book[oid];\n"
@@ -1502,9 +1561,6 @@ def pictorial_stage_html(
         "      b.addEventListener('click', function(ev){\n"
         "        ev.preventDefault(); ev.stopPropagation();\n"
         "        if (a.note) lineEl.textContent = a.note;\n"
-        "        if (a.id === 'pet' || a.id === 'pet_cat' || a.id === 'scratch_ear') {\n"
-        "          playPet(oid, n.kind);\n"
-        "        }\n"
         "      });\n"
         "      actsEl.appendChild(b);\n"
         "    });\n"
@@ -1517,7 +1573,57 @@ def pictorial_stage_html(
         "    });\n"
         "    card.addEventListener('click', function(ev){ ev.stopPropagation(); });\n"
         "  }\n"
+        "  var petGesture = null;\n"
+        "  var suppressClickUntil = 0;\n"
+        "  function petKinds(){ return {chimera:1, hearth_cat:1, dromas:1, dromas_calf:1}; }\n"
+        "  function beginPet(ev){\n"
+        "    var t = ev.target.closest ? ev.target.closest('.amp-sprite') : null;\n"
+        "    if (!t || t.getAttribute('data-pettable') !== '1') return;\n"
+        "    var kind = t.getAttribute('data-kind') || '';\n"
+        "    if (!petKinds()[kind]) return;\n"
+        "    var pt = ev.touches && ev.touches[0] ? ev.touches[0] : ev;\n"
+        "    petGesture = {\n"
+        "      oid: t.getAttribute('data-oid'),\n"
+        "      kind: kind,\n"
+        "      x: pt.clientX, y: pt.clientY,\n"
+        "      moved: 0, petted: false, btn: t\n"
+        "    };\n"
+        "  }\n"
+        "  function movePet(ev){\n"
+        "    if (!petGesture) return;\n"
+        "    var pt = ev.touches && ev.touches[0] ? ev.touches[0] : ev;\n"
+        "    var dx = pt.clientX - petGesture.x;\n"
+        "    var dy = pt.clientY - petGesture.y;\n"
+        "    petGesture.moved = Math.max(petGesture.moved, Math.sqrt(dx*dx + dy*dy));\n"
+        "    petGesture.x = pt.clientX; petGesture.y = pt.clientY;\n"
+        "    if (!petGesture.petted && petGesture.moved >= 10) {\n"
+        "      var n = book[petGesture.oid] || {};\n"
+        "      if (playPet(petGesture.oid, petGesture.kind, n.petNote || '')) {\n"
+        "        petGesture.petted = true;\n"
+        "        suppressClickUntil = Date.now() + 500;\n"
+        "      }\n"
+        "    }\n"
+        "    if (petGesture.petted && ev.cancelable) ev.preventDefault();\n"
+        "  }\n"
+        "  function endPet(ev){\n"
+        "    if (!petGesture) return;\n"
+        "    if (petGesture.petted) {\n"
+        "      suppressClickUntil = Date.now() + 500;\n"
+        "      if (ev && ev.cancelable) ev.preventDefault();\n"
+        "    }\n"
+        "    petGesture = null;\n"
+        "  }\n"
+        "  root.addEventListener('pointerdown', beginPet);\n"
+        "  root.addEventListener('pointermove', movePet);\n"
+        "  root.addEventListener('pointerup', endPet);\n"
+        "  root.addEventListener('pointercancel', endPet);\n"
+        "  root.addEventListener('touchstart', beginPet, {passive:true});\n"
+        "  root.addEventListener('touchmove', movePet, {passive:false});\n"
+        "  root.addEventListener('touchend', endPet);\n"
         "  root.addEventListener('click', function(ev){\n"
+        "    if (Date.now() < suppressClickUntil) {\n"
+        "      ev.preventDefault(); ev.stopPropagation(); return;\n"
+        "    }\n"
         "    var t = ev.target.closest ? ev.target.closest('.amp-sprite') : null;\n"
         "    if(!t) { hideNotice(); return; }\n"
         "    ev.preventDefault();\n"

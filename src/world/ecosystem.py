@@ -32,6 +32,7 @@ INDOOR_LAND = frozenset({"bath", "hearth", "loom", "scroll", "lamp"})
 KIND_VISUAL = {
     "chimera": "chimera",
     "dromas": "dromas",
+    "dromas_calf": "dromas_calf",
     "wheat": "wheat",
     "shore": "shore",
     "grove_leaf": "leaf",
@@ -223,16 +224,17 @@ VISITOR_ACT: Dict[str, dict] = {
         "note": "the air of this hour moves through your fingers",
     },
     "pet": {
-        "kinds": {"chimera", "hearth_cat", "dromas"},
+        "kinds": {"chimera", "hearth_cat", "dromas", "dromas_calf"},
         "note": "they lean into the touch, then remain themselves",
         "notes": {
             "chimera": "a small head under your fingers — Awoo, pleased, not a command",
             "hearth_cat": "the cat leans in, then remembers it is its own cat",
             "dromas": "the neck plates warm under your palm; the road-beast does not hurry",
+            "dromas_calf": "the calf bumps your hand, soft plates still learning the road",
         },
     },
     "greet_dromas": {
-        "kinds": {"dromas"},
+        "kinds": {"dromas", "dromas_calf"},
         "note": "the dromas blows warm earth-scent at your sleeve",
     },
     "soak": {
@@ -437,6 +439,13 @@ def _base_status(kind: str, place: str, period: int, month: int,
         if period in (2, 3):
             return "hauling", "moving goods between cities this hour"
         return "well", "waiting at the workshop gates"
+
+    if kind == "dromas_calf":
+        if resting or night:
+            return "resting", "a calf tucked near the yard fence"
+        if month == 4:
+            return "playful", "a calf learning Cultivation's busy roads"
+        return "well", "a calf keeping near the adult beasts"
 
     if kind == "wheat":
         if month == 4:
@@ -677,17 +686,45 @@ def _caravan_this_hour(world, place: str, flags: dict, period: int, month: int) 
 def _apply_trade_caravan(out: List[dict], world, place: str,
                          flags: dict, period: int, month: int, *,
                          traveling: bool = False) -> None:
-    """Tag a dromas + nearby people as one orderly trade caravan."""
-    dromases = [b for b in out if b.get("kind") == "dromas"]
-    if not dromases:
+    """Tag dromas + several people as one orderly trade caravan.
+
+    A caravan is usually more than one beast and one walker — typically a
+    pair of dromas (sometimes with a calf) and three or four people.
+    """
+    dromases = [b for b in out if b.get("kind") in {"dromas", "dromas_calf"}]
+    adults = [b for b in dromases if b.get("kind") == "dromas"]
+    calves = [b for b in dromases if b.get("kind") == "dromas_calf"]
+    if not adults and not calves:
         return
     if not traveling and not _caravan_this_hour(world, place, flags, period, month):
         return
-    mount = dromases[0]
+    # Ensure at least two adult mounts when the hour calls for a caravan.
+    if len(adults) < 2:
+        nxt = 1 + max(
+            (int(str(b.get("id") or "").rsplit(":", 1)[-1])
+             for b in adults if ":" in str(b.get("id") or "")),
+            default=0,
+        )
+        while len(adults) < 2:
+            extra = _mk_being("dromas", place, nxt, world, flags, None)
+            out.append(extra)
+            adults.append(extra)
+            nxt += 1
+    # A calf sometimes trails the train.
+    if not calves and (_h(_date_seed(world) + str(place) + "calf") % 3 == 0):
+        calf = _mk_being("dromas_calf", place, 1, world, flags, None)
+        out.append(calf)
+        calves.append(calf)
+
     cid = f"caravan:{place}:1"
-    mount["caravan_id"] = cid
-    mount["caravan_role"] = "mount"
-    mount["doing"] = "under harness with a trade caravan"
+    mounts = adults[:2] + calves[:1]
+    for i, mount in enumerate(mounts):
+        mount["caravan_id"] = cid
+        mount["caravan_role"] = "mount" if mount.get("kind") == "dromas" else "calf"
+        if mount.get("kind") == "dromas_calf":
+            mount["doing"] = "a calf keeping pace with the trade caravan"
+        else:
+            mount["doing"] = "under harness with a trade caravan"
 
     def _score(b: dict) -> int:
         role = str(b.get("role") or "").lower()
@@ -699,29 +736,39 @@ def _apply_trade_caravan(out: List[dict], world, place: str,
 
     residents = [b for b in out if b.get("kind") == "resident"]
     residents.sort(key=_score)
-    mates = residents[:2]
-    if not mates:
+    mates = list(residents[:4])
+    # Usually three or four walkers — never a lonely handler beside one beast.
+    want = 3 + (_h(_date_seed(world) + str(place) + "crew") % 2)
+    need = max(0, want - len(mates))
+    roles = (
+        ("dromas-handler", "a dromas-handler", "resident_handler"),
+        ("merchant", "a merchant of the road", "resident_merchant"),
+        ("courier", "a courier with the train", "resident"),
+        ("field-hand", "a porter with the train", "resident_field"),
+    )
+    for j in range(need):
+        role, label, visual = roles[j % len(roles)]
         handler = {
-            "id": f"resident:{place}:caravan-handler",
+            "id": f"resident:{place}:caravan-{role}-{j + 1}",
             "kind": "resident",
-            "name": "a dromas-handler",
+            "name": label,
             "place": place,
             "status": "here",
-            "doing": "a dromas-handler with the trade caravan",
-            "role": "dromas-handler",
+            "doing": f"{role} with the trade caravan",
+            "role": role,
             "spot": "road",
             "sound": None,
-            "visual": "resident_handler",
+            "visual": visual,
             "clickable": True,
             "care_hint": "",
-            "hotspot": hotspot_for("resident", 1),
+            "hotspot": hotspot_for("resident", j + 2),
             "visitor_acts": visitor_acts_for("resident"),
             "caravan_id": cid,
-            "caravan_role": "handler",
+            "caravan_role": "handler" if j == 0 else "trader",
         }
         out.append(handler)
-        mates = [handler]
-    for i, m in enumerate(mates):
+        mates.append(handler)
+    for i, m in enumerate(mates[:4]):
         m["caravan_id"] = cid
         m["caravan_role"] = "handler" if i == 0 else "trader"
         role = m.get("role") or "a traveler"
@@ -748,6 +795,7 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
     name = {
         "chimera": "a little chimera",
         "dromas": "a dromas of the road",
+        "dromas_calf": "a dromas calf",
         "wheat": "the coastal wheat",
         "shore": "the shore's living breath",
         "grove_leaf": "the Grove's leaf and timber",
@@ -790,6 +838,26 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
         name = "another little chimera"
     if kind == "dromas" and idx > 1:
         name = "another dromas"
+    elif kind == "dromas_calf":
+        name = "a dromas calf"
+    elif kind == "market_stall":
+        stall_names = (
+            "a fruit stall",
+            "a cloth stall",
+            "a sweet stall",
+            "a pottery stall",
+        )
+        name = stall_names[(max(1, idx) - 1) % len(stall_names)]
+        stall_doing = (
+            "grapes and summer fruit under a gold awning",
+            "cloth and dye for the square",
+            "wrapped sweets and small honey cakes",
+            "jars and bowls for the household",
+        )
+        if status == "open":
+            doing = stall_doing[(max(1, idx) - 1) % len(stall_doing)]
+            if period == 2:
+                doing = f"Action Hour — {doing}"
 
     sound = None
     if kind == "chimera":
@@ -865,6 +933,7 @@ def hotspot_for(kind: str, idx: int) -> dict:
     table = {
         "chimera": ("22%", "16%"),
         "dromas": ("72%", "12%"),
+        "dromas_calf": ("64%", "10%"),
         "wheat": ("40%", "6%"),
         "shore": ("50%", "4%"),
         "grove_leaf": ("30%", "48%"),
@@ -900,7 +969,16 @@ def hotspot_for(kind: str, idx: int) -> dict:
         "resident": ("40%", "14%"),
     }
     left, bottom = table.get(kind, ("50%", "20%"))
-    if idx > 1:
+    if kind == "market_stall":
+        # Dedicated vendor row across Okhema's square.
+        stall_spots = (
+            ("18%", "12%"),
+            ("34%", "13%"),
+            ("50%", "12%"),
+            ("66%", "14%"),
+        )
+        left, bottom = stall_spots[(max(1, idx) - 1) % len(stall_spots)]
+    elif idx > 1:
         # Nudge extras so two chimeras/dromases don't stack.
         try:
             lp = max(6, min(90, int(left.strip("%")) + (idx - 1) * 14))
@@ -986,6 +1064,10 @@ def derive_scene(world, place: Optional[str] = None,
         out.append(_mk_being("dromas", place, 1, world, flags, character_id))
         if month == 4 and period in (2, 3):
             out.append(_mk_being("dromas", place, 2, world, flags, character_id))
+        # A calf sometimes keeps near the adult beasts (outside caravan hours too).
+        if period in (1, 2, 3) and not flags.get("resting"):
+            if _h(_date_seed(world) + str(place) + "baby-dromas") % 4 == 0:
+                out.append(_mk_being("dromas_calf", place, 1, world, flags, character_id))
 
     if place in FIELDS:
         out.append(_mk_being("wheat", place, 1, world, flags, character_id))
@@ -1005,7 +1087,15 @@ def derive_scene(world, place: Optional[str] = None,
         out.append(_mk_being("wind", place, 1, world, flags, character_id))
         out.append(_mk_being("well", place, 1, world, flags, character_id))
         if flags.get("market_open") and place not in GROVE:
-            out.append(_mk_being("market_stall", place, 1, world, flags, character_id))
+            # Okhema's square is a row of vendor stalls, not a lone booth.
+            if place in {"Okhema", "Eternal Holy City", "Dawncloud"}:
+                n_stalls = 4 if place == "Okhema" else 2
+            else:
+                n_stalls = 1
+            for i in range(1, n_stalls + 1):
+                out.append(_mk_being(
+                    "market_stall", place, i, world, flags, character_id,
+                ))
 
     if place in le.SHRINE:
         out.append(_mk_being("shrine", place, 1, world, flags, character_id))
@@ -1087,17 +1177,26 @@ def derive_scene(world, place: Optional[str] = None,
 
     out = [b for b in out if b.get("kind") not in INDOOR_LAND]
 
-    # Keep a readable stage, not a census
+    # Keep a readable stage, not a census — but never truncate a trade caravan.
     preferred = []
     seen_kinds = set()
-    for b in out:
+    caravan = [b for b in out if b.get("caravan_id")]
+    rest = [b for b in out if not b.get("caravan_id")]
+    for b in caravan + rest:
         k = b.get("kind")
         # Always keep first of each kind; extras only for chimera/dromas/residents
-        if k in seen_kinds and k not in {"chimera", "dromas", "resident"}:
+        if k in seen_kinds and k not in {
+            "chimera", "dromas", "dromas_calf", "resident", "market_stall",
+        }:
             continue
         seen_kinds.add(k)
         preferred.append(b)
-    return preferred[:16]
+    # Cap ambient density after the caravan is secured.
+    if len(caravan) >= 4:
+        head = preferred[: len(caravan)]
+        tail = [b for b in preferred[len(caravan):] if not b.get("caravan_id")]
+        return head + tail[: max(0, 18 - len(head))]
+    return preferred[:18]
 
 
 def logic_faults(scene: List[dict], place: str) -> List[str]:
@@ -1229,7 +1328,15 @@ def interact(world, object_id: str,
                 "a trade caravan keeps its order."
             )
         else:
-            line = f"{being['name'].capitalize()} shifts its weight; {sound}."
+            line = f"{being['name'].capitalize()} stands in the road-scent of this hour."
+    elif kind == "dromas_calf":
+        if being.get("caravan_id"):
+            line = (
+                f"{being['name'].capitalize()} keeps pace with the train — "
+                "small plates, full curiosity."
+            )
+        else:
+            line = f"{being['name'].capitalize()} stays near the adult beasts."
     elif kind == "hearth_cat":
         line = f'The cat answers: “{sound}.”'
     elif kind == "shore":
@@ -1257,7 +1364,9 @@ def interact(world, object_id: str,
     elif kind == "shrine":
         line = f"Stone and thanks: {being.get('doing')}."
     elif kind == "market_stall":
-        line = f"The stall: {being.get('doing')}."
+        line = f"{being['name'].capitalize()}: {being.get('doing')}."
+        if being.get("status") == "open":
+            line += " A vendor keeps the awning."
     elif kind == "forge":
         line = f"The forge answers: {sound}."
     elif kind == "loom":

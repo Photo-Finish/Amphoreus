@@ -278,6 +278,31 @@ def pack_pet_films() -> None:
         print("wrote", dest.name, strip.size)
 
 
+def pack_dromas_calf(scale: float = 0.52) -> None:
+    """Baby dromas: scaled adult still / walk / pet films."""
+    stems = (
+        "dromas.png",
+        *(f"dromas_f{i}.png" for i in range(1, 5)),
+        "dromas_film.png",
+        *(f"dromas_pet_f{i}.png" for i in range(1, 5)),
+        "dromas_pet_film.png",
+    )
+    for name in stems:
+        src = OUT / name
+        if not src.is_file():
+            print("skip missing", name)
+            continue
+        im = Image.open(src).convert("RGBA")
+        w, h = im.size
+        out = im.resize(
+            (max(1, int(w * scale)), max(1, int(h * scale))),
+            Image.Resampling.LANCZOS,
+        )
+        dest = OUT / name.replace("dromas", "dromas_calf", 1)
+        out.save(dest)
+        print("wrote", dest.name, out.size)
+
+
 # ---------------------------------------------------------------------------
 # Profession outfits — recolor/composite from civilian resident still + walk
 # ---------------------------------------------------------------------------
@@ -547,5 +572,7 @@ if __name__ == "__main__":
         pack_pet_films()
     elif "outfits" in sys.argv:
         build_profession_outfits()
+    elif "calf" in sys.argv:
+        pack_dromas_calf()
     else:
         main()

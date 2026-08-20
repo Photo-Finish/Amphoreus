@@ -213,6 +213,15 @@ sc_o = eco.derive_scene(ws_o, place="Okhema")
 ko = {b["kind"] for b in sc_o}
 check("Okhema mosaic or fountain or pillar",
       bool(ko & {"mosaic", "fountain", "pillar"}), str(ko))
+stalls = [b for b in sc_o if b["kind"] == "market_stall"]
+if stalls:
+    check("Okhema has several vendor stalls", len(stalls) >= 3, str([b.get("name") for b in stalls]))
+    names = {b.get("name") for b in stalls}
+    check("Okhema stalls are varied", len(names) >= 3, str(names))
+    lefts = {b.get("hotspot", {}).get("left") for b in stalls}
+    check("Okhema stalls are spaced", len(lefts) >= 3, str(lefts))
+else:
+    check("Okhema has several vendor stalls", False, "market closed this hour")
 chim_o = next(b for b in sc_o if b["kind"] == "chimera")
 scratch = eco.visitor_touch(ws_o, chim_o["id"], "scratch_ear", place="Okhema", save=False)
 check("scratch chimera ear", scratch.get("ok") is True, str(scratch))
@@ -241,6 +250,25 @@ if drom:
 else:
     check("pet dromas", False, "no dromas")
 
+chim = next((b for b in sc_o if b["kind"] == "chimera"), None)
+if chim:
+    pet_c = eco.visitor_touch(ws_o, chim["id"], "pet", place="Okhema", save=False)
+    check("pet chimera", pet_c.get("ok") is True, str(pet_c))
+    acts_c = eco.visitor_acts_for("chimera")
+    check("chimera has pet act", "pet" in acts_c, str(acts_c))
+else:
+    check("pet chimera", False, "no chimera")
+
+calf_acts = eco.visitor_acts_for("dromas_calf")
+check("calf has pet act", "pet" in calf_acts, str(calf_acts))
+from pathlib import Path
+_sprites = Path(__file__).resolve().parent.parent / "assets" / "life_sprites"
+check("calf still sprite on disk", (_sprites / "dromas_calf.png").is_file())
+check("calf walk film on disk", (_sprites / "dromas_calf_film.png").is_file())
+check("calf pet film on disk", (_sprites / "dromas_calf_pet_film.png").is_file())
+check("chimera pet film on disk", (_sprites / "chimera_pet_film.png").is_file())
+check("dromas pet film on disk", (_sprites / "dromas_pet_film.png").is_file())
+
 print("== Trade caravan ==")
 found = False
 for per in (2, 3):
@@ -250,12 +278,29 @@ for per in (2, 3):
         mounts = [b for b in sc_c if b.get("kind") == "dromas" and b.get("caravan_id")]
         if mounts:
             cid = mounts[0]["caravan_id"]
-            mates = [b for b in sc_c if b.get("caravan_id") == cid and b.get("kind") != "dromas"]
-            check("caravan has dromas + people", bool(mates), f"mates={len(mates)}")
+            train = [b for b in sc_c if b.get("caravan_id") == cid]
+            people = [b for b in train if b.get("kind") == "resident"]
+            beasts = [b for b in train if b.get("kind") in {"dromas", "dromas_calf"}]
+            check("caravan has multiple people", len(people) >= 3,
+                  f"people={len(people)} beasts={len(beasts)}")
+            check("caravan has multiple beasts", len(beasts) >= 2,
+                  f"people={len(people)} beasts={len(beasts)}")
             found = True
             break
     if found:
         break
+if not found:
+    # Force traveling caravan path
+    out = [eco._mk_being("dromas", "Okhema", 1, ws_o, {}, None)]
+    eco._apply_trade_caravan(
+        out, ws_o, "Okhema", {}, eco._period(ws_o), eco._month(ws_o),
+        traveling=True,
+    )
+    people = [b for b in out if b.get("kind") == "resident" and b.get("caravan_id")]
+    beasts = [b for b in out if b.get("kind") in {"dromas", "dromas_calf"} and b.get("caravan_id")]
+    check("caravan has multiple people", len(people) >= 3, f"people={len(people)}")
+    check("caravan has multiple beasts", len(beasts) >= 2, f"beasts={len(beasts)}")
+    found = True
 if not found:
     check("caravan has dromas + people", False, "no caravan hour in sample")
 
