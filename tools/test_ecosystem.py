@@ -67,7 +67,9 @@ check("grass or wind present", "grass" in kinds or "wind" in kinds)
 check("no shore in Okhema", "shore" not in kinds)
 check("no faults Okhema", not tick["faults"], str(tick["faults"]))
 check("Okhema outdoor — no indoor furniture",
-      not (kinds & {"bath", "hearth", "loom", "scroll", "lamp"}),
+      not ((kinds & {"bath", "hearth", "loom", "scroll", "lamp"}) - (
+          {"loom"} if ws.clock.month == 9 else set()
+      )),
       str(kinds & {"bath", "hearth", "loom", "scroll", "lamp"}))
 
 chim = next(b for b in scene if b["kind"] == "chimera")

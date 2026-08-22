@@ -130,6 +130,13 @@ def greet_with_memory(world, city: str, limit: int = 4) -> list:
         recog = recognition_line(world, item)
         if recog:
             item["recognition"] = recog
+        try:
+            from . import resident_errands as _re
+            el = _re.errand_line(world, item)
+            if el:
+                item["errand_line"] = el
+        except Exception:
+            pass
         out.append(item)
     return out
 
@@ -161,4 +168,18 @@ def talk_with_memory(world, city: str, npc_name: str) -> dict:
         res = dict(res)
         res["line"] = line
         res["recognition"] = prior
+
+    try:
+        from . import resident_errands as _re
+        el = _re.errand_line(
+            world,
+            match if isinstance(match, dict) else {"name": npc_name, "city": city},
+        )
+        if el:
+            res = dict(res)
+            res["errand_line"] = el
+            res["line"] = f"{res.get('line') or ''} {el}".strip()
+    except Exception:
+        pass
     return res
+

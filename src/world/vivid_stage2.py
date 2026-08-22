@@ -101,10 +101,17 @@ def place_hour_frame(world, character_id: str,
     _stage_lines = _lm.visitor_stage_lines(world, place=loc, character_id=character_id)
     _residents = []
     try:
-        from . import resident_npcs as _rn
-        _residents = _rn.greet_here(world, loc, limit=4) if not traveling else []
+        # Memory + errand_line (Month of Reaping / Cultivation only when in season)
+        from . import resident_memory as _rm
+        _residents = (
+            _rm.greet_with_memory(world, loc, limit=4) if not traveling else []
+        )
     except Exception:
-        _residents = []
+        try:
+            from . import resident_npcs as _rn
+            _residents = _rn.greet_here(world, loc, limit=4) if not traveling else []
+        except Exception:
+            _residents = []
     _mech = []
     try:
         _der = _lm.derive(world, place=loc, character_id=character_id)
@@ -175,6 +182,10 @@ def place_hour_markdown(frame: dict, heir_name: str) -> str:
     if greet and not frame.get("traveling"):
         bits = [f"{r.get('name')} ({r.get('role')})" for r in greet[:3]]
         lines.append("Someone here: " + "; ".join(bits))
+        for r in greet[:3]:
+            el = (r.get("errand_line") or "").strip()
+            if el:
+                lines.append(el)
     return "\n\n".join(lines)
 
 

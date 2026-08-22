@@ -174,9 +174,9 @@ def main():
     alone = sl.bond_weather_block(ws, "phainon", name_of=name_of)
     check("alone: no bond weather", alone == "", alone[:80])
 
-    # warmer delta fallback
-    ws.set_location("cipher", "Okhema")
-    ws.relationship_delta["cipher|phainon"] = 2
+    # warmer delta fallback (use a Heir who is not Cipher / not a BOND_PAIR mate)
+    ws.set_location("hysilens", "Okhema")
+    ws.relationship_delta["hysilens|phainon"] = 2
     warm = sl.bond_weather_block(ws, "phainon", name_of=name_of)
     check("delta warmer bond weather",
           "Bond weather" in warm and "warmer" in warm.lower(), warm[:120])
@@ -224,6 +224,19 @@ def main():
     ab3 = sl.absence_prompt_block(ws, "mydei")
     check("short gap no absence block", ab3 == "")
 
+    # Visit chrome vignette (peek-only)
+    ws.vivid["visitor_absences"] = {}
+    sl.note_visit_touch(ws, "aglaea")
+    ws.clock.advance(6 * PERIODS_PER_DAY)
+    vig = sl.absence_visit_vignette(ws, "aglaea")
+    check("absence vignette after gap",
+          "days have passed" in vig.lower() and "hearth" in vig.lower(),
+          vig[:120])
+    check("vignette does not set returned_ack",
+          ws.vivid["visitor_absences"]["aglaea"].get("returned_ack") is None)
+    vig_short = sl.absence_visit_vignette(ws, "mydei")  # never touched
+    check("no vignette without last_seen", vig_short == "")
+
     print("== Item 15 teaching echo ==")
     ws.set_location("anaxa", "Grove of Epiphany")
     ws.set_location("hyacine", "Grove of Epiphany")
@@ -265,6 +278,87 @@ def main():
           frozenset({"phainon", "mydei"}) in sl.BOND_PAIRS)
 
     print()
+    
+    print("== Letter mini-scene choices ==")
+    try:
+        wev.compose_letter(
+            ws, "tribbie", "phainon",
+            "The gates asked a question only you can answer.",
+        )
+    except Exception:
+        if not getattr(ws, "letters", None):
+            ws.letters = []
+        ws.letters.append({
+            "to": "phainon", "from": "tribbie", "from_name": "Tribbie",
+            "text": "The gates asked a question only you can answer.",
+        })
+    letter = sl.walk_in_scene(ws, "phainon", name_of=name_of)
+    check("letter_open for choices", letter.get("kind") == "letter_open", str(letter))
+    choices = sl.letter_scene_choices(letter)
+    check("three letter choices", len(choices) == 3, str(choices))
+    ids = {c["id"] for c in choices}
+    check("choice ids read/wait/leave",
+          ids == {"read_together", "wait_quietly", "leave_them"}, ids)
+    check("legacy letter kind also offers choices",
+          len(sl.letter_scene_choices({"kind": "letter"})) == 3)
+    bad = sl.apply_letter_choice(ws, "phainon", "nope")
+    check("unknown letter choice rejected", bad.get("ok") is False, str(bad))
+    applied = sl.apply_letter_choice(ws, "phainon", "read_together")
+    check("apply_letter_choice ok", applied.get("ok") is True, str(applied))
+    check("letter choice in vivid",
+          (ws.vivid.get("letter_choices") or {}).get("phainon", {}).get("choice_id")
+          == "read_together")
+    cur = sl.current_letter_choice(ws, "phainon")
+    check("current_letter_choice today",
+          cur.get("choice_id") == "read_together", str(cur))
+    lcp = sl.letter_choice_prompt(ws, "phainon")
+    check("letter_choice_prompt non-empty", "letter" in lcp.lower(), lcp[:120])
+    wait_ap = sl.apply_letter_choice(ws, "phainon", "wait_quietly")
+    check("wait_quietly applies", wait_ap.get("ok") is True, str(wait_ap))
+    leave_ap = sl.apply_letter_choice(ws, "phainon", "leave_them")
+    check("leave_them applies", leave_ap.get("ok") is True, str(leave_ap))
+    # Stale day: prompt and current choice empty
+    stale = (ws.vivid.get("letter_choices") or {}).get("phainon") or {}
+    stale["day_index"] = int(stale.get("day_index") or 0) - 99
+    (ws.vivid.setdefault("letter_choices", {}))["phainon"] = stale
+    check("stale letter choice empty current",
+          sl.current_letter_choice(ws, "phainon") == {})
+    check("stale letter choice empty prompt",
+          sl.letter_choice_prompt(ws, "phainon") == "")
+    check("quiet scene has no letter choices",
+          sl.letter_scene_choices({"kind": "quiet"}) == [])
+
+    print("== Bond pairs castorice/hyacine + cipher + dan-heng ==")
+    check("castorice+hyacine bond pair",
+          frozenset({"castorice", "hyacine"}) in sl.BOND_PAIRS)
+    check("cipher+aglaea bond pair",
+          frozenset({"cipher", "aglaea"}) in sl.BOND_PAIRS)
+    for cid in list(getattr(ws, "agent_location", {}) or {}):
+        try:
+            ws.set_location(cid, "Aidonia")
+        except Exception:
+            pass
+    ws.set_location("castorice", "Okhema")
+    ws.set_location("hyacine", "Okhema")
+    bw = sl.bond_weather_block(ws, "castorice", name_of=name_of)
+    check("castorice+hyacine weather",
+          "Cassie" in bw or "close friend" in bw.lower() or "Bond weather" in bw,
+          bw[:140])
+    ws.set_location("hyacine", "Grove of Epiphany")
+    ws.set_location("castorice", "Aidonia")
+    ws.set_location("cipher", "Okhema")
+    ws.set_location("phainon", "Okhema")
+    ws.set_location("aglaea", "Janusopolis")
+    cw = sl.bond_weather_block(ws, "phainon", name_of=name_of)
+    check("cipher locked-door air when co-located",
+          "locked-door" in cw.lower() or "Cipher" in cw, cw[:140])
+    ws.set_location("cipher", "Eternal Holy City")
+    ws.set_location("phainon", "Aedes Elysiae")
+    ws.set_location("dan-heng-permansor-terrae", "Okhema")
+    dw = sl.bond_weather_block(ws, "dan-heng-permansor-terrae", name_of=name_of)
+    check("dan-heng earth underfoot cue",
+          "earth" in dw.lower() or "Georios" in dw, dw[:140])
+
     print(f"{len(PASSED)} passed, {len(FAILED)} failed")
     if FAILED:
         for n in FAILED:

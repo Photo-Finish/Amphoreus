@@ -389,6 +389,9 @@ def flavor_name(place: str, kind: str, idx: int, name: str, visual: str = "") ->
 
 def flavor_doing(place: str, kind: str, status: str, doing: str,
                  period: int, idx: int) -> str:
+    # Keep official Light Calendar month texture (never invent festival titles).
+    if "Month of" in (doing or ""):
+        return doing
     if kind == "dawn":
         return doing
     key = voice_key(place)

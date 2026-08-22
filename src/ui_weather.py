@@ -93,10 +93,31 @@ EFFECT_LABEL = {
 }
 
 
-def effect_for(location) -> tuple:
-    """(effect_key, sky_text) for a place, or ("none", "")."""
+def effect_for(location, world=None) -> tuple:
+    """(effect_key, sky_text) for a place, or ("none", "").
+
+    When *world* is given and the black tide presses this edge city, force the
+    darker ``blacktide`` overlay so Walk/Visit land weather matches the surge.
+    """
     sky = weather_text(location)
-    return classify(sky), sky
+    effect = classify(sky)
+    try:
+        from src.world import ecosystem as eco
+        if world is not None and eco.tide_edge_active(world, location or ""):
+            tip = sky or "The black tide stirs at the edge; the sky darkens."
+            return "blacktide", tip
+        # Vivid/eco flag set by apply_tick when visitor stands at a surge city.
+        if world is not None:
+            vivid = getattr(world, "vivid", None) or {}
+            if vivid.get("tide_edge") and (
+                (vivid.get("tide_edge_place") or "") == (location or "")
+                or eco.tide_edge_active(world, location or "")
+            ):
+                tip = sky or "The black tide stirs at the edge; the sky darkens."
+                return "blacktide", tip
+    except Exception:
+        pass
+    return effect, sky
 
 
 # --------------------------------------------------------------------- #

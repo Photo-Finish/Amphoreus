@@ -226,6 +226,139 @@ def operator_may_invite(is_visitor: bool) -> bool:
     return not bool(is_visitor)
 
 
+
+def heir_may_propose_gathering(world, host_id: str) -> bool:
+    """Co-located Heirs (not the visitor) may propose sitting together."""
+    if not host_id:
+        return False
+    return group_possible(world, host_id)
+
+
+def _heir_invites_bucket(world) -> dict:
+    try:
+        from . import society_life as sl
+        v = sl.vivid_ext(world)
+    except Exception:
+        v = getattr(world, "vivid", None)
+        if not isinstance(v, dict):
+            v = {}
+            world.vivid = v
+    b = v.get("heir_invites")
+    if not isinstance(b, dict):
+        b = {}
+        v["heir_invites"] = b
+    return b
+
+
+def pending_heir_invite(world, host_id: str):
+    """Pending proposal for this host, if any."""
+    if not host_id:
+        return None
+    row = _heir_invites_bucket(world).get(host_id)
+    if isinstance(row, dict) and row.get("pending"):
+        return row
+    return None
+
+
+def clear_heir_invite(world, host_id: str) -> None:
+    _heir_invites_bucket(world).pop(host_id, None)
+    try:
+        world.save()
+    except Exception:
+        pass
+
+
+def propose_from_heir(
+    store,
+    *,
+    proposer_id: str,
+    host_id: str,
+    invitees,
+    world,
+    speak=None,
+    name_of=None,
+) -> dict:
+    """Build invitation text in the proposer's voice; store a pending proposal.
+
+    Does not start the gathering — operator accepts via operator_may_invite.
+    Guests never reach this from the Visit UI.
+    """
+
+    def _nm(cid):
+        if name_of:
+            try:
+                return name_of(cid)
+            except Exception:
+                pass
+        try:
+            return world.name_of(cid)
+        except Exception:
+            return cid
+
+    if not heir_may_propose_gathering(world, host_id):
+        return {"ok": False, "reason": "no co-located company"}
+    if not proposer_id:
+        return {"ok": False, "reason": "no proposer"}
+    here = copresent_heirs(world, host_id)
+    if proposer_id not in here:
+        return {"ok": False, "reason": "proposer not co-located"}
+
+    try:
+        place = world.location_name(host_id)
+    except Exception:
+        place = ""
+    invitee_ids = [
+        c for c in (invitees or []) if c and c != host_id and c != proposer_id
+    ]
+    if not invitee_ids:
+        invitee_ids = [c for c in here if c not in {host_id, proposer_id}]
+    company_names = [
+        _nm(c) for c in [host_id, *invitee_ids] if c != proposer_id
+    ]
+    company = ", ".join(company_names) if company_names else _nm(host_id)
+
+    prompt = (
+        f"You stand in {place} with {company} and the star-stranger. "
+        "In your own voice, invite the star-stranger and the others to sit "
+        "together for a while — a gathering of company, not a trial. "
+        "One or two spoken sentences. Do not lecture about experiments."
+    )
+    spoken = ""
+    if speak:
+        try:
+            spoken = (speak(proposer_id, prompt) or "").strip()
+        except Exception:
+            spoken = ""
+    if not spoken or looks_offline(spoken):
+        pname = _nm(proposer_id)
+        spoken = (
+            f"Star-stranger — sit with us a moment? {company} are here in {place}. "
+            f"I ({pname}) would keep this hour together."
+        )
+
+    proposal = {
+        "pending": True,
+        "proposer_id": proposer_id,
+        "host_id": host_id,
+        "place": place or "",
+        "invitees": list(invitee_ids),
+        "text": spoken,
+        "proposer_name": _nm(proposer_id),
+    }
+    _heir_invites_bucket(world)[host_id] = proposal
+    try:
+        world.save()
+    except Exception:
+        pass
+    try:
+        if store is not None:
+            sess = as_session(store)
+            sess["heir_invite_pending"] = dict(proposal)
+    except Exception:
+        pass
+    return {"ok": True, "proposal": proposal, "text": spoken}
+
+
 def still_together(world, store) -> bool:
     """Whether the active gathering still has two members at the place."""
     sess = as_session(store)

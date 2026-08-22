@@ -45,6 +45,14 @@ BOND_PAIRS: Dict[frozenset, tuple] = {
         "home shore",
         "Aedes air — Cyrene and Phainon share a home-shore ease.",
     ),
+    frozenset({"castorice", "hyacine"}): (
+        "close friends",
+        "Cassie warmth — Castorice and Hyacine share close-friend ease (dried flowers, soft nicknames, no distance of duty).",
+    ),
+    frozenset({"cipher", "aglaea"}): (
+        "thread and shadow",
+        "Cipher's locked-door ease and Aglaea's golden patience sit together — old trust under the jokes, never a scripted confession.",
+    ),
 }
 
 # Topics that would breach the knowledge wall if echoed as lessons.
@@ -95,6 +103,9 @@ def vivid_ext(world) -> dict:
     v.setdefault("visitor_absences", {})
     v.setdefault("resident_memory", {})
     v.setdefault("teaching_echoes", [])
+    v.setdefault("heir_invites", {})
+    v.setdefault("letter_choices", {})
+    v.setdefault("resident_errands", {})
     return v
 
 
@@ -384,8 +395,75 @@ def walk_in_prompt(scene: dict) -> str:
 
 
 # --------------------------------------------------------------------------- #
+# Letter mini-scene — read together / wait / leave
+# --------------------------------------------------------------------------- #
+
+_LETTER_SCENE_KINDS = frozenset({"letter_open", "letter"})
+_LETTER_CHOICE_LABELS = {
+    "read_together": "read the letter together",
+    "wait_quietly": "wait quietly beside the open letter",
+    "leave_them": "step back and leave them to the letter",
+}
+
+
+def letter_scene_choices(scene: dict) -> list:
+    """Choices for mid-letter walk-ins (letter_open, or legacy kind letter)."""
+    if not scene or scene.get("kind") not in _LETTER_SCENE_KINDS:
+        return []
+    return [
+        {"id": "read_together", "label": "Read it with them"},
+        {"id": "wait_quietly", "label": "Wait quietly"},
+        {"id": "leave_them", "label": "Leave them to the letter"},
+    ]
+
+
+def apply_letter_choice(world, character_id: str, choice_id: str) -> dict:
+    """Persist the visitor's letter-scene choice for this Visit hour."""
+    v = vivid_ext(world)
+    bucket = v.setdefault("letter_choices", {})
+    choice_id = (choice_id or "").strip()
+    if choice_id not in _LETTER_CHOICE_LABELS:
+        return {"ok": False, "reason": "unknown choice"}
+    entry = {
+        "choice_id": choice_id,
+        "label": _LETTER_CHOICE_LABELS[choice_id],
+        "hour": _clock_label(world),
+        "day_index": _day_index(world),
+        "character_id": character_id,
+    }
+    bucket[character_id] = entry
+    return {"ok": True, **entry}
+
+
+def current_letter_choice(world, character_id: str) -> dict:
+    """Today's letter-scene choice for this Heir, or {}."""
+    v = vivid_ext(world)
+    entry = (v.get("letter_choices") or {}).get(character_id)
+    if not isinstance(entry, dict):
+        return {}
+    if entry.get("day_index") != _day_index(world):
+        return {}
+    return entry
+
+
+def letter_choice_prompt(world, character_id: str) -> str:
+    """Prompt addon when a letter-scene choice was made this calendar day."""
+    entry = current_letter_choice(world, character_id)
+    label = (entry.get("label") or "") if entry else ""
+    if not label:
+        return ""
+    return (
+        "# The visitor's choice at your letter\n"
+        f"When they found you mid-letter, they chose to {label}. "
+        "Acknowledge that choice lightly if it fits — do not restart a scripted scene, "
+        "and do not invent the writer's next lines."
+    )
+
+
+# --------------------------------------------------------------------------- #
 # Item 6 — Bond weather
 # --------------------------------------------------------------------------- #
+
 def bond_weather_block(
     world, character_id: str, name_of=None
 ) -> str:
@@ -413,8 +491,7 @@ def bond_weather_block(
             present.append(cid)
     except Exception:
         return ""
-    if not present:
-        return ""
+    dh = "dan-heng-permansor-terrae"
 
     # Prefer a canon soft pair involving this Heir and someone here.
     for other in present:
@@ -427,6 +504,30 @@ def bond_weather_block(
                 "Let it sit as air in the room — never invent jealousy, rivalry plots, "
                 "or force either Heir to speak about the bond."
             )
+
+    # Cipher co-located (not a fake pair): locked-door secrecy weather.
+    # Checked before relationship_delta so soft deltas do not swallow it.
+    if present and (character_id == "cipher" or "cipher" in present):
+        return (
+            "# Bond weather\n"
+            "(locked-door air) Cipher's presence thins the room to secrets and side-doors — "
+            "a soft secrecy weather, not a claim of romance. "
+            "Let it sit as air — never invent jealousy or force a confession."
+        )
+
+    # Dan Heng · Permansor Terrae: soft Georios / earth-underfoot land cue
+    # (alone or with company — place texture, not a relationship plot).
+    if character_id == dh or dh in present:
+        place = loc or ""
+        return (
+            "# Bond weather\n"
+            "(earth underfoot) Soft Georios land-cue — earth underfoot, stone patience"
+            + (f" in {place}" if place else "")
+            + ". Let the ground steady the hour; do not invent Titan sermons."
+        )
+
+    if not present:
+        return ""
 
     # Fallback: relationship_delta warmer/cooler with someone here.
     deltas = getattr(world, "relationship_delta", None) or {}
@@ -442,12 +543,9 @@ def bond_weather_block(
             f"Your bond with {on} feels {way} of late. "
             "Hold it as weather, not as a plot — no jealousy scripts."
         )
+
     return ""
 
-
-# --------------------------------------------------------------------------- #
-# Item 10 — Walk→Visit eco handoff
-# --------------------------------------------------------------------------- #
 def record_eco_notice(
     world,
     *,
@@ -594,6 +692,37 @@ def absence_prompt_block(
     row["returned_ack"] = today
     note_visit_touch(world, character_id)
     return block
+
+
+def absence_visit_vignette(
+    world, character_id: str, bond_last_seen: str | None = None
+) -> str:
+    """Literary 1–2 sentences for Visit chrome after a long leave.
+
+    Peek-only: does not set returned_ack (the prompt block still owns that).
+    UI should gate with session key shown_return_vignette_{cid}.
+    """
+    v = vivid_ext(world)
+    absences = v.get("visitor_absences") or {}
+    row = absences.get(character_id) or {}
+    today = _day_index(world)
+
+    last = row.get("last_seen_day")
+    if last is None and bond_last_seen:
+        last = _parse_iso_day_index(bond_last_seen, world)
+    if last is None:
+        return ""
+
+    gap = today - int(last)
+    if gap < _ABSENCE_DAYS:
+        return ""
+
+    days = max(_ABSENCE_DAYS, gap)
+    return (
+        f"Some {days} Light-Calendar days have passed since you last stood here. "
+        "The hearth was kept; a little road dust still hangs on a sleeve — "
+        "greet the return without accusation."
+    )
 
 
 # --------------------------------------------------------------------------- #

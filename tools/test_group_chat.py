@@ -439,6 +439,120 @@ def main():
           not gc.still_together(ws, store))
 
     print()
+    
+    print("== Heir-initiated invitations ==")
+    ws = _ws()
+    ws.set_location("aglaea", "Okhema")
+    ws.set_location("phainon", "Okhema")
+    ws.set_location("cipher", "Okhema")
+    ws.save()
+    check("heir may propose when 2+ co-located",
+          gc.heir_may_propose_gathering(ws, "aglaea"))
+    check("operator_may_invite true for operator",
+          gc.operator_may_invite(False) is True)
+    check("operator_may_invite false for visitor",
+          gc.operator_may_invite(True) is False)
+    store = {}
+    prop = gc.propose_from_heir(
+        store,
+        proposer_id="phainon",
+        host_id="aglaea",
+        invitees=["cipher"],
+        world=ws,
+        speak=lambda cid, p: "Star-stranger, sit with us in Okhema.",
+        name_of=lambda c: c,
+    )
+    check("propose_from_heir ok", prop.get("ok") is True, str(prop))
+    check("proposal text present",
+          "sit" in (prop.get("text") or "").lower(), prop.get("text"))
+    pending = gc.pending_heir_invite(ws, "aglaea")
+    check("pending stored on vivid heir_invites",
+          pending is not None and pending.get("pending") is True, str(pending))
+    check("vivid heir_invites key present",
+          "aglaea" in (getattr(ws, "vivid", {}) or {}).get("heir_invites", {}))
+    ws.set_location("phainon", "Aedes Elysiae")
+    ws.set_location("cipher", "Eternal Holy City")
+    ws.save()
+    check("heir may not propose when alone",
+          not gc.heir_may_propose_gathering(ws, "aglaea"))
+
+    print("== Heir proposal: persist, accept, guards ==")
+    ws = _ws()
+    ws.set_location("aglaea", "Okhema")
+    ws.set_location("phainon", "Okhema")
+    ws.set_location("cipher", "Okhema")
+    ws.save()
+    state_path = os.environ.get("AMPHOREUS_STATE_PATH")
+    store = {}
+    gc.propose_from_heir(
+        store,
+        proposer_id="phainon",
+        host_id="aglaea",
+        invitees=["cipher"],
+        world=ws,
+        speak=lambda cid, p: "Star-stranger, sit with us in Okhema.",
+        name_of=lambda c: c,
+    )
+    ws.save()
+    ws_reload = WorldState(state_path)
+    pending_reload = gc.pending_heir_invite(ws_reload, "aglaea")
+    check("pending survives world save/reload",
+          pending_reload is not None and pending_reload.get("pending") is True,
+          str(pending_reload))
+
+    inv = list(pending_reload.get("invitees") or ["cipher"])
+    accept_store = {}
+    accept_res = gc.send_invitations(
+        ws_reload, "aglaea", inv,
+        name_of=lambda c: c,
+        speak=_speak_accept,
+        store=accept_store,
+    )
+    gc.clear_heir_invite(ws_reload, "aglaea")
+    check("accept path starts the gathering",
+          accept_res.get("started") is True, str(accept_res))
+    check("accept path activates session",
+          gc.session_active(accept_store))
+    check("accept path clears pending invite",
+          gc.pending_heir_invite(ws_reload, "aglaea") is None)
+
+    # Decline path: clear pending without starting a gathering.
+    ws_dec = _ws()
+    ws_dec.set_location("aglaea", "Okhema")
+    ws_dec.set_location("phainon", "Okhema")
+    ws_dec.set_location("cipher", "Okhema")
+    ws_dec.save()
+    gc.propose_from_heir(
+        {},
+        proposer_id="phainon",
+        host_id="aglaea",
+        invitees=["cipher"],
+        world=ws_dec,
+        speak=lambda cid, p: "Sit with us?",
+        name_of=lambda c: c,
+    )
+    check("decline setup has pending",
+          gc.pending_heir_invite(ws_dec, "aglaea") is not None)
+    gc.clear_heir_invite(ws_dec, "aglaea")
+    check("decline clears pending without session",
+          gc.pending_heir_invite(ws_dec, "aglaea") is None)
+
+    ws.set_location("phainon", "Aedes Elysiae")
+    ws.save()
+    bad_prop = gc.propose_from_heir(
+        {},
+        proposer_id="phainon",
+        host_id="aglaea",
+        invitees=["cipher"],
+        world=ws,
+        name_of=lambda c: c,
+    )
+    check("proposer not co-located is rejected",
+          bad_prop.get("ok") is False,
+          str(bad_prop.get("reason")))
+    check("guest gate blocks operator invite path",
+          gc.operator_may_invite(True) is False)
+
     print(f"{len(PASSED)} passed, {len(FAILED)} failed")
     if FAILED:
         print("Failed:")

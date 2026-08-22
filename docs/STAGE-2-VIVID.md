@@ -70,3 +70,21 @@ Suites: `tools/test_lived_mechanisms.py` (63), `tools/test_resident_npcs.py` (33
 
 Modules: `society_life.py`, `resident_memory.py`, `daybook.py`, `ui_galgame_group.py`.
 Charter unchanged.
+
+## Third delivery — invites, land, guest path (2026-08-22)
+
+| Feature | Note |
+|---|---|
+| Heir-initiated sit | Co-located Heir proposes; operator accepts |
+| Letter mini-scene | read / wait / leave |
+| Bond weather | Cassie; Cipher doors; Earth underfoot |
+| Resident errands | Date-advancing street work |
+| dromas_walk_v2 | Promoted to live film |
+| Little Ica | With Hyacine only |
+| Seasonal eco | Official Light Calendar months only — no invented festivals |
+| Tide on land | Surge thins EDGE cities + blacktide sky |
+| Walk → Map | Pin + vignette |
+| Guest Walk | Notice OK; care chat operator-only |
+| Absence chrome | Visit return vignette |
+| Daybook spine | First on Chronicle/Gazette |
+| Desktop exe | Repo-root `AmphoreusSanctuary.exe` |

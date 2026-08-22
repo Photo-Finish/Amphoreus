@@ -337,10 +337,20 @@ if not characters:
     st.sidebar.warning("No character cards found in src/characters/")
     st.stop()
 
+# Optional deep-link: ?heir=phainon (used by live UI checks / bookmarks).
+if "amp_heir_select" not in st.session_state:
+    try:
+        _heir_qp = str(st.query_params.get("heir") or "").strip()
+        if _heir_qp in characters:
+            st.session_state["amp_heir_select"] = _heir_qp
+    except Exception:
+        pass
+
 selected = st.sidebar.selectbox(
     "Who do you want to speak with?",
     characters,
     format_func=lambda x: manager.get_character_info(x)["name"],
+    key="amp_heir_select",
 )
 
 # Portrait of the chosen Heir
@@ -616,9 +626,19 @@ with chronicle_tab:
         render_gazette(manager, characters)
     except Exception as e:
         st.error(f"The gazette could not be composed: {e}")
+        # Raw-only fallback — still lead with the daybook spine.
         try:
+            from src.world.world_state import WorldState as _WS_db
+            from src.world import daybook as _daybook_fb
             from src.world.chronicle import Chronicle
+            _ws_db = _WS_db()
             ch = Chronicle(str(Path(__file__).parent.parent / "world_runtime" / "chronicle"))
+            _entries_fb = ch.read(200)
+            _db_fb = _daybook_fb.compose_daybook(_ws_db, _entries_fb)
+            _db_md_fb = _daybook_fb.daybook_markdown(_db_fb)
+            if _db_md_fb.strip():
+                with st.expander("Today in Amphoreus", expanded=True):
+                    st.markdown(_db_md_fb)
             st.markdown(ch.read_markdown(60))
         except Exception:
             st.info("The chronicle is not written yet — the world engine has not begun its days.\n\nStart it with: `python -m src.world.world_engine --interval 900`")
@@ -647,6 +667,24 @@ with map_tab:
         _names = {c: manager.get_character_info(c)["name"] for c in characters}
         _heir_locs = _ws.present_locations()
         _guests_here = {c for c in _ws.agent_location if _ws.guest_status(c) == "present"}
+
+        # Walk→Map handoff (guests may set this from Walk the Land).
+        _map_focus = (st.session_state.get("amp_map_focus") or "").strip() or None
+        _map_focus_label = (st.session_state.get("amp_map_focus_label") or "").strip()
+        if _map_focus:
+            _focus_hour = ""
+            try:
+                from src.world import society_life as _sl_focus
+                _focus_hour = _sl_focus.map_hour_vignette(_ws, _map_focus)
+            except Exception:
+                _focus_hour = ""
+            _cap = f"From Walk the Land: **{_map_focus}**"
+            if _map_focus_label:
+                _cap += f" · {_map_focus_label}"
+            if _focus_hour:
+                _cap += f" — {_focus_hour}"
+            st.info(_cap)
+
         # Click-info for the interactive map — embedded in the page so the
         # popup script can show it without a round-trip.
         import json as _json
@@ -694,10 +732,14 @@ with map_tab:
             heir_locations=_heir_locs,
             traveling=_ws.agent_travel,
             heir_names=_names,
-            highlight=None,
+            highlight=_map_focus,
             guest_ids=_guests_here,
             interactive=True,
         )
+        # Clear Walk→Map focus after render (next open shows until Walk sets again).
+        if _map_focus:
+            st.session_state.pop("amp_map_focus", None)
+            st.session_state.pop("amp_map_focus_label", None)
         # The interactive map lives in a component (an iframe) so the click
         # script can run; the SVG is capped at its 1000px natural width.
         _amp_html = (
@@ -833,10 +875,16 @@ with map_tab:
                 else:
                     _idx = 0
                 st.markdown("### Area art")
-                _sel = st.selectbox(
-                    "Choose a place to view", _opts, format_func=lambda s: _labels[s],
-                    index=_idx, key="map_area_sel",
+                # Labels as options (no format_func) so Streamlit AppTest can
+                # serialize widget state without index mismatches on slug ids.
+                _label_list = [_labels[s] for s in _opts]
+                _sel_label = st.selectbox(
+                    "Choose a place to view",
+                    _label_list,
+                    index=_idx,
+                    key="map_area_sel",
                 )
+                _sel = _opts[_label_list.index(_sel_label)]
                 # The area's art, wearing today's weather (set by the Keeper).
                 try:
                     from src.ui_weather import render_scene as _wx_scene
@@ -1127,14 +1175,97 @@ with main_tab:
     # Stage 2 — place-hour frame + ongoing moment + shared scene + NPC talk
     try:
         from src.world import vivid_stage2 as _v2
+        from src.world.world_state import WorldState as _WS_abs
+        from src.world import society_life as _sl_abs
+        # Once-per-session: top-level bool keys.
+        _abs_key = f"shown_return_vignette_{selected}"
+        _show_abs = False
+        _abs_v = ""
+        if not st.session_state.get(_abs_key):
+            try:
+                _bond_ls = (manager.get_bond_info(selected) or {}).get("last_seen")
+            except Exception:
+                _bond_ls = None
+            _abs_v = _sl_abs.absence_visit_vignette(
+                _WS_abs(), selected, bond_last_seen=_bond_ls,
+            )
+            if _abs_v:
+                _show_abs = True
+                st.session_state[_abs_key] = True
+        # Stable slot: info on first show, hard-clear otherwise.
+        _abs_slot = st.empty()
+        if _show_abs and _abs_v:
+            _abs_slot.info(_abs_v)
+        else:
+            _abs_slot.empty()
         _frame = manager.place_hour(selected)
         _stage = (_frame.get("stage_paragraph") or "").strip()
         if _stage:
             st.markdown(f"*{_stage}*")
+        # Letter mini-scene on the Visit surface (not buried in the hour expander).
+        _moment = None
+        _letter_on_surface = False
+        try:
+            from src.world import society_life as _sl_letter
+            from src.world.world_state import WorldState as _WS_letter
+            _moment = manager.ongoing_moment(selected)
+            _letter_choices = _sl_letter.letter_scene_choices(_moment or {})
+            if _letter_choices:
+                _letter_on_surface = True
+                st.info(
+                    (_moment or {}).get("ui_summary")
+                    or (_moment or {}).get("summary", "")
+                )
+                _prior = _sl_letter.current_letter_choice(_WS_letter(), selected)
+                if _prior.get("label"):
+                    st.caption(f"You chose to {_prior['label']}.")
+                if is_visitor():
+                    st.caption(
+                        "They are mid-letter — guests may look, not choose."
+                    )
+                else:
+                    # Form isolates letter picks from heir-invite Accept/Decline
+                    # (bare st.button can cross-fire across Visit chrome).
+                    with st.form(f"amp_letter_form_{selected}"):
+                        _cols = st.columns(len(_letter_choices))
+                        _submitted = {}
+                        for _i, _ch in enumerate(_letter_choices):
+                            with _cols[_i]:
+                                _cid = _ch.get("id") or ""
+                                _submitted[_cid] = st.form_submit_button(
+                                    _ch.get("label") or _cid,
+                                )
+                    _picked = next(
+                        (_cid for _cid, _hit in _submitted.items() if _hit),
+                        None,
+                    )
+                    if _picked:
+                        _ws_l = _WS_letter()
+                        _sl_letter.apply_letter_choice(
+                            _ws_l, selected, _picked,
+                        )
+                        try:
+                            _ws_l.save()
+                        except Exception:
+                            pass
+                        st.rerun()
+        except Exception as _letter_exc:
+            _moment = None
+            _letter_on_surface = False
+            # Surface wiring failures (silent pass hid letter mini-scene bugs).
+            st.caption(f"Letter mini-scene unavailable: {_letter_exc}")
         with st.expander("This hour — place, sky, who is here", expanded=False):
             st.markdown(_v2.place_hour_markdown(_frame, info["name"]))
-            _moment = manager.ongoing_moment(selected)
-            if _moment and _moment.get("kind") != "quiet":
+            if _moment is None:
+                try:
+                    _moment = manager.ongoing_moment(selected)
+                except Exception:
+                    _moment = None
+            if (
+                _moment
+                and _moment.get("kind") != "quiet"
+                and not _letter_on_surface
+            ):
                 st.info(_moment.get("ui_summary") or _moment.get("summary", ""))
         _comps = manager.companions_here(selected)
         if _comps and not is_visitor():
@@ -1164,6 +1295,10 @@ with main_tab:
         _npcs = list(_frame.get("residents_here") or [])
         if _npcs and not is_visitor() and not _frame.get("traveling"):
             with st.expander(f"Someone here in {_npc_city}"):
+                for _n in _npcs:
+                    _el = (_n.get("errand_line") or "").strip()
+                    if _el:
+                        st.caption(_el)
                 _npc_names = [n.get("name") for n in _npcs if n.get("name")]
                 _npc_pick = st.selectbox(
                     "A person actually here this hour", _npc_names,

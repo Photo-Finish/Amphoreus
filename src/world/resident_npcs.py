@@ -473,6 +473,11 @@ def _encounter_line(npc: dict, heir_name: str, city: str, spot: str,
 
 def apply_tick(world, flags: Optional[dict] = None) -> Dict[str, Any]:
     """Visible sets + Heir encounters for this clock key. Idempotent."""
+    try:
+        from . import resident_errands as _re
+        _re.apply_on_tick(world)
+    except Exception:
+        pass
     from . import lived_mechanisms as lm
     key = lm.clock_key(world)
     bucket = residents_bucket(world)

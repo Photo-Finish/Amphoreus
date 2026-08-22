@@ -260,6 +260,111 @@ def render_group_chat_controls(manager, selected: str, info: dict,
         )
         return
 
+    # Heir-initiated invitation (operator only; guests already returned).
+    try:
+        _pending = gc.pending_heir_invite(ws, selected)
+    except Exception:
+        _pending = None
+    if _pending or gc.heir_may_propose_gathering(ws, selected):
+        with st.expander("They ask you to sit", expanded=bool(_pending)):
+            if _pending:
+                who = (
+                    _pending.get("proposer_name")
+                    or _pending.get("proposer_id")
+                    or "Someone"
+                )
+                st.markdown(f"**{who}:** {_pending.get('text') or ''}")
+                # Form isolates Accept/Decline from Visit letter buttons (Streamlit
+                # otherwise can mis-route a letter click onto Decline and clear the
+                # invite without applying the letter choice).
+                with st.form(f"amp_gc_heir_invite_form_{selected}"):
+                    _acc, _dec = st.columns(2)
+                    with _acc:
+                        _do_accept = st.form_submit_button(
+                            "Accept and sit with them",
+                        )
+                    with _dec:
+                        _do_decline = st.form_submit_button(
+                            "Decline for now",
+                        )
+                if _do_decline:
+                    try:
+                        gc.clear_heir_invite(ws, selected)
+                    except Exception:
+                        pass
+                    st.rerun()
+                if _do_accept:
+                    inv = list(_pending.get("invitees") or [])
+                    others = gc.companions_for_group(ws, selected)
+                    if not inv:
+                        inv = list(others)
+
+                    def _speak(cid, prompt):
+                        return gc.heir_speak(
+                            manager, cid, prompt,
+                            extra_system=(
+                                "# A gathering, not a trial\n"
+                                "A fellow Heir asked the star-stranger to sit with company. "
+                                "Answer in your own spoken words. End with ACCEPT or DECLINE."
+                            ),
+                        )
+
+                    result = gc.send_invitations(
+                        ws, selected, inv,
+                        name_of=lambda c: _name_of(manager, c),
+                        speak=_speak,
+                        store=_ss(),
+                    )
+                    try:
+                        gc.clear_heir_invite(ws, selected)
+                    except Exception:
+                        pass
+                    msgs = st.session_state.setdefault("messages", {})
+                    hist = msgs.setdefault(selected, [])
+                    hist.append({
+                        "role": "user",
+                        "content": "*(you accept their invitation to sit together)*",
+                    })
+                    for r in (result.get("replies") or []):
+                        hist.append({
+                            "role": "assistant",
+                            "content": r.get("content") or "",
+                            "speaker": r.get("speaker") or "",
+                        })
+                    hist.append({
+                        "role": "assistant",
+                        "content": result.get("world_line") or "",
+                    })
+                    if result.get("started"):
+                        st.session_state["amp_gc_kind_radio"] = "Group chat"
+                    st.rerun()
+            if st.button(
+                "Ask the host Heir if they would invite company",
+                key=f"amp_gc_heir_ask_{selected}",
+            ):
+                import random
+                others = gc.companions_for_group(ws, selected)
+                proposer = random.choice(others) if others else selected
+                invitees = [c for c in others if c != proposer]
+
+                def _speak_prop(cid, prompt):
+                    return gc.heir_speak(manager, cid, prompt)
+
+                res = gc.propose_from_heir(
+                    _ss(),
+                    proposer_id=proposer,
+                    host_id=selected,
+                    invitees=invitees,
+                    world=ws,
+                    speak=_speak_prop,
+                    name_of=lambda c: _name_of(manager, c),
+                )
+                if res.get("ok"):
+                    st.rerun()
+                else:
+                    st.caption(res.get("reason") or "No proposal this hour.")
+
+
     if "amp_gc_kind_radio" not in st.session_state:
         st.session_state["amp_gc_kind_radio"] = "Individual chat"
     # Scoped chrome: transparent / hairline gold (matches Visit selectboxes).

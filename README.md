@@ -1138,8 +1138,25 @@ tide / letter / weather / co-location / aftermath features):
   still healthy (voice-stability only); live style probe deferred (Ollama model
   list empty this session). Castorice remains the open gate from the last report.
 - **Desktop window shell** (`AmphoreusSanctuary.exe`) — same Streamlit UI in a
-  native window via pywebview (Edge WebView2). Browser tab launcher
-  `launch_sanctuary.cmd` is unchanged. Build: `tools/build_desktop_exe.ps1`;
-  also `launch_sanctuary_desktop.cmd` / `tools/desktop_sanctuary.py`.
+  native window via pywebview (Edge WebView2). The exe ships at **repo root**
+  for double-click; browser tab launcher `launch_sanctuary.cmd` is unchanged.
+  Build: `tools/build_desktop_exe.ps1`; also `launch_sanctuary_desktop.cmd` /
+  `tools/desktop_sanctuary.py`.
+
+### 2026-08-22 (evening) — invites, land, guest Walk
+- **Heir-initiated gatherings** — co-located Heirs may propose sitting with you;
+  operators accept/decline; guests look-only (`group_chat.propose_from_heir`).
+- **Letter mini-scene** — mid-letter choices: read together / wait / leave
+  (`society_life.letter_scene_choices`).
+- **Bond weather** — Castorice–Hyacine (Cassie); Cipher locked-door air; Dan Heng
+  Earth underfoot. **No unofficial festivals** — seasonal eco uses official
+  Light Calendar months only.
+- **Resident errands** — recurring street people, date-advancing Amphoreus work
+  (`resident_errands.py`).
+- **Land** — `dromas_walk_v2` → live `dromas_film.png`; **Little Ica** with
+  Hyacine; Cultivation/Reaping/Joy/Weaving/Strife/Membrance density; tide-edge
+  thins EDGE cities + `blacktide` Walk sky.
+- **Walk → Map pin**, **guest Walk** (notice OK; care-chat operator-only),
+  **absence Visit vignette**, **Chronicle daybook spine**.
 
 

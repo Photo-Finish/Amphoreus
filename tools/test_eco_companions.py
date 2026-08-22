@@ -196,6 +196,83 @@ check(
     str(faults),
 )
 
+print("== Little Ica (Hyacine's winged pony companion) ==")
+ws_ica = mk(2, "Okhema")
+ws_ica.set_location("hyacine", "Okhema")
+k_ica = kinds_at(ws_ica, "Okhema")
+check("Little Ica with Hyacine at Okhema", "little_ica" in k_ica, str(k_ica))
+ica = next(
+    (b for b in eco.derive_scene(ws_ica, place="Okhema") if b["kind"] == "little_ica"),
+    None,
+)
+check("Little Ica named Little Ica", ica is not None and ica.get("name") == "Little Ica")
+check(
+    "Little Ica not dead/starving",
+    ica is not None and ica.get("status") not in {"dead", "starving", "plague"},
+    str(ica.get("status") if ica else None),
+)
+ica_doing = (ica or {}).get("doing") or ""
+check(
+    "Little Ica framed as winged pony (not dragonling)",
+    ("pony" in ica_doing.lower() or "winged" in ica_doing.lower())
+    and "dragonling" not in ica_doing.lower(),
+    ica_doing,
+)
+inter_ica = eco.interact(ws_ica, ica["id"], place="Okhema") if ica else {}
+check("Little Ica interact ok", inter_ica.get("ok") is True, str(inter_ica))
+ica_line = inter_ica.get("line") or ""
+check(
+    "Little Ica interact soft presence / not dragonling",
+    ("pony" in ica_line.lower() or "Hyacine" in ica_line)
+    and "dragonling" not in ica_line.lower().replace("not a dragonling", ""),
+    ica_line,
+)
+check(
+    "Little Ica pet allowed",
+    "little_ica" in eco.VISITOR_ACT["pet"]["kinds"],
+)
+
+ws_ica_away = mk(2, "Okhema")
+ws_ica_away.set_location("hyacine", "Aidonia")
+k_away = kinds_at(ws_ica_away, "Okhema")
+check(
+    "No Little Ica in Okhema when Hyacine is elsewhere",
+    "little_ica" not in k_away,
+    str(k_away),
+)
+
+ws_ica_grove = mk(2, "Grove of Epiphany")
+ws_ica_grove.set_location("hyacine", "Okhema")
+k_grove_ica = kinds_at(ws_ica_grove, "Grove of Epiphany")
+check(
+    "No Little Ica in Grove without Hyacine",
+    "little_ica" not in k_grove_ica,
+    str(k_grove_ica),
+)
+
+ws_ica_grove2 = mk(2, "Grove of Epiphany")
+ws_ica_grove2.set_location("hyacine", "Grove of Epiphany")
+k_grove_hy = kinds_at(ws_ica_grove2, "Grove of Epiphany")
+check(
+    "Little Ica follows Hyacine into Grove",
+    "little_ica" in k_grove_hy,
+    str(k_grove_hy),
+)
+
+fake_ica = [{"kind": "little_ica", "status": "present", "id": "ica-x"}]
+faults_ica = eco.logic_faults(fake_ica, "Okhema", world=ws_ica_away)
+check(
+    "logic_faults rejects Little Ica without Hyacine",
+    any("Little Ica" in f or "Hyacine" in f for f in faults_ica),
+    str(faults_ica),
+)
+faults_grove = eco.logic_faults(fake_ica, "Grove of Epiphany", world=ws_ica_grove)
+check(
+    "logic_faults rejects Little Ica in Grove without Hyacine",
+    any("Grove" in f or "Hyacine" in f for f in faults_grove),
+    str(faults_grove),
+)
+
 print()
 print(f"{len(PASSED)} passed, {len(FAILED)} failed")
 if FAILED:

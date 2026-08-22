@@ -104,27 +104,35 @@ def render_gazette(manager, characters):
         proj_rows.append(f"{names.get(cid, cid)} — “{p['title']}” · {bar} {done}/{p['steps']}")
 
     with st.container():
-        parts = ['<div class="amp-gazette">']
-        parts.append('<h1>THE AMPHOREUS GAZETTE</h1>')
-        parts.append('<div class="rule"></div>')
-        parts.append(f'<div class="dateline">{_html.escape(ws.clock.format())} · '
-                     'a gazette of the Heirs\' days, written by their actions, not by us</div>')
+        # Masthead
+        st.markdown(
+            f'<div class="amp-gazette">'
+            f'<h1>THE AMPHOREUS GAZETTE</h1>'
+            f'<div class="rule"></div>'
+            f'<div class="dateline">{_html.escape(ws.clock.format())} · '
+            f'a gazette of the Heirs\' days, written by their actions, not by us</div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
 
-        # Literary daybook (Stage-2) — before dense lists
+        # Literary daybook spine — first content, expanded by default
         try:
             from src.world import daybook as _daybook
             _db_entry = _daybook.compose_daybook(ws, entries)
             _db_md = _daybook.daybook_markdown(_db_entry)
             if _db_md.strip():
-                parts.append('<h2>Today in Amphoreus</h2>')
-                for _para in (_db_entry.get("paragraphs") or []):
-                    _para = str(_para).strip()
-                    if _para:
-                        parts.append(
-                            f'<div class="item" style="margin-bottom:8px;">'
-                            f'{_html.escape(_para)}</div>')
+                with st.expander("Today in Amphoreus", expanded=True):
+                    for _para in (_db_entry.get("paragraphs") or []):
+                        _para = str(_para).strip()
+                        if _para:
+                            st.markdown(_para)
+                    if not (_db_entry.get("paragraphs") or []):
+                        st.markdown(_db_md)
         except Exception:
             pass
+
+        # Denser lists live below the daybook
+        parts = ['<div class="amp-gazette">']
 
         # sky + news strip
         if weather or news:

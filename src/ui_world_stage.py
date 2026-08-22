@@ -110,10 +110,21 @@ def render_world_stage(ws, manager=None, *, key_prefix: str = "wstage") -> None:
         st.markdown("#### Residents this hour")
         if vis:
             with st.expander(f"Here in {place} ({len(vis)} visible)", expanded=True):
+                try:
+                    from src.world import resident_errands as _re
+                except Exception:
+                    _re = None
                 for r in vis[:12]:
                     st.markdown(
                         f"- **{r['name']}** — {r.get('role')} at the {r.get('spot')}"
                     )
+                    if _re is not None:
+                        try:
+                            el = (_re.errand_line(ws, r) or "").strip()
+                            if el:
+                                st.caption(el)
+                        except Exception:
+                            pass
         else:
             st.caption("No residents standing in this scene this hour.")
         enc = ((getattr(ws, "vivid") or {}).get("residents") or {}).get("encounters") or []

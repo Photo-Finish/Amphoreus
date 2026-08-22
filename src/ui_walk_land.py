@@ -92,6 +92,28 @@ def region_options() -> List[Tuple[str, str, Optional[object]]]:
     return out
 
 
+MAP_FOCUS_KEY = "amp_map_focus"
+MAP_FOCUS_LABEL_KEY = "amp_map_focus_label"
+
+
+def map_focus_payload(place: str, label: str | None = None) -> dict:
+    """Pure Walk→Map handoff dict (no Streamlit). Keys match session_state."""
+    place = (place or "").strip()
+    out = {MAP_FOCUS_KEY: place}
+    lab = (label or "").strip()
+    if lab:
+        out[MAP_FOCUS_LABEL_KEY] = lab
+    return out
+
+
+def apply_map_focus(session_state, place: str, label: str | None = None) -> dict:
+    """Write Walk→Map focus into a session_state-like mapping. Returns payload."""
+    payload = map_focus_payload(place, label)
+    for k, v in payload.items():
+        session_state[k] = v
+    return payload
+
+
 def _clock_line(ws) -> str:
     try:
         return ws.clock.format_short()
@@ -130,15 +152,32 @@ def _render_walk_classic(
         "Stand in a region of Amphoreus — no Heir dialogue. "
         "The picture is a small weather window."
     )
+    # Classic path: force tide-edge blacktide + sky tip when Keeper sky is empty.
+    display_sky = sky or ""
+    try:
+        from src.world.world_state import WorldState
+        from src.world import ecosystem as eco
+        from src.ui_weather import effect_for
+        _ws = WorldState()
+        _eff, _tip = effect_for(place, world=_ws)
+        if eco.tide_edge_active(_ws, place):
+            display_sky = _tip or sky or (
+                "The black tide stirs at the edge; the sky darkens."
+            )
+        elif _tip:
+            display_sky = _tip
+    except Exception:
+        pass
     meta = f"{clock} · **{place}** · {label}"
-    if sky:
-        meta += f" · {sky}"
+    if display_sky:
+        meta += f" · {display_sky}"
     st.caption(meta)
     if art is not None:
         render_inset_window(
             art, place, scene or [],
             dense=True, entities=entities,
             key=f"{key_prefix}_{place}_inset",
+            world_sky=display_sky,
         )
     else:
         st.warning(
@@ -149,6 +188,13 @@ def _render_walk_classic(
     render_presence_chips(
         scene, heir_id="", key_prefix=f"{key_prefix}_{place}", place=place,
     )
+    if st.button(
+        "Show this place on the Map",
+        key=f"{key_prefix}_{place}_map_pin",
+        help="Opens the Map tab focus on this world place (guests welcome).",
+    ):
+        apply_map_focus(st.session_state, place, label=label)
+        st.success(f"Map will highlight **{place}** — open the Map of Amphoreus tab.")
     try:
         from src.world.world_state import WorldState
         ws = WorldState()
@@ -261,9 +307,28 @@ def render_walk_page(*, key_prefix: str = "walk") -> None:
 
     stage = _stage_for(ws, place)
 
+    # Resolve land weather before the glass panel so tide-edge sky text is
+    # visible in meta even when Keeper ambient weather is empty.
+    effect, sky_fx = "none", sky or ""
+    try:
+        from src.ui_weather import effect_for, classify
+        effect, sky_fx = effect_for(place, world=ws)
+        if not sky_fx and sky:
+            if not eco.tide_edge_active(ws, place):
+                effect = classify(sky)
+            sky_fx = sky
+        if eco.tide_edge_active(ws, place):
+            effect = "blacktide"
+            sky_fx = sky_fx or sky or "The black tide stirs at the edge; the sky darkens."
+    except Exception:
+        if eco.tide_edge_active(ws, place):
+            effect, sky_fx = "blacktide", (
+                sky or "The black tide stirs at the edge; the sky darkens."
+            )
+
     # Glass reading panel — title, clock, stage beat
     beat = f'<div class="beat">{_html.escape(stage)}</div>' if stage else ""
-    sky_bit = f" · sky: {_html.escape(sky)}" if sky else ""
+    sky_bit = f" · sky: {_html.escape(sky_fx)}" if sky_fx else ""
     st.markdown(
         f'<div class="amp-read">'
         f"<h1 style=\"font-family:Georgia,'Palatino Linotype',serif;"
@@ -282,11 +347,6 @@ def render_walk_page(*, key_prefix: str = "walk") -> None:
     shown = art is not None
     if art is not None:
         try:
-            from src.ui_weather import effect_for, classify
-            effect, sky_fx = effect_for(place)
-            if not sky_fx and sky:
-                effect = classify(sky)
-                sky_fx = sky
             render_pictorial_stage(
                 art, place, effect, sky_fx, scene,
                 max_width=1920, read_line="", dense=True,
@@ -320,6 +380,14 @@ def render_walk_page(*, key_prefix: str = "walk") -> None:
         read_only=True,
     )
 
+    if st.button(
+        "Show this place on the Map",
+        key=f"{key_prefix}_{place}_map_pin",
+        help="Opens the Map tab focus on this world place (guests welcome).",
+    ):
+        apply_map_focus(st.session_state, place, label=label)
+        st.success(f"Map will highlight **{place}** — open the Map of Amphoreus tab.")
+
     if life:
         life_bits = [
             b for b in scene
@@ -331,6 +399,21 @@ def render_walk_page(*, key_prefix: str = "walk") -> None:
                     st.markdown(
                         f"- **{b.get('name')}** — {b.get('doing')}"
                     )
+        # Named street errands (official month language only when in season)
+        try:
+            from src.world import resident_memory as _rm
+            _greet = _rm.greet_with_memory(ws, place, limit=4)
+            _errand_rows = [
+                (r.get("errand_line") or "").strip()
+                for r in _greet
+                if (r.get("errand_line") or "").strip()
+            ]
+            if _errand_rows:
+                with st.expander("Street errands this hour", expanded=False):
+                    for el in _errand_rows:
+                        st.caption(el)
+        except Exception:
+            pass
 
     try:
         heirs_here = []

@@ -138,6 +138,7 @@ KIND_VISUAL = {
     "pillar": "pillar",
     # Canon companions / Membrance Maze fairies (UI may fall back to text hotspots).
     "pollux": "pollux",
+    "little_ica": "little_ica",
     "maze_fairy": "maze_fairy",
     "mountain_dweller": "mountain_dweller",
 }
@@ -379,7 +380,9 @@ VISITOR_ACT: Dict[str, dict] = {
         "note": "the air of this hour moves through your fingers",
     },
     "pet": {
-        "kinds": {"chimera", "hearth_cat", "dromas", "dromas_calf", "pollux"},
+        "kinds": {
+            "chimera", "hearth_cat", "dromas", "dromas_calf", "pollux", "little_ica",
+        },
         "note": "they lean into the touch, then remain themselves",
         "notes": {
             "chimera": "a small head under your fingers — Awoo, pleased, not a command",
@@ -389,6 +392,9 @@ VISITOR_ACT: Dict[str, dict] = {
             "pollux": (
                 "Castorice's dragon companion — Pollux keeps close; "
                 "not the Workshop dromas of the same name"
+            ),
+            "little_ica": (
+                "Hyacine's winged pony companion — Little Ica leans in, soft and present"
             ),
         },
     },
@@ -506,23 +512,53 @@ def _h(seed: str) -> int:
     return int(hashlib.sha256(seed.encode("utf-8")).hexdigest()[:8], 16)
 
 
-def _castorice_present(world, place: str) -> bool:
-    """True when Castorice is physically at this place (Pollux only then)."""
-    if not place:
+def _heir_present(world, heir_id: str, place: str) -> bool:
+    """True when *heir_id* is physically at this place (not mid-travel)."""
+    if not place or not heir_id:
         return False
     try:
         here = world.agents_at(place) or []
-        if "castorice" in here:
+        if heir_id in here:
             return True
     except Exception:
         pass
     try:
-        if world.location_name("castorice") == place:
-            if not world.travel_info("castorice"):
+        if world.location_name(heir_id) == place:
+            if not world.travel_info(heir_id):
                 return True
     except Exception:
         pass
     return False
+
+
+def _castorice_present(world, place: str) -> bool:
+    """True when Castorice is physically at this place (Pollux only then)."""
+    return _heir_present(world, "castorice", place)
+
+
+def _hyacine_present(world, place: str) -> bool:
+    """True when Hyacine is physically at this place (Little Ica only then)."""
+    return _heir_present(world, "hyacine", place)
+
+
+def tide_edge_active(world, place: str) -> bool:
+    """Black-tide surge pressing this place (edge city under an active surge)."""
+    if not place:
+        return False
+    try:
+        from . import world_events as wev
+        if not wev.surge_active(world):
+            return False
+        cities = set((getattr(world, "surge") or {}).get("cities") or [])
+        if place in cities:
+            return True
+        # Surge cities are sampled from EDGE_CITIES; treat listed edges the same
+        # when the surge map names them (or the whole edge set if empty).
+        if not cities and place in set(wev.EDGE_CITIES):
+            return True
+        return False
+    except Exception:
+        return False
 
 
 def _is_membrance_month(world) -> bool:
@@ -628,7 +664,7 @@ def _base_status(kind: str, place: str, period: int, month: int,
         if resting or night:
             return "resting", "in the yard, earth-scented and still"
         if month == 4:
-            return "vigorous", "doubly vigorous on Cultivation's roads"
+            return "vigorous", "doubly vigorous on the Month of Cultivation's roads"
         if _h(seed + oid + "restless") % 23 == 0:
             return "restless", "refusing the sandpit, eyes wary"
         if period in (2, 3):
@@ -639,14 +675,14 @@ def _base_status(kind: str, place: str, period: int, month: int,
         if resting or night:
             return "resting", "a calf tucked near the yard fence"
         if month == 4:
-            return "playful", "a calf learning Cultivation's busy roads"
+            return "playful", "a calf learning the Month of Cultivation's busy roads"
         return "well", "a calf keeping near the adult beasts"
 
     if kind == "wheat":
         if month == 4:
-            return "sowing", "seed in Georios' soil — Cultivation"
+            return "sowing", "seed in Georios' soil — Month of Cultivation"
         if month == 8:
-            return "reaping", "fields stripping toward gold — Reaping"
+            return "gold", "fields fuller and gold in the Month of Reaping"
         if month in (5, 6):
             return "growing", "drinking the light along the shore fields"
         if _h(seed + oid + "uneasy") % 29 == 0:
@@ -733,11 +769,13 @@ def _base_status(kind: str, place: str, period: int, month: int,
     if kind == "forge":
         if resting or night:
             return "banked", "iron waits for Action Hour"
+        if month == 10:
+            return "ringing", "forge ringing denser in the Month of Strife — tools, not a war order"
         return "ringing", "hammers; ore becoming tools"
 
     if kind == "loom":
         if month == 9:
-            return "weaving", "looms carry memory — Weaving's month"
+            return "weaving", "looms carry memory — fuller cloth in the Month of Weaving"
         if resting:
             return "resting", "the loom is still for the night"
         return "well", "cloth on the body and on the beam"
@@ -776,6 +814,10 @@ def _base_status(kind: str, place: str, period: int, month: int,
         # Castorice's dragon companion (not the Okhema Workshop dromas Pollux).
         return "present", "Castorice's dragon companion keeps close"
 
+    if kind == "little_ica":
+        # Hyacine's winged pony companion — not a dragonling.
+        return "present", "Hyacine's winged pony companion keeps soft company"
+
     if kind == "maze_fairy":
         return "alive", "a Membrance Maze fairy at the maze-edge"
 
@@ -808,6 +850,8 @@ def _base_status(kind: str, place: str, period: int, month: int,
     if kind == "laundry":
         if night or resting:
             return "in", "lines empty; cloth sleeps indoors"
+        if month == 9:
+            return "hanging", "cloth fuller on the line in the Month of Weaving"
         if flags.get("cooling") or "windy" in str(flags.get("weather_tags") or ""):
             return "hanging", "wash taking the cooling air"
         return "hanging", "color on the line, ordinary as bread"
@@ -842,6 +886,8 @@ def _base_status(kind: str, place: str, period: int, month: int,
     if kind == "banner":
         if resting or night:
             return "furled", "cloth waits for Action Hour"
+        if month == 10:
+            return "open", "banners denser in the Month of Strife — a city, not a march"
         return "open", "Kremnoan color on the wind — a city, not a march"
 
     if kind == "incense":
@@ -1045,11 +1091,14 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
         "tidepool": "a tide pool",
         "pillar": "a public column",
         "pollux": "Pollux",
+        "little_ica": "Little Ica",
         "maze_fairy": "a Membrance Maze fairy",
         "mountain_dweller": "a Mountain Dweller",
     }.get(kind, kind)
     if kind == "pollux":
         name = "Pollux"
+    if kind == "little_ica":
+        name = "Little Ica"
     if kind == "chimera" and chimera_meta:
         phrase = chimera_meta.get("phrase") or "little chimera"
         name = f"another {phrase}" if idx > 1 else f"a {phrase}"
@@ -1077,17 +1126,20 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
                 doing = f"Action Hour — {doing}"
 
     if place and kind != "dawn" and kind not in {
-        "pollux", "maze_fairy", "mountain_dweller",
+        "pollux", "little_ica", "maze_fairy", "mountain_dweller",
     }:
         name = voice.flavor_name(
             place, kind, idx, name, visual=visual if kind == "chimera" else ""
         )
         doing = voice.flavor_doing(place, kind, status, doing, period, idx)
 
-    # Sanctuary clamp: Pollux is never dead/starving.
+    # Sanctuary clamp: companions are never dead/starving.
     if kind == "pollux" and status in {"dead", "starving", "plague"}:
         status = "present"
         doing = "Castorice's dragon companion keeps close"
+    if kind == "little_ica" and status in {"dead", "starving", "plague"}:
+        status = "present"
+        doing = "Hyacine's winged pony companion keeps soft company"
 
     sound = None
     if kind == "chimera":
@@ -1142,6 +1194,8 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
         sound = "scrap-cloth in a doorway"
     elif kind == "pollux":
         sound = "a soft wing-fold"
+    elif kind == "little_ica":
+        sound = "a soft doot of wings"
     elif kind == "maze_fairy":
         sound = "a light fairy hush at the maze-edge"
     elif kind == "mountain_dweller":
@@ -1208,6 +1262,7 @@ def hotspot_for(kind: str, idx: int) -> dict:
         "pillar": ("28%", "12%"),
         "resident": ("40%", "14%"),
         "pollux": ("48%", "18%"),
+        "little_ica": ("52%", "20%"),
         "maze_fairy": ("34%", "10%"),
         "mountain_dweller": ("58%", "14%"),
     }
@@ -1278,6 +1333,7 @@ def derive_scene(world, place: Optional[str] = None,
     flags = _flags(world)
     period = _period(world)
     month = _month(world)
+    tide_edge = tide_edge_active(world, place)
     out: List[dict] = []
 
     if traveling:
@@ -1298,6 +1354,9 @@ def derive_scene(world, place: Optional[str] = None,
     # Place-bound life
     if place in CHIMERA_CITIES:
         n = 2 if period in (1, 2) and not flags.get("resting") else 1
+        # Tide-edge surge thins holy-city density when Okhema family is named.
+        if tide_edge:
+            n = 1 if not flags.get("resting") else 0
         for i in range(1, n + 1):
             out.append(_mk_being("chimera", place, i, world, flags, character_id))
         if flags.get("resting") or period in (0, 4):
@@ -1305,8 +1364,11 @@ def derive_scene(world, place: Optional[str] = None,
 
     if place in DROMAS_ROADS:
         out.append(_mk_being("dromas", place, 1, world, flags, character_id))
-        if month == 4 and period in (2, 3):
+        # Month of Cultivation (4): more dromases on roads.
+        if month == 4 and period in (1, 2, 3) and not flags.get("resting"):
             out.append(_mk_being("dromas", place, 2, world, flags, character_id))
+            if _h(_date_seed(world) + str(place) + "cultivation-dromas") % 3 == 0:
+                out.append(_mk_being("dromas", place, 3, world, flags, character_id))
         # A calf sometimes keeps near the adult beasts (outside caravan hours too).
         if period in (1, 2, 3) and not flags.get("resting"):
             if _h(_date_seed(world) + str(place) + "baby-dromas") % 4 == 0:
@@ -1320,6 +1382,8 @@ def derive_scene(world, place: Optional[str] = None,
     # Canon companions / Membrance Maze fairies (not ordinary species spawns).
     if _castorice_present(world, place):
         out.append(_mk_being("pollux", place, 1, world, flags, character_id))
+    if _hyacine_present(world, place):
+        out.append(_mk_being("little_ica", place, 1, world, flags, character_id))
     if place in MAZE_FAIRY_PLACES and _is_membrance_month(world):
         out.append(_mk_being("maze_fairy", place, 1, world, flags, character_id))
     if (
@@ -1337,6 +1401,9 @@ def derive_scene(world, place: Optional[str] = None,
         out.append(_mk_being("shore", place, 1, world, flags, character_id))
         out.append(_mk_being("siren", place, 1, world, flags, character_id))
         out.append(_mk_being("pearl", place, 1, world, flags, character_id))
+        # Month of Joy (5): fuller shore presence.
+        if month == 5 and not (flags.get("resting") or period in (0, 4)):
+            out.append(_mk_being("siren", place, 2, world, flags, character_id))
 
     if place in LIVING_GROVE:
         out.append(_mk_being("grove_leaf", place, 1, world, flags, character_id))
@@ -1373,6 +1440,8 @@ def derive_scene(world, place: Optional[str] = None,
                 n_stalls = 1
             else:
                 n_stalls = 1
+            if tide_edge:
+                n_stalls = max(1, n_stalls // 2)
             for i in range(1, n_stalls + 1):
                 out.append(_mk_being(
                     "market_stall", place, i, world, flags, character_id,
@@ -1422,6 +1491,12 @@ def derive_scene(world, place: Optional[str] = None,
         if not (flags.get("resting") or period in (0, 4)):
             out.append(_mk_being("laundry", place, 1, world, flags, character_id))
             out.append(_mk_being("courier", place, 1, world, flags, character_id))
+        # Month of Weaving (9): stronger cloth / loom presence in Okhema family.
+        if month == 9 and not (flags.get("resting") or period in (0, 4)):
+            out.append(_mk_being("ribbon", place, 1, world, flags, character_id))
+            out.append(_mk_being("loom", place, 1, world, flags, character_id))
+            if place == "Okhema":
+                out.append(_mk_being("laundry", place, 2, world, flags, character_id))
     if place in ART_FAMILY_JANUS:
         out.append(_mk_being("incense", place, 1, world, flags, character_id))
         out.append(_mk_being("ribbon", place, 1, world, flags, character_id))
@@ -1456,6 +1531,9 @@ def derive_scene(world, place: Optional[str] = None,
         out.append(_mk_being("boat", place, 1, world, flags, character_id))
         out.append(_mk_being("net", place, 1, world, flags, character_id))
         out.append(_mk_being("tidepool", place, 1, world, flags, character_id))
+        # Month of Joy (5): fuller nets at the working shore.
+        if month == 5 and not (flags.get("resting") or period in (0, 4)):
+            out.append(_mk_being("net", place, 2, world, flags, character_id))
     elif place in le.RIVER and place not in TOMB_PLACES:
         out.append(_mk_being("boat", place, 1, world, flags, character_id))
     if place in FIELDS:
@@ -1483,12 +1561,16 @@ def derive_scene(world, place: Optional[str] = None,
     # Extra banner pass for present Kremnos (forge block already plants one; keep color dense).
     if place == "Castrum Kremnos":
         out.append(_mk_being("banner", place, 1, world, flags, character_id))
+        # Month of Strife (10): denser banners / forge-ringing feel.
+        if month == 10 and not (flags.get("resting") or period in (0, 4)):
+            out.append(_mk_being("banner", place, 2, world, flags, character_id))
 
     # Named residents as interactive ambient (cap 3) — identity on click.
     if include_residents and not traveling:
         try:
             from . import resident_npcs as rn
-            for i, r in enumerate(rn.greet_here(world, place, limit=3), start=1):
+            res_limit = 1 if tide_edge else 3
+            for i, r in enumerate(rn.greet_here(world, place, limit=res_limit), start=1):
                 rid = f"resident:{place}:{r.get('name')}"
                 out.append({
                     "id": rid,
@@ -1558,7 +1640,12 @@ def derive_scene(world, place: Optional[str] = None,
             "dawn", "thief_star", "wind",
         }]
 
-    out = [b for b in out if b.get("kind") not in INDOOR_LAND]
+    # Indoor furniture stays off the outdoor land — except Month of Weaving loom
+    # presence in the Okhema family (cloth work made visible on the square).
+    indoor_ban = set(INDOOR_LAND)
+    if month == 9 and place in ART_FAMILY_OKHEMA:
+        indoor_ban.discard("loom")
+    out = [b for b in out if b.get("kind") not in indoor_ban]
 
     # Prefer signature texture over generic duplicates when capping the stage.
     _SIGNATURE = {
@@ -1567,7 +1654,7 @@ def derive_scene(world, place: Optional[str] = None,
         "mosaic", "fountain", "pillar", "laundry", "courier", "gate",
         "ribbon", "incense", "shrine", "boat", "net", "tidepool", "pearl",
         "dromas", "dromas_calf", "pebble", "well", "grass", "wind",
-        "pollux", "maze_fairy", "mountain_dweller",
+        "pollux", "little_ica", "maze_fairy", "mountain_dweller", "loom",
     }
 
     def _rank(b: dict) -> Tuple[int, int]:
@@ -1576,10 +1663,29 @@ def derive_scene(world, place: Optional[str] = None,
             return (0, 0)
         if k == "dawn":
             return (1, 0)
+        # Canon companions — never drop behind seasonal laundry/loom/dromas.
+        if k in {"pollux", "little_ica", "maze_fairy", "mountain_dweller"}:
+            return (1, 0)
+        # Seasonal land texture — ahead of generic signature when capping.
+        if month == 9 and place in ART_FAMILY_OKHEMA and k in {
+            "loom", "ribbon", "laundry",
+        }:
+            return (1, 1)
+        if month == 10 and place in ART_FAMILY_KREMNOS and k in {"forge", "banner"}:
+            return (1, 1)
+        if month == 8 and k == "wheat":
+            return (1, 1)
+        if month == 5 and k in {"net", "siren", "shore"}:
+            return (1, 1)
+        if month == 4 and k in {"dromas", "dromas_calf"}:
+            return (1, 1)
+        # Civic signature first (fountain/mosaic/…) — then street people ahead of
+        # generic ambient, so Month-of-* density / tide thinning do not wipe
+        # residents while greet_here still has people (errand UI).
         if k in _SIGNATURE:
             return (2, 0)
         if k == "resident":
-            return (3, 0)
+            return (2, 1)
         return (4, 0)
 
     out.sort(key=_rank)
@@ -1594,6 +1700,7 @@ def derive_scene(world, place: Optional[str] = None,
         # Always keep first of each kind; extras only for chimera/dromas/residents
         if k in seen_kinds and k not in {
             "chimera", "dromas", "dromas_calf", "resident", "market_stall",
+            "banner", "net", "siren", "laundry",
         }:
             continue
         seen_kinds.add(k)
@@ -1602,11 +1709,29 @@ def derive_scene(world, place: Optional[str] = None,
     if len(caravan) >= 4:
         head = preferred[: len(caravan)]
         tail = [b for b in preferred[len(caravan):] if not b.get("caravan_id")]
-        return head + tail[: max(0, 20 - len(head))]
-    return preferred[:20]
+        capped = head + tail[: max(0, 20 - len(head))]
+    else:
+        capped = preferred[:20]
+    # Keep at least one street resident when the cast had any — seasonal
+    # multiples (laundry/stalls) must not erase errand-bearing people.
+    if not any(b.get("kind") == "resident" for b in capped):
+        spare = next((b for b in preferred if b.get("kind") == "resident"), None)
+        if spare is not None:
+            for i in range(len(capped) - 1, -1, -1):
+                k = capped[i].get("kind")
+                if k in {"laundry", "chimera", "grass", "wind", "incense", "pebble"}:
+                    capped[i] = spare
+                    break
+            else:
+                if len(capped) >= 20:
+                    capped[-1] = spare
+                else:
+                    capped.append(spare)
+    return capped
 
 
-def logic_faults(scene: List[dict], place: str) -> List[str]:
+def logic_faults(scene: List[dict], place: str,
+                 world=None) -> List[str]:
     faults = []
     kinds = {b.get("kind") for b in scene}
     if place in GROVE and ("chimera" in kinds or "shore" in kinds or "siren" in kinds
@@ -1642,6 +1767,9 @@ def logic_faults(scene: List[dict], place: str) -> List[str]:
     if place in TOMB_PLACES and ("olive" in kinds or "cicada" in kinds or "fountain" in kinds):
         faults.append("Tomb must not hold living-grove picnic life")
     indoor = kinds & INDOOR_LAND
+    # Month of Weaving may show loom outdoors in Okhema family.
+    if "loom" in indoor and place in ART_FAMILY_OKHEMA:
+        indoor = indoor - {"loom"}
     if indoor:
         faults.append("Indoor furniture on outdoor land: " + ", ".join(sorted(indoor)))
     for b in scene:
@@ -1656,6 +1784,14 @@ def logic_faults(scene: List[dict], place: str) -> List[str]:
         faults.append("Mountain Dwellers do not haunt Aidonia (Thanatos snow-city)")
     if "mountain_dweller" in kinds and place in GROVE:
         faults.append("Mountain Dweller must not appear in the Grove")
+    if "little_ica" in kinds and world is not None:
+        if not _hyacine_present(world, place):
+            if place in GROVE:
+                faults.append(
+                    "Little Ica must never appear in the Grove without Hyacine"
+                )
+            else:
+                faults.append("Little Ica outside Hyacine's place")
     return faults
 
 
@@ -1670,11 +1806,15 @@ def apply_tick(world, flags: Optional[dict] = None) -> Dict[str, Any]:
 
     place, _ = _place_of(world, None)
     scene = derive_scene(world, place=place, include_residents=True)
+    tide = tide_edge_active(world, place)
     gaz = []
     for b in scene:
         if b.get("kind") == "resident":
             continue
-        if b.get("status") in {"ailing", "restless", "uneasy", "vigorous", "full", "sowing", "reaping"}:
+        if b.get("status") in {
+            "ailing", "restless", "uneasy", "vigorous", "full",
+            "sowing", "reaping", "gold", "ringing", "weaving",
+        }:
             gaz.append(f"{b['name'].capitalize()} — {b['doing']}.")
         elif b.get("kind") == "chimera" and b.get("status") == "wandering":
             gaz.append(f"Chimeras wander Okhema's stalls this hour.")
@@ -1685,6 +1825,14 @@ def apply_tick(world, flags: Optional[dict] = None) -> Dict[str, Any]:
     bucket["scene"] = scene
     bucket["gazette"] = gaz
     bucket["last_key"] = key
+    bucket["tide_edge"] = tide
+    try:
+        vivid = getattr(world, "vivid", None)
+        if isinstance(vivid, dict):
+            vivid["tide_edge"] = tide
+            vivid["tide_edge_place"] = place if tide else ""
+    except Exception:
+        pass
     if flags:
         bucket["flags_echo"] = {
             k: flags.get(k) for k in (
@@ -1697,7 +1845,8 @@ def apply_tick(world, flags: Optional[dict] = None) -> Dict[str, Any]:
         "scene": scene,
         "gazette": gaz,
         "idempotent": idempotent,
-        "faults": logic_faults(scene, place),
+        "tide_edge": tide,
+        "faults": logic_faults(scene, place, world=world),
         "lines": [] if idempotent else list(gaz[:2]),
         "clock_key": key,
     }
@@ -1826,6 +1975,11 @@ def interact(world, object_id: str,
         line = (
             "Pollux — Castorice's dragon companion — keeps close at her side. "
             "(Not the Workshop dromas that shares the name.)"
+        )
+    elif kind == "little_ica":
+        line = (
+            "Little Ica — Hyacine's winged pony companion — keeps soft company nearby. "
+            "A quiet presence, not a dragonling."
         )
     elif kind == "maze_fairy":
         line = (

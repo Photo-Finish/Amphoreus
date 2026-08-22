@@ -249,6 +249,26 @@ _SPRITE_PATHS: Dict[str, str] = {
         '<circle cx="20" cy="12" r="6" fill="#e8d5a3"/>'
         '<path d="M10 34 Q10 20 20 20 Q30 20 30 34" fill="#c9b896"/>'
     ),
+    # Hyacine's winged pony companion — soft pastel pony + small wings.
+    "little_ica": (
+        '<ellipse cx="20" cy="26" rx="11" ry="7" fill="#f2e6f0"/>'
+        '<ellipse cx="20" cy="28" rx="8" ry="4" fill="#fff8fc"/>'
+        '<circle cx="28" cy="18" r="6" fill="#f6ecf4"/>'
+        '<ellipse cx="30" cy="17" rx="2.2" ry="1.8" fill="#fff"/>'
+        '<circle cx="30.5" cy="16.5" r="1.1" fill="#6a4a78"/>'
+        '<path d="M8 18 Q4 12 10 10 Q14 16 12 22 Z" fill="#e8d0f0" opacity=".9"/>'
+        '<path d="M14 16 Q12 8 18 10 Q18 16 16 20 Z" fill="#d8b8e8" opacity=".85"/>'
+        '<ellipse cx="34" cy="20" rx="3" ry="1.5" fill="#e8c8a8"/>'
+    ),
+    # Castorice's dragon companion — dark soft silhouette (SVG fallback).
+    "pollux": (
+        '<ellipse cx="20" cy="26" rx="12" ry="7" fill="#4a3a58"/>'
+        '<path d="M8 22 Q4 10 14 14 Q12 22 10 26 Z" fill="#6a5880"/>'
+        '<path d="M32 22 Q38 10 28 14 Q30 22 32 26 Z" fill="#6a5880"/>'
+        '<circle cx="12" cy="18" r="4" fill="#5a4868"/>'
+        '<circle cx="11" cy="17" r="1.1" fill="#c8b8e0"/>'
+        '<path d="M28 24 Q34 20 36 28" fill="none" stroke="#7a6888" stroke-width="2"/>'
+    ),
 }
 
 _DEFAULT_SPRITE = (
@@ -301,6 +321,7 @@ _ROAMER_DUR = {
 _FAR_ARCH_KINDS = frozenset({"pillar", "gate", "banner", "mill"})
 _LIFE_KINDS = frozenset({
     "chimera", "dromas", "dromas_calf", "hearth_cat", "resident", "cicada",
+    "little_ica", "pollux", "maze_fairy", "mountain_dweller",
 })
 _ELEVATED_KINDS = _SKY_KINDS | frozenset({
     "laundry", "banner", "cicada", "grove_leaf",
@@ -329,6 +350,10 @@ _SPRITE_CELL: Dict[str, int] = {
     "incense": 40,
     "kite": 46,
     "hearth_cat": 50,
+    "little_ica": 64,
+    "pollux": 72,
+    "maze_fairy": 48,
+    "mountain_dweller": 110,
     "chimera": 56,
     "dromas_calf": 118,
     "laundry": 54,
@@ -407,6 +432,7 @@ def _page_window_bottom(kind: str, hotspot_bottom: str) -> str:
     # Slight depth variety, still on the sill.
     table = {
         "dromas": "1%", "dromas_calf": "1%", "chimera": "2%", "hearth_cat": "2%", "resident": "2%",
+        "little_ica": "2%", "pollux": "2%", "maze_fairy": "3%", "mountain_dweller": "2%",
         "well": "1%", "fountain": "1%", "forge": "1%", "gate": "1%",
         "shrine": "2%", "market_stall": "2%", "mill": "1%", "pillar": "1%",
         "olive": "2%", "incense": "2%", "boat": "0%", "siren": "1%",
@@ -478,7 +504,9 @@ _PET_FILM_DUR = {
     "dromas": "1.15s",
     "dromas_calf": "0.95s",
 }
-_PET_KINDS = frozenset({"chimera", "hearth_cat", "dromas", "dromas_calf"})
+_PET_KINDS = frozenset({
+    "chimera", "hearth_cat", "dromas", "dromas_calf", "pollux", "little_ica",
+})
 _MOUNT_KINDS = frozenset({"dromas", "dromas_calf"})
 
 
@@ -569,8 +597,9 @@ def _sprite_markup(kind: str, *, mobile: bool = True, asset: str = "") -> str:
             film = sprite_film_uri(key)
             if film:
                 dur = _FILM_DUR.get(kind, _FILM_DUR.get(key, "0.8s"))
+                stem = _html.escape(f"{key}_film", quote=True)
                 return (
-                    f'<span class="amp-sprite-film" style="'
+                    f'<span class="amp-sprite-film" data-film="{stem}" style="'
                     f"background-image:url('{film}');"
                     f"--amp-frames:4;--amp-film-dur:{dur};\"></span>"
                 )
@@ -1380,8 +1409,13 @@ def pictorial_stage_documents(
 
     ambient = life_overlay_html(scene, place, dense=dense) if entities else ""
     # Cap on-stage figures so the art stays readable (full list lives in eco).
+    # Canon companions (Pollux / Little Ica / maze fairy / Mountain Dweller)
+    # sit first so dense seasonal cities never crowd them off the stage.
+    # Roamers (chimera / dromas / …) live in the viewport pool — they must
+    # not burn still-sprite slots ahead of companions.
     _PRIORITY = (
-        "chimera", "dromas", "hearth_cat", "resident",
+        "little_ica", "pollux", "maze_fairy", "mountain_dweller",
+        "hearth_cat", "chimera", "dromas", "dromas_calf", "resident",
         "well", "fountain", "forge", "boat", "siren", "olive", "cicada",
         "pearl", "shrine", "gate", "market_stall",
         "laundry", "mill", "kite", "courier", "banner", "pillar", "incense",
@@ -1410,12 +1444,15 @@ def pictorial_stage_documents(
         for b in clickable
         if b.get("id")
     }
+    # Fill still slots from priority order; skip roamers (they spawn via JS).
     still = []
-    for b in ranked[:max_sprites]:
+    for b in ranked:
         kind = str(b.get("kind") or "")
         if kind in _ROAMER_KINDS:
             continue
         still.append(b)
+        if len(still) >= max_sprites:
+            break
 
     def _paint_key(b: dict):
         kind = str(b.get("kind") or "")
@@ -1504,6 +1541,27 @@ def pictorial_stage_documents(
             f"margin:0;padding:0;overflow:visible;z-index:{_PAGE_LIFE_Z};border:none;"
             "background:transparent;pointer-events:none;';\n"
             "    }\n"
+            # Empty life-canvas hits fall through to Visit chrome
+            # (heir invite / letter / absence sit under this fixed iframe).
+            "    try {\n"
+            "      var pass = function(ev) {\n"
+            "        var t = ev.target;\n"
+            "        if (t && t.closest && t.closest(\n"
+            "          '.amp-sprite, .amp-pop, button, a, input, textarea, select'\n"
+            "        )) return;\n"
+            "        f.style.pointerEvents = 'none';\n"
+            "        var below = f.ownerDocument.elementFromPoint(ev.clientX, ev.clientY);\n"
+            "        f.style.pointerEvents = 'auto';\n"
+            "        if (!below || below === f || below === p) return;\n"
+            "        ev.preventDefault(); ev.stopPropagation();\n"
+            "        below.dispatchEvent(new MouseEvent(ev.type, {\n"
+            "          bubbles:true, cancelable:true, view:window.parent,\n"
+            "          clientX:ev.clientX, clientY:ev.clientY\n"
+            "        }));\n"
+            "      };\n"
+            "      document.addEventListener('click', pass, true);\n"
+            "      document.addEventListener('pointerdown', pass, true);\n"
+            "    } catch (e) {}\n"
             "    try {\n"
             "      var pdoc = f.ownerDocument;\n"
             "      var shot = document.querySelector('.amp-land-photo');\n"
@@ -1831,6 +1889,7 @@ def render_inset_window(
     entities: bool = True,
     box_max: int = 0,
     key: str = "inset",
+    world_sky: str = "",
 ) -> None:
     """Classic place window: full main-pane width, fixed height, not full-bleed."""
     import streamlit as st
@@ -1844,7 +1903,15 @@ def render_inset_window(
     except Exception:
         pass
     win_h = max(120, int(height or CLASSIC_WINDOW_HEIGHT))
-    effect, sky = effect_for(place)
+    try:
+        from src.world.world_state import WorldState
+        effect, sky = effect_for(place, world=WorldState())
+    except Exception:
+        effect, sky = effect_for(place)
+    if world_sky:
+        sky = world_sky
+    if not sky and effect == "blacktide":
+        sky = "The black tide stirs at the edge; the sky darkens."
     ok = render_pictorial_stage(
         image_path, place, effect, sky, scene or [],
         height=win_h, dense=dense, page_layer=False,
@@ -1919,12 +1986,23 @@ def render_presence_chips(
         "grass", "wind", "wheat", "grove_leaf", "shore",
         "bath", "hearth", "loom", "scroll", "lamp",
     }
+    _chip_priority = (
+        "little_ica", "pollux", "maze_fairy", "mountain_dweller",
+        "chimera", "dromas", "dromas_calf", "hearth_cat", "resident",
+    )
     beings = [
         b for b in (scene or [])
         if b.get("id")
         and (b.get("clickable") or b.get("kind"))
         and str(b.get("kind") or "") not in skip
     ]
+    beings.sort(
+        key=lambda b: (
+            _chip_priority.index(b.get("kind"))
+            if b.get("kind") in _chip_priority else 40,
+            str(b.get("id") or ""),
+        ),
+    )
     st.markdown("#### Presence")
     if not beings:
         st.caption("Quiet here this hour.")
@@ -1971,6 +2049,21 @@ def _render_pocket() -> None:
     if pocket:
         names = [str(p.get("name") or "a small thing") for p in pocket[-6:]]
         st.caption("In your pocket: " + " · ".join(names))
+
+
+def heir_care_chat_blocked(
+    *,
+    read_only: bool = False,
+    is_guest: bool = False,
+    heir_id: str = "",
+) -> bool:
+    """True when Heir-care buttons that write Visit chat history must not open.
+
+    Notice / visitor_touch stay available; only care that injects into
+    ``st.session_state["messages"][heir_id]`` is operator-only.
+    Walk the Land always passes ``heir_id=""`` and ``read_only=True``.
+    """
+    return bool(read_only or is_guest or not (heir_id or "").strip())
 
 
 def render_focus_strip(
@@ -2076,7 +2169,22 @@ def render_focus_strip(
                         st.session_state[f"{key_prefix}_flash"] = touch.get("reason")
                         st.rerun()
 
-    if read_only or not heir_id:
+    # Care that writes into Heir chat history: operator-only.
+    try:
+        from src.ui_role import is_visitor as _is_vis_care
+        _guest = bool(_is_vis_care())
+    except Exception:
+        _guest = False
+
+    care_blocked = heir_care_chat_blocked(
+        read_only=read_only, is_guest=_guest, heir_id=heir_id,
+    )
+    if care_blocked:
+        # Guests / Walk / read-only Visit: notice & touch OK; Heir-voice care is not.
+        if _guest or (read_only and heir_id):
+            st.caption(
+                "Care that needs an Heir waits on Visit (operator)."
+            )
         return
 
     actions = eco.authorized_actions(heir_id, being)
@@ -2087,6 +2195,19 @@ def render_focus_strip(
         btn = f"◇ {a['label']} ({heir_name})"
         with care_cols[i % len(care_cols)]:
             if st.button(btn, key=f"{key_prefix}_c_{oid}_{a['id']}"):
+                # Defense in depth — never inject chat history for guests.
+                # Fail closed if role cannot be confirmed.
+                try:
+                    from src.ui_role import is_visitor as _is_vis_apply
+                    guest_now = bool(_is_vis_apply())
+                except Exception:
+                    guest_now = True
+                if guest_now:
+                    st.session_state[f"{key_prefix}_flash"] = (
+                        "Care that needs an Heir waits on Visit (operator)."
+                    )
+                    st.rerun()
+                    return
                 ws = WorldState()
                 care = eco.apply_care(ws, heir_id, oid, a["id"], save=True)
                 if care.get("ok"):
@@ -2151,7 +2272,11 @@ def render_life_interactions(
     read_only: bool = False,
     place: Optional[str] = None,
 ) -> None:
-    """Focus strip after pictorial notice."""
+    """Focus strip after pictorial notice.
+
+    Guests may notice / visitor_touch; care that injects Heir chat is
+    operator-only (see render_focus_strip).
+    """
     render_focus_strip(
         scene,
         heir_id=heir_id,
@@ -2160,7 +2285,7 @@ def render_life_interactions(
         place=place,
         read_only=read_only,
     )
-    if heir_id:
+    if heir_id and not read_only:
         import streamlit as st
         noticed = st.session_state.get("eco_noticed") or {}
         bits = [

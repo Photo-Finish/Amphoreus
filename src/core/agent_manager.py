@@ -721,6 +721,7 @@ class AgentManager:
                 for fn in (
                     lambda: _sl.shared_gathering_prompt(ws, character_id, name_of=_nm),
                     lambda: _sl.bond_weather_block(ws, character_id, name_of=_nm),
+                    lambda: _sl.letter_choice_prompt(ws, character_id),
                     lambda: _sl.eco_notice_prompt(ws, character_id),
                     lambda: _sl.teaching_echo_prompt(ws, character_id),
                 ):
