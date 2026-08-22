@@ -2120,6 +2120,21 @@ def render_focus_strip(
                         "place": place or "",
                     }
                     st.session_state["eco_focus"] = oid
+                    # Persist Walk→Visit handoff on the world ledger.
+                    try:
+                        from src.world import society_life as _sl
+                        _sl.record_eco_notice(
+                            ws,
+                            place=place or "",
+                            object_id=oid,
+                            kind=str(being.get("kind") or ""),
+                            line=str(care.get("note") or ""),
+                            visitor_action=str(a.get("label") or "care"),
+                            heir_hint=heir_id or "",
+                        )
+                        ws.save()
+                    except Exception:
+                        pass
                     st.rerun()
                 else:
                     st.session_state[f"{key_prefix}_flash"] = care.get("reason")
@@ -2160,28 +2175,36 @@ def render_life_interactions(
 
 
 def noticed_prompt_addon(heir_id: str) -> str:
-    """Extra injector from what the visitor clicked this session."""
+    """Extra injector from session clicks plus durable Walk→Visit eco notices."""
+    lines = []
     try:
         import streamlit as st
         noticed = st.session_state.get("eco_noticed") or {}
     except Exception:
-        return ""
+        noticed = {}
     rows = [
         v for v in noticed.values()
         if v.get("heir") == heir_id
     ]
-    if not rows:
-        return ""
-    lines = ["# What the visitor just pointed at on the stage"]
-    for v in rows[-5:]:
+    if rows:
+        lines.append("# What the visitor just pointed at on the stage")
+        for v in rows[-5:]:
+            lines.append(
+                f"- {v.get('name')} ({v.get('kind')}, {v.get('status')}): "
+                f"{v.get('line') or v.get('sound') or 'noticed'}"
+            )
         lines.append(
-            f"- {v.get('name')} ({v.get('kind')}, {v.get('status')}): "
-            f"{v.get('line') or v.get('sound') or 'noticed'}"
+            "If they ask who someone is, or about that chimera / grass / shore, "
+            "answer from these facts. Do not invent other cities' life."
         )
-    lines.append(
-        "If they ask who someone is, or about that chimera / grass / shore, "
-        "answer from these facts. Do not invent other cities' life."
-    )
+    try:
+        from src.world.world_state import WorldState
+        from src.world import society_life as _sl
+        durable = _sl.eco_notice_prompt(WorldState(), heir_id)
+        if durable:
+            lines.append(durable)
+    except Exception:
+        pass
     return "\n".join(lines)
 
 
@@ -2221,6 +2244,21 @@ def consume_notice_query(*, place: Optional[str] = None, heir_id: str = "",
         }
         st.session_state["eco_noticed"] = noticed
         st.session_state["eco_focus"] = oid
+        try:
+            from src.world import society_life as _sl
+            ws = WorldState()
+            _sl.record_eco_notice(
+                ws,
+                place=place or b.get("place") or "",
+                object_id=oid,
+                kind=str(b.get("kind") or ""),
+                line=str(res.get("line") or res.get("sound") or "noticed"),
+                visitor_action="notice",
+                heir_hint=heir_id or "",
+            )
+            ws.save()
+        except Exception:
+            pass
     else:
         st.session_state[f"{key_prefix}_flash"] = res.get("reason")
     try:

@@ -50,3 +50,23 @@ Suite: `tools/test_lived_entities.py` (59 checks) plus the original 44 vivid che
 
 Suites: `tools/test_lived_mechanisms.py` (63), `tools/test_resident_npcs.py` (33),
 `tools/test_lived_entities.py` (61), plus the original 44 vivid checks.
+
+## Second delivery — society continuity & land handoff (2026-08-22)
+
+| Feature | What the visitor feels |
+|---|---|
+| Multi-Heir Galgame | Gathering → visual-novel with several sprites |
+| Shared hour memory | Solo Visit remembers a past gathering |
+| Walk-in scenes | Arrive mid-letter / mid-talk / rumor |
+| Resident recognition | Street people remember you |
+| Bond weather | Soft rivalry / thread / loyalty cues when co-located |
+| Pollux / Maze fairies / Mountain Dwellers | Castorice's dragon; Aedes fairies in Membrance; Okhema smiths (not Aidonia) |
+| Walk→Visit eco | Care/notice on Walk is known on Visit |
+| Map this-hour | Place popup carries a lived vignette |
+| Daybook | Gazette’s “Today in Amphoreus” |
+| Absence return | Soft beat after ≥5 days away |
+| Collective memory honesty | Doc + secondhand teaching echo |
+| Engine default + named tunnel | World lives on launch; stable hostnames when configured |
+
+Modules: `society_life.py`, `resident_memory.py`, `daybook.py`, `ui_galgame_group.py`.
+Charter unchanged.

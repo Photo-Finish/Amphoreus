@@ -574,6 +574,18 @@ class AgentManager:
                     _wev.teaching_rumor(WorldState(), character_id, tname)
                 except Exception:
                     pass
+                # Co-located secondhand echo (honest collective memory — not adoption).
+                try:
+                    from src.world import society_life as _sl
+                    from src.world.world_state import WorldState
+                    _ws = WorldState()
+                    place = _ws.location_name(character_id)
+                    echoes = _sl.maybe_echo_teaching(
+                        _ws, character_id, tname, place)
+                    if echoes:
+                        _ws.save()
+                except Exception:
+                    pass
             return response
         return self._stream_response(character_id, response)
 
@@ -684,10 +696,51 @@ class AgentManager:
             tide = _v2.tide_edge_prompt(ws, character_id)
             if tide:
                 parts.append(tide)
-            moment = _v2.ongoing_moment(ws, character_id)
-            om = _v2.ongoing_moment_prompt(moment)
-            if om:
-                parts.append(om)
+            # Prefer richer walk-in scenes (letter / mid-talk / rumor).
+            try:
+                from src.world import society_life as _sl
+                from src.world.chronicle import Chronicle
+                tail = []
+                try:
+                    # Chronicle.read returns newest-first; walk_in wants chronological.
+                    tail = list(reversed(Chronicle().read(20) or []))
+                except Exception:
+                    tail = []
+                scene = _sl.walk_in_scene(
+                    ws, character_id, chronicle_tail=tail, name_of=_nm)
+                om = _sl.walk_in_prompt(scene)
+                if om:
+                    parts.append(om)
+            except Exception:
+                moment = _v2.ongoing_moment(ws, character_id)
+                om = _v2.ongoing_moment_prompt(moment)
+                if om:
+                    parts.append(om)
+            try:
+                from src.world import society_life as _sl
+                for fn in (
+                    lambda: _sl.shared_gathering_prompt(ws, character_id, name_of=_nm),
+                    lambda: _sl.bond_weather_block(ws, character_id, name_of=_nm),
+                    lambda: _sl.eco_notice_prompt(ws, character_id),
+                    lambda: _sl.teaching_echo_prompt(ws, character_id),
+                ):
+                    bit = fn()
+                    if bit:
+                        parts.append(bit)
+                # Absence fires once on return, then marks the touch.
+                try:
+                    bond = self.memory.get_bond(character_id) or {}
+                    abs_blk = _sl.absence_prompt_block(
+                        ws, character_id,
+                        bond_last_seen=bond.get("last_seen"),
+                    )
+                    if abs_blk:
+                        parts.append(abs_blk)
+                        ws.save()
+                except Exception:
+                    pass
+            except Exception:
+                pass
             try:
                 from src.world import ecosystem as _eco
                 eco_block = _eco.prompt_block(ws, character_id)
@@ -780,9 +833,18 @@ class AgentManager:
             WorldState(), character_id, object_id, action_id, save=True)
 
     def ongoing_moment(self, character_id: str) -> dict:
-        from src.world import vivid_stage2 as _v2
         from src.world.world_state import WorldState
-        return _v2.ongoing_moment(WorldState(), character_id)
+        ws = WorldState()
+        try:
+            from src.world import society_life as _sl
+            from src.world.chronicle import Chronicle
+            tail = list(reversed(Chronicle().read(20) or []))
+            return _sl.walk_in_scene(
+                ws, character_id, chronicle_tail=tail,
+                name_of=lambda c: self.get_character_info(c)["name"])
+        except Exception:
+            from src.world import vivid_stage2 as _v2
+            return _v2.ongoing_moment(ws, character_id)
 
     def _social_reactions(self, character_id, user_message):
         """After the Heir's reply, the visitor's words may cross a value

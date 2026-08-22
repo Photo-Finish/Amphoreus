@@ -52,3 +52,7 @@ models/hf-cache/
 *.part
 .DS_Store
 Thumbs.db
+
+# Desktop shell PyInstaller output (rebuild: tools/build_desktop_exe.ps1)
+# Root AmphoreusSanctuary.exe may be kept locally for double-click use.
+dist/

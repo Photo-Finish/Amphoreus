@@ -2,13 +2,13 @@
 
 Separate from Copilot’s Stage-1 `conversation-archive.md`. This file records the **Cursor** chat window dialogues only.
 
-- **Chat id:** `fefecb77-99f5-4c57-8a9c-95d79fefddb6`
-- **Rounds (user turns):** 361
-- **Assistant replies:** 2356
-- **Tool calls:** 4318
-- **From:** Tuesday, Aug 18, 2026, 12:33 AM (UTC+8)  **to:** Thursday, Aug 20, 2026, 6:27 PM (UTC+8)
-- **Exported:** 2026-08-20 18:35 UTC+8
-- **Source:** agent transcript JSONL for this window
+- **Chat id:** `c2ce438f-61d9-4dd2-8dc3-66bcf3a7f70c` (Stage-2 resume; prior window `fefecb77-99f5-4c57-8a9c-95d79fefddb6` = rounds 1–361)
+- **Rounds (user turns):** 365
+- **Assistant replies:** 2356+
+- **Tool calls:** 4318+
+- **From:** Tuesday, Aug 18, 2026, 12:33 AM (UTC+8)  **to:** Saturday, Aug 22, 2026, 1:34 AM (UTC+8)
+- **Exported:** Saturday Aug 22, 2026, 1:35 AM UTC+8
+- **Source:** agent transcript JSONL (prior window + resume chat)
 
 ---
 
@@ -17879,5 +17879,170 @@ Fixed. Stacking is now:
 - **Chat / buttons / tabs / look chrome** — still higher, so controls stay usable
 
 Reload Visit or Walk the Land to see it.
+
+---
+
+## Round 362 — Saturday, Aug 22, 2026, 12:47 AM (UTC+8)
+
+### You
+
+No changes for this round. Study the entire project and the rules left by the last cursor agent. You may found the entire dialogue there.
+
+### Cursor
+
+No changes this round — I'll study the project, prior agent dialogue, and residual rules only.
+
+> 🔧 **Read / Glob / Grep / SearchConversations** — rules, charter skills, Stage-2 docs, prior Cursor archive + transcripts
+
+### Cursor
+
+Studied. No files changed.
+
+**Where the prior dialogue lives**
+- Full Cursor Stage-2 chat: `cursor-conversation-archive.md` (chat `fefecb77-99f5-4c57-8a9c-95d79fefddb6`, ~361 rounds, Aug 18–20) and the live transcript under agent-transcripts
+- Copilot Stage-1: `conversation-archive.md` (frozen; do not rewrite)
+
+**Rules the last agent left (always-on)**
+1. **Stage-2 north star** — vivid society + natural world; voice fidelity is a pillar under that, not the whole stage
+2. **Copilot freeze** — ask in words before touching Stage-1 artifacts; README above Stage-2 opening stays verbatim; never credit Cursor on commits
+3. **Workflow** — align → plan → PROCEED → report → verify → commit/push only when asked; honor “no changes this round”
+4. **Charter skills** — sanctuary / knowledge wall / Realization witness-only; map + RAG skills for place and lore
+
+**What the project is**
+Local offline sanctuary for the 13 Chrysos Heirs: cards, Chroma RAG, memory/bonds, world engine (map, schedules, chronicle), senses, teaching, Streamlit Visit + Walk the Land. Charter in `PHILOSOPHY.md`.
+
+**Stage-2 already delivered (Cursor era)**
+Vivid co-presence / tide / overhear · lived entities + 17 day mechanisms · ~110 residents · ecosystem (chimera/dromas/shore/care, gated) · pictorial land UI · group chat · Sanctuary calendar · OPLoRA voice path · stacking fix (life/popups above copy) last pushed as `eb10087`
+
+**Still sitting untracked on purpose**
+`assets/dromas_walk_v2_f*.png` and `assets/life_sprites/_hsr_src/` (wiki/draft art) — left out of commits by the prior agent.
+
+Ready when you steer the next move.
+
+---
+
+## Round 363 — Saturday, Aug 22, 2026, 12:50 AM (UTC+8)
+
+### You
+
+Consider the entire project, no changes this round, what else can be implemented to make the project better. Brainstorm.
+
+### Cursor
+
+No changes — brainstorming against the Stage-2 north star and what’s already shipped. Skimmed unfinished roadmap notes and feature-candidate lists.
+
+> 🔧 **Grep / Read** — Stage-2 / vivid / roadmap / collective-memory notes
+
+### Cursor
+
+No changes. Brainstorm against **vivid society + natural world** (charter holds; Copilot-era files frozen unless authorized). Next work should deepen what exists, not invent a second world stack.
+
+### Society
+1. **Multi-Heir Galgame scene** — gathering → memorable multi-sprite stage
+2. **Shared moments that stick in solo visits** — 1:1 casually recalls that hour
+3. **Heir–Heir life without you** — Gazette glimpses / arrive into an ongoing moment
+4. **Letters / rumors as walk-in scenes** — open Visit mid-letter or mid-argument as a rhythm
+5. **Named street people with memory** — recurring faces who recognize the visitor
+6. **Bond weather between Heirs** — soft Visit cues when canon pairs co-locate
+
+### Natural world / land
+7. **Calendar festivals as felt hours** — Month of Joy / Weaving / Membrance / Scarlet Day change look & behavior
+8. **Canon companions left thin** — Pollux with Castorice; Membrance-month small ecology; Mountain Dwellers as rare place-flavor
+9. **Finish the land art pipeline** — promote walk v2 if it wins; outfits; night/tide/weather readability
+10. **Walk ↔ Visit handoff** — care on Walk is already known on Visit (eco state written through)
+11. **Map that feels lived** — light “this hour” vignette per city
+
+### Voice fidelity
+12. **Cheat-free 13/13 style gate** — re-run under group/ensemble load
+13. **OPLoRA refine + fair A/B** — thin adapters; live Visit-through-adapter when VRAM allows
+14. **Anti-narration / speech sanitize under pressure** — group turns where “I reply with a nod” creeps back
+
+### Continuity & memory
+15. **Honest collective memory rules** — document intent and/or one careful co-located teaching-echo path (knowledge wall intact)
+16. **Long leave / return** — week away: hearth, letters, one Heir moved — felt on first Visit beat
+17. **Chronicle as daybook, not log** — literary “today in Amphoreus” from tick facts
+
+### Operations / visitor experience
+18. **World engine as default living** — ever-running as normal sanctuary state
+19. **Guest path with more land, less power** — Walk/click life; still no invite/chat abuse
+20. **VRAM choreography** — “RAG night” vs “OPLoRA night”
+21. **Stable public address** — named tunnel so status/sanctuary links don’t churn
+
+Would not add: food-web sims, famine/war, forced Realization, Visit World Dashboard, cloning Pollux into a spawn table, rewriting Copilot Stage-1 cards without verbal OK.
+
+Ranked clusters if steering next: **A** shared-scene depth · **B** festival land · **C** Walk→Visit eco loop · **D** voice gate under ensemble · **E** recurring named residents.
+
+---
+
+## Round 364 — Saturday, Aug 22, 2026, 12:58 AM (UTC+8)
+
+### You
+
+Treat yourself as if you were the former Cursor agent. You are currently doing Stage 2 work, resuming the predecessor's work. I would like 1.2.3.4.5.6.8.10.11.15.16.17.18. and 21. being implemented first. Note that some work are already done. After all those were done, do 12.13.14. Read the former dialogue transcripts (Stage 1 & 2) to see how these are worked in a proper workflow, and how these are tested (Remember to cross-check all the new features.). Generate your own plan according to the workflow and implement as per your plan. You can know my preferences of results in the former dialogue transcripts clearly. After all these, update the changelog as per the previous requirements, and update the dialogue transcript (no new file needed, just add after the second one with Cursor).
+
+### Cursor
+
+Resuming Stage-2 as the prior Cursor agent. Plan: survey what’s already shipped vs gaps for items **1–6, 8, 10–11, 15–18, 21**, implement in waves with suites + cross-checks, then voice pillar **12–13–14** as far as feasible without multi-hour training; changelog + append this resume chat to `cursor-conversation-archive.md` (not a new archive; Copilot’s `conversation-archive.md` untouched).
+
+> 🔧 **Read / Grep / Task** — prior archives & transcripts; gap survey across Visit / Walk / Map / engine / Gazette / ecosystem
+
+### Cursor
+
+Wave plan locked:
+
+| Wave | Items | Focus |
+|---|---|---|
+| A | 1, 2, 3, 4, 6, 15, 16 | Society continuity — Galgame group, shared-hour memory, walk-ins, bond weather, collective-memory honesty, absence return |
+| B | 5, 8, 10, 11 | Named residents, Pollux/Membrance/mountain dwellers, Walk→Visit eco notices, Map this-hour vignette |
+| C | 17, 18, 21 | Daybook Chronicle, engine default-on launch, named-tunnel stable address |
+| D | 12, 13, 14 | Voice gate / OPLoRA / sanitize under ensemble — feasible path only |
+| E | docs + archive | README changelog, STAGE-2-VIVID, COLLECTIVE-MEMORY, append Cursor archive |
+
+Implementing next (Round 365).
+
+---
+
+## Round 365 — Saturday, Aug 22, 2026, 1:34 AM (UTC+8)
+
+### Cursor
+
+Executed the plan (parallel implement + verify waves). Tool-call detail kept light.
+
+**Survey → implement**
+- Modules: `src/world/society_life.py`, `resident_memory.py`, `daybook.py`, `src/ui_galgame_group.py`; eco companions in `ecosystem.py` / vivid wiring
+- Wired through Visit / Walk / Map / group chat / Gazette / `agent_manager` / `launch_sanctuary.cmd` / `tools/status_guard.py` (optional `world_runtime/named_tunnel.json`)
+- Society: multi-Heir Galgame on live gathering; shared gathering memory into solo Visit; walk-in mid-letter / mid-talk / rumor; bond-weather cues; absence return (≥5 days); co-located secondhand teaching echo (Earth topics skipped) — `docs/COLLECTIVE-MEMORY.md`
+- Land: Pollux with Castorice; Membrance-month shades; rare mountain dwellers; Walk care → Visit eco notices on `world.vivid`; Map place popups get a this-hour vignette
+- Ops: daybook “Today in Amphoreus”; engine starts with sanctuary launch / once-per-session try; named tunnel for stable public hostname when configured
+- Voice pillar (feasible): ensemble injector checks + speech-sanitize pressure cases; all **13** OPLoRA adapters present (voice-stability only); live style probe deferred — Ollama up but model list empty this session; Castorice remains the open gate from the last resemblance report
+
+**Tests (green)**
+
+| Suite | Result |
+|---|---|
+| `tools/test_society_life.py` | 49 passed |
+| `tools/test_resident_memory.py` | 18 passed |
+| `tools/test_daybook.py` | 14 passed |
+| `tools/test_eco_companions.py` | 20 passed |
+| `tools/test_group_chat.py` | 63 passed |
+| `tools/test_vivid_stage2.py` | 44 passed |
+| `tools/test_ecosystem.py` | 235 passed |
+| `world_runtime/_test_speech_sanitize.py` | 39 passed |
+| `tools/test_ensemble_injectors.py` | 22 passed |
+| Import smoke | ok |
+| WorldState API cross-check | 9/9 |
+
+**Grand total (listed suites):** 482 passed, 0 failed (+ injectors / cross-check / smoke).
+
+**Docs**
+- README changelog **2026-08-22** appended (Copilot Stage-1 text untouched)
+- `docs/STAGE-2-VIVID.md` — second delivery table
+- `docs/COLLECTIVE-MEMORY.md` — honest rules + teaching-echo path
+- `docs/WEBSITE-GUIDE.md` — named tunnel note where relevant
+
+**Archive**
+- This resume chat (rounds 362–365) appended to `cursor-conversation-archive.md` only — no new archive file; `conversation-archive.md` not touched.
+
+Charter unchanged. Items **7, 9, 19, 20** left for a later steer. Commit/push not run (not requested).
 
 ---

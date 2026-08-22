@@ -38,3 +38,17 @@ into `adapter_v2/`. Does not train from scratch.
 
 Do **not** edit `databank/` or cards — reshape via `shape_training_data.py`
 into `work_copies/` only.
+
+## Ensemble / Stage-2 note (2026-08-22)
+
+Adapters remain **voice-stability only** — they stabilize spoken register under
+Visit / group load; they do not replace canon. Scripture and lore still come
+from the **RAG path**, not from LoRA weights.
+
+Next refine targets **thin sets** (Hysilens, Evernight, Cerydra, Cipher, and
+peers with higher residual loss) under **group-chat load**, where ensemble
+pressure exposes register drift sooner than 1:1 Visit.
+
+Do **not** overwrite live `adapter/` until last loss on the refine run is
+strictly lower than the current verified adapter (same gate as the 2026-08-18
+refine protocol).

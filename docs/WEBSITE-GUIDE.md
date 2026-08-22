@@ -109,9 +109,21 @@ also like a *meaningful* hostname such as `amphoreus.yourdomain.com`:
    then `cloudflared tunnel create amphoreus`.
 3. Route a hostname: `cloudflared tunnel route dns amphoreus amphoreus.yourdomain.com`.
 4. Replace the two quick tunnels in `tools/status_guard.py` with one named
-   tunnel (`cloudflared tunnel run amphoreus` + an ingress rule forwarding
-   `/app*` to 8765 and everything else to 8501 — the guard code is one edit
-   away; ask the assistant to wire it).
+   tunnel **or** write `world_runtime/named_tunnel.json`:
+
+```json
+{
+  "enabled": true,
+  "tunnel_name": "amphoreus",
+  "credentials_file": "C:/Users/YOU/.cloudflared/UUID.json",
+  "status_hostname": "status.yourdomain.com",
+  "ui_hostname": "sanctuary.yourdomain.com"
+}
+```
+
+   The guard will generate `world_runtime/named_tunnel.yml` and run
+   `cloudflared tunnel run …` so hostnames stay constant across reboots.
+   The eternal github.io front door still rewrites to these URLs.
 
 From then on `https://amphoreus.yourdomain.com` is **constant for as long as
 this computer is connected to the Internet**, across reboots and network

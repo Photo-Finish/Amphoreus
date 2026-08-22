@@ -243,6 +243,7 @@ _MAP_CLICK_SCRIPT = """\
       html  = '<span class="amp-close">✕</span>';
       html += '<h4>'+esc(P.icon)+' '+esc(P.name)+'</h4>';
       html += '<div class="amp-sub">'+esc(P.desc)+'</div>';
+      if(P.hour) html += '<div class="amp-row">This hour: <i>'+esc(P.hour)+'</i></div>';
       if(P.past && !P.past_form) html += '<div class="amp-row">⏳ Dawn-era form: <b>'+esc(P.past)+'</b> — across the Veil of Evernight (1 p, Oronyx-blessed)</div>';
       if(P.past_form) html += '<div class="amp-row">🔁 This is the <b>Dawn-era (past)</b> form of <b>'+esc(P.of)+'</b> — reached across the Veil of Evernight (1 p)</div>';
       if(P.nether) html += '<div class="amp-row">† The Nether — the death-realm beneath Styxia (Thanatos-blessed only)</div>';
@@ -514,6 +515,18 @@ try:
     )
 except Exception:
     pass
+
+# Stage 2 — world engine as default living (try once per UI session).
+try:
+    if not st.session_state.get("_amp_engine_autostart_tried"):
+        st.session_state["_amp_engine_autostart_tried"] = True
+        from src.ui_control_panel import _engine_running, _engine_start
+        if not _engine_running():
+            if _engine_start():
+                st.sidebar.caption("The world engine woke with the Sanctuary.")
+except Exception:
+    pass
+
 st.sidebar.caption("*The Sanctuary of the Chrysos Heirs*")
 
 # Land look + Life sit above the tabs so they stay visible (not in the sidebar).
@@ -578,11 +591,16 @@ with guide_tab:
         st.error(f"Could not render the guide: {e}")
 
 with game_tab:
-    # 🎬 Galgame view — an OPTIONAL visual-novel rendering of the same
-    # conversation. The Classic interface above is untouched.
+    # 🎬 Galgame view — OPTIONAL visual-novel of the same conversation.
+    # When a Visit gathering is active, show the multi-Heir stage instead.
     try:
-        from src.ui_galgame import render_galgame
-        render_galgame(manager, selected, info)
+        from src.ui_group_chat import group_is_active, store as _gc_store
+        if group_is_active():
+            from src.ui_galgame_group import render_group_galgame
+            render_group_galgame(manager, _gc_store())
+        else:
+            from src.ui_galgame import render_galgame
+            render_galgame(manager, selected, info)
     except Exception as e:
         st.error(f"Could not render the galgame view: {e}")
 
@@ -634,10 +652,17 @@ with map_tab:
         import json as _json
         _place_info = {}
         for _pn in _map.ALL_POS:
+            _hour = ""
+            try:
+                from src.world import society_life as _sl_map
+                _hour = _sl_map.map_hour_vignette(_ws, _pn)
+            except Exception:
+                _hour = ""
             _place_info[_pn] = {
                 "name": _pn,
                 "icon": _map.AREA_ICONS.get(_pn, "✦"),
                 "desc": _ws.location_desc(_pn),
+                "hour": _hour,
                 "heirs": [_names[c] for c, l in _heir_locs.items()
                           if l == _pn and c not in _ws.agent_travel],
                 "traveling": [_names[c] for c, l in _heir_locs.items()
@@ -1110,7 +1135,7 @@ with main_tab:
             st.markdown(_v2.place_hour_markdown(_frame, info["name"]))
             _moment = manager.ongoing_moment(selected)
             if _moment and _moment.get("kind") != "quiet":
-                st.info(_moment.get("summary", ""))
+                st.info(_moment.get("ui_summary") or _moment.get("summary", ""))
         _comps = manager.companions_here(selected)
         if _comps and not is_visitor():
             with st.expander("Sit with them (shared scene)"):

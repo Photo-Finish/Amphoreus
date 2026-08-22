@@ -45,11 +45,11 @@ def group_messages() -> list:
         return []
 
 
-def end_group_session() -> dict:
+def end_group_session(manager=None) -> dict:
     """End the gathering (leaving Visit, or an explicit return to 1:1)."""
     try:
         ss = _ss()
-        old = gc.session_end(ss)
+        old = gc.session_end(ss, manager=manager)
         ss[_MODE_KEY] = "individual"
         ss["amp_gc_kind_radio"] = "Individual chat"
         return old
@@ -57,11 +57,11 @@ def end_group_session() -> dict:
         return gc.blank_session()
 
 
-def end_if_left_visit_page() -> None:
+def end_if_left_visit_page(manager=None) -> None:
     """Call from Streamlit multipage scripts that are not Visit (Walk, Panel)."""
     try:
         if group_is_active():
-            end_group_session()
+            end_group_session(manager=manager)
     except Exception:
         pass
 

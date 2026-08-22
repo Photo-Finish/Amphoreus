@@ -50,10 +50,19 @@ rem   The model mapping is resolved by src/core/senses.py from SENSES_MODE /
 rem   .env - this variable just picks the option.
 set SENSES_MODE=unified
 
-echo [2/3] Starting the interface in the background...
+echo [2/4] Ensuring the little Amphoreus keeps living...
+powershell -NoProfile -Command ^
+  "$py='%PYTHON%'; $root='%ROOT%'; $alive=$false; ^
+   try { $alive = (Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -match 'world_engine' }) -ne $null } catch {}; ^
+   if (-not $alive) { ^
+     Start-Process -FilePath $py -ArgumentList '-m','src.world.world_engine','--interval','900' -WorkingDirectory $root -WindowStyle Hidden -RedirectStandardOutput ($root+'world_runtime\engine.log') -RedirectStandardError ($root+'world_runtime\engine.log.err'); ^
+     Write-Host '      World engine started (interval 900s).' ^
+   } else { Write-Host '      World engine already running.' }"
+
+echo [3/4] Starting the interface in the background...
 powershell -NoProfile -Command "$p = Start-Process -FilePath '%PYTHON%' -ArgumentList '-m','streamlit','run','%ROOT%src\ui_app.py','--server.headless','true','--server.port','8501' -WorkingDirectory '%ROOT%' -WindowStyle Minimized -RedirectStandardOutput '%ROOT%world_runtime\ui.log' -RedirectStandardError '%ROOT%world_runtime\ui.log.err' -PassThru; $p.Id | Out-File -FilePath '%ROOT%world_runtime\ui.pid' -Encoding ascii"
 
-echo [3/3] Waiting for the interface, then opening it in your browser...
+echo [4/4] Waiting for the interface, then opening it in your browser...
 set /a _n=0
 :wait_ui
 timeout /t 1 /nobreak >nul

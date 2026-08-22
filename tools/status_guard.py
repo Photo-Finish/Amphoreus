@@ -186,6 +186,83 @@ def write_urls(status_tunnels, ui_tunnels):
         print(f"[guard] {now()} write failed: {e}")
 
 
+NAMED_CFG = ROOT / "world_runtime" / "named_tunnel.json"
+# Example named_tunnel.json (gitignored operator file):
+# {
+#   "enabled": true,
+#   "tunnel_name": "amphoreus",
+#   "credentials_file": "C:/Users/.../.cloudflared/<UUID>.json",
+#   "status_hostname": "status.example.com",
+#   "ui_hostname": "sanctuary.example.com"
+# }
+
+
+def load_named_tunnel_cfg():
+    try:
+        cfg = json.loads(NAMED_CFG.read_text(encoding="utf-8"))
+        if cfg.get("enabled") and cfg.get("tunnel_name"):
+            return cfg
+    except Exception:
+        pass
+    return None
+
+
+def make_named_ingress(cf, cfg):
+    """Stable hostnames via a Cloudflare *named* tunnel (no trycloudflare churn).
+
+    Requires operator setup (login + tunnel create + DNS route). When configured,
+    the guard prefers these URLs over quick tunnels.
+    """
+    name = cfg.get("tunnel_name") or "amphoreus"
+    cred = cfg.get("credentials_file") or ""
+    status_host = cfg.get("status_hostname") or ""
+    ui_host = cfg.get("ui_hostname") or ""
+    yml = ROOT / "world_runtime" / "named_tunnel.yml"
+    ingress = []
+    if status_host:
+        ingress.append(
+            f"  - hostname: {status_host}\n"
+            f"    service: http://127.0.0.1:{PORT}\n"
+        )
+    if ui_host:
+        ingress.append(
+            f"  - hostname: {ui_host}\n"
+            f"    service: http://127.0.0.1:{UI_PORT}\n"
+        )
+    ingress.append("  - service: http_status:404\n")
+    body = f"tunnel: {name}\n"
+    if cred:
+        body += f"credentials-file: {cred}\n"
+    body += "ingress:\n" + "".join(ingress)
+    try:
+        yml.write_text(body, encoding="utf-8")
+    except Exception as e:
+        print(f"[guard] {now()} could not write named tunnel yml: {e}")
+        return None, None, None
+
+    class NamedTunnel(Tunnel):
+        def __init__(self):
+            args = [str(cf), "tunnel", "--no-autoupdate",
+                    "--config", str(yml), "run", name]
+            super().__init__("named-tunnel", args,
+                             re.compile(r"(?!x)x"))
+            self.url = None
+
+        def start(self):
+            self.proc = subprocess.Popen(
+                self.args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                text=True, encoding="utf-8", errors="replace",
+                creationflags=CREATION_FLAGS)
+            print(f"[guard] {now()} started {self.name} (pid {self.proc.pid})")
+            self.url = f"https://{status_host}" if status_host else None
+            threading.Thread(target=self._reader, daemon=True).start()
+
+    nt = NamedTunnel()
+    status_url = f"https://{status_host}" if status_host else ""
+    ui_url = f"https://{ui_host}" if ui_host else ""
+    return nt, status_url, ui_url
+
+
 def make_cloudflare(cf, port, name):
     return Tunnel(name,
                   [str(cf), "tunnel", "--no-autoupdate", "--url",
@@ -305,7 +382,20 @@ def main():
     cf = ensure_cloudflared()
     status_tunnels = []
     ui_tunnels = []
-    if cf:
+    named_cfg = load_named_tunnel_cfg()
+    pinned_status = ""
+    pinned_ui = ""
+    if cf and named_cfg:
+        nt, pinned_status, pinned_ui = make_named_ingress(cf, named_cfg)
+        if nt is not None:
+            status_tunnels.append(nt)
+            print(f"[guard] {now()} named tunnel enabled "
+                  f"({named_cfg.get('tunnel_name')}) — stable hostnames")
+            if pinned_status:
+                print(f"[guard] {now()} status host: {pinned_status}")
+            if pinned_ui:
+                print(f"[guard] {now()} ui host: {pinned_ui}")
+    elif cf:
         status_tunnels.append(make_cloudflare(cf, PORT, "cloudflared-status"))
     front = FrontDoor()
     if front.enabled:
@@ -320,7 +410,7 @@ def main():
             for t in status_tunnels:
                 t.ensure()
             if port_open(UI_PORT):
-                if cf and not ui_tunnels:
+                if cf and not named_cfg and not ui_tunnels:
                     print(f"[guard] {now()} UI (port {UI_PORT}) is up; "
                           "opening a tunnel for it")
                     ui_tunnels.append(make_cloudflare(cf, UI_PORT, "cloudflared-ui"))
@@ -330,15 +420,29 @@ def main():
                 print(f"[guard] {now()} UI (port {UI_PORT}) is down; "
                       "its tunnel stays but is not advertised")
             write_urls(status_tunnels, ui_tunnels)
-            pub_status = ""
-            pub_ui = ""
+            # Prefer pinned named hostnames when configured.
+            pub_status = pinned_status
+            pub_ui = pinned_ui
             try:
                 lines = URLS_TXT.read_text(encoding="utf-8").splitlines()
-                pub_status = next((l.strip() for l in lines
-                                   if l.strip().startswith("https")), "")
+                if not pub_status:
+                    pub_status = next((l.strip() for l in lines
+                                       if l.strip().startswith("https")), "")
                 ui_lines = UI_URL_TXT.read_text(encoding="utf-8").splitlines()
-                pub_ui = next((l.strip() for l in ui_lines
-                               if l.strip().startswith("https")), "")
+                if not pub_ui:
+                    pub_ui = next((l.strip() for l in ui_lines
+                                   if l.strip().startswith("https")), "")
+                # When named UI host is set, keep advertising it even if quick
+                # tunnel list is empty.
+                if pinned_ui and not ui_tunnels:
+                    UI_URL_TXT.write_text(pinned_ui + "\n", encoding="utf-8")
+                if pinned_status:
+                    # Ensure status_urls also lists the stable hostname first.
+                    cur = URLS_TXT.read_text(encoding="utf-8")
+                    if pinned_status not in cur:
+                        URLS_TXT.write_text(
+                            pinned_status + "\n" + (pinned_ui + "\n" if pinned_ui else "")
+                            + cur, encoding="utf-8")
             except Exception:
                 pass
             lan_status = f"http://{socket.gethostname()}.local:{PORT}"

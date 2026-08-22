@@ -1107,4 +1107,39 @@ tide / letter / weather / co-location / aftermath features):
   Heirs together but cannot invite. The gathering ends on leaving Visit an
   Heir (tab or page), not on closing localhost:8501.
 
+### 2026-08-22
+- **Society continuity deepens** (`src/world/society_life.py`) — shared gatherings
+  stick into solo Visit as remembered hours; richer walk-in scenes (mid-letter /
+  mid-Heir-talk / rumor); bond-weather cues when canon pairs share a place;
+  Walk→Visit eco notices persist on `world.vivid`; long-leave return beats (≥5
+  days); co-located secondhand teaching echoes (Earth topics skipped). Doc:
+  `docs/COLLECTIVE-MEMORY.md`. Suite: `tools/test_society_life.py` (49) +
+  `tools/test_ensemble_injectors.py` (22).
+- **Multi-Heir Galgame** (`src/ui_galgame_group.py`) — when a Visit gathering is
+  active, the Galgame tab shows multiple sprites and the current speaker’s line;
+  classic 1:1 Galgame unchanged.
+- **Named street memory** (`src/world/resident_memory.py`) — recurring residents
+  recognize the visitor across meets; wired through `vivid_stage2` greet/talk.
+  Suite: 18.
+- **Canon companions on the land** — Pollux (Castorice's dragon companion, not
+  the Workshop dromas); Membrance-month **maze fairies** at Aedes; Mountain
+  Dwellers at **Okhema** (home) with thin Kremnos forge echo — never Aidonia
+  (`ecosystem.py`, `databank/world/fauna.md`). Suite: `tools/test_eco_companions.py`.
+- **Daybook Chronicle view** (`src/world/daybook.py`) — Gazette opens with a
+  literary “Today in Amphoreus” from tick facts (not a raw log). Suite: 14.
+- **Lived Map hour** — Map place popups carry a this-hour vignette from
+  mechanisms / eco.
+- **World engine default living** — `launch_sanctuary.cmd` starts the engine if
+  idle; Visit UI also tries once per session.
+- **Stable public address** — `status_guard.py` reads optional
+  `world_runtime/named_tunnel.json` for Cloudflare named tunnels (no
+  trycloudflare churn); github.io front door still rewritten. Guide updated.
+- **Voice pillar** — speech-sanitize ensemble cases (62); OPLoRA 13 adapters
+  still healthy (voice-stability only); live style probe deferred (Ollama model
+  list empty this session). Castorice remains the open gate from the last report.
+- **Desktop window shell** (`AmphoreusSanctuary.exe`) — same Streamlit UI in a
+  native window via pywebview (Edge WebView2). Browser tab launcher
+  `launch_sanctuary.cmd` is unchanged. Build: `tools/build_desktop_exe.ps1`;
+  also `launch_sanctuary_desktop.cmd` / `tools/desktop_sanctuary.py`.
+
 

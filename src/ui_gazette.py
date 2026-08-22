@@ -110,6 +110,22 @@ def render_gazette(manager, characters):
         parts.append(f'<div class="dateline">{_html.escape(ws.clock.format())} · '
                      'a gazette of the Heirs\' days, written by their actions, not by us</div>')
 
+        # Literary daybook (Stage-2) — before dense lists
+        try:
+            from src.world import daybook as _daybook
+            _db_entry = _daybook.compose_daybook(ws, entries)
+            _db_md = _daybook.daybook_markdown(_db_entry)
+            if _db_md.strip():
+                parts.append('<h2>Today in Amphoreus</h2>')
+                for _para in (_db_entry.get("paragraphs") or []):
+                    _para = str(_para).strip()
+                    if _para:
+                        parts.append(
+                            f'<div class="item" style="margin-bottom:8px;">'
+                            f'{_html.escape(_para)}</div>')
+        except Exception:
+            pass
+
         # sky + news strip
         if weather or news:
             parts.append('<h2>☀️ The Sky Over Amphoreus</h2>')

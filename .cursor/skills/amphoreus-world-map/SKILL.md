@@ -61,6 +61,9 @@ Special: **The Nether** under Styxia (Thanatos-blessed). Cross-era rules in `tim
 |---|---|
 | Chimera | Holy-city family (`CHIMERA_CITIES`) — not Grove/tomb picnic |
 | Dromas | `DROMAS_ROADS` places |
+| Pollux | Only where **Castorice** stands (dragon companion; not Workshop dromas Pollux) |
+| Maze fairy | Aedes Elysiae family in **Month of Membrance** only |
+| Mountain Dweller | **Okhema** family (+ thin Kremnos forge echo) — **not Aidonia** |
 | Shore / siren / net / tidepool | Working seashore (`WORKING_SHORE`) |
 | Boat | Shore or River of Souls places |
 | Forge / banner | Kremnos family |

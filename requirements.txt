@@ -7,6 +7,9 @@ python-dotenv>=1.0.0   # loads .env / SENSES_MODE (used by llm_client + senses)
 # UI
 streamlit>=1.28.0
 pandas>=1.5.0          # used by the Map tab (travel-time matrix)
+# Optional desktop window (AmphoreusSanctuary.exe): pywebview + pyinstaller
+#   pip install pywebview pyinstaller
+#   powershell -ExecutionPolicy Bypass -File tools/build_desktop_exe.ps1
 
 # Vector Database (Phase 2 — RAG)
 chromadb>=0.4.0

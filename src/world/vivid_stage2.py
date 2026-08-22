@@ -536,14 +536,18 @@ def npcs_in_city(city: str) -> List[dict]:
 
 
 def greet_here(world, city: str, limit: int = 4) -> List[dict]:
-    from . import resident_npcs as rn
-    return rn.greet_here(world, city, limit=limit)
+    """Visit affordance with optional recognition from resident_memory."""
+    from . import resident_memory as rm
+    return rm.greet_with_memory(world, city, limit=limit)
 
 
 def talk_to_npc(world, city: str, npc_name: str) -> dict:
-    """A short, deterministic sanctuary-safe line from a living NPC."""
-    from . import resident_npcs as rn
-    return rn.talk_to_npc(world, city, npc_name)
+    """A short, deterministic sanctuary-safe line from a living NPC.
+
+    Memory-aware: returning visitors get a recognition preface; meetings persist.
+    """
+    from . import resident_memory as rm
+    return rm.talk_with_memory(world, city, npc_name)
 
 
 # --------------------------------------------------------------------------- #

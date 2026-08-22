@@ -103,10 +103,41 @@ def session_active(store) -> bool:
     return bool(sess.get("active") and len(sess.get("members") or []) >= 2)
 
 
-def session_end(store) -> dict:
-    """Clear the gathering. Returns the session as it stood."""
+def session_end(store, manager=None) -> dict:
+    """Clear the gathering. Returns the session as it stood.
+
+    When a gathering had real talk, persist a shared-hour memory so solo
+    Visits can feel that hour later (Stage-2 society continuity).
+    """
     sess = as_session(store)
     old = dict(sess)
+    try:
+        members = list(old.get("members") or [])
+        place = old.get("place") or ""
+        msgs = [
+            m for m in (old.get("messages") or [])
+            if m.get("role") == "assistant" and (m.get("content") or "").strip()
+        ]
+        if len(members) >= 2 and msgs:
+            snippets = []
+            for m in msgs[-6:]:
+                sp = m.get("speaker") or ""
+                bit = re.sub(r"\s+", " ", (m.get("content") or "")).strip()[:100]
+                if bit:
+                    snippets.append(f"{sp}: {bit}" if sp else bit)
+            from src.world.world_state import WorldState
+            from src.world import society_life as sl
+            ws = WorldState()
+            sl.note_shared_gathering(
+                ws, members, place, snippets,
+                clock_label=ws.clock.format_short(),
+            )
+            ws.save()
+            if manager is not None:
+                sl.promote_gathering_to_memories(
+                    manager, members, place, snippets)
+    except Exception:
+        pass
     sess.clear()
     sess.update(blank_session())
     return old

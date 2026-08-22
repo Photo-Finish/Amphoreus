@@ -136,6 +136,10 @@ KIND_VISUAL = {
     "mill": "mill",
     "tidepool": "tidepool",
     "pillar": "pillar",
+    # Canon companions / Membrance Maze fairies (UI may fall back to text hotspots).
+    "pollux": "pollux",
+    "maze_fairy": "maze_fairy",
+    "mountain_dweller": "mountain_dweller",
 }
 
 # Place-family art stems (Visit loads ``{stem}_{family}.png`` when present).
@@ -146,6 +150,15 @@ ART_FAMILY_KREMNOS = frozenset({"Castrum Kremnos", "Bloodbathed Battlefront"})
 ART_FAMILY_STYXIA = frozenset({"Styxia", "Warbling Shores"})
 ART_FAMILY_GROVE = frozenset({"Grove of Epiphany", "Radiant Scarwood"})
 ART_FAMILY_AIDONIA = frozenset({"Aidonia"})
+
+# Mountain Dwellers (Georios Titankin): fled to Okhema; live as smiths/masons.
+# Kremnos family kept as thin historical forge echo (Chartonus / old service).
+# Aidonia is Thanatos snow-city — NOT their home (databank/world/fauna.md).
+MOUNTAIN_DWELLER_PLACES = ART_FAMILY_OKHEMA | ART_FAMILY_KREMNOS
+# Membrance Maze fairies — Aedes (and of old) in Month of Membrance only.
+MAZE_FAIRY_PLACES = ART_FAMILY_AEDES
+# Back-compat alias for older tests / callers.
+MEMBRANCE_SHADE_PLACES = MAZE_FAIRY_PLACES
 
 # Kinds that meaningfully differ by place family → asset prefix (stall_okhema…).
 _PLACE_ART_PREFIX = {
@@ -348,8 +361,14 @@ VISITOR_ACT: Dict[str, dict] = {
         "note": "you sit a while; the hearth keeps the hour",
     },
     "wave": {
-        "kinds": {"resident"},
+        "kinds": {"resident", "mountain_dweller"},
         "note": "a passerby answers with a nod",
+        "notes": {
+            "mountain_dweller": (
+                "a Mountain Dweller greets you — Georios' kin on an ordinary "
+                "smith or mason errand"
+            ),
+        },
     },
     "drink": {
         "kinds": {"well", "bath", "fountain"},
@@ -360,13 +379,17 @@ VISITOR_ACT: Dict[str, dict] = {
         "note": "the air of this hour moves through your fingers",
     },
     "pet": {
-        "kinds": {"chimera", "hearth_cat", "dromas", "dromas_calf"},
+        "kinds": {"chimera", "hearth_cat", "dromas", "dromas_calf", "pollux"},
         "note": "they lean into the touch, then remain themselves",
         "notes": {
             "chimera": "a small head under your fingers — Awoo, pleased, not a command",
             "hearth_cat": "the cat leans in, then remembers it is its own cat",
             "dromas": "the neck plates warm under your palm; the road-beast does not hurry",
             "dromas_calf": "the calf bumps your hand, soft plates still learning the road",
+            "pollux": (
+                "Castorice's dragon companion — Pollux keeps close; "
+                "not the Workshop dromas of the same name"
+            ),
         },
     },
     "greet_dromas": {
@@ -394,8 +417,14 @@ VISITOR_ACT: Dict[str, dict] = {
         "note": "the shuttle clicks; cloth remembers the month",
     },
     "trail_maze": {
-        "kinds": {"maze"},
+        "kinds": {"maze", "maze_fairy"},
         "note": "you walk the maze-edge a little; it keeps its small ecology",
+        "notes": {
+            "maze_fairy": (
+                "a Membrance Maze fairy keeps you company at the edge — "
+                "home to fairies under Aedes' great tree"
+            ),
+        },
     },
     "brush_grain": {
         "kinds": {"wheat"},
@@ -475,6 +504,36 @@ def eco_bucket(world) -> dict:
 
 def _h(seed: str) -> int:
     return int(hashlib.sha256(seed.encode("utf-8")).hexdigest()[:8], 16)
+
+
+def _castorice_present(world, place: str) -> bool:
+    """True when Castorice is physically at this place (Pollux only then)."""
+    if not place:
+        return False
+    try:
+        here = world.agents_at(place) or []
+        if "castorice" in here:
+            return True
+    except Exception:
+        pass
+    try:
+        if world.location_name("castorice") == place:
+            if not world.travel_info("castorice"):
+                return True
+    except Exception:
+        pass
+    return False
+
+
+def _is_membrance_month(world) -> bool:
+    """Month of Membrance (calendar name or month index 13)."""
+    try:
+        name = str(getattr(world.clock, "month_name", "") or "")
+        if "Membrance" in name:
+            return True
+    except Exception:
+        pass
+    return _month(world) == 13
 
 
 def _period(world) -> int:
@@ -712,6 +771,16 @@ def _base_status(kind: str, place: str, period: int, month: int,
         if _h(seed + oid + "uneasy") % 31 == 0:
             return "uneasy", "a dry hush at the maze-edge"
         return "quiet", "the wheat-village maze keeps its small ecology"
+
+    if kind == "pollux":
+        # Castorice's dragon companion (not the Okhema Workshop dromas Pollux).
+        return "present", "Castorice's dragon companion keeps close"
+
+    if kind == "maze_fairy":
+        return "alive", "a Membrance Maze fairy at the maze-edge"
+
+    if kind == "mountain_dweller":
+        return "alive", "a Mountain Dweller on a smith or mason's errand"
 
     if kind == "pebble":
         return "well", "a road-stone the size of a thumb"
@@ -975,7 +1044,12 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
         "mill": "a coastal mill",
         "tidepool": "a tide pool",
         "pillar": "a public column",
+        "pollux": "Pollux",
+        "maze_fairy": "a Membrance Maze fairy",
+        "mountain_dweller": "a Mountain Dweller",
     }.get(kind, kind)
+    if kind == "pollux":
+        name = "Pollux"
     if kind == "chimera" and chimera_meta:
         phrase = chimera_meta.get("phrase") or "little chimera"
         name = f"another {phrase}" if idx > 1 else f"a {phrase}"
@@ -1002,11 +1076,18 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
             if period == 2:
                 doing = f"Action Hour — {doing}"
 
-    if place and kind != "dawn":
+    if place and kind != "dawn" and kind not in {
+        "pollux", "maze_fairy", "mountain_dweller",
+    }:
         name = voice.flavor_name(
             place, kind, idx, name, visual=visual if kind == "chimera" else ""
         )
         doing = voice.flavor_doing(place, kind, status, doing, period, idx)
+
+    # Sanctuary clamp: Pollux is never dead/starving.
+    if kind == "pollux" and status in {"dead", "starving", "plague"}:
+        status = "present"
+        doing = "Castorice's dragon companion keeps close"
 
     sound = None
     if kind == "chimera":
@@ -1059,6 +1140,12 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
         sound = "stone taking light"
     elif kind == "ribbon":
         sound = "scrap-cloth in a doorway"
+    elif kind == "pollux":
+        sound = "a soft wing-fold"
+    elif kind == "maze_fairy":
+        sound = "a light fairy hush at the maze-edge"
+    elif kind == "mountain_dweller":
+        sound = "a deep, measured greeting"
 
     being = {
         "id": oid,
@@ -1120,6 +1207,9 @@ def hotspot_for(kind: str, idx: int) -> dict:
         "tidepool": ("56%", "5%"),
         "pillar": ("28%", "12%"),
         "resident": ("40%", "14%"),
+        "pollux": ("48%", "18%"),
+        "maze_fairy": ("34%", "10%"),
+        "mountain_dweller": ("58%", "14%"),
     }
     left, bottom = table.get(kind, ("50%", "20%"))
     if kind == "market_stall":
@@ -1226,6 +1316,22 @@ def derive_scene(world, place: Optional[str] = None,
         out.append(_mk_being("wheat", place, 1, world, flags, character_id))
         out.append(_mk_being("grass", place, 1, world, flags, character_id))
         out.append(_mk_being("maze", place, 1, world, flags, character_id))
+
+    # Canon companions / Membrance Maze fairies (not ordinary species spawns).
+    if _castorice_present(world, place):
+        out.append(_mk_being("pollux", place, 1, world, flags, character_id))
+    if place in MAZE_FAIRY_PLACES and _is_membrance_month(world):
+        out.append(_mk_being("maze_fairy", place, 1, world, flags, character_id))
+    if (
+        place in MOUNTAIN_DWELLER_PLACES
+        and period in (1, 2)
+        and not flags.get("resting")
+    ):
+        # Thin presence: 0–1, deterministic rarity (Okhema home; Kremnos echo).
+        if _h(_date_seed(world) + str(place) + "mountain-dweller") % 5 == 0:
+            out.append(_mk_being(
+                "mountain_dweller", place, 1, world, flags, character_id,
+            ))
 
     if place in WORKING_SHORE:
         out.append(_mk_being("shore", place, 1, world, flags, character_id))
@@ -1461,6 +1567,7 @@ def derive_scene(world, place: Optional[str] = None,
         "mosaic", "fountain", "pillar", "laundry", "courier", "gate",
         "ribbon", "incense", "shrine", "boat", "net", "tidepool", "pearl",
         "dromas", "dromas_calf", "pebble", "well", "grass", "wind",
+        "pollux", "maze_fairy", "mountain_dweller",
     }
 
     def _rank(b: dict) -> Tuple[int, int]:
@@ -1540,6 +1647,15 @@ def logic_faults(scene: List[dict], place: str) -> List[str]:
     for b in scene:
         if b.get("status") in {"dead", "starving", "plague"}:
             faults.append(f"Forbidden status on {b.get('id')}")
+    # Pollux presence is gated by Castorice in derive_scene (any city she stands in).
+    if "maze_fairy" in kinds and place not in MAZE_FAIRY_PLACES:
+        faults.append("Membrance Maze fairy outside Aedes Elysiae family")
+    if "mountain_dweller" in kinds and place not in MOUNTAIN_DWELLER_PLACES:
+        faults.append("Mountain Dweller outside Okhema / Kremnos family")
+    if "mountain_dweller" in kinds and place in ART_FAMILY_AIDONIA:
+        faults.append("Mountain Dwellers do not haunt Aidonia (Thanatos snow-city)")
+    if "mountain_dweller" in kinds and place in GROVE:
+        faults.append("Mountain Dweller must not appear in the Grove")
     return faults
 
 
@@ -1706,6 +1822,21 @@ def interact(world, object_id: str,
         line = f"You hear {sound}."
     elif kind == "maze":
         line = f"The maze-edge: {being.get('doing')}."
+    elif kind == "pollux":
+        line = (
+            "Pollux — Castorice's dragon companion — keeps close at her side. "
+            "(Not the Workshop dromas that shares the name.)"
+        )
+    elif kind == "maze_fairy":
+        line = (
+            "A fairy of the Membrance Maze at the maze-edge — "
+            "home under Aedes' great tree, in Cyrene's month."
+        )
+    elif kind == "mountain_dweller":
+        line = (
+            "A Mountain Dweller (Georios' kin) greets you — "
+            "smith or mason on an ordinary Okhema-road errand."
+        )
     elif kind == "pebble":
         line = "A road-stone the size of a thumb lies where a wheel missed it."
     elif kind == "pearl":
