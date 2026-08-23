@@ -76,7 +76,11 @@ def main():
     )
     check(
         "pinPhoto re-runs when tab panel becomes visible",
-        "attributeFilter: ['hidden']" in scene_src,
+        "attributeFilter: ['hidden', 'aria-hidden']" in scene_src,
+    )
+    check(
+        "pinLifeShell promotes life wrap in app shell",
+        "pinLifeShell" in scene_src and "stAppViewContainer" in scene_src,
     )
 
     print("== apply_map_focus (session_state-like) ==")

@@ -358,9 +358,10 @@ _SPRITE_Y_SCALE = 2
 _UI_NOTICE_Z = 280
 _UI_READ_Z = 260
 # Page-layer stacking vs Streamlit chrome (see ui_weather page_backdrop_css):
-# photo behind copy; life/popups above copy; chat/tabs stay higher still.
+# photo z0 → pictorial copy z5 → life/popups z35 → widgets z40 → tabs z80.
 _PAGE_PHOTO_Z = 0
-_PAGE_LIFE_Z = 25
+_PAGE_COPY_Z = 5
+_PAGE_LIFE_Z = 35
 # Page-layer walkable figures share one sill — the viewport bottom edge.
 _PAGE_GROUND_BOTTOM = "0px"
 # Display height on the full pictorial stage. Resident is human scale.
@@ -1979,11 +1980,34 @@ def pictorial_stage_documents(
             f"object-position:{photo_pos};pointer-events:none;display:block;\">';\n"
             "        if (shot) shot.style.display = 'none';\n"
             "      }\n"
+            "      function pinLifeShell(){\n"
+            "        var wrap = p;\n"
+            "        if (!wrap || !f) return;\n"
+            "        if (!panelVisible()) {\n"
+            "          wrap.style.display = 'none';\n"
+            "          return;\n"
+            "        }\n"
+            "        wrap.style.display = '';\n"
+            "        var mount = landMount();\n"
+            "        if (!mount) return;\n"
+            "        var photoHost = pdoc.getElementById('amp-land-photo-host');\n"
+            "        if (wrap.parentNode !== mount) {\n"
+            "          if (photoHost && photoHost.parentNode === mount) {\n"
+            "            mount.insertBefore(wrap, photoHost.nextSibling);\n"
+            "          } else {\n"
+            "            mount.insertBefore(wrap, mount.firstChild);\n"
+            "          }\n"
+            "        }\n"
+            "      }\n"
             "      pinPhoto();\n"
+            "      pinLifeShell();\n"
             "      if (panel) {\n"
             "        try {\n"
-            "          new MutationObserver(function(){ pinPhoto(); }).observe(panel, {\n"
-            "            attributes: true, attributeFilter: ['hidden']\n"
+            "          new MutationObserver(function(){\n"
+            "            pinPhoto();\n"
+            "            pinLifeShell();\n"
+            "          }).observe(panel, {\n"
+            "            attributes: true, attributeFilter: ['hidden', 'aria-hidden']\n"
             "          });\n"
             "        } catch (e) {}\n"
             "      }\n"

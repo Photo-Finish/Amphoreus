@@ -30,15 +30,20 @@ docs = pictorial_stage_documents(
     dense=True,
 )
 html = docs[0] if docs else ""
+weather_src = (ROOT / "src" / "ui_weather.py").read_text(encoding="utf-8")
 checks = {
-    "html/body pointer-events:none": "html,body{margin:0;padding:0;width:100%;height:100%;"
-    "background:transparent;overflow:hidden;pointer-events:none;}" in html,
+    "html/body pointer-events:none": (
+        "background:transparent;overflow:hidden;pointer-events:none;}" in html
+        and "pointer-events:none;" in html.split("html,body")[1][:120]
+    ),
     "iframe pointer-events:none in pin_js": "pointer-events:none;" in html.split("f.style.cssText")[1][:120],
     "wheel passScroll": "passScroll" in html and "pdoc.addEventListener('wheel', passScroll" in html,
     "touch pass": "addEventListener('touchmove'" in html,
     "sprite pointer-events:auto": ".amp-sprite {" in html and "pointer-events: auto;" in html,
     "photo host mounts in app shell": "landMount" in html and "stAppViewContainer" in html,
-    "life iframe z-index 25": "z-index:25" in html,
+    "life iframe z-index 35": "z-index:35" in html,
+    "life shell promoted": "pinLifeShell" in html,
+    "pictorial copy under life": "z-index: 5 !important" in weather_src,
 }
 for name, ok in checks.items():
     print(f"{'PASS' if ok else 'FAIL'}: {name}")
@@ -49,12 +54,15 @@ from src.ui_look import look_chrome_css
 from src.ui_weather import page_backdrop_css
 
 css = look_chrome_css() + page_backdrop_css.__doc__
-weather_src = (ROOT / "src" / "ui_weather.py").read_text(encoding="utf-8")
 if "stAppViewContainer" not in weather_src.split("page_backdrop_css", 1)[1][:4000]:
     print("FAIL: ui_weather app shell z-index for photo host")
     raise SystemExit(1)
 print("PASS: ui_weather app shell z-index for photo host")
 life_block = weather_src.split("iframe[data-amp-land-life", 1)[1]
+if "z-index: 35 !important;" not in life_block[:800]:
+    print("FAIL: ui_weather life iframe z-index")
+    raise SystemExit(1)
+print("PASS: ui_weather life iframe z-index")
 if "pointer-events: none !important;" not in life_block[:800]:
     print("FAIL: ui_weather life iframe CSS")
     raise SystemExit(1)

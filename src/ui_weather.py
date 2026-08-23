@@ -483,8 +483,10 @@ def page_backdrop_css(image_path, max_width=1920, heir_id=None) -> str:
     """Pictorial chrome: transparent Streamlit page, no land photo.
 
     The JPEG is promoted into ``#amp-land-photo-host`` at z-index 0
-    (behind page copy). Life sprites and notice popups stay in the land iframe
-    at z-index 25 (above copy, below tabs/look chrome). The host mounts as the
+    (behind page copy). Pictorial Visit/Walk copy (headings, amp-read, hero
+    portraits) sits at z-index 5. Life sprites and notice popups stay in the land
+    iframe at z-index 35 (above copy, below interactive widgets at 40 and
+    tabs/look chrome). The host mounts as the
     first child of ``[data-testid="stAppViewContainer"]`` (not ``body``) and the
     app shell sits at z-index 1 so a body-level photo at z-index 0 cannot paint
     over the life iframe. ``max_width`` is unused (kept for callers).
@@ -729,6 +731,19 @@ section[data-testid="stMain"] {{
   z-index: 10 !important;
   pointer-events: auto !important;
 }}
+/* Pictorial Visit/Walk: read-only page copy under the life layer (z35). */
+html.amp-mode-visit section[data-testid="stMain"] [data-testid="stHeading"],
+html.amp-mode-visit section[data-testid="stMain"] [data-testid="stMarkdown"],
+html.amp-mode-visit section[data-testid="stMain"] [data-testid="stCaptionContainer"],
+html.amp-mode-visit section[data-testid="stMain"] [data-testid="stImage"],
+html.amp-mode-visit section[data-testid="stMain"] .stAlert,
+html.amp-mode-walk section[data-testid="stMain"] [data-testid="stHeading"],
+html.amp-mode-walk section[data-testid="stMain"] [data-testid="stMarkdown"],
+html.amp-mode-walk section[data-testid="stMain"] [data-testid="stCaptionContainer"],
+html.amp-mode-walk section[data-testid="stMain"] [data-testid="stImage"],
+html.amp-mode-walk section[data-testid="stMain"] .stAlert {{
+  z-index: 5 !important;
+}}
 .block-container .stButton,
 .block-container .stCheckbox,
 .block-container .stSelectbox,
@@ -777,7 +792,8 @@ section[data-testid="stSidebar"] {{
   box-shadow: none !important;
 }}
 [data-amp-land-wrap="1"],
-[data-amp-land-life-wrap="1"] {{
+[data-amp-land-life-wrap="1"],
+[data-testid="stAppViewContainer"] > [data-amp-land-life-wrap="1"] {{
   position: fixed !important;
   inset: 0 !important;
   width: 100vw !important;
@@ -785,7 +801,7 @@ section[data-testid="stSidebar"] {{
   margin: 0 !important;
   padding: 0 !important;
   overflow: visible !important;
-  z-index: 25 !important;
+  z-index: 35 !important;
   border: none !important;
   background: transparent !important;
   pointer-events: none !important;
@@ -818,7 +834,7 @@ iframe[data-amp-land-life="1"] {{
   max-width: none !important;
   max-height: none !important;
   border: none !important;
-  z-index: 25 !important;
+  z-index: 35 !important;
   background: transparent !important;
   /* Click-through except .amp-sprite / notice UI inside the iframe doc. */
   pointer-events: none !important;
