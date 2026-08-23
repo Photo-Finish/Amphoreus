@@ -1207,64 +1207,71 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
     return being
 
 
+# Horizontal lanes (% left). Stalls and roamers each keep dedicated bands so
+# civic fixtures never reuse the same anchor (fountain / gate / mosaic stack).
+_STALL_LEFT_LANES = ("18%", "34%", "50%", "66%")
+_ROAMER_LEFT_LANES = {
+    "chimera": "10%",
+    "resident": "54%",
+    "dromas": "84%",
+    "dromas_calf": "76%",
+    "cicada": "36%",
+}
+
+
 def hotspot_for(kind: str, idx: int) -> dict:
     """Where to paint a clickable hotspot on the scene (percent CSS)."""
     table = {
-        "chimera": ("22%", "16%"),
-        "dromas": ("72%", "12%"),
-        "dromas_calf": ("64%", "10%"),
+        "chimera": (_ROAMER_LEFT_LANES["chimera"], "16%"),
+        "dromas": (_ROAMER_LEFT_LANES["dromas"], "12%"),
+        "dromas_calf": (_ROAMER_LEFT_LANES["dromas_calf"], "10%"),
         "wheat": ("40%", "6%"),
         "shore": ("50%", "4%"),
         "grove_leaf": ("30%", "48%"),
         "grass": ("18%", "3%"),
         "wind": ("80%", "68%"),
-        "hearth_cat": ("58%", "12%"),
+        "hearth_cat": ("72%", "12%"),
         "dawn": ("48%", "76%"),
         "thief_star": ("82%", "80%"),
-        "well": ("24%", "11%"),   # yard / village side — not plaza-center
+        "well": ("22%", "11%"),   # yard / village side — not plaza-center
         "shrine": ("12%", "14%"),
         "market_stall": ("36%", "14%"),
         "forge": ("78%", "12%"),
-        "gate": ("50%", "10%"),
+        "gate": ("38%", "10%"),
         "siren": ("70%", "8%"),
         "maze": ("28%", "8%"),
         "pebble": ("16%", "5%"),
         "pearl": ("62%", "6%"),
-        "fountain": ("48%", "10%"),  # civic plaza center
+        "fountain": ("44%", "10%"),  # civic plaza — off the stall-3 lane
         "olive": ("20%", "16%"),
-        "cicada": ("34%", "42%"),
+        "cicada": (_ROAMER_LEFT_LANES["cicada"], "42%"),
         "laundry": ("86%", "28%"),
-        "boat": ("78%", "6%"),
+        "boat": ("80%", "6%"),
         "net": ("68%", "5%"),
         "ribbon": ("14%", "26%"),
-        "mosaic": ("50%", "4%"),
+        "mosaic": ("56%", "4%"),
         "courier": ("70%", "62%"),
-        "banner": ("84%", "32%"),
+        "banner": ("88%", "32%"),
         "incense": ("8%", "16%"),
         "kite": ("60%", "68%"),
         "mill": ("32%", "12%"),
-        "tidepool": ("56%", "5%"),
-        "pillar": ("28%", "12%"),
-        "resident": ("40%", "14%"),
-        "pollux": ("48%", "18%"),
+        "tidepool": ("58%", "5%"),
+        "pillar": ("26%", "12%"),
+        "resident": (_ROAMER_LEFT_LANES["resident"], "14%"),
+        "pollux": ("46%", "18%"),
         "little_ica": ("52%", "20%"),
-        "maze_fairy": ("34%", "10%"),
-        "mountain_dweller": ("58%", "14%"),
+        "maze_fairy": ("30%", "10%"),
+        "mountain_dweller": ("74%", "14%"),
     }
     left, bottom = table.get(kind, ("50%", "20%"))
     if kind == "market_stall":
-        # Dedicated vendor row across Okhema's square.
-        stall_spots = (
-            ("18%", "12%"),
-            ("34%", "13%"),
-            ("50%", "12%"),
-            ("66%", "14%"),
-        )
-        left, bottom = stall_spots[(max(1, idx) - 1) % len(stall_spots)]
+        stall_idx = (max(1, idx) - 1) % len(_STALL_LEFT_LANES)
+        left = _STALL_LEFT_LANES[stall_idx]
+        bottom = ("12%", "13%", "12%", "14%")[stall_idx]
     elif idx > 1:
         # Nudge extras so two chimeras/dromases don't stack.
         try:
-            lp = max(6, min(90, int(left.strip("%")) + (idx - 1) * 14))
+            lp = max(6, min(90, int(left.strip("%")) + (idx - 1) * 12))
             left = f"{lp}%"
         except Exception:
             pass

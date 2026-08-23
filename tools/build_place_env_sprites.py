@@ -7,6 +7,9 @@ Kremnos martial, Styxia pearl, Grove scholar, Aidonia muted).
 Market stalls: ``market_stall.png`` (HSR Okhema vendor still) → ``stall_okhema``
 and family recolors; procedural ``paint_stall`` only if that base is missing.
 
+Mosaic / pillar: cropped from ``fountain.png`` / ``shrine.png`` when those HSR-tier
+bases exist; procedural ``paint_*`` only as fallback.
+
 Does not touch ``assets/life_sprites/_hsr_src/``.
 """
 from __future__ import annotations
@@ -270,6 +273,87 @@ def paint_pillar(*, stone, capital, name: str) -> None:
     _save(im, name)
 
 
+def _fit_env_crop(im: Image.Image, *, bottom: int = 20) -> Image.Image:
+    """Scale a cropped detail to a 256 canvas, feet on the ground."""
+    canvas = _blank()
+    ratio = min(200 / im.width, 180 / im.height)
+    nw, nh = max(1, int(im.width * ratio)), max(1, int(im.height * ratio))
+    scaled = im.resize((nw, nh), Image.LANCZOS)
+    canvas.paste(scaled, ((SIZE - nw) // 2, SIZE - nh - bottom), scaled)
+    return canvas
+
+
+def crop_mosaic_from_fountain(name: str = "mosaic_okhema.png") -> Image.Image | None:
+    """Greek-wave band from the Okhema fountain basin → floor mosaic sprite."""
+    src = OUT / "fountain.png"
+    if not src.is_file():
+        return None
+    im = Image.open(src).convert("RGBA")
+    band = im.crop((56, 152, 200, 208))
+    return _fit_env_crop(band, bottom=36)
+
+
+def crop_pillar_from_shrine(name: str = "pillar_okhema.png") -> Image.Image | None:
+    """Single Ionic column from the thanks shrine → civic pillar sprite."""
+    src = OUT / "shrine.png"
+    if not src.is_file():
+        return None
+    im = Image.open(src).convert("RGBA")
+    col = im.crop((28, 40, 88, 216))
+    return _fit_env_crop(col, bottom=24)
+
+
+def build_mosaic_and_pillar() -> None:
+    """HSR-tier mosaic/pillar from fountain/shrine art; procedural fallback."""
+    mosaic = crop_mosaic_from_fountain()
+    if mosaic is not None:
+        _save(mosaic, "mosaic_okhema.png")
+        _save(mosaic, "mosaic.png")
+        grove = recolor_grove(mosaic)
+        _save(grove, "mosaic_grove.png")
+    else:
+        print("  mosaic: procedural fallback (fountain.png missing)")
+        paint_mosaic(
+            tiles=(
+                (106, 138, 170, 255),
+                (201, 168, 106, 255),
+                (201, 74, 74, 255),
+                (74, 122, 72, 255),
+            ),
+            name="mosaic_okhema.png",
+        )
+        _copy_as("mosaic_okhema.png", "mosaic.png")
+
+    pillar = crop_pillar_from_shrine()
+    if pillar is not None:
+        _save(pillar, "pillar_okhema.png")
+        _save(pillar, "pillar.png")
+        _save(recolor_grove(pillar), "pillar_grove.png")
+        _save(recolor_aidonia(pillar), "pillar_aidonia.png")
+    else:
+        print("  pillar: procedural fallback (shrine.png missing)")
+        paint_pillar(
+            stone=(201, 184, 150, 255),
+            capital=(232, 213, 163, 255),
+            name="pillar_okhema.png",
+        )
+        paint_pillar(
+            stone=(140, 150, 100, 255),
+            capital=(170, 175, 120, 255),
+            name="pillar_grove.png",
+        )
+        paint_pillar(
+            stone=(150, 155, 165, 255),
+            capital=(180, 186, 196, 255),
+            name="pillar_aidonia.png",
+        )
+        paint_pillar(
+            stone=(201, 184, 150, 255),
+            capital=(232, 213, 163, 255),
+            name="pillar.png",
+        )
+
+
 def paint_mosaic(*, tiles, name: str) -> None:
     im = _blank()
     d = ImageDraw.Draw(im)
@@ -405,45 +489,7 @@ def build_extras() -> None:
         knot=(190, 198, 210, 255),
         name="ribbon_aidonia.png",
     )
-    paint_pillar(
-        stone=(201, 184, 150, 255),
-        capital=(232, 213, 163, 255),
-        name="pillar_okhema.png",
-    )
-    paint_pillar(
-        stone=(140, 150, 100, 255),
-        capital=(170, 175, 120, 255),
-        name="pillar_grove.png",
-    )
-    paint_pillar(
-        stone=(150, 155, 165, 255),
-        capital=(180, 186, 196, 255),
-        name="pillar_aidonia.png",
-    )
-    # also generic pillar.png
-    paint_pillar(
-        stone=(201, 184, 150, 255),
-        capital=(232, 213, 163, 255),
-        name="pillar.png",
-    )
-    paint_mosaic(
-        tiles=(
-            (106, 138, 170, 255),
-            (201, 168, 106, 255),
-            (201, 74, 74, 255),
-            (74, 122, 72, 255),
-        ),
-        name="mosaic_okhema.png",
-    )
-    paint_mosaic(
-        tiles=(
-            (106, 138, 170, 255),
-            (201, 168, 106, 255),
-            (201, 74, 74, 255),
-            (74, 122, 72, 255),
-        ),
-        name="mosaic.png",
-    )
+    build_mosaic_and_pillar()
 
 
 def main() -> None:

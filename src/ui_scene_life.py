@@ -316,6 +316,9 @@ _LAND_FIXTURE_STILLS = frozenset({
 })
 _MAX_STALL_STILLS_DENSE = 4
 _MAX_STALL_STILLS_SPARSE = 2
+# Minimum horizontal gap between painted still sprites (% of stage width).
+_MIN_STILL_LEFT_GAP = 8.0
+_STALL_LEFT_LANES = (18.0, 34.0, 50.0, 66.0)
 _ROAMER_DUR = {
     "dromas": (16, 24),
     "dromas_calf": (12, 18),
@@ -451,6 +454,78 @@ def _parse_bottom_pct(bottom: str, default: float = 2.0) -> float:
         return float(raw)
     except ValueError:
         return default
+
+
+def _parse_left_pct(left: str, default: float = 50.0) -> float:
+    raw = str(left or "").strip().rstrip("%").rstrip("px")
+    try:
+        return float(raw)
+    except ValueError:
+        return default
+
+
+def _format_left_pct(value: float) -> str:
+    return f"{max(6, min(90, round(value))):.0f}%"
+
+
+def _layout_still_lefts(still: List[dict]) -> None:
+    """Spread still sprites across the ground band without sharing anchors."""
+    if not still:
+        return
+    taken: List[float] = []
+    stall_rows = [b for b in still if str(b.get("kind") or "") == "market_stall"]
+    fixture_rows = [b for b in still if str(b.get("kind") or "") in _LAND_FIXTURE_STILLS]
+    other_rows = [
+        b for b in still
+        if str(b.get("kind") or "") not in _LAND_FIXTURE_STILLS
+        and str(b.get("kind") or "") != "market_stall"
+    ]
+
+    def _assign(b: dict, *, lock_stall: bool = False) -> None:
+        kind = str(b.get("kind") or "")
+        hs = b.setdefault("hotspot", {})
+        base = _parse_left_pct(str(hs.get("left") or "50%"))
+        if lock_stall:
+            lane = min(_STALL_LEFT_LANES, key=lambda spot: abs(spot - base))
+        else:
+            lane = base
+        guard = 0
+        while any(abs(lane - t) < _MIN_STILL_LEFT_GAP for t in taken):
+            guard += 1
+            if guard > 40:
+                break
+            if lock_stall:
+                lane = min(_STALL_LEFT_LANES, key=lambda spot: abs(spot - lane - _MIN_STILL_LEFT_GAP))
+            elif lane + _MIN_STILL_LEFT_GAP <= 90:
+                lane += _MIN_STILL_LEFT_GAP
+            elif lane - _MIN_STILL_LEFT_GAP >= 6:
+                lane -= _MIN_STILL_LEFT_GAP
+            else:
+                lane = max(6.0, min(90.0, lane + 3.0))
+        if any(abs(lane - t) < _MIN_STILL_LEFT_GAP for t in taken):
+            for candidate in range(6, 91):
+                if all(abs(candidate - t) >= _MIN_STILL_LEFT_GAP for t in taken):
+                    lane = float(candidate)
+                    break
+        lane = max(6.0, min(90.0, lane))
+        taken.append(lane)
+        hs["left"] = _format_left_pct(lane)
+
+    for b in stall_rows:
+        _assign(b, lock_stall=True)
+    for b in fixture_rows:
+        _assign(b)
+    for b in other_rows:
+        _assign(b)
+
+
+def _still_reserved_lefts(still: List[dict]) -> List[float]:
+    """Left % anchors occupied by civic still sprites — roamers must avoid."""
+    out: List[float] = []
+    for b in still or []:
+        hs = b.get("hotspot") or {}
+        out.append(_parse_left_pct(str(hs.get("left") or "50%")))
+    return out
 
 
 def _sprite_band(kind: str) -> str:
@@ -771,19 +846,23 @@ def _css() -> str:
   position: absolute;
   width: var(--amp-cell); height: var(--amp-cell);
   margin-left: calc(var(--amp-cell) / -2);
-  /* Foot inset within the art cell — pairs with bottom:0 on the page sill. */
+  /* Inset postcard: legacy foot nudge from art padding. */
   margin-bottom: calc(var(--amp-cell) * -0.12);
   padding: 0; border: none; background: transparent;
   cursor: pointer; z-index: 10;
   animation: none;
   pointer-events: auto;
 }
+/* Page-layer sill: anchor cell bottom at viewport bottom; align art feet to cell bottom. */
+.amp-pict-page .amp-sprite {
+  margin-bottom: 0;
+}
+.amp-sprite .amp-sprite-body {
+  display: block; width: 100%; height: 100%;
+}
 .amp-sprite.mobile {
   animation: amp-sprite-roam var(--amp-roam-dur, 12s) ease-in-out infinite;
   animation-delay: var(--amp-roam-delay, 0s);
-}
-.amp-sprite.mobile .amp-sprite-body {
-  display: block; width: 100%; height: 100%;
 }
 .amp-sprite.mobile.face-r .amp-sprite-body,
 .amp-sprite.mobile.face-l .amp-sprite-body {
@@ -851,11 +930,11 @@ def _css() -> str:
   background:rgba(10,8,20,.5); padding:2px 10px; border-radius:999px;
 }
 @keyframes amp-film {
-  to { background-position: calc(var(--amp-frames, 4) * var(--amp-cell, 92px) * -1) 0; }
+  to { background-position: calc(var(--amp-frames, 4) * var(--amp-cell, 92px) * -1) var(--amp-film-y, 0); }
 }
 @keyframes amp-film-pet {
-  from { background-position: 0 0; }
-  to { background-position: calc(var(--amp-frames, 4) * var(--amp-cell, 92px) * -1) 0; }
+  from { background-position: 0 var(--amp-film-y, 0); }
+  to { background-position: calc(var(--amp-frames, 4) * var(--amp-cell, 92px) * -1) var(--amp-film-y, 0); }
 }
 .amp-life-layer { position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index: 4; }
 .amp-sprite::after {
@@ -868,15 +947,22 @@ def _css() -> str:
 .amp-sprite.sky { animation: none; }
 .amp-sprite.sky::after { display: none; }
 .amp-sprite svg, .amp-sprite img { width: 100%; height: 100%; display: block; pointer-events: none; }
-.amp-sprite img { object-fit: contain; filter: drop-shadow(0 2px 5px rgba(0,0,0,.55)); }
+.amp-sprite img { object-fit: contain; object-position: bottom center; filter: drop-shadow(0 2px 5px rgba(0,0,0,.55)); }
 .amp-sprite-film {
+  --amp-film-y: 0;
   display: block; width: 100%; height: 100%;
   background-repeat: no-repeat;
-  background-position: 0 0;
+  background-position: 0 var(--amp-film-y);
   background-size: calc(var(--amp-frames, 4) * var(--amp-cell, 92px)) var(--amp-cell, 92px);
   pointer-events: none;
   filter: drop-shadow(0 2px 5px rgba(0,0,0,.55));
   animation: amp-film var(--amp-film-dur, .8s) steps(var(--amp-frames, 4)) infinite;
+}
+.amp-pict-page .amp-sprite-film {
+  --amp-film-y: 100%;
+}
+.amp-pict-page .amp-sprite:not(.sky)::after {
+  bottom: 0;
 }
 .amp-sprite.petting,
 .amp-sprite.petting.amp-roamer.crossing {
@@ -887,9 +973,9 @@ def _css() -> str:
   animation: amp-film-pet var(--amp-pet-dur, 0.9s) steps(var(--amp-frames, 4)) 2;
 }
 .amp-sprite:hover { filter: drop-shadow(0 0 14px rgba(240,230,200,.85)); }
-.amp-sprite[data-pettable="1"] { cursor: grab; touch-action: none; }
+.amp-sprite[data-pettable="1"] { cursor: grab; touch-action: pan-y; }
 .amp-sprite[data-pettable="1"]:active,
-.amp-sprite[data-petting="1"] { cursor: grabbing; }
+.amp-sprite[data-petting="1"] { cursor: grabbing; touch-action: none; }
 .amp-sprite.mobile:hover { animation-play-state: paused; }
 .amp-sprite.mobile.face-r:hover .amp-sprite-body,
 .amp-sprite.mobile.face-l:hover .amp-sprite-body { animation-play-state: paused; }
@@ -1054,6 +1140,7 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
             continue
         hs = b.get("hotspot") or {}
         bottom = _resolved_bottom(kind, str(hs.get("bottom") or "20%"), page_layer=page_layer)
+        spawn_lane = _parse_left_pct(str(hs.get("left") or "50%"))
         oid = str(b.get("id"))
         asset = _sprite_asset_key(b, kind)
         pool.append({
@@ -1063,6 +1150,7 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
             "asset": asset,
             "ailing": b.get("status") == "ailing",
             "bottom": bottom,
+            "spawnLane": spawn_lane,
             "dur": _roamer_cross_secs(kind, oid),
             "cell": _sprite_cell_px(kind, page_layer=page_layer),
             "body": _sprite_markup(kind, asset=asset),
@@ -1187,9 +1275,15 @@ def _pick_still_sprites(
     return still[:max_sprites]
 
 
-def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
+def _viewport_roam_js(
+    *,
+    max_active: int,
+    spawn_prob: float,
+    reserved_lefts: List[float] | None = None,
+) -> str:
     """Client-side probabilistic roamer lifecycle inside the land iframe."""
     prob = max(0.05, min(0.95, spawn_prob))
+    reserved_js = json.dumps(reserved_lefts or [])
     return f"""
   (function(){{
     var el = document.getElementById('amp-roamer-pool');
@@ -1200,9 +1294,33 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
 
     var maxActive = {max_active};
     var spawnProb = {prob:.2f};
+    var reservedLefts = {reserved_js};
+    var minGap = 10.5;
     var active = 0;
     var busy = {{}};
 
+    function anchorClear(pct) {{
+      for (var i = 0; i < reservedLefts.length; i++) {{
+        if (Math.abs(pct - reservedLefts[i]) < minGap) return false;
+      }}
+      return true;
+    }}
+    function pickAnchor(ent) {{
+      var base = (ent.spawnLane != null && !isNaN(ent.spawnLane))
+        ? Number(ent.spawnLane) : (18 + Math.random() * 64);
+      if (anchorClear(base)) return base;
+      for (var j = 0; j < 18; j++) {{
+        var jitter = base + (Math.random() - 0.5) * 28;
+        if (jitter < 10) jitter = 10;
+        if (jitter > 90) jitter = 90;
+        if (anchorClear(jitter)) return jitter;
+      }}
+      var fallbacks = [10, 22, 36, 54, 68, 84];
+      for (var k = 0; k < fallbacks.length; k++) {{
+        if (anchorClear(fallbacks[k])) return fallbacks[k];
+      }}
+      return 12;
+    }}
     function rand(a, b) {{ return a + Math.random() * (b - a); }}
     function stageW() {{
       return root.clientWidth || window.innerWidth || 800;
@@ -1296,7 +1414,7 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
       var w = stageW();
       var cell = ent.cell || cellPx();
       var margin = cell * 0.75;
-      var anchorPct = 18 + Math.random() * 64;
+      var anchorPct = pickAnchor(ent);
       var anchorPx = w * anchorPct / 100;
       var fromLeft = Math.random() < 0.5;
       var goRight = fromLeft;
@@ -1373,8 +1491,10 @@ def life_overlay_html(scene: List[dict], place: str = "", *, dense: bool = False
         parts.append('<div class="amp-wheat-row"></div>')
 
     if "fountain" in kinds:
+        fb = next((b for b in (scene or []) if b.get("kind") == "fountain"), None)
+        fx = str((fb or {}).get("hotspot", {}).get("left") or "44%")
         parts.append(
-            '<div class="amp-fountain" style="left:48%;bottom:0;"></div>'
+            f'<div class="amp-fountain" style="left:{fx};bottom:0;"></div>'
         )
     if "laundry" in kinds:
         parts.append(
@@ -1502,6 +1622,8 @@ def pictorial_stage_documents(
     }
     # Fill still slots: civic fixtures first, then dense stalls, then the rest.
     still = _pick_still_sprites(ranked, max_sprites, dense=dense)
+    _layout_still_lefts(still)
+    reserved_lefts = _still_reserved_lefts(still)
 
     def _paint_key(b: dict):
         kind = str(b.get("kind") or "")
@@ -1593,12 +1715,13 @@ def pictorial_stage_documents(
             # Empty life-canvas hits fall through to Visit chrome
             # (heir invite / letter / absence sit under this fixed iframe).
             "    try {\n"
+            "      var pdoc = f.ownerDocument;\n"
             "      var passInteractive =\n"
             "        '.amp-sprite, .amp-pop, .amp-notice-card, button, a, input, textarea, select';\n"
             "      var pass = function(ev) {\n"
             "        var t = ev.target;\n"
             "        if (t && t.closest && t.closest(passInteractive)) return;\n"
-            "        var below = f.ownerDocument.elementFromPoint(ev.clientX, ev.clientY);\n"
+            "        var below = pdoc.elementFromPoint(ev.clientX, ev.clientY);\n"
             "        if (!below || below === f || below === p) return;\n"
             "        ev.preventDefault(); ev.stopPropagation();\n"
             "        below.dispatchEvent(new MouseEvent(ev.type, {\n"
@@ -1606,30 +1729,67 @@ def pictorial_stage_documents(
             "          clientX:ev.clientX, clientY:ev.clientY\n"
             "        }));\n"
             "      };\n"
-            "      var passScroll = function(ev) {\n"
-            "        var t = ev.target;\n"
-            "        if (t && t.closest && t.closest(\n"
-            "          '.amp-sprite[data-petting=\"1\"], .amp-notice-card, .amp-pop, '\n"
-            "          + 'button, a, input, textarea, select'\n"
-            "        )) return;\n"
+            "      var chromeShield =\n"
+            "        'section[data-testid=\"stSidebar\"], .st-key-amp_look_chrome, '\n"
+            "        + '[data-testid=\"stHeader\"], [role=\"tablist\"], '\n"
+            "        + '[data-testid=\"stBottomBlockContainer\"]';\n"
+            "      var scrollBlock =\n"
+            "        '.amp-sprite[data-petting=\"1\"], .amp-notice-card, .amp-pop';\n"
+            "      var formBlock = 'button, a, input, textarea, select';\n"
+            "      var findScrollEl = function() {\n"
+            "        var main = pdoc.querySelector('section[data-testid=\"stMain\"]');\n"
+            "        if (main && main.scrollHeight > main.clientHeight + 1) return main;\n"
+            "        var block = pdoc.querySelector('[data-testid=\"stMainBlockContainer\"]');\n"
+            "        if (block && block.scrollHeight > block.clientHeight + 1) return block;\n"
+            "        return pdoc.scrollingElement || pdoc.documentElement;\n"
+            "      };\n"
+            "      var lifePanelOpen = function() {\n"
+            "        var panel = f.closest('[data-testid=\"stTabPanel\"]');\n"
+            "        return f.isConnected && !(panel && panel.hidden);\n"
+            "      };\n"
+            "      var overLifeArt = function(ev) {\n"
+            "        if (!lifePanelOpen()) return false;\n"
+            "        var x = ev.clientX, y = ev.clientY;\n"
+            "        if (!Number.isFinite(x) || !Number.isFinite(y)) return false;\n"
+            "        var r = f.getBoundingClientRect();\n"
+            "        if (x < r.left || x > r.right || y < r.top || y > r.bottom) return false;\n"
+            "        var top = pdoc.elementFromPoint(x, y);\n"
+            "        if (top && top.closest && top.closest(chromeShield)) return false;\n"
+            "        return true;\n"
+            "      };\n"
+            "      var blockScroll = function(ev) {\n"
+            "        var nodes = [ev.target];\n"
             "        try {\n"
-            "          var pdoc = f.ownerDocument;\n"
-            "          var scrollEl = pdoc.querySelector('section[data-testid=\"stMain\"]')\n"
-            "            || pdoc.scrollingElement || pdoc.documentElement;\n"
-            "          if (ev.type === 'wheel') {\n"
-            "            scrollEl.scrollTop += ev.deltaY;\n"
-            "            scrollEl.scrollLeft += (ev.deltaX || 0);\n"
-            "            ev.preventDefault();\n"
+            "          var idoc = f.contentDocument;\n"
+            "          if (idoc) {\n"
+            "            var inner = idoc.elementFromPoint(ev.clientX, ev.clientY);\n"
+            "            if (inner) nodes.push(inner);\n"
             "          }\n"
+            "        } catch (e) {}\n"
+            "        for (var i = 0; i < nodes.length; i++) {\n"
+            "          var t = nodes[i];\n"
+            "          if (!t || !t.closest) continue;\n"
+            "          if (t.closest(scrollBlock)) return true;\n"
+            "          if (t.closest(formBlock) && t.ownerDocument === pdoc) return true;\n"
+            "        }\n"
+            "        return false;\n"
+            "      };\n"
+            "      var scrollBy = function(dx, dy) {\n"
+            "        var scrollEl = findScrollEl();\n"
+            "        scrollEl.scrollTop += dy;\n"
+            "        scrollEl.scrollLeft += dx;\n"
+            "      };\n"
+            "      var passScroll = function(ev) {\n"
+            "        if (ev.type !== 'wheel' || !overLifeArt(ev) || blockScroll(ev)) return;\n"
+            "        try {\n"
+            "          scrollBy(ev.deltaX || 0, ev.deltaY);\n"
+            "          ev.preventDefault();\n"
+            "          ev.stopPropagation();\n"
             "        } catch (e) {}\n"
             "      };\n"
             "      var touchY = null;\n"
             "      var passTouch = function(ev) {\n"
-            "        var t = ev.target;\n"
-            "        if (t && t.closest && t.closest(\n"
-            "          '.amp-sprite[data-pettable=\"1\"], .amp-notice-card, .amp-pop, '\n"
-            "          + 'button, a, input, textarea, select'\n"
-            "        )) return;\n"
+            "        if (!overLifeArt(ev) || blockScroll(ev)) return;\n"
             "        if (ev.type === 'touchstart' && ev.touches.length === 1) {\n"
             "          touchY = ev.touches[0].clientY;\n"
             "          return;\n"
@@ -1638,18 +1798,15 @@ def pictorial_stage_documents(
             "        var dy = touchY - ev.touches[0].clientY;\n"
             "        touchY = ev.touches[0].clientY;\n"
             "        try {\n"
-            "          var pdoc = f.ownerDocument;\n"
-            "          var scrollEl = pdoc.querySelector('section[data-testid=\"stMain\"]')\n"
-            "            || pdoc.scrollingElement || pdoc.documentElement;\n"
-            "          scrollEl.scrollTop += dy;\n"
+            "          scrollBy(0, dy);\n"
             "          ev.preventDefault();\n"
             "        } catch (e) {}\n"
             "      };\n"
             "      document.addEventListener('click', pass, true);\n"
             "      document.addEventListener('pointerdown', pass, true);\n"
-            "      document.addEventListener('wheel', passScroll, {passive:false, capture:true});\n"
-            "      document.addEventListener('touchstart', passTouch, {passive:true, capture:true});\n"
-            "      document.addEventListener('touchmove', passTouch, {passive:false, capture:true});\n"
+            "      pdoc.addEventListener('wheel', passScroll, {passive:false, capture:true});\n"
+            "      pdoc.addEventListener('touchstart', passTouch, {passive:true, capture:true});\n"
+            "      pdoc.addEventListener('touchmove', passTouch, {passive:false, capture:true});\n"
             "    } catch (e) {}\n"
             "    try {\n"
             "      var pdoc = f.ownerDocument;\n"
@@ -1741,6 +1898,7 @@ def pictorial_stage_documents(
         roam_js = _viewport_roam_js(
             max_active=max_roamers,
             spawn_prob=0.68 if dense else 0.62,
+            reserved_lefts=reserved_lefts,
         )
 
     notice_json = (

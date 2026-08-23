@@ -82,7 +82,24 @@ def main() -> int:
             pict.first.click()
             page.wait_for_timeout(3000)
         before = scroll_metrics(page)
-        page.mouse.move(640, 360)
+        # Scroll over a life sprite in the visible Walk tab (not empty sky).
+        sprite_box = page.evaluate(
+            """() => {
+              const panel = [...document.querySelectorAll('[data-testid="stTabPanel"]')]
+                .find(p => !p.hidden && p.querySelector('iframe[data-amp-land-life="1"]'));
+              const f = panel && panel.querySelector('iframe[data-amp-land-life="1"]');
+              if (!f || !f.contentDocument) return null;
+              const sp = f.contentDocument.querySelector('.amp-sprite');
+              if (!sp) return null;
+              const r = sp.getBoundingClientRect();
+              if (r.width < 4 || r.height < 4) return null;
+              return {x: r.x + r.width / 2, y: r.y + r.height / 2};
+            }"""
+        )
+        if sprite_box:
+            page.mouse.move(sprite_box["x"], sprite_box["y"])
+        else:
+            page.mouse.move(640, 360)
         for _ in range(4):
             page.mouse.wheel(0, 900)
             page.wait_for_timeout(250)

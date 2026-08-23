@@ -13,9 +13,11 @@ packing also runs a residual tan→blue safeguard + cute smooth pass.
 
 Rebuild:
   python tools/build_hsr_life_sprites.py              # chimera + dromas stills/walk
+  python tools/build_hsr_life_sprites.py wiki-chimera # in-game wiki cuts (HSR 3D chimera)
   python tools/build_hsr_life_sprites.py pet           # pet films (incl. dromas)
   python tools/build_hsr_life_sprites.py calf          # dromas_calf from adult
   python tools/build_hsr_life_sprites.py dromas        # dromas still+walk+pet+calf
+  python tools/build_hsr_life_sprites.py chimera-colors # color variant stills + films
 """
 from __future__ import annotations
 
@@ -31,6 +33,16 @@ WALK = SRC / "walk"
 PET = SRC / "pet"
 OUT = ROOT / "assets" / "life_sprites"
 CELL = 184
+
+# In-game HSR screenshot crops → transparent stills (PIL box: left, upper, right, lower).
+# Prefer these over flat ``chimera_okhema`` / side-cartoon walk frames for Okhema land.
+CHIMERA_WIKI_CUTS: dict[str, tuple[str, tuple[int, int, int, int], int, int]] = {
+    "chimera": ("chimera_purple_npc.png", (320, 350, 480, 600), 18, 22),
+    "chimera_purple": ("chimera_purple.png", (275, 310, 525, 730), 22, 28),
+    "chimera_blue": ("chimera_blue.png", (320, 350, 480, 600), 18, 22),
+    "chimera_orange": ("chimera_orange.png", (330, 340, 530, 620), 18, 22),
+    "chimera_pink": ("chimera_pink.png", (470, 500, 720, 920), 24, 32),
+}
 
 # HSR default Okhema coat — dusty periwinkle (degrees).
 DROMAS_HIDE_HUE = 208.0
@@ -338,6 +350,37 @@ def _film(frames: list[Image.Image], dest: Path) -> None:
         strip.paste(fr, (i * CELL, 0), fr)
     strip.save(dest)
     print("wrote", dest.name, strip.size)
+
+
+def _bob_walk_film(still: Image.Image, stem: str) -> list[Image.Image]:
+    """Four-frame roam strip from one still (wiki front pose — no side-cartoon walk)."""
+    frames: list[Image.Image] = []
+    for i, (dx, dy) in enumerate(((0, 0), (3, -2), (0, -4), (-3, -1)), start=1):
+        fr = Image.new("RGBA", (CELL, CELL), (0, 0, 0, 0))
+        fr.paste(still, (dx, dy), still)
+        frames.append(fr)
+        fr.save(OUT / f"{stem}_f{i}.png")
+        print("wrote", f"{stem}_f{i}.png", fr.size)
+    _film(frames, OUT / f"{stem}_film.png")
+    return frames
+
+
+def _wiki_cut_still(stem: str, meta: tuple[str, tuple[int, int, int, int], int, int]) -> Image.Image:
+    """Border-flood key from an in-game HSR screenshot under ``_hsr_src/``."""
+    import sys
+
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from tools.cut_hsr_life_sprites import cut as wiki_cut
+
+    src_name, box, thresh, steps = meta
+    path = SRC / src_name
+    if not path.is_file():
+        raise FileNotFoundError(f"missing wiki source for {stem}: {path}")
+    still = wiki_cut(path, box, thresh, steps)
+    still.save(OUT / f"{stem}.png")
+    print("wrote", f"{stem}.png", still.size, f"(wiki {src_name})")
+    return still
 
 
 def _frame_diversity(frames: list[Image.Image]) -> list[float]:
@@ -906,14 +949,92 @@ def _recolor_chimera_film(im: Image.Image, target_hue: float) -> Image.Image:
     return out
 
 
+def build_chimera_wiki(*, all_colors: bool = True) -> None:
+    """Promote in-game HSR chimera screenshots to live stills + bob walk films."""
+    base_still = _wiki_cut_still("chimera", CHIMERA_WIKI_CUTS["chimera"])
+    _bob_walk_film(base_still, "chimera")
+
+    if not all_colors:
+        print("done — wiki chimera still + walk")
+        return
+
+    base_pet = OUT / "chimera_pet_film.png"
+    for stem, meta in CHIMERA_WIKI_CUTS.items():
+        if stem == "chimera":
+            continue
+        still = _wiki_cut_still(stem, meta)
+        _bob_walk_film(still, stem)
+        if not base_pet.is_file() or stem not in CHIMERA_COLOR_VARIANTS:
+            continue
+        hue = float(CHIMERA_COLOR_VARIANTS[stem]["hue"])
+        _recolor_chimera_pet_from_base(stem, hue, base_pet)
+    print("done — wiki chimera family:", ", ".join(CHIMERA_WIKI_CUTS))
+
+
+def _recolor_chimera_pet_from_base(stem: str, hue: float, base_pet: Path) -> None:
+    pet = Image.open(base_pet).convert("RGBA")
+    pw, ph = pet.size
+    pcell = pw // 4
+    pframes = []
+    for i in range(4):
+        fr = pet.crop((i * pcell, 0, (i + 1) * pcell, ph))
+        pframes.append(_recolor_chimera_film(fr, hue))
+        pframes[-1].save(OUT / f"{stem}_pet_f{i + 1}.png")
+    strip = Image.new("RGBA", (pcell * 4, ph), (0, 0, 0, 0))
+    for i, fr in enumerate(pframes):
+        strip.paste(fr, (i * pcell, 0), fr)
+    dest = OUT / f"{stem}_pet_film.png"
+    strip.save(dest)
+    print("wrote", dest.name, strip.size)
+
+
+def _recolor_chimera_films_from_base(
+    stem: str,
+    hue: float,
+    base_film: Path,
+    base_pet: Path,
+) -> None:
+    """Optional walk/pet recolor so roam cycle matches default chimera timing."""
+    film = Image.open(base_film).convert("RGBA")
+    fw, fh = film.size
+    cell_w = fw // 4
+    frames = []
+    for i in range(4):
+        fr = film.crop((i * cell_w, 0, (i + 1) * cell_w, fh))
+        frames.append(_recolor_chimera_film(fr, hue))
+        frames[-1].save(OUT / f"{stem}_f{i + 1}.png")
+    _film(frames, OUT / f"{stem}_film.png")
+    if base_pet.is_file():
+        pet = Image.open(base_pet).convert("RGBA")
+        pw, ph = pet.size
+        pcell = pw // 4
+        pframes = []
+        for i in range(4):
+            fr = pet.crop((i * pcell, 0, (i + 1) * pcell, ph))
+            pframes.append(_recolor_chimera_film(fr, hue))
+            pframes[-1].save(OUT / f"{stem}_pet_f{i + 1}.png")
+        strip = Image.new("RGBA", (pcell * 4, ph), (0, 0, 0, 0))
+        for i, fr in enumerate(pframes):
+            strip.paste(fr, (i * pcell, 0), fr)
+        dest = OUT / f"{stem}_pet_film.png"
+        strip.save(dest)
+        print("wrote", dest.name, strip.size)
+
+
 def build_chimera_variants() -> None:
-    """Front stills from color photos + recolored walk/pet films."""
+    """Color stills from wiki cuts (preferred) or GrabCut fallback + recolored films."""
     base_film = OUT / "chimera_film.png"
     base_pet = OUT / "chimera_pet_film.png"
     if not base_film.is_file():
         raise FileNotFoundError(f"need base walk film first: {base_film}")
 
     for stem, meta in CHIMERA_COLOR_VARIANTS.items():
+        if stem in CHIMERA_WIKI_CUTS:
+            still = _wiki_cut_still(stem, CHIMERA_WIKI_CUTS[stem])
+            _bob_walk_film(still, stem)
+            if base_pet.is_file():
+                _recolor_chimera_pet_from_base(stem, float(meta["hue"]), base_pet)
+            continue
         src = SRC / meta["src"]
         if not src.is_file():
             print("skip missing source", src.name)
@@ -985,6 +1106,8 @@ if __name__ == "__main__":
         build_profession_outfits()
     elif "calf" in args:
         pack_dromas_calf()
+    elif "wiki-chimera" in args or "wiki_chimera" in args:
+        build_chimera_wiki()
     elif "chimera-colors" in args or "chimera_colors" in args:
         build_chimera_variants()
     else:

@@ -558,6 +558,70 @@ check(
     "inset mode keeps hotspot bottom",
     usl._resolved_bottom("chimera", "14%", page_layer=False) == "14%",
 )
+_page_css = usl._css()
+check(
+    "page-layer zeroes cell-scaled foot margin",
+    ".amp-pict-page .amp-sprite" in _page_css
+    and "margin-bottom: 0" in _page_css.split(".amp-pict-page .amp-sprite")[1][:120],
+)
+check(
+    "page-layer bottom-aligns walk films",
+    ".amp-pict-page .amp-sprite-film" in _page_css
+    and "--amp-film-y: 100%" in _page_css,
+)
+# Foot lift from margin must not scale with taller cells (resident vs chimera).
+_res_cell = usl._sprite_cell_px("resident", page_layer=True)
+_chim_cell = usl._sprite_cell_px("chimera", page_layer=True)
+_inset_res_lift = _res_cell * 0.12
+_inset_chim_lift = _chim_cell * 0.12
+check(
+    "inset foot lift scales with cell (old bug)",
+    abs(_inset_res_lift - _inset_chim_lift) > 4,
+    f"resident={_inset_res_lift:.1f}px chimera={_inset_chim_lift:.1f}px",
+)
+_page_res_lift = 0.0
+_page_chim_lift = 0.0
+check(
+    "page-layer foot lift equal across cell sizes",
+    _page_res_lift == _page_chim_lift == 0.0,
+    f"resident={_page_res_lift} chimera={_page_chim_lift}",
+)
+
+print("== Still / fixture horizontal spacing ==")
+_fixture_kinds = eco._LAND_FIXTURES | {"hearth_cat", "chimera", "dromas", "resident"}
+ws_sp = mk(2, "Okhema")
+sc_sp = eco.derive_scene(ws_sp, place="Okhema")
+left_map: dict[int, list] = {}
+for b in sc_sp:
+    if b["kind"] not in _fixture_kinds:
+        continue
+    lp = int(str(b.get("hotspot", {}).get("left", "0")).strip("%") or 0)
+    left_map.setdefault(lp, []).append(b["kind"])
+dups = {lp: ks for lp, ks in left_map.items() if len(ks) > 1}
+check("Okhema fixture hotspot lanes unique", not dups, str(dups))
+clickable_sp = [b for b in sc_sp if b.get("clickable") and b.get("id")]
+still_sp = usl._pick_still_sprites(
+    sorted(clickable_sp, key=lambda b: str(b.get("id"))),
+    10,
+    dense=True,
+)
+usl._layout_still_lefts(still_sp)
+still_lefts = sorted(
+    usl._parse_left_pct(str(b.get("hotspot", {}).get("left", "0")))
+    for b in still_sp
+)
+if len(still_lefts) > 1:
+    min_gap = min(still_lefts[i + 1] - still_lefts[i] for i in range(len(still_lefts) - 1))
+else:
+    min_gap = 99.0
+check("still sprites min horizontal gap", min_gap >= 8.0, f"lefts={still_lefts} gap={min_gap}")
+roam_fixture_same = [
+    (rk, fk)
+    for rk in usl._ROAMER_KINDS
+    for fk in eco._LAND_FIXTURES
+    if eco.hotspot_for(rk, 1).get("left") == eco.hotspot_for(fk, 1).get("left")
+]
+check("roamer lanes differ from fixture lanes", not roam_fixture_same, str(roam_fixture_same))
 
 from src.ui_backgrounds import DEFAULT_BG, bg_path_for_place
 from src.world.world_state import LOCATIONS

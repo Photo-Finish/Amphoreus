@@ -34,7 +34,7 @@ checks = {
     "html/body pointer-events:none": "html,body{margin:0;padding:0;width:100%;height:100%;"
     "background:transparent;overflow:hidden;pointer-events:none;}" in html,
     "iframe pointer-events:none in pin_js": "pointer-events:none;" in html.split("f.style.cssText")[1][:120],
-    "wheel passScroll": "passScroll" in html and "addEventListener('wheel'" in html,
+    "wheel passScroll": "passScroll" in html and "pdoc.addEventListener('wheel', passScroll" in html,
     "touch pass": "addEventListener('touchmove'" in html,
     "sprite pointer-events:auto": ".amp-sprite {" in html and "pointer-events: auto;" in html,
 }

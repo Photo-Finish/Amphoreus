@@ -623,6 +623,7 @@ section[data-testid="stSidebar"] {{
 }}
 section[data-testid="stMain"] {{
   pointer-events: none;
+  overflow-y: auto !important;
 }}
 .block-container {{
   position: relative;
