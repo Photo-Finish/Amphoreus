@@ -1209,13 +1209,20 @@ def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
 
 # Horizontal lanes (% left). Stalls and roamers each keep dedicated bands so
 # civic fixtures never reuse the same anchor (fountain / gate / mosaic stack).
+# Tall civic stills (gate / fountain / mosaic) keep dedicated bands ≥14% apart
+# so 256px page-layer anchors do not share a silhouette.
+CIVIC_FIXTURE_LEFT = {
+    "gate": "28%",
+    "fountain": "58%",
+    "mosaic": "76%",
+}
 _STALL_LEFT_LANES = ("18%", "34%", "50%", "66%")
 _ROAMER_LEFT_LANES = {
     "chimera": "10%",
     "resident": "54%",
     "dromas": "84%",
-    "dromas_calf": "76%",
-    "cicada": "36%",
+    "dromas_calf": "82%",
+    "cicada": "40%",
 }
 
 
@@ -1237,26 +1244,26 @@ def hotspot_for(kind: str, idx: int) -> dict:
         "shrine": ("12%", "14%"),
         "market_stall": ("36%", "14%"),
         "forge": ("78%", "12%"),
-        "gate": ("38%", "10%"),
+        "gate": (CIVIC_FIXTURE_LEFT["gate"], "10%"),
         "siren": ("70%", "8%"),
         "maze": ("28%", "8%"),
         "pebble": ("16%", "5%"),
         "pearl": ("62%", "6%"),
-        "fountain": ("44%", "10%"),  # civic plaza — off the stall-3 lane
+        "fountain": (CIVIC_FIXTURE_LEFT["fountain"], "10%"),
         "olive": ("20%", "16%"),
         "cicada": (_ROAMER_LEFT_LANES["cicada"], "42%"),
-        "laundry": ("86%", "28%"),
+        "laundry": ("88%", "28%"),
         "boat": ("80%", "6%"),
         "net": ("68%", "5%"),
         "ribbon": ("14%", "26%"),
-        "mosaic": ("56%", "4%"),
+        "mosaic": (CIVIC_FIXTURE_LEFT["mosaic"], "4%"),
         "courier": ("70%", "62%"),
         "banner": ("88%", "32%"),
         "incense": ("8%", "16%"),
         "kite": ("60%", "68%"),
         "mill": ("32%", "12%"),
         "tidepool": ("58%", "5%"),
-        "pillar": ("26%", "12%"),
+        "pillar": ("20%", "12%"),
         "resident": (_ROAMER_LEFT_LANES["resident"], "14%"),
         "pollux": ("46%", "18%"),
         "little_ica": ("52%", "20%"),

@@ -64,7 +64,15 @@ def main():
     scene_src = (ROOT / "src" / "ui_scene_life.py").read_text(encoding="utf-8")
     check(
         "pinPhoto skips hidden tab panels",
-        "panel.hidden" in scene_src and "function pinPhoto" in scene_src,
+        "panelVisible" in scene_src and "function pinPhoto" in scene_src,
+    )
+    check(
+        "pinPhoto respects aria-hidden tab panels",
+        "aria-hidden" in scene_src and "function pinPhoto" in scene_src,
+    )
+    check(
+        "pinPhoto mounts inside stAppViewContainer",
+        "landMount" in scene_src and "stAppViewContainer" in scene_src,
     )
     check(
         "pinPhoto re-runs when tab panel becomes visible",

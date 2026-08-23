@@ -386,7 +386,11 @@ def backdrop_slug(image_path) -> str:
 
 
 def ground_css_position(image_path) -> str:
-    """Pin the backdrop onto pavement / path, not the sky."""
+    """Pin inset-card backdrops onto pavement / path, not the sky.
+
+    Full-page land (Visit / Walk) uses ``page_photo_object_position`` instead —
+    viewport bottom is the sill; do not zoom to a painted floor band.
+    """
     p = Path(image_path) if image_path else None
     if p and p.parent.name == "ground":
         # Already cropped to the floor — further 62% shift zooms into pavement.
@@ -407,6 +411,15 @@ def ground_css_position(image_path) -> str:
         "abyss-of-fate": "center 86%",
         "memortis-shore": "18% 78%",
     }.get(slug, "center 78%")
+
+
+def page_photo_object_position(image_path) -> str:
+    """Object-position for the full-viewport pinned land photo.
+
+    Feet and fixtures sit on the viewport bottom edge — never a CSS floor tile
+    or pavement-zoom crop (those are for inset postcards only).
+    """
+    return "center bottom"
 
 
 def read_palette(image_path, heir_id=None) -> dict:
@@ -469,10 +482,13 @@ def read_palette(image_path, heir_id=None) -> dict:
 def page_backdrop_css(image_path, max_width=1920, heir_id=None) -> str:
     """Pictorial chrome: transparent Streamlit page, no land photo.
 
-    The JPEG is promoted into a parent ``#amp-land-photo-host`` at z-index 0
+    The JPEG is promoted into ``#amp-land-photo-host`` at z-index 0
     (behind page copy). Life sprites and notice popups stay in the land iframe
-    at z-index 25 (above copy, below tabs/look chrome). ``max_width`` is unused
-    (kept for callers).  ``heir_id`` tints overlay text (Visit); omit on Walk.
+    at z-index 25 (above copy, below tabs/look chrome). The host mounts as the
+    first child of ``[data-testid="stAppViewContainer"]`` (not ``body``) and the
+    app shell sits at z-index 1 so a body-level photo at z-index 0 cannot paint
+    over the life iframe. ``max_width`` is unused (kept for callers).
+    ``heir_id`` tints overlay text (Visit); omit on Walk.
 
     Visit and Walk both mount ``page_backdrop_css`` inside Streamlit tab
     panels (all tabs render every run). Walk's panel comes *after* Visit in
@@ -533,6 +549,13 @@ section[data-testid="stMain"] {{
   background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
+}}
+/* Pictorial photo host is z-index 0; the app shell must sit above it on body
+   (z-index 0 beats auto) so the life iframe at z-index 25 stays in front. */
+[data-testid="stAppViewContainer"] {{
+  position: relative !important;
+  z-index: 1 !important;
+  isolation: isolate;
 }}
 /* Spinners / status overlays — no white card over the land. */
 [data-testid="stSpinner"],
@@ -779,6 +802,10 @@ section[data-testid="stSidebar"] {{
   z-index: 0 !important;
   border: none !important;
   pointer-events: none !important;
+}}
+[data-testid="stAppViewContainer"] > #amp-land-photo-host,
+[data-testid="stAppViewContainer"] > [data-amp-land-photo-wrap="1"] {{
+  z-index: 0 !important;
 }}
 iframe[data-amp-land="1"],
 iframe[data-amp-land-life="1"] {{

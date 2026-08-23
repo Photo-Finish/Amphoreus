@@ -318,7 +318,18 @@ _MAX_STALL_STILLS_DENSE = 4
 _MAX_STALL_STILLS_SPARSE = 2
 # Minimum horizontal gap between painted still sprites (% of stage width).
 _MIN_STILL_LEFT_GAP = 8.0
+# Tall civic stills (gate / fountain / mosaic) need wider anchor separation.
+_LARGE_FIXTURE_MIN_GAP = 13.0
+_GATE_FOUNTAIN_MIN_GAP = 13.0
+_CIVIC_FIXTURE_LANES = {
+    "gate": 28.0,
+    "fountain": 58.0,
+    "mosaic": 76.0,
+}
+_CIVIC_FIXTURE_ORDER = ("gate", "fountain", "mosaic")
 _STALL_LEFT_LANES = (18.0, 34.0, 50.0, 66.0)
+_STALL_ALT_LANES = (22.0, 44.0, 62.0, 72.0)
+_DENSE_STALL_LANES = (18.0, 44.0, 66.0, 80.0)
 _ROAMER_DUR = {
     "dromas": (16, 24),
     "dromas_calf": (12, 18),
@@ -351,7 +362,7 @@ _UI_READ_Z = 260
 _PAGE_PHOTO_Z = 0
 _PAGE_LIFE_Z = 25
 # Page-layer walkable figures share one sill — the viewport bottom edge.
-_PAGE_GROUND_BOTTOM = "0"
+_PAGE_GROUND_BOTTOM = "0px"
 # Display height on the full pictorial stage. Resident is human scale.
 # Little chimera is a mascot you could pick up; dromas is a ridden earth-beast.
 _SPRITE_CELL: Dict[str, int] = {
@@ -473,47 +484,142 @@ def _layout_still_lefts(still: List[dict]) -> None:
     if not still:
         return
     taken: List[float] = []
+    civic_by_kind = {
+        str(b.get("kind") or ""): b
+        for b in still
+        if str(b.get("kind") or "") in _CIVIC_FIXTURE_LANES
+    }
+    civic_rows = [
+        civic_by_kind[kind]
+        for kind in _CIVIC_FIXTURE_ORDER
+        if kind in civic_by_kind
+    ]
     stall_rows = [b for b in still if str(b.get("kind") or "") == "market_stall"]
-    fixture_rows = [b for b in still if str(b.get("kind") or "") in _LAND_FIXTURE_STILLS]
+    fixture_rows = sorted(
+        (
+            b for b in still
+            if str(b.get("kind") or "") in _LAND_FIXTURE_STILLS
+            and str(b.get("kind") or "") not in _CIVIC_FIXTURE_LANES
+        ),
+        key=lambda b: str(b.get("kind") or "") == "laundry",
+    )
+    ground_fixture_rows = [
+        b for b in fixture_rows if str(b.get("kind") or "") != "laundry"
+    ]
+    laundry_rows = [
+        b for b in fixture_rows if str(b.get("kind") or "") == "laundry"
+    ]
     other_rows = [
         b for b in still
         if str(b.get("kind") or "") not in _LAND_FIXTURE_STILLS
         and str(b.get("kind") or "") != "market_stall"
     ]
 
+    def _min_gap_for(kind: str) -> float:
+        if kind in _CIVIC_FIXTURE_LANES:
+            return _LARGE_FIXTURE_MIN_GAP
+        return _MIN_STILL_LEFT_GAP
+
+    def _separate_from_taken(lane: float, min_gap: float) -> float:
+        guard = 0
+        while any(abs(lane - t) < min_gap for t in taken):
+            guard += 1
+            if guard > 40:
+                break
+            if lane + min_gap <= 90:
+                lane += min_gap
+            elif lane - min_gap >= 6:
+                lane -= min_gap
+            else:
+                lane = max(6.0, min(90.0, lane + 3.0))
+        if any(abs(lane - t) < min_gap for t in taken):
+            best: float | None = None
+            best_room = -1.0
+            for candidate in range(6, 91):
+                if not all(abs(candidate - t) >= min_gap for t in taken):
+                    continue
+                room = min((abs(candidate - t) for t in taken), default=99.0)
+                if room > best_room:
+                    best_room = room
+                    best = float(candidate)
+            if best is not None:
+                lane = best
+        return max(6.0, min(90.0, lane))
+
+    def _finalize_lane(lane: float, min_gap: float) -> float:
+        lane = _separate_from_taken(lane, min_gap)
+        if any(abs(lane - t) < 1.0 for t in taken):
+            for candidate in range(6, 91):
+                if all(abs(candidate - t) >= min_gap for t in taken):
+                    return float(candidate)
+            for candidate in range(6, 91):
+                if all(abs(candidate - t) >= 1.0 for t in taken):
+                    return float(candidate)
+        return lane
+
     def _assign(b: dict, *, lock_stall: bool = False) -> None:
         kind = str(b.get("kind") or "")
         hs = b.setdefault("hotspot", {})
         base = _parse_left_pct(str(hs.get("left") or "50%"))
+        min_gap = _min_gap_for(kind)
         if lock_stall:
-            lane = min(_STALL_LEFT_LANES, key=lambda spot: abs(spot - base))
-        else:
-            lane = base
-        guard = 0
-        while any(abs(lane - t) < _MIN_STILL_LEFT_GAP for t in taken):
-            guard += 1
-            if guard > 40:
-                break
-            if lock_stall:
-                lane = min(_STALL_LEFT_LANES, key=lambda spot: abs(spot - lane - _MIN_STILL_LEFT_GAP))
-            elif lane + _MIN_STILL_LEFT_GAP <= 90:
-                lane += _MIN_STILL_LEFT_GAP
-            elif lane - _MIN_STILL_LEFT_GAP >= 6:
-                lane -= _MIN_STILL_LEFT_GAP
+            stall_candidates = _STALL_LEFT_LANES + _STALL_ALT_LANES
+            if laundry_rows:
+                stall_candidates = [s for s in stall_candidates if s <= 80.0]
+            valid_stalls = [
+                spot for spot in stall_candidates
+                if all(abs(spot - t) >= min_gap for t in taken)
+            ]
+            if valid_stalls:
+                lane = min(valid_stalls, key=lambda spot: abs(spot - base))
             else:
-                lane = max(6.0, min(90.0, lane + 3.0))
-        if any(abs(lane - t) < _MIN_STILL_LEFT_GAP for t in taken):
-            for candidate in range(6, 91):
-                if all(abs(candidate - t) >= _MIN_STILL_LEFT_GAP for t in taken):
-                    lane = float(candidate)
-                    break
-        lane = max(6.0, min(90.0, lane))
+                fallback = min(base, 80.0) if laundry_rows else base
+                lane = _finalize_lane(fallback, min_gap)
+        else:
+            lane = _finalize_lane(base, min_gap)
+        if lock_stall and laundry_rows:
+            lane = min(lane, 80.0)
+            lane = _separate_from_taken(lane, min_gap)
         taken.append(lane)
         hs["left"] = _format_left_pct(lane)
 
-    for b in stall_rows:
+    gate_lane: float | None = None
+    fountain_lane: float | None = None
+    for b in civic_rows:
+        kind = str(b.get("kind") or "")
+        hs = b.setdefault("hotspot", {})
+        lane = _CIVIC_FIXTURE_LANES[kind]
+        if kind == "fountain" and gate_lane is not None:
+            if lane - gate_lane < _GATE_FOUNTAIN_MIN_GAP:
+                lane = gate_lane + _GATE_FOUNTAIN_MIN_GAP
+        elif kind == "gate" and fountain_lane is not None:
+            if fountain_lane - lane < _GATE_FOUNTAIN_MIN_GAP:
+                lane = max(6.0, fountain_lane - _GATE_FOUNTAIN_MIN_GAP)
+        lane = max(6.0, min(90.0, lane))
+        if kind == "gate":
+            gate_lane = lane
+        elif kind == "fountain":
+            fountain_lane = lane
+        taken.append(lane)
+        hs["left"] = _format_left_pct(lane)
+
+    if laundry_rows:
+        hs0 = laundry_rows[0].setdefault("hotspot", {})
+        laundry_anchor = _parse_left_pct(str(hs0.get("left") or "88%"))
+        laundry_anchor = max(6.0, min(90.0, laundry_anchor))
+        hs0["left"] = _format_left_pct(laundry_anchor)
+        taken.append(laundry_anchor)
+
+    for i, b in enumerate(stall_rows):
+        if laundry_rows and i < len(_DENSE_STALL_LANES):
+            lane = _DENSE_STALL_LANES[i]
+            if all(abs(lane - t) >= _MIN_STILL_LEFT_GAP for t in taken):
+                hs = b.setdefault("hotspot", {})
+                taken.append(lane)
+                hs["left"] = _format_left_pct(lane)
+                continue
         _assign(b, lock_stall=True)
-    for b in fixture_rows:
+    for b in ground_fixture_rows:
         _assign(b)
     for b in other_rows:
         _assign(b)
@@ -857,6 +963,10 @@ def _css() -> str:
 .amp-pict-page .amp-sprite {
   margin-bottom: 0;
 }
+.amp-pict-page .amp-sprite.ground-sill {
+  bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
 .amp-sprite .amp-sprite-body {
   display: block; width: 100%; height: 100%;
 }
@@ -959,10 +1069,17 @@ def _css() -> str:
   animation: amp-film var(--amp-film-dur, .8s) steps(var(--amp-frames, 4)) infinite;
 }
 .amp-pict-page .amp-sprite-film {
-  --amp-film-y: 100%;
+  --amp-film-y: bottom;
+  background-position: 0 bottom;
 }
+/* Page layer: no painted ground plane — per-sprite drop-shadow only. */
 .amp-pict-page .amp-sprite:not(.sky)::after {
-  bottom: 0;
+  display: none;
+}
+.amp-pict-page .amp-shore-band,
+.amp-pict-page .amp-wheat-row,
+.amp-pict-page .amp-fountain {
+  display: none;
 }
 .amp-sprite.petting,
 .amp-sprite.petting.amp-roamer.crossing {
@@ -1120,8 +1237,13 @@ def _sprite_button_html(
     asset = _sprite_asset_key(b, kind)
     pettable = ' data-pettable="1"' if kind in _PET_KINDS else ""
     asset_attr = f' data-asset="{_html.escape(asset, quote=True)}"' if asset else ""
+    sill_cls = (
+        " ground-sill"
+        if page_layer and bottom in (_PAGE_GROUND_BOTTOM, "0", "0%")
+        else ""
+    )
     return (
-        f'<button type="button" class="amp-sprite{motion}{facing}{ailing}{sky}{roamer_cls}" '
+        f'<button type="button" class="amp-sprite{motion}{facing}{ailing}{sky}{roamer_cls}{sill_cls}" '
         f'data-oid="{oid}" data-kind="{_html.escape(kind, quote=True)}"{pettable}{asset_attr} '
         f'title="{title}" aria-label="{title}" '
         f'style="left:{left};bottom:{bottom};--amp-cell:{cell}px;z-index:{z};{roam}">'
@@ -1380,7 +1502,8 @@ def _viewport_roam_js(
       if (ent.notice && typeof book !== 'undefined') book[ent.oid] = ent.notice;
       var bottomPct = (opts.bottomPct != null) ? opts.bottomPct : parsePct(ent.bottom, 0);
       btn.style.left = anchorPct + '%';
-      btn.style.bottom = bottomPct + '%';
+      btn.style.bottom = bottomPct ? (bottomPct + '%') : '0';
+      if (!bottomPct) btn.classList.add('ground-sill');
       btn.style.setProperty('--amp-cell', cell + 'px');
       btn.style.zIndex = String(spriteZ(ent, bottomPct));
       btn.style.setProperty('--amp-cross-from', fromPx + 'px');
@@ -1492,9 +1615,11 @@ def life_overlay_html(scene: List[dict], place: str = "", *, dense: bool = False
 
     if "fountain" in kinds:
         fb = next((b for b in (scene or []) if b.get("kind") == "fountain"), None)
-        fx = str((fb or {}).get("hotspot", {}).get("left") or "44%")
+        hs = (fb or {}).get("hotspot") or {}
+        fx = str(hs.get("left") or "44%")
+        fy = str(hs.get("bottom") or "16%")
         parts.append(
-            f'<div class="amp-fountain" style="left:{fx};bottom:0;"></div>'
+            f'<div class="amp-fountain" style="left:{fx};bottom:{fy};"></div>'
         )
     if "laundry" in kinds:
         parts.append(
@@ -1567,7 +1692,7 @@ def pictorial_stage_documents(
     inset_height: int = 0,
 ) -> List[str]:
     """HTML document(s) for ``components.html`` — photo then life when page-layered."""
-    from src.ui_weather import image_data_uri, overlay_for
+    from src.ui_weather import image_data_uri, overlay_for, page_photo_object_position
 
     art_path = image_path
     if page_layer and image_path:
@@ -1660,15 +1785,16 @@ def pictorial_stage_documents(
     )
 
     if page_layer:
+        photo_pos = page_photo_object_position(art_path or image_path)
         shell = (
-            '<style>html,body{margin:0;padding:0;width:100%;height:100%;'
+            '<style>html,body{margin:0;padding:0;width:100%;height:100vh;min-height:100vh;'
             'background:transparent;overflow:hidden;pointer-events:none;}'
             '.amp-land-photo{position:absolute;inset:0;width:100%;height:100%;'
-            'object-fit:cover;object-position:center bottom;pointer-events:none;'
+            f'object-fit:cover;object-position:{photo_pos};pointer-events:none;'
             'z-index:0;display:block;}'
             '#amp-pict-stage{isolation:isolate;}</style>'
-            '<div id="amp-pict-stage" class="amp-pict-page" style="position:fixed;inset:0;width:100%;'
-            'height:100%;overflow:hidden;background:transparent;pointer-events:none;">'
+            '<div id="amp-pict-stage" class="amp-pict-page" style="position:fixed;top:0;left:0;'
+            'right:0;bottom:0;overflow:hidden;background:transparent;pointer-events:none;">'
         )
         art_div = (
             f'<img class="amp-land-photo" alt="" src="{uri}">' if uri else ""
@@ -1745,7 +1871,11 @@ def pictorial_stage_documents(
             "      };\n"
             "      var lifePanelOpen = function() {\n"
             "        var panel = f.closest('[data-testid=\"stTabPanel\"]');\n"
-            "        return f.isConnected && !(panel && panel.hidden);\n"
+            "        if (!f.isConnected) return false;\n"
+            "        if (!panel) return true;\n"
+            "        if (panel.hidden) return false;\n"
+            "        if (panel.getAttribute('aria-hidden') === 'true') return false;\n"
+            "        return true;\n"
             "      };\n"
             "      var overLifeArt = function(ev) {\n"
             "        if (!lifePanelOpen()) return false;\n"
@@ -1811,8 +1941,19 @@ def pictorial_stage_documents(
             "    try {\n"
             "      var pdoc = f.ownerDocument;\n"
             "      var panel = f.closest('[data-testid=\"stTabPanel\"]');\n"
+            "      function panelVisible(){\n"
+            "        if (!panel) return true;\n"
+            "        if (panel.hidden) return false;\n"
+            "        if (panel.getAttribute('aria-hidden') === 'true') return false;\n"
+            "        return true;\n"
+            "      }\n"
+            "      function landMount(){\n"
+            "        return pdoc.querySelector('[data-testid=\"stAppViewContainer\"]')\n"
+            "          || pdoc.querySelector('[data-testid=\"stApp\"]')\n"
+            "          || pdoc.body;\n"
+            "      }\n"
             "      function pinPhoto(){\n"
-            "        if (panel && panel.hidden) return;\n"
+            "        if (!panelVisible()) return;\n"
             "        var shot = document.querySelector('.amp-land-photo');\n"
             "        var src = shot ? (shot.getAttribute('src') || '') : '';\n"
             "        if (!pdoc) return;\n"
@@ -1825,14 +1966,17 @@ def pictorial_stage_documents(
             "          host = pdoc.createElement('div');\n"
             "          host.id = 'amp-land-photo-host';\n"
             "          host.setAttribute('data-amp-land-photo-wrap', '1');\n"
-            "          (pdoc.body || pdoc.documentElement).appendChild(host);\n"
+            "        }\n"
+            "        var mount = landMount();\n"
+            "        if (host.parentNode !== mount) {\n"
+            "          mount.insertBefore(host, mount.firstChild);\n"
             "        }\n"
             f"        host.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;"
             f"margin:0;padding:0;overflow:hidden;z-index:{_PAGE_PHOTO_Z};border:none;"
             "background:#0b0a14;pointer-events:none;display:block;';\n"
             "        host.innerHTML = '<img alt=\"\" src=\"'+src+'\" style=\""
             "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
-            "object-position:center bottom;pointer-events:none;display:block;\">';\n"
+            f"object-position:{photo_pos};pointer-events:none;display:block;\">';\n"
             "        if (shot) shot.style.display = 'none';\n"
             "      }\n"
             "      pinPhoto();\n"

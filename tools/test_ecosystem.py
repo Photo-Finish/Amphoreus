@@ -433,6 +433,27 @@ ft = eco.hotspot_for("fountain", 1)
 check("well/fountain different spots",
       (wl.get("left"), wl.get("bottom")) != (ft.get("left"), ft.get("bottom")),
       f"well={wl} fountain={ft}")
+gt = eco.hotspot_for("gate", 1)
+mos = eco.hotspot_for("mosaic", 1)
+
+
+def _left_pct(raw: str) -> float:
+    return float(str(raw or "0").strip().rstrip("%") or 0)
+
+
+gate_left = _left_pct(gt.get("left", "0"))
+fount_left = _left_pct(ft.get("left", "0"))
+mos_left = _left_pct(mos.get("left", "0"))
+check(
+    "gate/fountain hotspot lanes separated",
+    abs(gate_left - fount_left) >= 13.0,
+    f"gate={gt} fountain={ft} gap={abs(gate_left - fount_left):.0f}",
+)
+check(
+    "gate/fountain/mosaic civic lanes ordered",
+    gate_left < fount_left < mos_left,
+    f"gate={gate_left:.0f}% fountain={fount_left:.0f}% mosaic={mos_left:.0f}%",
+)
 
 print("== Place art variants + stall counts ==")
 from pathlib import Path as _P
@@ -551,6 +572,10 @@ check(
     str(_page_ground),
 )
 check(
+    "page-layer ground sill uses px anchor",
+    usl._PAGE_GROUND_BOTTOM == "0px",
+)
+check(
     "page-layer sky keeps elevated bottom",
     usl._resolved_bottom("kite", "68%", page_layer=True) == "68%",
 )
@@ -567,7 +592,64 @@ check(
 check(
     "page-layer bottom-aligns walk films",
     ".amp-pict-page .amp-sprite-film" in _page_css
-    and "--amp-film-y: 100%" in _page_css,
+    and "--amp-film-y: bottom" in _page_css
+    and "background-position: 0 bottom" in _page_css,
+)
+check(
+    "page-layer hides sprite ground ellipses",
+    ".amp-pict-page .amp-sprite:not(.sky)::after" in _page_css
+    and "display: none" in _page_css.split(
+        ".amp-pict-page .amp-sprite:not(.sky)::after"
+    )[1][:80],
+)
+check(
+    "page-layer hides full-width ground ambient",
+    ".amp-pict-page .amp-shore-band,\n.amp-pict-page .amp-wheat-row,\n.amp-pict-page .amp-fountain" in _page_css
+    and "display: none" in _page_css.split(
+        ".amp-pict-page .amp-shore-band,\n.amp-pict-page .amp-wheat-row,\n.amp-pict-page .amp-fountain"
+    )[1][:80],
+)
+_fountain_amb = usl.life_overlay_html(
+    [{"kind": "fountain", "hotspot": {"left": "44%", "bottom": "10%"}}],
+    "Okhema",
+)
+_fountain_tag = _fountain_amb[_fountain_amb.find('class="amp-fountain"'):]
+_fountain_tag = _fountain_tag[:_fountain_tag.find("></div>") + 2] if "></div>" in _fountain_tag else _fountain_tag[:120]
+check(
+    "fountain ambient follows hotspot not floor",
+    "bottom:10%" in _fountain_tag and "bottom:0" not in _fountain_tag,
+    _fountain_tag,
+)
+from src.ui_weather import page_photo_object_position, ground_css_position
+check(
+    "page photo avoids pavement zoom",
+    page_photo_object_position("assets/galgame/bg-okhema.jpg") == "center bottom"
+    and ground_css_position("assets/galgame/bg-okhema.jpg") == "18% 88%",
+)
+_pict_docs = usl.pictorial_stage_documents(
+    ROOT / "assets/galgame/bg-okhema.jpg",
+    "Okhema",
+    "none",
+    "",
+    [
+        {"id": "w1", "kind": "well", "name": "Well", "clickable": True,
+         "hotspot": {"left": "22%", "bottom": "11%"}},
+        {"id": "d1", "kind": "dromas", "name": "Dromas", "clickable": True,
+         "hotspot": {"left": "84%", "bottom": "12%"}},
+    ],
+    page_layer=True,
+    entities=True,
+)
+_pict_html = _pict_docs[0] if _pict_docs else ""
+check(
+    "page pictorial still uses ground sill",
+    "ground-sill" in _pict_html and "bottom:0px" in _pict_html,
+    _pict_html[_pict_html.find("amp-sprite"): _pict_html.find("amp-sprite") + 120] if _pict_html else "",
+)
+check(
+    "page pictorial shell uses 100vh stage",
+    "height:100vh" in _pict_html and "bottom:0;" in _pict_html.split("amp-pict-page")[1][:120],
+    "",
 )
 # Foot lift from margin must not scale with taller cells (resident vs chimera).
 _res_cell = usl._sprite_cell_px("resident", page_layer=True)
@@ -606,15 +688,32 @@ still_sp = usl._pick_still_sprites(
     dense=True,
 )
 usl._layout_still_lefts(still_sp)
+_GROUND_STILL_KINDS = frozenset({
+    "gate", "fountain", "well", "shrine", "forge", "pillar",
+    "market_stall", "mill", "banner",
+})
 still_lefts = sorted(
     usl._parse_left_pct(str(b.get("hotspot", {}).get("left", "0")))
     for b in still_sp
+    if b.get("kind") in _GROUND_STILL_KINDS
 )
 if len(still_lefts) > 1:
     min_gap = min(still_lefts[i + 1] - still_lefts[i] for i in range(len(still_lefts) - 1))
 else:
     min_gap = 99.0
 check("still sprites min horizontal gap", min_gap >= 8.0, f"lefts={still_lefts} gap={min_gap}")
+gf_still = {
+    b["kind"]: usl._parse_left_pct(str(b.get("hotspot", {}).get("left", "0")))
+    for b in still_sp
+    if b.get("kind") in ("gate", "fountain")
+}
+if "gate" in gf_still and "fountain" in gf_still:
+    gf_gap = abs(gf_still["gate"] - gf_still["fountain"])
+    check(
+        "gate/fountain still lanes separated",
+        gf_gap >= 13.0,
+        f"gate={gf_still['gate']:.0f}% fountain={gf_still['fountain']:.0f}% gap={gf_gap:.0f}",
+    )
 roam_fixture_same = [
     (rk, fk)
     for rk in usl._ROAMER_KINDS

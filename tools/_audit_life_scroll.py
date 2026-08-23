@@ -37,6 +37,8 @@ checks = {
     "wheel passScroll": "passScroll" in html and "pdoc.addEventListener('wheel', passScroll" in html,
     "touch pass": "addEventListener('touchmove'" in html,
     "sprite pointer-events:auto": ".amp-sprite {" in html and "pointer-events: auto;" in html,
+    "photo host mounts in app shell": "landMount" in html and "stAppViewContainer" in html,
+    "life iframe z-index 25": "z-index:25" in html,
 }
 for name, ok in checks.items():
     print(f"{'PASS' if ok else 'FAIL'}: {name}")
@@ -48,6 +50,10 @@ from src.ui_weather import page_backdrop_css
 
 css = look_chrome_css() + page_backdrop_css.__doc__
 weather_src = (ROOT / "src" / "ui_weather.py").read_text(encoding="utf-8")
+if "stAppViewContainer" not in weather_src.split("page_backdrop_css", 1)[1][:4000]:
+    print("FAIL: ui_weather app shell z-index for photo host")
+    raise SystemExit(1)
+print("PASS: ui_weather app shell z-index for photo host")
 life_block = weather_src.split("iframe[data-amp-land-life", 1)[1]
 if "pointer-events: none !important;" not in life_block[:800]:
     print("FAIL: ui_weather life iframe CSS")
