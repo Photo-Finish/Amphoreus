@@ -9,6 +9,9 @@ is only for the land UI that Stage 2 replaced.
 The live app keeps both looks. Sidebar **Land look** switches:
 
 - **Pictures on the land** — full-bleed art + figures (the current default).
+  Page-layer stack (2026-08-23): Heir backdrop under the life iframe; walkable
+  sprites on the viewport bottom sill; civic fixtures spaced (see
+  `docs/STAGE-2-VIVID.md` fourth delivery).
 - **Classic (inset + names)** — one inset picture and named buttons. No weather
   overlay, no grass/rain layer, no full-page figures. Restore-from-git is still
   available below if you want the exact 113d7c2 files.

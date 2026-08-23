@@ -1,6 +1,6 @@
 # Stage 2 — Vivid society & natural world (first delivery)
 
-**Date:** 2026-08-18  
+**Date:** 2026-08-18 (first delivery); extended 2026-08-22 … 2026-08-23  
 **North star:** make the society and natural world as vivid as possible.
 
 ## Canon fit
@@ -88,3 +88,22 @@ Charter unchanged.
 | Absence chrome | Visit return vignette |
 | Daybook spine | First on Chronicle/Gazette |
 | Desktop exe | Repo-root `AmphoreusSanctuary.exe` |
+
+## Fourth delivery — pictorial land polish (2026-08-23)
+
+| Feature | Note |
+|---|---|
+| Launcher reuse | `launch_sanctuary.cmd` reuses healthy `:8501`; does not kill foreign Streamlit |
+| Scroll with Life on | Wheel/touch on the life iframe forwards to `stMain`; sprites stay clickable |
+| One ground sill | Page-layer walkable sprites at viewport `bottom: 0px` (`ground-sill`); no mid-frame floor strip |
+| Backdrop under life | `#amp-land-photo-host` first child of `stAppViewContainer` (z0); life iframe z25 |
+| Stall HSR art | Place-family stalls from `market_stall` pipeline (`build_place_env_sprites.py`) |
+| Chimera wiki cuts | Color variants from Little Chimera wiki sources (`build_hsr_life_sprites.py`) |
+| Caravan balance | Trade caravan additive; cap preserves chimera + solo roamers |
+| Civic spacing | Gate 28% / fountain 58% / mosaic 76%; ≥13% gate–fountain gap after layout |
+| Mosaic / pillar | Env sprites rebuilt for Okhema / Grove / Aidonia families |
+
+Modules: `src/ui_scene_life.py`, `src/ui_weather.py`, `src/ui_look.py`,
+`src/world/ecosystem.py`. Suites: `tools/test_ecosystem.py` (258),
+`tools/test_walk_map_handoff.py` (13), `tools/_audit_life_scroll.py`.
+Charter unchanged.

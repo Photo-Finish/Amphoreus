@@ -3,7 +3,7 @@
 How to reach the living Sanctuary from any device, what the addresses mean,
 what happens when the network changes, and how to make the address permanent.
 
-**Last updated:** 2026-08-16
+**Last updated:** 2026-08-23
 
 ---
 
@@ -152,6 +152,8 @@ router — then `http://<your-public-ip>:8765` works directly.)
 | The old public URL shows a Cloudflare error | Normal — the URL changed after a restart. Use the eternal address `https://photo-finish.github.io/` or the LAN URL. |
 | `http://Lambda.local:…` does not load on a phone | The device lacks mDNS — use the IP form (`http://192.168.1.15:8765`). |
 | The full UI shows “interface not running” | The Streamlit app (port 8501) is down — start it (the launcher, or ask the assistant) and the guard re-opens its tunnel. |
+| Double-clicking `launch_sanctuary.cmd` opens a blank / wrong tab | Normal when `:8501` is already healthy: the launcher **reuses** that Streamlit and opens the browser once health returns. It only stops a UI **this** launcher started (`world_runtime/ui_launcher_owns.txt`). Desktop shell: `launch_sanctuary_desktop.cmd` / repo-root `AmphoreusSanctuary.exe`. |
+| Pictures/Life on — sprites buried under Heir art, or a dark floor strip | Page-layer land stack: backdrop z0 under life iframe z25; walkable feet on the viewport sill. See `docs/STAGE-2-VIVID.md` (fourth delivery). Reload after pull. |
 | The full UI loads but the chat won’t connect (WebSocket error) | Usually a first-load hiccup while the app boots — reload the page. |
 | `Voice: Ready` but slow replies | gemma3:27b is the standard voice (~8 tok/s); switch to the fast voice in the Control Panel. |
 | Nothing works from the Internet | The computer is offline, or Cloudflare is blocked in your region — use LAN, or see §4. |

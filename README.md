@@ -1159,4 +1159,25 @@ tide / letter / weather / co-location / aftermath features):
 - **Walk → Map pin**, **guest Walk** (notice OK; care-chat operator-only),
   **absence Visit vignette**, **Chronicle daybook spine**.
 
+### 2026-08-23 — pictorial land polish
+- **Launcher reuse** (`15171e4`) — `launch_sanctuary.cmd` waits for
+  `http://127.0.0.1:8501/_stcore/health` and reuses a healthy Streamlit instead
+  of spawning a second one; only stops a UI this launcher started.
+- **Walk life layer** (`de769ff`) — scroll passes through the life iframe to
+  the main column; page-layer sprites share one ground sill (viewport bottom);
+  place-family HSR stall art; trade caravans are additive (solo dromas /
+  residents / chimeras kept); stall density reserved so civic fixtures stay
+  visible. Suites: `tools/test_ecosystem.py`, `tools/test_walk_map_handoff.py`,
+  `tools/_audit_life_scroll.py`.
+- **Scroll, ground, chimera art** (`9b98ce6`) — wheel/touch still scroll when
+  Life is on; NPC/roamer feet on the page sill (no cell-scaled floor nudge);
+  still sprites spaced; Little Chimera films rebuilt from wiki cuts; mosaic /
+  pillar env sprites refreshed.
+- **Backdrop, floor, horizon, civic lanes** (`5fe549b`) — Heir galgame photo
+  mounts inside `stAppViewContainer` at z-index 0 under the life iframe (25),
+  so Aglaea’s backdrop no longer buries gate/fountain/dromas; page layer hides
+  painted floor ellipses and ambient ground bands; walk films align feet to
+  the sill (`ground-sill`, `bottom: 0px`); Okhema civic lanes separate gate
+  (28%), fountain (58%), mosaic (76%). Detail: `docs/STAGE-2-VIVID.md`.
+
 

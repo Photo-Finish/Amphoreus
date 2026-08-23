@@ -1205,6 +1205,57 @@ stored date (default Year 4932, Month of Weaving, week 1, day 1) and advance
 that sim clock. Saving the world never writes the 1x overlay onto the 4932…
 store. Suite: `tools/test_sanctuary_calendar.py`.
 
+### 3.18 Stage 2 — society continuity, companions, guest path (2026-08-22)
+(`src/world/society_life.py`, `resident_memory.py`, `resident_errands.py`,
+`daybook.py`, `group_chat.py`, `ui_galgame_group.py`, ecosystem companions)
+
+After the first vivid/lived deliveries, Stage 2 deepened **continuity you can
+re-enter**: shared gatherings stick into solo Visit; walk-in mid-letter /
+mid-talk / rumor scenes; named street memory; Heir-initiated sit invites;
+letter mini-scene choices; bond-weather cues (Cassie, Cipher doors, Earth
+underfoot); date-advancing resident errands; daybook “Today in Amphoreus”;
+Walk→Map pin; guest Walk (notice OK, care-chat operator-only); absence return
+vignette. Canon land companions: Pollux with Castorice, Membrance maze fairies
+at Aedes, Mountain Dwellers at Okhema (not Aidonia), Little Ica with Hyacine.
+Seasonal eco density uses **official Light Calendar months only** — no invented
+festivals. Desktop shell: repo-root `AmphoreusSanctuary.exe` (pywebview).
+
+Visitor catalog / north-star notes: `docs/STAGE-2-VIVID.md`,
+`docs/COLLECTIVE-MEMORY.md`. Suites include `tools/test_society_life.py`,
+`tools/test_group_chat.py`, `tools/test_eco_companions.py`, daybook /
+resident-memory suites.
+
+### 3.19 Stage 2 — pictorial land layer (2026-08-19 … 2026-08-23)
+(`src/ui_scene_life.py`, `src/ui_weather.py`, `src/ui_look.py`,
+`src/world/ecosystem.py`, `assets/life_sprites/`)
+
+Visit and Walk share a **Pictures on the land** mode: full-bleed region art,
+painted still fixtures, roamers that cross the view, optional pet films, and
+occasional trade caravans. Classic inset look remains available.
+
+**Stack (page layer):** `#amp-land-photo-host` mounts as the first child of
+`stAppViewContainer` at z-index 0; the life iframe sits at z-index 25 so sprites
+paint **in front of** the Heir galgame backdrop. Walkable figures share one
+ground sill (`bottom: 0px`, class `ground-sill`); page layer hides sprite
+`::after` floor ellipses and full-width ambient ground bands (shore / wheat /
+fountain glints). Scroll: the life iframe is `pointer-events: none` except
+sprites; wheel/touch forward to `section[data-testid="stMain"]`.
+
+**Placement:** civic fixtures use dedicated lanes (gate 28%, fountain 58%,
+mosaic 76%) with a ≥13% gate–fountain gap after `_layout_still_lefts`; stall
+density is capped so markets do not crowd out wells/gates. Trade caravans are
+**additive** — they do not retag every solo dromas/resident, and the stage cap
+preserves chimera + solo roamers.
+
+**Art:** place-family stalls / mosaic / pillar via `tools/build_place_env_sprites.py`;
+Little Chimera color films from wiki cuts via `tools/build_hsr_life_sprites.py`.
+Prompt lock: `assets/life_sprites/PROMPT.md`. Pre-pictorial restore:
+`docs/UI-ORIGINALS.md`.
+
+**Launcher:** `launch_sanctuary.cmd` reuses a healthy `:8501` and only stops a
+UI it owns. Suites: `tools/test_ecosystem.py`, `tools/test_walk_map_handoff.py`,
+`tools/_audit_life_scroll.py`.
+
 ---
 
 *"Only through a worthy sacrifice can we gain a befitting victory."* — Cerydra.

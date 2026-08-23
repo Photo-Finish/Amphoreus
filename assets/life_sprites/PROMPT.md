@@ -25,6 +25,17 @@ Painted PNGs are only for **outdoor interactive** figures (chimera, dromas,
 square cat, civilian, well, stall, forge, gate, boat, kite, olive, cicada…).
 Indoor furniture (bath, hearth, lamp, scroll, loom) is not staged.
 Ambient grass / wind / wheat / dawn is CSS or SVG, not a painted sprite.
+On **Pictures on the land** (page layer), do not paint a full-width floor band —
+feet sit on the viewport sill; drop-shadows stay per-sprite.
+
+## Preferred sources (rebuild pipelines)
+
+- **Little Chimera** color stills / walk films: wiki cutouts via
+  `tools/build_hsr_life_sprites.py` (not AI photoreal cats).
+- **Market stalls / mosaic / pillar:** place-family recolors from
+  `tools/build_place_env_sprites.py` (HSR stall plate + region tints).
+- **Dromas:** soft periwinkle HSR earth-beast (see Canon shapes); prefer
+  official / wiki side cuts over clay-brown AI drafts.
 
 ## Canon shapes
 

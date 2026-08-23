@@ -115,3 +115,16 @@ These **run on the world-engine tick**. They write flags and a few chronicle fac
 ## Residents (how they use the list)
 
 About 110 templated street people (plus Copilot's six named living NPCs: Bartholos, Seliose, Noldus, Researcher Eikura Shuu, Mem, Theodosia) take their hour from these mechanisms: hearths at rest, stalls at Lucid/Action, gates at Parting, Grove students with no harbor-fishers. They can nod to a Heir who is actually in their city. Visit offers two-to-four people *here this hour*, not the census.
+
+---
+
+## Related — painted life on Visit / Walk (not this catalog)
+
+The **pictorial land layer** (`src/world/ecosystem.py` + `src/ui_scene_life.py`)
+puts chimera, dromas, stalls, gates, fountains, and street people on the same
+hour’s stage as Pictures/Life on the land. That layer is visual continuity for
+the visitor — it does **not** invent famine, plague, or burial, and it does not
+replace the entity/mechanism ledger above. Ground rule for page-layer art: one
+sill at the viewport bottom; Heir backdrop behind sprites; civic fixtures spaced
+so gate and fountain do not share a silhouette. See `docs/STAGE-2-VIVID.md`
+(fourth delivery) and `docs/IMPLEMENTATION.md` §3.19.
