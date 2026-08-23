@@ -33,7 +33,7 @@ if not exist "%PYTHON%" (
 echo ============================================================
 echo   Project Amphoreus - The Sanctuary of the Chrysos Heirs
 echo ============================================================
-echo [1/3] Checking the Ollama server...
+echo [1/4] Checking the Ollama server...
 powershell -NoProfile -Command "if (Get-NetTCPConnection -LocalPort 11434 -State Listen -ErrorAction SilentlyContinue) { exit 0 } else { exit 1 }"
 if %errorlevel% equ 1 (
     echo       Server not running - starting it...
@@ -60,33 +60,50 @@ powershell -NoProfile -Command ^
    } else { Write-Host '      World engine already running.' }"
 
 echo [3/4] Starting the interface in the background...
-powershell -NoProfile -Command "$p = Start-Process -FilePath '%PYTHON%' -ArgumentList '-m','streamlit','run','%ROOT%src\ui_app.py','--server.headless','true','--server.port','8501' -WorkingDirectory '%ROOT%' -WindowStyle Minimized -RedirectStandardOutput '%ROOT%world_runtime\ui.log' -RedirectStandardError '%ROOT%world_runtime\ui.log.err' -PassThru; $p.Id | Out-File -FilePath '%ROOT%world_runtime\ui.pid' -Encoding ascii"
+set UI_OWNS=0
+del "%ROOT%world_runtime\ui_launcher_owns.txt" 2>nul
+powershell -NoProfile -Command ^
+  "if (Test-Path '%ROOT%world_runtime\ui_launcher_owns.txt') { Remove-Item '%ROOT%world_runtime\ui_launcher_owns.txt' -Force -ErrorAction SilentlyContinue }; ^
+   $ok = $false; ^
+   try { $r = Invoke-WebRequest -Uri 'http://127.0.0.1:8501/_stcore/health' -UseBasicParsing -TimeoutSec 2; if ($r.StatusCode -eq 200) { $ok = $true } } catch {}; ^
+   if ($ok) { Write-Host '      Interface already running on port 8501 (reusing).'; exit 0 }; ^
+   $p = Start-Process -FilePath '%PYTHON%' -ArgumentList @('-m','streamlit','run','%ROOT%src\ui_app.py','--server.headless','true','--server.port','8501','--server.address','127.0.0.1','--browser.gatherUsageStats','false') -WorkingDirectory '%ROOT%' -WindowStyle Minimized -RedirectStandardOutput '%ROOT%world_runtime\ui.log' -RedirectStandardError '%ROOT%world_runtime\ui.log.err' -PassThru; ^
+   $p.Id | Out-File -FilePath '%ROOT%world_runtime\ui.pid' -Encoding ascii -NoNewline; ^
+   '1' | Out-File -FilePath '%ROOT%world_runtime\ui_launcher_owns.txt' -Encoding ascii -NoNewline; ^
+   Write-Host ('      Streamlit started (pid ' + $p.Id + ').')"
+if exist "%ROOT%world_runtime\ui_launcher_owns.txt" set UI_OWNS=1
 
 echo [4/4] Waiting for the interface, then opening it in your browser...
 set /a _n=0
 :wait_ui
 timeout /t 1 /nobreak >nul
-powershell -NoProfile -Command "if (Get-NetTCPConnection -LocalPort 8501 -State Listen -ErrorAction SilentlyContinue) { exit 0 } else { exit 1 }"
+powershell -NoProfile -Command "try { $r = Invoke-WebRequest -Uri 'http://127.0.0.1:8501/_stcore/health' -UseBasicParsing -TimeoutSec 2; if ($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }"
 if not errorlevel 1 goto ui_ready
 set /a _n+=1
-if %_n% geq 60 goto ui_open
+if %_n% geq 90 goto ui_open
 goto wait_ui
 
 :ui_ready
 echo       The Sanctuary is ready.
 :ui_open
-start "" http://localhost:8501
+powershell -NoProfile -Command "Start-Process 'http://127.0.0.1:8501/'"
 
 echo ============================================================
 echo   The Sanctuary is open in your browser:
-echo       http://localhost:8501
+echo       http://127.0.0.1:8501
+if "%UI_OWNS%"=="1" (
+echo   This window owns the interface — close it to stop Streamlit.
+) else (
+echo   Interface was already running — closing this window will NOT stop it.
+)
 echo   Senses mode: %SENSES_MODE%
-echo   Leave this window open to keep the interface running.
-echo   Press any key (or close this window) to stop the interface.
+echo   Press any key (or close this window^) when you are done here.
 echo ============================================================
 pause >nul
 
-rem --- closing this window stops the interface ---
-powershell -NoProfile -Command "$id = $null; if (Test-Path '%ROOT%world_runtime\ui.pid') { $id = Get-Content '%ROOT%world_runtime\ui.pid' -ErrorAction SilentlyContinue }; if ($id) { Stop-Process -Id $id -Force -ErrorAction SilentlyContinue }; $owner = (Get-NetTCPConnection -LocalPort 8501 -State Listen -ErrorAction SilentlyContinue).OwningProcess; if ($owner) { Stop-Process -Id $owner -Force -ErrorAction SilentlyContinue }"
+rem --- closing this window stops the interface only if we started it ---
+if "%UI_OWNS%"=="1" (
+powershell -NoProfile -Command "$id = $null; if (Test-Path '%ROOT%world_runtime\ui.pid') { $id = Get-Content '%ROOT%world_runtime\ui.pid' -ErrorAction SilentlyContinue }; if ($id) { Stop-Process -Id $id -Force -ErrorAction SilentlyContinue }; $owner = (Get-NetTCPConnection -LocalPort 8501 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1).OwningProcess; if ($owner) { Stop-Process -Id $owner -Force -ErrorAction SilentlyContinue }; Remove-Item '%ROOT%world_runtime\ui_launcher_owns.txt' -Force -ErrorAction SilentlyContinue"
+)
 
 endlocal
