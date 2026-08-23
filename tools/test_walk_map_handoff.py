@@ -17,8 +17,10 @@ os.chdir(ROOT)
 from src.ui_walk_land import (
     MAP_FOCUS_KEY,
     MAP_FOCUS_LABEL_KEY,
+    _LABEL_SLUG,
     apply_map_focus,
     map_focus_payload,
+    region_options,
 )
 
 PASSED, FAILED = [], []
@@ -46,6 +48,28 @@ def main():
     check("label optional", MAP_FOCUS_LABEL_KEY not in p2 and p2[MAP_FOCUS_KEY] == "Styxia")
     p3 = map_focus_payload("  Grove of Epiphany  ", "  Grove  ")
     check("strips whitespace", p3[MAP_FOCUS_KEY] == "Grove of Epiphany")
+
+    print("== walk region backdrops ==")
+    missing = []
+    unmapped = []
+    for label, place, path in region_options():
+        if label not in _LABEL_SLUG:
+            unmapped.append(label)
+        if path is None:
+            missing.append(label)
+    check("every WALK_REGION label has _LABEL_SLUG", not unmapped, str(unmapped))
+    check("every walk region resolves art on disk", not missing, str(missing))
+
+    print("== pictorial photo pin (tab visibility) ==")
+    scene_src = (ROOT / "src" / "ui_scene_life.py").read_text(encoding="utf-8")
+    check(
+        "pinPhoto skips hidden tab panels",
+        "panel.hidden" in scene_src and "function pinPhoto" in scene_src,
+    )
+    check(
+        "pinPhoto re-runs when tab panel becomes visible",
+        "attributeFilter: ['hidden']" in scene_src,
+    )
 
     print("== apply_map_focus (session_state-like) ==")
     state = {}

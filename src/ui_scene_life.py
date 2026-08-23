@@ -309,6 +309,13 @@ _SPRITE_FACING: Dict[str, str] = {
 _PROFILE_WALK_KINDS = frozenset({"chimera", "dromas", "dromas_calf"})
 # Viewport traverse spawn/despawn — only these kinds leave and re-enter view.
 _ROAMER_KINDS = frozenset({"chimera", "dromas", "dromas_calf", "resident", "cicada"})
+# Painted civic fixtures — reserve still slots before dense market stalls.
+_LAND_FIXTURE_STILLS = frozenset({
+    "well", "fountain", "shrine", "gate", "forge",
+    "laundry", "ribbon", "pillar", "mosaic", "banner", "mill", "incense",
+})
+_MAX_STALL_STILLS_DENSE = 4
+_MAX_STALL_STILLS_SPARSE = 2
 _ROAMER_DUR = {
     "dromas": (16, 24),
     "dromas_calf": (12, 18),
@@ -340,6 +347,8 @@ _UI_READ_Z = 260
 # photo behind copy; life/popups above copy; chat/tabs stay higher still.
 _PAGE_PHOTO_Z = 0
 _PAGE_LIFE_Z = 25
+# Page-layer walkable figures share one sill — the viewport bottom edge.
+_PAGE_GROUND_BOTTOM = "0"
 # Display height on the full pictorial stage. Resident is human scale.
 # Little chimera is a mascot you could pick up; dromas is a ridden earth-beast.
 _SPRITE_CELL: Dict[str, int] = {
@@ -420,7 +429,11 @@ def _sprite_roam_style(kind: str, oid: str, *, delay: float = 0.0) -> str:
 
 
 def _page_window_bottom(kind: str, hotspot_bottom: str) -> str:
-    """Lower border of the page window is the ground for page-layer life."""
+    """Lower border of the page window is the ground for page-layer life.
+
+    Walkable / standing sprites share one sill (``_PAGE_GROUND_BOTTOM``).
+    Only sky and explicitly elevated kinds keep a raised bottom.
+    """
     if kind in _SKY_KINDS:
         return hotspot_bottom or "72%"
     if kind == "laundry":
@@ -429,16 +442,7 @@ def _page_window_bottom(kind: str, hotspot_bottom: str) -> str:
         return "22%"
     if kind in ("cicada", "grove_leaf"):
         return hotspot_bottom or "42%"
-    # Slight depth variety, still on the sill.
-    table = {
-        "dromas": "1%", "dromas_calf": "1%", "chimera": "2%", "hearth_cat": "2%", "resident": "2%",
-        "little_ica": "2%", "pollux": "2%", "maze_fairy": "3%", "mountain_dweller": "2%",
-        "well": "1%", "fountain": "1%", "forge": "1%", "gate": "1%",
-        "shrine": "2%", "market_stall": "2%", "mill": "1%", "pillar": "1%",
-        "olive": "2%", "incense": "2%", "boat": "0%", "siren": "1%",
-        "pearl": "1%", "pebble": "0%", "net": "0%", "tidepool": "0%",
-    }
-    return table.get(kind, "2%")
+    return _PAGE_GROUND_BOTTOM
 
 
 def _parse_bottom_pct(bottom: str, default: float = 2.0) -> float:
@@ -767,6 +771,7 @@ def _css() -> str:
   position: absolute;
   width: var(--amp-cell); height: var(--amp-cell);
   margin-left: calc(var(--amp-cell) / -2);
+  /* Foot inset within the art cell — pairs with bottom:0 on the page sill. */
   margin-bottom: calc(var(--amp-cell) * -0.12);
   padding: 0; border: none; background: transparent;
   cursor: pointer; z-index: 10;
@@ -1126,6 +1131,62 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
     return pool
 
 
+def _pick_still_sprites(
+    ranked: List[dict],
+    max_sprites: int,
+    *,
+    dense: bool,
+) -> List[dict]:
+    """Reserve stall budget, then civic fixtures, then fill remaining slots."""
+    max_stalls = _MAX_STALL_STILLS_DENSE if dense else _MAX_STALL_STILLS_SPARSE
+    stall_in_scene = sum(
+        1 for b in ranked
+        if str(b.get("kind") or "") == "market_stall"
+    )
+    stall_budget = min(max_stalls, stall_in_scene, max_sprites)
+    fixture_budget = max(0, max_sprites - stall_budget)
+
+    still: List[dict] = []
+    stall_count = 0
+    fixture_done: set = set()
+    seen_ids: set = set()
+
+    def _take(b: dict) -> bool:
+        oid = b.get("id")
+        if not oid or oid in seen_ids:
+            return False
+        seen_ids.add(oid)
+        still.append(b)
+        return True
+
+    for b in ranked:
+        kind = str(b.get("kind") or "")
+        if kind in _ROAMER_KINDS:
+            continue
+        if kind in _LAND_FIXTURE_STILLS and kind not in fixture_done:
+            if len(fixture_done) >= fixture_budget:
+                continue
+            if _take(b):
+                fixture_done.add(kind)
+
+    for b in ranked:
+        kind = str(b.get("kind") or "")
+        if kind in _ROAMER_KINDS:
+            continue
+        if kind == "market_stall" and stall_count < stall_budget:
+            if _take(b):
+                stall_count += 1
+
+    for b in ranked:
+        kind = str(b.get("kind") or "")
+        if kind in _ROAMER_KINDS:
+            continue
+        if _take(b) and len(still) >= max_sprites:
+            break
+
+    return still[:max_sprites]
+
+
 def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
     """Client-side probabilistic roamer lifecycle inside the land iframe."""
     prob = max(0.05, min(0.95, spawn_prob))
@@ -1165,13 +1226,8 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
       var bias = (ent.bandBias != null) ? ent.bandBias : {_BAND_BIAS["life"]};
       return {_SPRITE_Z_FLOOR} + Math.round((100 - depth) * {_SPRITE_Y_SCALE}) + bias;
     }}
-    function depthLane(ent) {{
-      var bottomPct = parsePct(ent.bottom, 2);
-      if (ent.elevated) return bottomPct;
-      var lane = Math.random();
-      if (lane < 0.32) return Math.min(16, bottomPct + 8 + Math.random() * 5);
-      if (lane < 0.5) return Math.max(0, bottomPct - Math.random());
-      return bottomPct;
+    function groundBottom(ent) {{
+      return parsePct(ent.bottom, 0);
     }}
     function pick() {{
       var avail = pool.filter(function(p) {{ return !busy[p.oid] && !p.caravanMate; }});
@@ -1204,7 +1260,7 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
       btn.setAttribute('title', ent.name);
       btn.setAttribute('aria-label', ent.name);
       if (ent.notice && typeof book !== 'undefined') book[ent.oid] = ent.notice;
-      var bottomPct = (opts.bottomPct != null) ? opts.bottomPct : parsePct(ent.bottom, 2);
+      var bottomPct = (opts.bottomPct != null) ? opts.bottomPct : parsePct(ent.bottom, 0);
       btn.style.left = anchorPct + '%';
       btn.style.bottom = bottomPct + '%';
       btn.style.setProperty('--amp-cell', cell + 'px');
@@ -1261,7 +1317,7 @@ def _viewport_roam_js(*, max_active: int, spawn_prob: float) -> str:
           setTimeout(function() {{ spawn(false); }}, rand(400, 2800));
         }}
       }}
-      var bottomPct = depthLane(ent);
+      var bottomPct = groundBottom(ent);
       var dirMates = mates.map(function(m) {{
         var copy = {{}};
         Object.keys(m).forEach(function(k) {{ copy[k] = m[k]; }});
@@ -1318,7 +1374,7 @@ def life_overlay_html(scene: List[dict], place: str = "", *, dense: bool = False
 
     if "fountain" in kinds:
         parts.append(
-            '<div class="amp-fountain" style="left:48%;bottom:2%;"></div>'
+            '<div class="amp-fountain" style="left:48%;bottom:0;"></div>'
         )
     if "laundry" in kinds:
         parts.append(
@@ -1416,10 +1472,10 @@ def pictorial_stage_documents(
     _PRIORITY = (
         "little_ica", "pollux", "maze_fairy", "mountain_dweller",
         "hearth_cat", "chimera", "dromas", "dromas_calf", "resident",
-        "well", "fountain", "forge", "boat", "siren", "olive", "cicada",
-        "pearl", "shrine", "gate", "market_stall",
-        "laundry", "mill", "kite", "courier", "banner", "pillar", "incense",
-        "mosaic", "ribbon",
+        "well", "fountain", "forge", "mosaic", "pillar", "shrine", "gate",
+        "boat", "siren", "olive", "cicada", "pearl",
+        "laundry", "ribbon", "banner", "mill", "incense", "courier",
+        "market_stall", "kite",
         "dawn", "thief_star",
     )
     clickable = [
@@ -1444,15 +1500,8 @@ def pictorial_stage_documents(
         for b in clickable
         if b.get("id")
     }
-    # Fill still slots from priority order; skip roamers (they spawn via JS).
-    still = []
-    for b in ranked:
-        kind = str(b.get("kind") or "")
-        if kind in _ROAMER_KINDS:
-            continue
-        still.append(b)
-        if len(still) >= max_sprites:
-            break
+    # Fill still slots: civic fixtures first, then dense stalls, then the rest.
+    still = _pick_still_sprites(ranked, max_sprites, dense=dense)
 
     def _paint_key(b: dict):
         kind = str(b.get("kind") or "")
@@ -1491,12 +1540,12 @@ def pictorial_stage_documents(
     if page_layer:
         shell = (
             '<style>html,body{margin:0;padding:0;width:100%;height:100%;'
-            'background:transparent;overflow:hidden;}'
+            'background:transparent;overflow:hidden;pointer-events:none;}'
             '.amp-land-photo{position:absolute;inset:0;width:100%;height:100%;'
             'object-fit:cover;object-position:center bottom;pointer-events:none;'
             'z-index:0;display:block;}'
             '#amp-pict-stage{isolation:isolate;}</style>'
-            '<div id="amp-pict-stage" style="position:fixed;inset:0;width:100%;'
+            '<div id="amp-pict-stage" class="amp-pict-page" style="position:fixed;inset:0;width:100%;'
             'height:100%;overflow:hidden;background:transparent;pointer-events:none;">'
         )
         art_div = (
@@ -1531,7 +1580,7 @@ def pictorial_stage_documents(
             "    f.setAttribute('data-amp-land-life', '1');\n"
             "    f.removeAttribute('width'); f.removeAttribute('height');\n"
             f"    f.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;"
-            f"border:0;z-index:{_PAGE_LIFE_Z};background:transparent;pointer-events:auto;"
+            f"border:0;z-index:{_PAGE_LIFE_Z};background:transparent;pointer-events:none;"
             "max-width:none;max-height:none;';\n"
             "    var p = f.parentElement;\n"
             "    if (p) {\n"
@@ -1544,14 +1593,12 @@ def pictorial_stage_documents(
             # Empty life-canvas hits fall through to Visit chrome
             # (heir invite / letter / absence sit under this fixed iframe).
             "    try {\n"
+            "      var passInteractive =\n"
+            "        '.amp-sprite, .amp-pop, .amp-notice-card, button, a, input, textarea, select';\n"
             "      var pass = function(ev) {\n"
             "        var t = ev.target;\n"
-            "        if (t && t.closest && t.closest(\n"
-            "          '.amp-sprite, .amp-pop, button, a, input, textarea, select'\n"
-            "        )) return;\n"
-            "        f.style.pointerEvents = 'none';\n"
+            "        if (t && t.closest && t.closest(passInteractive)) return;\n"
             "        var below = f.ownerDocument.elementFromPoint(ev.clientX, ev.clientY);\n"
-            "        f.style.pointerEvents = 'auto';\n"
             "        if (!below || below === f || below === p) return;\n"
             "        ev.preventDefault(); ev.stopPropagation();\n"
             "        below.dispatchEvent(new MouseEvent(ev.type, {\n"
@@ -1559,15 +1606,64 @@ def pictorial_stage_documents(
             "          clientX:ev.clientX, clientY:ev.clientY\n"
             "        }));\n"
             "      };\n"
+            "      var passScroll = function(ev) {\n"
+            "        var t = ev.target;\n"
+            "        if (t && t.closest && t.closest(\n"
+            "          '.amp-sprite[data-petting=\"1\"], .amp-notice-card, .amp-pop, '\n"
+            "          + 'button, a, input, textarea, select'\n"
+            "        )) return;\n"
+            "        try {\n"
+            "          var pdoc = f.ownerDocument;\n"
+            "          var scrollEl = pdoc.querySelector('section[data-testid=\"stMain\"]')\n"
+            "            || pdoc.scrollingElement || pdoc.documentElement;\n"
+            "          if (ev.type === 'wheel') {\n"
+            "            scrollEl.scrollTop += ev.deltaY;\n"
+            "            scrollEl.scrollLeft += (ev.deltaX || 0);\n"
+            "            ev.preventDefault();\n"
+            "          }\n"
+            "        } catch (e) {}\n"
+            "      };\n"
+            "      var touchY = null;\n"
+            "      var passTouch = function(ev) {\n"
+            "        var t = ev.target;\n"
+            "        if (t && t.closest && t.closest(\n"
+            "          '.amp-sprite[data-pettable=\"1\"], .amp-notice-card, .amp-pop, '\n"
+            "          + 'button, a, input, textarea, select'\n"
+            "        )) return;\n"
+            "        if (ev.type === 'touchstart' && ev.touches.length === 1) {\n"
+            "          touchY = ev.touches[0].clientY;\n"
+            "          return;\n"
+            "        }\n"
+            "        if (ev.type !== 'touchmove' || touchY === null || ev.touches.length !== 1) return;\n"
+            "        var dy = touchY - ev.touches[0].clientY;\n"
+            "        touchY = ev.touches[0].clientY;\n"
+            "        try {\n"
+            "          var pdoc = f.ownerDocument;\n"
+            "          var scrollEl = pdoc.querySelector('section[data-testid=\"stMain\"]')\n"
+            "            || pdoc.scrollingElement || pdoc.documentElement;\n"
+            "          scrollEl.scrollTop += dy;\n"
+            "          ev.preventDefault();\n"
+            "        } catch (e) {}\n"
+            "      };\n"
             "      document.addEventListener('click', pass, true);\n"
             "      document.addEventListener('pointerdown', pass, true);\n"
+            "      document.addEventListener('wheel', passScroll, {passive:false, capture:true});\n"
+            "      document.addEventListener('touchstart', passTouch, {passive:true, capture:true});\n"
+            "      document.addEventListener('touchmove', passTouch, {passive:false, capture:true});\n"
             "    } catch (e) {}\n"
             "    try {\n"
             "      var pdoc = f.ownerDocument;\n"
-            "      var shot = document.querySelector('.amp-land-photo');\n"
-            "      var src = shot ? (shot.getAttribute('src') || '') : '';\n"
-            "      if (pdoc && src) {\n"
+            "      var panel = f.closest('[data-testid=\"stTabPanel\"]');\n"
+            "      function pinPhoto(){\n"
+            "        if (panel && panel.hidden) return;\n"
+            "        var shot = document.querySelector('.amp-land-photo');\n"
+            "        var src = shot ? (shot.getAttribute('src') || '') : '';\n"
+            "        if (!pdoc) return;\n"
             "        var host = pdoc.getElementById('amp-land-photo-host');\n"
+            "        if (!src) {\n"
+            "          if (host) { host.innerHTML = ''; host.style.display = 'none'; }\n"
+            "          return;\n"
+            "        }\n"
             "        if (!host) {\n"
             "          host = pdoc.createElement('div');\n"
             "          host.id = 'amp-land-photo-host';\n"
@@ -1576,11 +1672,19 @@ def pictorial_stage_documents(
             "        }\n"
             f"        host.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;"
             f"margin:0;padding:0;overflow:hidden;z-index:{_PAGE_PHOTO_Z};border:none;"
-            "background:#0b0a14;pointer-events:none;';\n"
+            "background:#0b0a14;pointer-events:none;display:block;';\n"
             "        host.innerHTML = '<img alt=\"\" src=\"'+src+'\" style=\""
             "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
             "object-position:center bottom;pointer-events:none;display:block;\">';\n"
             "        if (shot) shot.style.display = 'none';\n"
+            "      }\n"
+            "      pinPhoto();\n"
+            "      if (panel) {\n"
+            "        try {\n"
+            "          new MutationObserver(function(){ pinPhoto(); }).observe(panel, {\n"
+            "            attributes: true, attributeFilter: ['hidden']\n"
+            "          });\n"
+            "        } catch (e) {}\n"
             "      }\n"
             "    } catch (e) {}\n"
             "  }\n"

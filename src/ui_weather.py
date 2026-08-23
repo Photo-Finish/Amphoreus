@@ -792,7 +792,8 @@ iframe[data-amp-land-life="1"] {{
   border: none !important;
   z-index: 25 !important;
   background: transparent !important;
-  pointer-events: auto !important;
+  /* Click-through except .amp-sprite / notice UI inside the iframe doc. */
+  pointer-events: none !important;
 }}
 [data-testid="stTabPanel"][hidden] iframe[data-amp-land="1"],
 [data-testid="stTabPanel"][hidden] [data-amp-land-wrap="1"],

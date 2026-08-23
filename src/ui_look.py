@@ -84,9 +84,16 @@ def look_chrome_css() -> str:
     Pictorial CSS raises ``[data-testid=stTabs]`` (and the land iframe inside
     it) to z-index 80. The picker sits *above* the tabs in the document, so
     without its own stacking context it is painted over and looks missing.
+
+    The life iframe is ``pointer-events: none`` so wheel/touch scroll reaches
+    Walk the Land glass panels and below-fold copy; sprites stay interactive
+    inside the iframe document.
     """
     return """
 <style>
+iframe[data-amp-land-life="1"] {
+  pointer-events: none !important;
+}
 .st-key-amp_look_chrome {
   position: relative !important;
   z-index: 120 !important;

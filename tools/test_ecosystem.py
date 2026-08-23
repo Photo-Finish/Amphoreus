@@ -287,6 +287,12 @@ for per in (2, 3):
                   f"people={len(people)} beasts={len(beasts)}")
             check("caravan has multiple beasts", len(beasts) >= 2,
                   f"people={len(people)} beasts={len(beasts)}")
+            solo_d = [b for b in sc_c if b.get("kind") == "dromas" and not b.get("caravan_id")]
+            solo_r = [b for b in sc_c if b.get("kind") == "resident" and not b.get("caravan_id")]
+            check("solo dromas beside caravan", len(solo_d) >= 1,
+                  f"solo={len(solo_d)} caravan_beasts={len(beasts)}")
+            check("solo residents beside caravan", len(solo_r) >= 1,
+                  f"solo={len(solo_r)} caravan_people={len(people)}")
             found = True
             break
     if found:
@@ -302,6 +308,8 @@ if not found:
     beasts = [b for b in out if b.get("kind") in {"dromas", "dromas_calf"} and b.get("caravan_id")]
     check("caravan has multiple people", len(people) >= 3, f"people={len(people)}")
     check("caravan has multiple beasts", len(beasts) >= 2, f"beasts={len(beasts)}")
+    solo_d = [b for b in out if b.get("kind") == "dromas" and not b.get("caravan_id")]
+    check("forced caravan leaves solo dromas", len(solo_d) >= 1, f"solo={len(solo_d)}")
     found = True
 if not found:
     check("caravan has dromas + people", False, "no caravan hour in sample")
@@ -525,6 +533,31 @@ ae_stall = {
 check("Visit picks stall_okhema", usl._sprite_asset_key(ok_stall) == "stall_okhema")
 check("Visit picks stall_aedes", usl._sprite_asset_key(ae_stall) == "stall_aedes")
 check("Visit PNG uri stall_aedes", bool(usl.sprite_png_uri("stall_aedes")))
+
+# Page-layer ground: one shared sill for walkable sprites (still + roamer pool).
+_GROUND_KINDS = (
+    "chimera", "dromas", "dromas_calf", "hearth_cat", "resident",
+    "well", "fountain", "forge", "gate", "shrine", "market_stall",
+    "little_ica", "pollux", "boat", "pebble",
+)
+_page_ground = {
+    k: usl._resolved_bottom(k, "14%", page_layer=True)
+    for k in _GROUND_KINDS
+}
+check(
+    "page-layer ground kinds share one bottom",
+    len(set(_page_ground.values())) == 1
+    and _page_ground["chimera"] == usl._PAGE_GROUND_BOTTOM,
+    str(_page_ground),
+)
+check(
+    "page-layer sky keeps elevated bottom",
+    usl._resolved_bottom("kite", "68%", page_layer=True) == "68%",
+)
+check(
+    "inset mode keeps hotspot bottom",
+    usl._resolved_bottom("chimera", "14%", page_layer=False) == "14%",
+)
 
 from src.ui_backgrounds import DEFAULT_BG, bg_path_for_place
 from src.world.world_state import LOCATIONS

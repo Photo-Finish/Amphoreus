@@ -93,6 +93,20 @@ BANNER_PLACES = set(le.FORGE) | {"Fortress of Dome"}
 # Indoor furniture lives in lore / mechanisms. The land UI is outdoors.
 INDOOR_LAND = frozenset({"bath", "hearth", "loom", "scroll", "lamp"})
 
+# Built land fixtures — one of each must survive derive_scene cap even when
+# market stalls are dense (forge, well, fountain, shrine, gate, loom, …).
+_LAND_FIXTURES = frozenset({
+    "well", "fountain", "shrine", "gate", "forge", "loom",
+    "laundry", "ribbon", "pillar", "mosaic", "banner", "mill",
+    "incense",
+})
+_STAGE_CAP = 20
+_TRIM_FIRST_KINDS = frozenset({"grass", "wind", "pebble"})
+# When squeezing a spare resident into a full stage, never evict place-life.
+_RESIDENT_SWAP_TRIM = (
+    "grass", "wind", "pebble", "incense", "laundry", "market_stall",
+)
+
 # Visual / interact kinds the Visit UI knows how to paint.
 KIND_VISUAL = {
     "chimera": "chimera",
@@ -937,69 +951,47 @@ def _caravan_this_hour(world, place: str, flags: dict, period: int, month: int) 
 def _apply_trade_caravan(out: List[dict], world, place: str,
                          flags: dict, period: int, month: int, *,
                          traveling: bool = False) -> None:
-    """Tag dromas + several people as one orderly trade caravan.
+    """Spawn a tagged trade caravan — additive scene, not the only street life.
 
     A caravan is usually more than one beast and one walker — typically a
     pair of dromas (sometimes with a calf) and three or four people.
+    Solo dromas, calves, and greet_here residents stay independent.
     """
-    dromases = [b for b in out if b.get("kind") in {"dromas", "dromas_calf"}]
-    adults = [b for b in dromases if b.get("kind") == "dromas"]
-    calves = [b for b in dromases if b.get("kind") == "dromas_calf"]
-    if not adults and not calves:
-        return
     if not traveling and not _caravan_this_hour(world, place, flags, period, month):
         return
-    # Ensure at least two adult mounts when the hour calls for a caravan.
-    if len(adults) < 2:
-        nxt = 1 + max(
-            (int(str(b.get("id") or "").rsplit(":", 1)[-1])
-             for b in adults if ":" in str(b.get("id") or "")),
-            default=0,
-        )
-        while len(adults) < 2:
-            extra = _mk_being("dromas", place, nxt, world, flags, None)
-            out.append(extra)
-            adults.append(extra)
-            nxt += 1
-    # A calf sometimes trails the train.
-    if not calves and (_h(_date_seed(world) + str(place) + "calf") % 3 == 0):
-        calf = _mk_being("dromas_calf", place, 1, world, flags, None)
-        out.append(calf)
-        calves.append(calf)
+    if not traveling and place not in DROMAS_ROADS:
+        return
 
     cid = f"caravan:{place}:1"
-    mounts = adults[:2] + calves[:1]
-    for i, mount in enumerate(mounts):
+    # Fresh caravan mounts — never retag pre-existing solo beasts.
+    for j in range(2):
+        mount = _mk_being("dromas", place, 90 + j, world, flags, None)
+        mount["id"] = f"dromas:{place}:caravan-mount-{j + 1}"
         mount["caravan_id"] = cid
-        mount["caravan_role"] = "mount" if mount.get("kind") == "dromas" else "calf"
-        if mount.get("kind") == "dromas_calf":
-            mount["doing"] = "a calf keeping pace with the trade caravan"
-        else:
-            mount["doing"] = "under harness with a trade caravan"
+        mount["caravan_role"] = "mount"
+        mount["doing"] = "under harness with a trade caravan"
+        mount["spot"] = "road"
+        out.append(mount)
+    if _h(_date_seed(world) + str(place) + "calf") % 3 == 0:
+        calf = _mk_being("dromas_calf", place, 90, world, flags, None)
+        calf["id"] = f"dromas_calf:{place}:caravan-calf-1"
+        calf["caravan_id"] = cid
+        calf["caravan_role"] = "calf"
+        calf["doing"] = "a calf keeping pace with the trade caravan"
+        calf["spot"] = "road"
+        out.append(calf)
 
-    def _score(b: dict) -> int:
-        role = str(b.get("role") or "").lower()
-        if "dromas" in role or "handler" in role:
-            return 0
-        if "merchant" in role or "courier" in role:
-            return 1
-        return 2
-
-    residents = [b for b in out if b.get("kind") == "resident"]
-    residents.sort(key=_score)
-    mates = list(residents[:4])
-    # Usually three or four walkers — never a lonely handler beside one beast.
+    # Fresh caravan walkers — never retag greet_here residents.
     want = 3 + (_h(_date_seed(world) + str(place) + "crew") % 2)
-    need = max(0, want - len(mates))
     roles = (
         ("dromas-handler", "a dromas-handler", "resident_handler"),
         ("merchant", "a merchant of the road", "resident_merchant"),
         ("courier", "a courier with the train", "resident"),
         ("field-hand", "a porter with the train", "resident_field"),
     )
-    for j in range(need):
+    for j in range(want):
         role, label, visual = roles[j % len(roles)]
-        handler = {
+        out.append({
             "id": f"resident:{place}:caravan-{role}-{j + 1}",
             "kind": "resident",
             "name": label,
@@ -1016,14 +1008,7 @@ def _apply_trade_caravan(out: List[dict], world, place: str,
             "visitor_acts": visitor_acts_for("resident"),
             "caravan_id": cid,
             "caravan_role": "handler" if j == 0 else "trader",
-        }
-        out.append(handler)
-        mates.append(handler)
-    for i, m in enumerate(mates[:4]):
-        m["caravan_id"] = cid
-        m["caravan_role"] = "handler" if i == 0 else "trader"
-        role = m.get("role") or "a traveler"
-        m["doing"] = f"{role} with the trade caravan"
+        })
 
 
 def _mk_being(kind: str, place: str, idx: int, world, flags: dict,
@@ -1314,6 +1299,97 @@ def _care_hint(status: str, kind: str) -> str:
     if kind in {"cicada", "olive"}:
         return "Cyrene's remembrance knows this shade."
     return ""
+
+
+def _cap_stage_cast(preferred: List[dict], limit: int = _STAGE_CAP) -> List[dict]:
+    """Cap derive_scene density without evicting civic fixtures or dense stalls."""
+    if len(preferred) <= limit:
+        return list(preferred)
+
+    protected: set = set()
+    for b in preferred:
+        if b.get("caravan_id"):
+            protected.add(b.get("id"))
+
+    for k in _LAND_FIXTURES:
+        fb = next((x for x in preferred if x.get("kind") == k), None)
+        if fb is not None:
+            protected.add(fb.get("id"))
+
+    for k in (
+        "dawn", "thief_star", "pollux", "little_ica",
+        "maze_fairy", "mountain_dweller",
+    ):
+        fb = next((x for x in preferred if x.get("kind") == k), None)
+        if fb is not None:
+            protected.add(fb.get("id"))
+
+    # Anchor place-life — first of each kind only.
+    for k in (
+        "dromas", "wheat", "shore", "grove_leaf",
+        "olive", "cicada", "maze", "siren", "pearl",
+    ):
+        fb = next((x for x in preferred if x.get("kind") == k), None)
+        if fb is not None:
+            protected.add(fb.get("id"))
+    for fb in [x for x in preferred if x.get("kind") == "chimera"][:2]:
+        protected.add(fb.get("id"))
+
+    for b in [x for x in preferred if x.get("kind") == "market_stall"][:4]:
+        protected.add(b.get("id"))
+
+    def _drop_rank(b: dict) -> int:
+        k = b.get("kind") or ""
+        if k in _TRIM_FIRST_KINDS:
+            return 0
+        if k in {"incense", "courier"}:
+            return 1
+        if k == "laundry":
+            return 2
+        if k == "market_stall":
+            return 3
+        if b.get("caravan_id") and k == "resident":
+            return 4
+        if k in {"chimera", "dromas", "dromas_calf"}:
+            return 5
+        if k == "resident":
+            return 6
+        if k in _LAND_FIXTURES:
+            return 98
+        return 7
+
+    out = list(preferred)
+    while len(out) > limit:
+        dropable = [
+            i for i, b in enumerate(out)
+            if b.get("id") not in protected
+        ]
+        if not dropable:
+            force = list(range(len(out)))
+            if not force:
+                break
+            drop_i = max(force, key=lambda i: _drop_rank(out[i]))
+            if _drop_rank(out[drop_i]) >= 98:
+                break
+            protected.discard(out[drop_i].get("id"))
+        else:
+            drop_i = max(dropable, key=lambda i: _drop_rank(out[i]))
+        out.pop(drop_i)
+
+    return out
+
+
+def _swap_resident_into_cast(capped: List[dict], spare: dict) -> None:
+    """Replace a trim candidate with *spare* without evicting chimera or dromas."""
+    for i in range(len(capped) - 1, -1, -1):
+        k = capped[i].get("kind")
+        if k in _RESIDENT_SWAP_TRIM:
+            capped[i] = spare
+            return
+    if len(capped) >= _STAGE_CAP:
+        capped[-1] = spare
+    else:
+        capped.append(spare)
 
 
 def derive_scene(world, place: Optional[str] = None,
@@ -1679,9 +1755,14 @@ def derive_scene(world, place: Optional[str] = None,
             return (1, 1)
         if month == 4 and k in {"dromas", "dromas_calf"}:
             return (1, 1)
-        # Civic signature first (fountain/mosaic/…) — then street people ahead of
-        # generic ambient, so Month-of-* density / tide thinning do not wipe
-        # residents while greet_here still has people (errand UI).
+        # Civic fixtures before dense stalls and generic ambient.
+        if k in _LAND_FIXTURES:
+            return (1, 2)
+        if k in {"grass", "wind", "pebble"}:
+            return (5, 0)
+        if k == "market_stall":
+            return (2, 2)
+        # Signature life — then street people ahead of generic trim candidates.
         if k in _SIGNATURE:
             return (2, 0)
         if k == "resident":
@@ -1705,28 +1786,27 @@ def derive_scene(world, place: Optional[str] = None,
             continue
         seen_kinds.add(k)
         preferred.append(b)
-    # Cap ambient density after the caravan is secured.
-    if len(caravan) >= 4:
-        head = preferred[: len(caravan)]
-        tail = [b for b in preferred[len(caravan):] if not b.get("caravan_id")]
-        capped = head + tail[: max(0, 20 - len(head))]
-    else:
-        capped = preferred[:20]
+    capped = _cap_stage_cast(preferred, limit=_STAGE_CAP)
     # Keep at least one street resident when the cast had any — seasonal
     # multiples (laundry/stalls) must not erase errand-bearing people.
     if not any(b.get("kind") == "resident" for b in capped):
         spare = next((b for b in preferred if b.get("kind") == "resident"), None)
         if spare is not None:
-            for i in range(len(capped) - 1, -1, -1):
-                k = capped[i].get("kind")
-                if k in {"laundry", "chimera", "grass", "wind", "incense", "pebble"}:
-                    capped[i] = spare
-                    break
-            else:
-                if len(capped) >= 20:
-                    capped[-1] = spare
-                else:
-                    capped.append(spare)
+            _swap_resident_into_cast(capped, spare)
+    # Caravan walkers are additive — keep at least one greet_here resident
+    # when the square had ordinary street people this hour.
+    if not any(
+        b.get("kind") == "resident" and not b.get("caravan_id") for b in capped
+    ):
+        spare = next(
+            (
+                b for b in preferred
+                if b.get("kind") == "resident" and not b.get("caravan_id")
+            ),
+            None,
+        )
+        if spare is not None:
+            _swap_resident_into_cast(capped, spare)
     return capped
 
 

@@ -4,6 +4,9 @@ Copies Okhema-polished fixtures as ``*_okhema`` stems, then recolors /
 procedurally paints place-family variants (Aedes rustic, Janus ritual,
 Kremnos martial, Styxia pearl, Grove scholar, Aidonia muted).
 
+Market stalls: ``market_stall.png`` (HSR Okhema vendor still) → ``stall_okhema``
+and family recolors; procedural ``paint_stall`` only if that base is missing.
+
 Does not touch ``assets/life_sprites/_hsr_src/``.
 """
 from __future__ import annotations
@@ -291,7 +294,8 @@ def paint_mosaic(*, tiles, name: str) -> None:
     _save(im, name)
 
 
-def build_stalls() -> None:
+def _procedural_stall_fallback() -> Image.Image:
+    """Low-fi placeholder only when market_stall.png is absent."""
     paint_stall(
         awning=(201, 74, 74, 255),
         post=(106, 90, 72, 255),
@@ -301,52 +305,28 @@ def build_stalls() -> None:
         trim=(232, 200, 106, 255),
         name="stall_okhema.png",
     )
-    # also generic stall.png for KIND_VISUAL fallback "stall"
-    paint_stall(
-        awning=(201, 74, 74, 255),
-        post=(106, 90, 72, 255),
-        body=(216, 200, 168, 255),
-        shelf=(184, 150, 90, 255),
-        goods=((120, 48, 120, 255), (60, 140, 80, 255), (220, 160, 60, 255)),
-        trim=(232, 200, 106, 255),
-        name="stall.png",
-    )
-    paint_stall(
-        awning=(168, 140, 100, 255),
-        post=(96, 72, 48, 255),
-        body=(150, 122, 88, 255),
-        shelf=(120, 92, 64, 255),
-        goods=((140, 100, 60, 255), (100, 120, 70, 255)),
-        rustic=True,
-        name="stall_aedes.png",
-    )
-    paint_stall(
-        awning=(180, 168, 196, 255),
-        post=(120, 110, 128, 255),
-        body=(198, 188, 200, 255),
-        shelf=(160, 148, 170, 255),
-        goods=((200, 190, 210, 255), (150, 130, 170, 255), (220, 210, 200, 255)),
-        trim=(168, 148, 118, 255),
-        name="stall_janus.png",
-    )
-    paint_stall(
-        awning=(120, 40, 40, 255),
-        post=(70, 72, 78, 255),
-        body=(96, 94, 98, 255),
-        shelf=(78, 80, 86, 255),
-        goods=((90, 90, 96, 255), (140, 50, 40, 255), (110, 110, 118, 255)),
-        trim=(120, 124, 132, 255),
-        name="stall_kremnos.png",
-    )
-    paint_stall(
-        awning=(210, 224, 230, 255),
-        post=(150, 160, 168, 255),
-        body=(220, 228, 232, 255),
-        shelf=(180, 198, 208, 255),
-        goods=((230, 240, 245, 255), (160, 190, 200, 255), (200, 180, 190, 255)),
-        trim=(186, 198, 208, 255),
-        name="stall_styxia.png",
-    )
+    return Image.open(OUT / "stall_okhema.png").convert("RGBA")
+
+
+def build_stalls() -> None:
+    """Place-family stalls from the HSR Okhema market_stall still (same tier as well/forge).
+
+    Recolors mirror well/fountain family passes — vivid painted props, not geometry placeholders.
+    """
+    base_path = OUT / "market_stall.png"
+    if base_path.is_file():
+        base = Image.open(base_path).convert("RGBA")
+        print("  stall base: market_stall.png (HSR still)")
+    else:
+        print("  stall base: procedural fallback (market_stall.png missing)")
+        base = _procedural_stall_fallback()
+
+    _save(base, "stall_okhema.png")
+    _save(base, "stall.png")
+    _save(recolor_aedes(base), "stall_aedes.png")
+    _save(recolor_janus(base), "stall_janus.png")
+    _save(recolor_kremnos(base), "stall_kremnos.png")
+    _save(recolor_styxia(base), "stall_styxia.png")
 
 
 def build_from_existing() -> None:
