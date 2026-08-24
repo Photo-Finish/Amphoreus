@@ -1,0 +1,6 @@
+# Optional — visitor emotion (DistilRoBERTa on CPU)
+# Install into the Streamlit venv WITHOUT pulling CUDA (keep Ollama on GPU):
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+#   pip install -r requirements-emotion.txt
+#   python tools/download_visitor_emotion_model.py
+transformers>=4.40.0

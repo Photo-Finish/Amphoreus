@@ -107,3 +107,17 @@ Modules: `src/ui_scene_life.py`, `src/ui_weather.py`, `src/ui_look.py`,
 `src/world/ecosystem.py`. Suites: `tools/test_ecosystem.py` (258),
 `tools/test_walk_map_handoff.py` (13), `tools/_audit_life_scroll.py`.
 Charter unchanged.
+
+## Fifth delivery — visitor emotion (2026-08-24)
+
+| Feature | Note |
+|---|---|
+| DistilRoBERTa tone | `j-hartmann/emotion-english-distilroberta-base` on CPU when installed |
+| Lexicon fallback | Chat never stalls if torch/transformers/weights missing |
+| Prompt block | `# How the visitor seems` — Amphoreus colour, no BERT/Earth jargon |
+| Wiring | `AgentManager.chat` + teaching path + `group_chat.heir_speak` |
+| Toggle | Control Panel / `AMP_VISITOR_EMOTION` — default ON |
+| Install | `requirements-emotion.txt` + `tools/download_visitor_emotion_model.py` |
+
+Module: `src/core/visitor_emotion.py`. Suite: `tools/test_visitor_emotion.py`.
+Charter unchanged (knowledge wall).

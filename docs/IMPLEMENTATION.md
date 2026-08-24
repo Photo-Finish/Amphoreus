@@ -1256,6 +1256,20 @@ Prompt lock: `assets/life_sprites/PROMPT.md`. Pre-pictorial restore:
 UI it owns. Suites: `tools/test_ecosystem.py`, `tools/test_walk_map_handoff.py`,
 `tools/_audit_life_scroll.py`.
 
+### 3.20 Stage 2 — visitor emotion (2026-08-24)
+(`src/core/visitor_emotion.py`)
+
+Each Visit / group-chat user line can be classified for tone. Primary path:
+DistilRoBERTa (`j-hartmann/emotion-english-distilroberta-base`) loaded once on
+**CPU** from `models/visitor_emotion/` so Ollama keeps the GPU. Lexicon fallback
+if weights or `transformers` are missing. The injector adds
+`# How the visitor seems` in Amphoreus-native wording (colour, not diagnosis) —
+never BERT, psychology, or Earth jargon (knowledge wall). Separate from Heir
+`mood_block` in `living_world.py`. Default ON; Control Panel +
+`AMP_VISITOR_EMOTION`. Install notes: `requirements-emotion.txt`,
+`tools/download_visitor_emotion_model.py`. Suite:
+`tools/test_visitor_emotion.py`.
+
 ---
 
 *"Only through a worthy sacrifice can we gain a befitting victory."* — Cerydra.

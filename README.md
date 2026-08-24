@@ -1159,6 +1159,17 @@ tide / letter / weather / co-location / aftermath features):
 - **Walk → Map pin**, **guest Walk** (notice OK; care-chat operator-only),
   **absence Visit vignette**, **Chronicle daybook spine**.
 
+### 2026-08-24 — visitor emotion
+- **Visitor tone for Heirs** (`src/core/visitor_emotion.py`) — each Visit /
+  group line can be read for emotion (DistilRoBERTa
+  `j-hartmann/emotion-english-distilroberta-base` on CPU when installed;
+  lexicon fallback otherwise). Heirs get an Amphoreus-native cue
+  (“How the visitor seems”) — colour, not diagnosis; no BERT/Earth jargon
+  (knowledge wall). Default **ON**; Control Panel + `AMP_VISITOR_EMOTION`.
+  Install: `requirements-emotion.txt` +
+  `python tools/download_visitor_emotion_model.py`. Suite:
+  `tools/test_visitor_emotion.py`.
+
 ### 2026-08-23 — pictorial land polish
 - **Launcher reuse** (`15171e4`) — `launch_sanctuary.cmd` waits for
   `http://127.0.0.1:8501/_stcore/health` and reuses a healthy Streamlit instead

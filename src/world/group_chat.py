@@ -873,6 +873,11 @@ def heir_speak(manager, character_id: str, user_message: str,
     system_prompt = enrich_system(manager, character_id)
     if extra_system:
         system_prompt = f"{system_prompt}\n\n{extra_system}"
+    try:
+        from src.core.visitor_emotion import maybe_inject as _emo_inject
+        system_prompt = _emo_inject(system_prompt, user_message)
+    except Exception:
+        pass
     manager._oplora_character_id = character_id
     # Keep gathering history in the user turn (not as fake assistant turns)
     # so the model does not treat other Heirs' lines as its own speech.

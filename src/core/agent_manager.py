@@ -295,6 +295,14 @@ class AgentManager:
         # has earned, a memory that may surface, and any unresolved hurt.
         system_prompt = self._inject_living_context(character_id, system_prompt)
 
+        # Visitor-message emotion (DistilRoBERTa / lexicon) — colours the Heir's
+        # reading of this turn; Amphoreus-native wording only (knowledge wall).
+        try:
+            from src.core.visitor_emotion import maybe_inject as _emo_inject
+            system_prompt = _emo_inject(system_prompt, user_message)
+        except Exception:
+            pass
+
         # Stage 2 — vivid society & natural world (place-hour, shared scene,
         # continuity, overhear notice, tide-at-the-edge). Chat-only.
         system_prompt = self._inject_vivid_context(character_id, system_prompt)
@@ -473,6 +481,11 @@ class AgentManager:
             system_prompt = f"{system_prompt}\n\n{teach_block}"
         system_prompt = self._inject_social_context(character_id, system_prompt)
         system_prompt = self._inject_living_context(character_id, system_prompt)
+        try:
+            from src.core.visitor_emotion import maybe_inject as _emo_inject
+            system_prompt = _emo_inject(system_prompt, user_message)
+        except Exception:
+            pass
         system_prompt = self._inject_curiosity_context(character_id, system_prompt)
         system_prompt = self._inject_horizons_context(character_id, system_prompt)
         system_prompt = self._inject_length_freedom(character_id, system_prompt)

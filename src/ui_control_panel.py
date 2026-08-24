@@ -354,6 +354,48 @@ def render_control_panel(manager, characters):
     except Exception as e:
         st.caption(f"Skills aid unavailable ({e}).")
 
+    # Visitor emotion (BERT DistilRoBERTa) — default ON
+    st.markdown("### Visitor emotion")
+    try:
+        from src.core import visitor_emotion as _vem
+        _emo_cur = _vem.emotion_enabled()
+        st.caption(
+            "When **ON**, each Visit line is read for tone (DistilRoBERTa when "
+            "installed; lexicon fallback otherwise) and the Heir receives a short "
+            "Amphoreus-native cue — colour, not diagnosis. Default **ON**. "
+            "Env: `AMP_VISITOR_EMOTION=1|0`. Model: "
+            "`python tools/download_visitor_emotion_model.py`."
+        )
+        _emo_choice = st.radio(
+            "Let Heirs sense the visitor's tone?",
+            [True, False],
+            index=0 if _emo_cur else 1,
+            format_func=lambda on: (
+                "ON — DistilRoBERTa / lexicon (default)"
+                if on
+                else "OFF — no tone cue"
+            ),
+            key="ctl_visitor_emotion",
+        )
+        if _emo_choice != _emo_cur:
+            if st.button(
+                f"Set visitor emotion {'ON' if _emo_choice else 'OFF'}",
+                key="ctl_visitor_emotion_btn",
+            ):
+                _vem.set_emotion_enabled(bool(_emo_choice))
+                st.success(_vem.backend_label())
+                st.rerun()
+        else:
+            st.success(f"Active: **{_vem.backend_label()}**.")
+            if _emo_cur and not _vem.model_on_disk():
+                st.info(
+                    "Local model folder empty — using lexicon until you run "
+                    "`python tools/download_visitor_emotion_model.py` "
+                    "(needs `transformers` + CPU `torch`)."
+                )
+    except Exception as e:
+        st.caption(f"Visitor emotion unavailable ({e}).")
+
     st.markdown("---")
 
     # ---------------- 1. Experience mode ----------------

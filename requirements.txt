@@ -17,6 +17,11 @@ chromadb>=0.4.0
 # Embeddings (Phase 2 — RAG)
 # sentence-transformers>=2.2.0  # Uncomment for local embeddings
 
+# Visitor emotion (optional) — DistilRoBERTa tone for Visit chat
+# See requirements-emotion.txt; install CPU torch separately, then:
+#   pip install -r requirements-emotion.txt
+#   python tools/download_visitor_emotion_model.py
+
 # Senses — hearing (speech-to-text) + video frame extraction (Sanctuary build)
 faster-whisper>=1.2.0
 av>=13.0.0          # PyAV — video frame extraction (bundled with faster-whisper)
