@@ -44,6 +44,21 @@ models/
 # Local environment config (machine-specific). Copy .env.example and edit.
 .env
 
+# Cryptographic keys / tunnel credentials — never commit.
+# Keep private material only under world_runtime/ (already ignored) or secrets/.
+secrets/
+*.pem
+*.p12
+*.pfx
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+*_rsa
+*_ed25519
+*.ppk
+.cloudflared/
+
 # HF download cache (inside the project, but not a shipped asset)
 models/hf-cache/
 
