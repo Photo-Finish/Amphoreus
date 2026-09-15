@@ -3,11 +3,11 @@
 Separate from Copilot’s Stage-1 `conversation-archive.md`. This file records the **Cursor** chat window dialogues only.
 
 - **Chat id:** `c2ce438f-61d9-4dd2-8dc3-66bcf3a7f70c` (Stage-2 resume; prior window `fefecb77-99f5-4c57-8a9c-95d79fefddb6` = rounds 1–361)
-- **Rounds (user turns):** 365
-- **Assistant replies:** 2356+
-- **Tool calls:** 4318+
-- **From:** Tuesday, Aug 18, 2026, 12:33 AM (UTC+8)  **to:** Saturday, Aug 22, 2026, 1:34 AM (UTC+8)
-- **Exported:** Saturday Aug 22, 2026, 1:35 AM UTC+8
+- **Rounds (user turns):** 370 (1–365 through 22 Aug; 366–370 appended 16 Sep 2026)
+- **Assistant replies:** 2356+ (later rounds condensed)
+- **Tool calls:** 4318+ (later rounds condensed)
+- **From:** Tuesday, Aug 18, 2026, 12:33 AM (UTC+8)  **to:** Wednesday, Sep 16, 2026, 1:07 AM (UTC+8)
+- **Exported:** Saturday Aug 22, 2026, 1:35 AM UTC+8; **updated** Wednesday Sep 16, 2026
 - **Source:** agent transcript JSONL (prior window + resume chat)
 
 ---
@@ -18044,5 +18044,95 @@ Executed the plan (parallel implement + verify waves). Tool-call detail kept lig
 - This resume chat (rounds 362–365) appended to `cursor-conversation-archive.md` only — no new archive file; `conversation-archive.md` not touched.
 
 Charter unchanged. Items **7, 9, 19, 20** left for a later steer. Commit/push not run (not requested).
+
+---
+
+## Round 366 — Saturday, Aug 22, 2026 (evening)
+
+### You
+
+Implement remaining Stage-2 Visit/Walk life: heir invites, letters, errands, seasonal land, guest Walk, absence, daybook, ship exe (items from the ranked list).
+
+### Cursor
+
+Shipped `6830427`: Heir-initiated gatherings, letter mini-scene, bond weather (official months only), resident errands, dromas_walk_v2, Little Ica, seasonal eco, tide-edge Walk sky, Walk→Map pin, guest Walk (notice OK / care operator-only), absence vignette, Chronicle daybook spine. Desktop exe path documented; changelog appended.
+
+---
+
+## Round 367 — Sunday, Aug 23, 2026
+
+### You
+
+Six Walk the Land refinements (one subagent each): heir pictures, stall art, caravan vs solo, scroll lock, horizon, stall density. Later: scroll still locks, NPC above horizon, collisions, HSR art.
+
+### Cursor
+
+`de769ff` / `9b98ce6`: tab-aware pinPhoto; additive trade caravans; `_PAGE_GROUND_BOTTOM`; HSR stall pipeline; stall density vs civic fixtures; wheel/touch scroll through life iframe; wiki-chimera films; mosaic/pillar rebuilds.
+
+---
+
+## Round 368 — Sunday, Aug 23, 2026, ~9:58 PM (UTC+8)
+
+### You
+
+Aglaea photo over environment; floor still exists; horizon not the lower border; fountain and gate overlapped. One subagent per problem, then visual examiners who boot the tab.
+
+### Cursor
+
+`5fe549b`: photo host first child of `stAppViewContainer` (z0); hide page-layer floor ellipses/ambient bands; `ground-sill` + `bottom: 0px`; civic lanes gate 28% / fountain 58% / mosaic 76%. Docs `a1d9f36`. Follow-up `b5d7759`: life iframe **z35** so sprites and notices paint over pictorial copy (widgets stay z40; tabs 80–120).
+
+---
+
+## Round 369 — Monday, Aug 24, 2026
+
+### You
+
+Use BERT to read visitor emotion and let Heirs understand it; download related files. Then: assess official 3D Heir models + movement (no code). Then: public keys in the repo.
+
+### Cursor
+
+`94c8477`: DistilRoBERTa visitor emotion (`src/core/visitor_emotion.py`), Control Panel + `AMP_VISITOR_EMOTION` default ON, lexicon fallback, knowledge-wall prompt `# How the visitor seems`. Model under gitignored `models/visitor_emotion/`.
+
+**3D Heirs:** defer. Official path is Aplaybox MMD (no redistribute); no Unity SDK; rips rejected; Streamlit/WebView2 is a poor skeletal host. Keep 2D galgame + pictorial land.
+
+**Keys:** none found in git (deploy keys 0, secret alerts 0). `3810a06` ignores `secrets/`, `*.pem`, SSH key names, `.cloudflared/`.
+
+---
+
+## Round 370 — Wednesday, Sep 16, 2026, 1:07 AM (UTC+8)
+
+### You
+
+Assess current progress. Update the conversation log. Test whether features are active.
+
+### Cursor
+
+HEAD `3810a06` on `main` = `origin/main`. Copilot Stage-1 archive untouched. Feature tests (this session):
+
+| Suite | Result |
+|---|---|
+| visitor_emotion | 12 passed |
+| ecosystem | 258 passed |
+| walk_map_handoff | 14 passed |
+| _audit_life_scroll | all pass |
+| society_life | 71 passed |
+| group_chat | 79 passed |
+| vivid_stage2 | 44 passed |
+| guest_walk_gate | 12 passed |
+| seasonal_eco | 31 passed |
+| eco_companions | 38 passed |
+| daybook | 14 passed |
+| resident_memory | 18 passed |
+| resident_errands | 18 passed |
+| ensemble_injectors | 22 passed |
+| amp_skills | ok |
+| lived_entities | 61 passed |
+| lived_mechanisms | 63 passed |
+| sanctuary_calendar | 30 passed |
+| resident_npcs | 39 passed |
+
+**Live UI (Playwright, `:8501`, Pictures + Life on):** Visit and Walk both show life iframe **z-index 35**, photo host **z0** under `stAppViewContainer`, **8** `.amp-sprite` each. DistilRoBERTa on disk; sample classify `joy` 0.98. Voice path **RAG**; skills aid **OFF**. World clock Year 4933 Month of Strife W1 D7 Entry Hour; 13 Heirs located; black tide off. Chroma `.chroma_db` ~171 MB. All 13 OPLoRA adapters present.
+
+**Not live this hour:** Ollama daemon up but **0 models loaded** (Heir chat cannot generate until a voice model is pulled/loaded); world engine process **idle** (launcher not used for this probe).
 
 ---
