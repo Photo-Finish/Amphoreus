@@ -1270,6 +1270,42 @@ never BERT, psychology, or Earth jargon (knowledge wall). Separate from Heir
 `tools/download_visitor_emotion_model.py`. Suite:
 `tools/test_visitor_emotion.py`.
 
+### 3.21 Stage 2 — 1x period ticks and the world machine (2026-09-16)
+(`src/world/world_engine.py`, `sanctuary_clock.py`, `ambient.py`)
+
+**1x** still reads GMT+8. It does not advance the overlay. The daemon waits
+until the next Light-Calendar period (~4.8 real hours) so Entry and Curtain-Fall
+remain rest hours, and Lucid / Action / Parting each get one living tick — in
+sync with the sanctuary clock, not with whatever wall-clock hour the process
+started. Duplicate ticks for the same overlay period are skipped.
+
+The **world machine** (Keeper weather/errands/news with deterministic fallback,
+lived mechanisms, street residents, ecosystem) keeps running when no
+conversation model is tagged in Ollama. Heir `decide` / encounter speech wait
+for a loaded voice; they do not 404-spam the chronicle. Visit chat is still
+the heavy conversation path.
+
+Visitor-taught names may spread Heir-to-Heir (talk, letter, teaching echo).
+Keeper fallback lines that name a Titan-month stay in that month. Suites:
+`tools/test_sanctuary_calendar.py`, `tools/test_world_machine.py`,
+`tools/test_society_life.py`.
+
+### 3.22 Stage 2 — online conversation API (2026-09-16)
+(`src/core/online_llm.py`, `voice_path.py`, `agent_manager.py`, Control Panel)
+
+A third voice path, **Online API**, sends Visit / group / Heir decide-react
+speech to a remote OpenAI-compatible chat endpoint so conversation does not
+load a local GPU model. The operator pastes a key in the Control Panel
+(provider, base URL, model id). The key is written only to
+`secrets/online_llm.json` (gitignored; never `world_state.json`). A tracked
+placeholder lives at `online_llm.example.json`.
+
+The world machine stays local: Keeper weather/errands/news use the
+deterministic fallback on this path (no DeepSeek-32B, no Ollama). Switching
+back to RAG restores the process-local Ollama endpoint. Official OpenAI
+hosts do not receive Ollama `think` extra_body. Suite:
+`tools/test_online_llm.py`.
+
 ---
 
 *"Only through a worthy sacrifice can we gain a befitting victory."* — Cerydra.

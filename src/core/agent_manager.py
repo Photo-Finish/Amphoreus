@@ -1082,7 +1082,21 @@ class AgentManager:
         # OPLoRA avenue: local 7B + Heir adapter via .venv-oplora infer server.
         # Streaming is not supported on this path yet — return the full reply.
         try:
-            from src.core.voice_path import is_oplora, adapter_ready
+            from src.core.voice_path import is_oplora, adapter_ready, is_online
+            if is_online():
+                from src.core import online_llm as _ol
+                if not _ol.apply_to_client(self.llm):
+                    name = self._character_name_from_prompt(messages[0]["content"])
+                    return (
+                        f"[{name} listens. The Online API path is selected but no "
+                        "API key is saved — Control Panel → Voice path → Online API.]"
+                    )
+                self.voice_model_active = self.llm.model
+                # Visit UI uses non-stream chat; keep a full string so the
+                # outer stream branch never walks OpenAI chunk objects.
+                return self.llm.chat(messages)
+            from src.core import online_llm as _ol_restore
+            _ol_restore.restore_local(self.llm)
             if is_oplora():
                 if stream:
                     stream = False
@@ -1101,9 +1115,10 @@ class AgentManager:
                 self.voice_model_active = f"oplora:{cid}"
                 return text
         except Exception:
-            # Only swallow import/path detection failures when not on OPLoRA.
-            from src.core.voice_path import is_oplora as _check
-            if _check():
+            # Only swallow import/path detection failures when not on a
+            # dedicated avenue — online/OPLoRA errors must surface.
+            from src.core.voice_path import is_oplora as _check, is_online as _on
+            if _check() or _on():
                 raise
 
         if not self.llm.configured:
@@ -1159,6 +1174,60 @@ class AgentManager:
         present on it? (list_models is a fail-fast preflight that also catches
         the 'bare ollama serve with an empty models dir' trap.)"""
         model = self.llm.model
+        try:
+            from src.core.voice_path import is_online, is_oplora
+            if is_online():
+                from src.core import online_llm as _ol
+                st = _ol.status()
+                if not st["configured"]:
+                    return {
+                        "ready": False,
+                        "model": st["model"],
+                        "detail": "Online API — no key saved (Control Panel)",
+                    }
+                if not _ol.apply_to_client(self.llm):
+                    return {
+                        "ready": False,
+                        "model": st["model"],
+                        "detail": "Online API — could not apply key",
+                    }
+                model = self.llm.model
+                try:
+                    present = self.llm.list_models()
+                except Exception:
+                    present = set()
+                if present and model not in present:
+                    # Some hosts (OpenRouter) list thousands; a miss is not fatal.
+                    return {
+                        "ready": True,
+                        "model": model,
+                        "detail": f"Online API ({st['provider']}) — key saved, model will be requested",
+                    }
+                return {
+                    "ready": True,
+                    "model": model,
+                    "detail": f"Online API ({st['provider']}) — remote, no local GPU",
+                }
+            from src.core import online_llm as _ol_restore
+            _ol_restore.restore_local(self.llm)
+            if is_oplora():
+                from src.core import oplora_client as _oc
+                from src.core.voice_path import adapters_status
+                h = _oc.health()
+                ad = adapters_status()
+                if h.get("ok"):
+                    return {
+                        "ready": True,
+                        "model": f"oplora:{ad['ready_count']}/{ad['total']}",
+                        "detail": "OPLoRA infer server up",
+                    }
+                return {
+                    "ready": False,
+                    "model": "oplora",
+                    "detail": h.get("error") or "OPLoRA infer server down",
+                }
+        except Exception:
+            pass
         if not self.llm.configured:
             return {"ready": False, "model": model,
                     "detail": "no backend configured (set OPENAI_BASE_URL / OPENAI_API_KEY)"}

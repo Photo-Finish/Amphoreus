@@ -19,9 +19,13 @@ witness-only.
 ## What does **not** travel
 
 - Private 1:1 facts you never named about another Heir
-- Earth / modern topics that would breach the knowledge wall (teaching echo skips them)
 - Operator experiment docs (`databank/experiment/`) as Heir dialogue fuel
-- Forced “everyone suddenly knows” reveals
+- Forced “everyone suddenly knows” reveals (no hive mind)
+
+Earth / modern names **may** travel when the avenue is visitor → Heir → other
+Heirs (talk, letter, or a co-located teaching echo of a lesson already given).
+The wall stays closed as a *source*; it does not erase what the star-stranger
+placed in play.
 
 ## Design intent
 

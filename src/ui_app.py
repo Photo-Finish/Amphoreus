@@ -297,10 +297,14 @@ if not is_visitor():
     else:
         st.sidebar.warning(f"🗣️ Voice: {vs['detail']} ({vs['model']})")
     try:
-        from src.core.voice_path import get_voice_path, label as _vp_label, PATH_OPLORA
+        from src.core.voice_path import (
+            get_voice_path, label as _vp_label, PATH_OPLORA, PATH_ONLINE,
+        )
         _vpath = get_voice_path()
         if _vpath == PATH_OPLORA:
             st.sidebar.info(f"🛤️ Path: {_vp_label(_vpath)}")
+        elif _vpath == PATH_ONLINE:
+            st.sidebar.success(f"🛤️ Path: {_vp_label(_vpath)}")
         else:
             st.sidebar.success(f"🛤️ Path: {_vp_label(_vpath)}")
     except Exception:
@@ -389,12 +393,17 @@ except Exception:
 # Bond with the visitor
 # Visitor mode (journey vs aftermath — see src/core/visitor_mode.py)
 try:
-    from src.core.visitor_mode import current_mode
+    from src.core.visitor_mode import current_mode, journey_sidebar_caption
     _mode = current_mode()
     if _mode == "aftermath":
         st.sidebar.caption("Mode: **Aftermath** — the Iron Tomb is conquered; the Heirs remember you as a war-companion.")
     else:
-        st.sidebar.caption("Mode: **Journey** — you are newly arrived; the Heirs do not know you yet.")
+        _bond_for_mode = {}
+        try:
+            _bond_for_mode = manager.get_bond_info(selected) or {}
+        except Exception:
+            pass
+        st.sidebar.caption(journey_sidebar_caption(_bond_for_mode))
 except Exception:
     pass
 # Where you physically stand in Amphoreus (set in the Control Panel).

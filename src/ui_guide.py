@@ -25,7 +25,10 @@ def render_guide(manager, characters):
         if mode == "aftermath":
             st.info("You are in **Aftermath** mode — the Heirs remember you as a war-companion.")
         else:
-            st.info("You are in **Journey** mode — you are newly arrived; the Heirs do not know you yet.")
+            st.info(
+                "You are in **Journey** mode — first meetings unless a bond "
+                "already grew; the sidebar follows how well they know you."
+            )
     except Exception:
         pass
 
@@ -140,6 +143,9 @@ def render_guide(manager, characters):
         "- **Heir voice** — gemma3:27b (the standard, slower) or "
         "qwen2.5:14b-instruct (fast); the other takes over automatically if the "
         "big model cannot load.\n"
+        "- **Voice path** — RAG (local Ollama), **Online API** (paste a key; "
+        "conversation uses a remote OpenAI-compatible model and leaves the GPU "
+        "alone), or OPLoRA (local 7B + Heir adapter).\n"
         "- **World engine** — start it so Amphoreus keeps living while you are "
         "away, or stop it to hold the world still (it rests within seconds of "
         "your request).\n"

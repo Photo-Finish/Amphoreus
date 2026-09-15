@@ -419,8 +419,16 @@ def _sprite_facing_class(kind: str) -> str:
     return ""
 
 
-def _sprite_motion_class(kind: str) -> str:
-    """CSS class: cat (film only), still, sky, or mobile (ground roam)."""
+def _sprite_motion_class(kind: str, status: str = "") -> str:
+    """CSS class: cat (film only), still, sky, or mobile (ground roam).
+
+    Resting hour / resting status stays still — walk films belong to working hours.
+    """
+    st = (status or "").strip().lower()
+    if st in ("resting", "asleep", "banked"):
+        if kind in _SKY_KINDS:
+            return " sky"
+        return " still"
     if kind == "hearth_cat":
         return " cat"
     if kind in _STATIONARY_KINDS:
@@ -1224,7 +1232,7 @@ def _sprite_button_html(
     oid = _html.escape(oid_raw, quote=True)
     title = _html.escape(str(b.get("name") or kind or "life"), quote=True)
     ailing = " ailing" if b.get("status") == "ailing" else ""
-    motion = _sprite_motion_class(kind)
+    motion = _sprite_motion_class(kind, str(b.get("status") or ""))
     sky = " sky" if kind in _SKY_KINDS else ""
     delay = abs(hash(oid_raw)) % 17 / 10.0
     facing = _sprite_facing_class(kind) if motion == " mobile" and not roamer else ""
@@ -1260,6 +1268,8 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
     for b in scene or []:
         kind = str(b.get("kind") or "")
         if kind not in _ROAMER_KINDS or not b.get("clickable") or not b.get("id"):
+            continue
+        if str(b.get("status") or "").lower() in ("resting", "asleep", "banked"):
             continue
         hs = b.get("hotspot") or {}
         bottom = _resolved_bottom(kind, str(hs.get("bottom") or "20%"), page_layer=page_layer)

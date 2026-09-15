@@ -1191,4 +1191,23 @@ tide / letter / weather / co-location / aftermath features):
   the sill (`ground-sill`, `bottom: 0px`); Okhema civic lanes separate gate
   (28%), fountain (58%), mosaic (76%). Detail: `docs/STAGE-2-VIVID.md`.
 
+### 2026-09-16
+- **1x period ticks** — still follow GMT+8. Each Light-Calendar period
+  (~4.8 real hours) gets one world-machine tick: Entry and Curtain-Fall stay
+  rest; Lucid, Action, and Parting live. The overlay clock is not advanced.
+- **World machine without a conversation model** — the engine keeps running
+  (Keeper fallback, hearths, streets, eco). Heir decide/talk waits for a
+  tagged Ollama model, OPLoRA, or an Online API key.
+- **Teaching echo and land chrome** — visitor-taught names may travel
+  Heir-to-Heir. Keeper fallback news/errands stay in their Titan-month.
+  Resting sprites stand still. Journey chrome follows the bond.
+- **Online API voice path** (`src/core/online_llm.py`, Control Panel) — a
+  third avenue beside RAG and OPLoRA. Paste an OpenAI-compatible key
+  (OpenAI, OpenRouter, DeepSeek, Groq, or a custom base URL); Visit chat,
+  group talk, and Heir decide/react use the remote model so conversation
+  does not load a local GPU. The key lives only in `secrets/online_llm.json`
+  (gitignored; never `world_state.json`). Placeholder:
+  `online_llm.example.json`. The world machine stays local. Suite:
+  `tools/test_online_llm.py`.
+
 

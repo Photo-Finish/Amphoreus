@@ -45,11 +45,16 @@ from src.world import living_world as _lw
 from src.world.agent import HeirAgent
 from src.world.ambient import AmbientDirector
 from src.world.chronicle import Chronicle
+from src.world.sanctuary_clock import (
+    REAL_DAY_SECONDS,
+    overlay_period_key,
+    seconds_until_next_period,
+)
 
-# The base pace of the world: at 1x, one in-game day passes per real day.
-# The speed multiplier (world.time_scale) divides this linearly, so 60x = a
-# whole in-game day every 24 real minutes.
-REAL_DAY_SECONDS = 86400
+# The base pace of the world: at 1x, GMT+8 overlay periods (~4.8 h) each get
+# one tick (rest hours stay rest; working hours live). At 2x–60x the Control
+# Panel multiplier divides a real day linearly, so 60x = a whole in-game day
+# every 24 real minutes.
 
 
 class WorldEngine:
@@ -97,6 +102,8 @@ class WorldEngine:
         if seed is not None:
             random.seed(seed)
         self._catchup = False
+        self._voice_ok: Optional[bool] = None
+        self._voice_ok_ts: float = 0.0
 
     # ------------------------------------------------------------------ #
     def _name_of(self, character_id: str) -> str:
@@ -251,6 +258,10 @@ class WorldEngine:
             return [night]
 
         # Active hour — every Heir decides freely (unless they are on the road).
+        # Conversation models are optional: the world machine (Keeper fallback,
+        # hearths, streets, eco) already wrote this hour. Skip Heir speech when
+        # no voice model is loaded — do not 404-spam or fake a pause line.
+        voice = self._heir_voice_ready()
         order = list(self.agents.keys())
         random.shuffle(order)
         for cid in order:
@@ -274,6 +285,8 @@ class WorldEngine:
                     )
                     lines.append(line)
                     self.chronicle.append({"time": time_str, "text": line})
+                    continue
+                if not voice:
                     continue
                 decision = agent.decide()
                 self._witness(cid, decision.get("action", ""))
@@ -314,13 +327,15 @@ class WorldEngine:
                 lines.append(line)
                 self.chronicle.append({"time": time_str, "text": line})
             except Exception as e:
-                lines.append(f"{time_str} — {agent.name} (the world paused for a moment: {e})")
+                # Operator noise, not a chronicle day.
+                print(f"[failsafe] {agent.name} could not decide ({e})")
 
         # Encounters: Heirs who chose to be together may speak — freely.
         if self._stop_requested():
             self.world.save()
             return lines
-        lines.extend(self._run_encounters(time_str))
+        if voice:
+            lines.extend(self._run_encounters(time_str))
 
         # Long-term work: the Heirs' life projects advance, milestones logged.
         for milestone in wev.advance_projects(self.world):
@@ -521,28 +536,97 @@ class WorldEngine:
     # ------------------------------------------------------------------ #
     # Daemon loop
     # ------------------------------------------------------------------ #
-    def _current_interval(self, base_interval: int) -> int:
-        """The engine's current pace: the base interval divided by the Control
-        Panel's time_scale (1x = base, 60x = as fast as the machine allows).
-        Read fresh each loop so a change takes effect without a restart."""
+    def _time_scale(self) -> float:
         try:
             from src.world.world_state import WorldState as _WS
-            scale = float(getattr(_WS(), "time_scale", 1.0) or 1.0)
+            return float(getattr(_WS(), "time_scale", 1.0) or 1.0)
         except Exception:
-            scale = 1.0
-        return max(10, int(base_interval / max(1.0, scale)))
+            return 1.0
+
+    def _heir_voice_ready(self) -> bool:
+        """True when a conversation model can answer (Ollama tags, not just a URL).
+
+        The world machine does not need this. Cached briefly so a tick does not
+        hammer /api/tags.
+        """
+        now = time.time()
+        if self._voice_ok is not None and (now - self._voice_ok_ts) < 60:
+            return self._voice_ok
+        ok = False
+        try:
+            from src.core.voice_path import is_online
+            from src.core import online_llm as _ol
+            if is_online():
+                ok = _ol.apply_to_client(self.llm)
+                self._voice_ok = ok
+                self._voice_ok_ts = now
+                return ok
+            _ol.restore_local(self.llm)
+        except Exception:
+            pass
+        try:
+            if getattr(self.llm, "configured", False):
+                models = self.llm.list_models() or set()
+                want = str(getattr(self.llm, "model", "") or "")
+                ok = bool(models) and (
+                    want in models
+                    or any(want.split(":")[0] and want.split(":")[0] in m for m in models)
+                )
+        except Exception:
+            ok = False
+        self._voice_ok = ok
+        self._voice_ok_ts = now
+        return ok
+
+    def _already_ticked_this_period(self) -> bool:
+        if getattr(self, "_catchup", False):
+            return False
+        if self._time_scale() > 1.0:
+            return False
+        try:
+            from src.world import rest_catchup as _rc
+            last = _rc._bucket(self.world).get("last_lived") or {}
+        except Exception:
+            return False
+        if not isinstance(last, dict) or not last:
+            return False
+        now = overlay_period_key(self.world.clock)
+        return (
+            int(last.get("year") or 0) == now["year"]
+            and int(last.get("month") or 0) == now["month"]
+            and int(last.get("week") or 0) == now["week"]
+            and int(last.get("day") or 0) == now["day"]
+            and int(last.get("period") or 0) == now["period"]
+            and (last.get("uncounted") or None) == now["uncounted"]
+        )
+
+    def _sleep_seconds(self, base_interval: int) -> int:
+        """1x waits for the next GMT+8 overlay period; 2x–60x divide a real day."""
+        scale = self._time_scale()
+        if scale <= 1.0:
+            return int(seconds_until_next_period())
+        return max(10, int(REAL_DAY_SECONDS / max(1.0, scale)))
+
+    def _current_interval(self, base_interval: int) -> int:
+        """The engine's current pace. 1x follows overlay periods, not the argv."""
+        return self._sleep_seconds(base_interval)
 
     def run_loop(self, interval_seconds: int = 900, once: bool = False):
-        """Run the world continuously (or a single day with once=True)."""
-        if not self.llm.configured:
-            print(
-                "World engine: no LLM backend configured. "
-                "Start Ollama or set OPENAI_BASE_URL / OPENAI_API_KEY."
-            )
-            return
+        """Run the world continuously (or a single period/day with once=True).
 
+        The world machine keeps turning even when no conversation model is
+        loaded (Keeper fallback, lived hour, streets, eco). Heir decide/talk
+        waits for a tagged Ollama/OPLoRA voice.
+        """
         self._clear_stop()
         print(f"🌍 The little Amphoreus awakens — {self.world.clock.format()}")
+        if not self._heir_voice_ready():
+            print(
+                "World engine: conversation model not loaded — "
+                "the world machine still runs (weather, hearths, streets). "
+                "Heir speech waits for a tagged Ollama model, OPLoRA, "
+                "or an Online API key."
+            )
 
         failed_days = 0
         while True:
@@ -550,8 +634,11 @@ class WorldEngine:
                 print("🌙 The little Amphoreus rests. (stop requested)")
                 break
             if self.world.visitor_present():
-                # The visitor is here — yield the hearth to them.
-                time.sleep(min(self._current_interval(interval_seconds), 60))
+                # Yield GPU to Visit chat; world machine resumes when you leave.
+                time.sleep(min(self._sleep_seconds(interval_seconds), 60))
+                continue
+            if self._already_ticked_this_period() and not once:
+                time.sleep(min(self._sleep_seconds(interval_seconds), 60))
                 continue
             try:
                 lines = self.run_day()
@@ -578,7 +665,7 @@ class WorldEngine:
                     failed_days = 0
             if once:
                 break
-            time.sleep(self._current_interval(interval_seconds))
+            time.sleep(self._sleep_seconds(interval_seconds))
 
     # ------------------------------------------------------------------ #
     # Stop / status

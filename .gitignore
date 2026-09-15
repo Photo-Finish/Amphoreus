@@ -46,6 +46,8 @@ models/
 
 # Cryptographic keys / tunnel credentials — never commit.
 # Keep private material only under world_runtime/ (already ignored) or secrets/.
+# Online conversation API key: secrets/online_llm.json (Control Panel → Online API).
+# Copy online_llm.example.json there; never commit a real key.
 secrets/
 *.pem
 *.p12

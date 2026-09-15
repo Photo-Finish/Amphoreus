@@ -262,11 +262,15 @@ def main():
     skip1 = sl.maybe_echo_teaching(
         ws, "anaxa", "python programming basics", "Grove of Epiphany",
     )
-    check("skips earth python topic", skip1 == [])
+    check("visitor-taught earth topic may echo to co-located Heir",
+          skip1 and skip1[0].get("for") == "hyacine",
+          str(skip1))
     skip2 = sl.maybe_echo_teaching(
         ws, "anaxa", "how a smartphone works", "Grove of Epiphany",
     )
-    check("skips smartphone topic", skip2 == [])
+    check("visitor-taught smartphone topic may echo",
+          skip2 and skip2[0].get("for") == "hyacine",
+          str(skip2))
 
     print("== map vignette ==")
     vg = sl.map_hour_vignette(ws, "Okhema")

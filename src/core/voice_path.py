@@ -1,7 +1,8 @@
-"""Voice path choice: Stage-1 RAG (Ollama + Chroma) vs OPLoRA (7B + Heir adapter).
+"""Voice path choice: RAG (Ollama), OPLoRA (local 7B), or online API.
 
 Persisted under world_runtime/voice_path.json so Copilot-era WorldState stays
-untouched. Default is RAG.
+untouched. Default is RAG. The online API key is NOT stored here — see
+src/core/online_llm.py (gitignored secrets/online_llm.json).
 """
 
 from __future__ import annotations
@@ -17,7 +18,8 @@ ADAPTERS_ROOT = PROJECT_ROOT / "tools" / "oplora" / "outputs" / "heirs"
 
 PATH_RAG = "rag"
 PATH_OPLORA = "oplora"
-VALID_PATHS = (PATH_RAG, PATH_OPLORA)
+PATH_ONLINE = "online"
+VALID_PATHS = (PATH_RAG, PATH_OPLORA, PATH_ONLINE)
 
 # Card id (src/characters/*.json stem) → adapter folder under outputs/heirs/
 CARD_TO_ADAPTER: dict[str, str] = {
@@ -57,7 +59,7 @@ def _write(data: dict) -> None:
 
 
 def get_voice_path() -> str:
-    """Active avenue: 'rag' (default) or 'oplora'."""
+    """Active avenue: 'rag' (default), 'online', or 'oplora'."""
     path = str(_read().get("path") or PATH_RAG).strip().lower()
     return path if path in VALID_PATHS else PATH_RAG
 
@@ -74,6 +76,10 @@ def set_voice_path(path: str) -> str:
 
 def is_oplora() -> bool:
     return get_voice_path() == PATH_OPLORA
+
+
+def is_online() -> bool:
+    return get_voice_path() == PATH_ONLINE
 
 
 def adapter_id_for(character_id: str) -> Optional[str]:
@@ -120,4 +126,6 @@ def label(path: Optional[str] = None) -> str:
     p = path or get_voice_path()
     if p == PATH_OPLORA:
         return "OPLoRA (Qwen2.5-7B + Heir adapter)"
+    if p == PATH_ONLINE:
+        return "Online API (remote LLM)"
     return "RAG (Ollama + Chroma scripture)"

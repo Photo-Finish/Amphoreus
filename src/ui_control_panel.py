@@ -247,24 +247,33 @@ def render_control_panel(manager, characters):
     except Exception:
         pass
 
-    # ---------------- 0. Voice path (RAG vs OPLoRA) ----------------
-    st.markdown("### Voice path — RAG or OPLoRA")
+    # ---------------- 0. Voice path (RAG / Online API / OPLoRA) ----------------
+    st.markdown("### Voice path — RAG, Online API, or OPLoRA")
     st.caption(
-        "**RAG** (Stage 1) — Ollama Heir voice + Chroma scripture retrieval. "
-        "**OPLoRA** — local Qwen2.5-7B (4-bit) + per-Heir LoRA adapter via an "
-        "isolated infer server (`.venv-oplora`). On 8 GB VRAM do not run both "
-        "heavy models at once: switching paths starts/stops the OPLoRA server "
-        "and you should keep only one avenue loaded."
+        "**RAG** — local Ollama Heir voice + Chroma scripture. "
+        "**Online API** — a remote OpenAI-compatible model; conversations "
+        "leave this machine's GPU alone. The key is stored only in "
+        "`secrets/online_llm.json` (gitignored). "
+        "**OPLoRA** — local Qwen2.5-7B + per-Heir LoRA. On 8 GB VRAM do not "
+        "run RAG and OPLoRA together."
     )
     _cur_path = _vp.get_voice_path()
     _path_choice = st.radio(
         "Which avenue speaks for the Heirs?",
-        [_vp.PATH_RAG, _vp.PATH_OPLORA],
-        index=0 if _cur_path == _vp.PATH_RAG else 1,
+        [_vp.PATH_RAG, _vp.PATH_ONLINE, _vp.PATH_OPLORA],
+        index=(
+            [_vp.PATH_RAG, _vp.PATH_ONLINE, _vp.PATH_OPLORA].index(_cur_path)
+            if _cur_path in (_vp.PATH_RAG, _vp.PATH_ONLINE, _vp.PATH_OPLORA)
+            else 0
+        ),
         format_func=lambda p: (
-            "RAG — Ollama + Chroma scripture"
+            "RAG — Ollama + Chroma (local GPU)"
             if p == _vp.PATH_RAG
-            else "OPLoRA — Qwen2.5-7B + Heir adapter"
+            else (
+                "Online API — remote LLM (no local GPU)"
+                if p == _vp.PATH_ONLINE
+                else "OPLoRA — Qwen2.5-7B + Heir adapter (local)"
+            )
         ),
         key="ctl_voice_path",
     )
@@ -299,10 +308,17 @@ def render_control_panel(manager, characters):
                     st.success("Voice path: **OPLoRA**. Visit an Heir to speak through the adapters.")
                     st.rerun()
             else:
-                with st.spinner("Stopping OPLoRA infer server so Ollama can use the GPU…"):
-                    _oc.stop_server()
-                _vp.set_voice_path(_vp.PATH_RAG)
-                st.success("Voice path: **RAG**. Heirs speak through Ollama + Chroma again.")
+                if _cur_path == _vp.PATH_OPLORA:
+                    with st.spinner("Stopping OPLoRA infer server…"):
+                        _oc.stop_server()
+                _vp.set_voice_path(_path_choice)
+                if _path_choice == _vp.PATH_ONLINE:
+                    st.success(
+                        "Voice path: **Online API**. Save a key below; "
+                        "Visit chat uses the remote model."
+                    )
+                else:
+                    st.success("Voice path: **RAG**. Heirs speak through Ollama + Chroma again.")
                 st.rerun()
     else:
         st.success(f"Active: **{_vp.label(_cur_path)}**.")
@@ -316,6 +332,72 @@ def render_control_panel(manager, characters):
                 if st.button("Stop OPLoRA server", key="ctl_oplora_stop"):
                     st.write(_oc.stop_server())
                     st.rerun()
+
+    from src.core import online_llm as _ol
+    _ol_st = _ol.status()
+    st.markdown("#### Online API key")
+    st.caption(
+        "OpenAI-compatible chat completions. Saved only in "
+        f"`{_ol_st['path']}` — never in git or world_state. "
+        "Copy `online_llm.example.json` if you prefer to edit the file by hand."
+    )
+    _prov = st.selectbox(
+        "Provider",
+        list(_ol.PROVIDERS.keys()),
+        index=list(_ol.PROVIDERS.keys()).index(_ol_st["provider"])
+        if _ol_st["provider"] in _ol.PROVIDERS else 0,
+        format_func=lambda p: _ol.PROVIDERS[p]["label"],
+        key="ctl_online_provider",
+    )
+    _preset = _ol.PROVIDERS[_prov]
+    _key_in = st.text_input(
+        "API key",
+        value="",
+        type="password",
+        placeholder=("saved: " + _ol_st["key_masked"] if _ol_st["configured"] else "sk-…"),
+        key="ctl_online_key",
+        help="Leave blank to keep the saved key. Save with an empty field after checking Clear to wipe.",
+    )
+    _url_in = st.text_input(
+        "Base URL",
+        value=_ol_st["base_url"] or _preset["base_url"],
+        key="ctl_online_url",
+    )
+    _model_in = st.text_input(
+        "Model id",
+        value=_ol_st["model"] or _preset["model"],
+        key="ctl_online_model",
+    )
+    c_save, c_clear = st.columns(2)
+    with c_save:
+        if st.button("Save online API", type="primary", key="ctl_online_save"):
+            key_to_store = _key_in.strip() or _ol.load().get("api_key") or ""
+            if not key_to_store:
+                st.error("Paste an API key first.")
+            else:
+                _ol.save(
+                    key_to_store,
+                    provider=_prov,
+                    base_url=_url_in,
+                    model=_model_in,
+                )
+                _vp.set_voice_path(_vp.PATH_ONLINE)
+                if _cur_path == _vp.PATH_OPLORA:
+                    _oc.stop_server()
+                st.success(
+                    f"Saved. Conversations will use **{_model_in}** at {_url_in} "
+                    f"({_ol.mask_key(key_to_store)})."
+                )
+                st.rerun()
+    with c_clear:
+        if st.button("Clear saved key", key="ctl_online_clear"):
+            _ol.clear_key()
+            st.warning("Online API key cleared.")
+            st.rerun()
+    if _ol_st["configured"]:
+        st.caption(f"Saved key: **{_ol_st['key_masked']}** · model **{_ol_st['model']}**")
+    else:
+        st.caption("No key saved yet — Visit chat will keep waiting.")
 
     # Optional Cursor-skills aid (RAG path) — default OFF
     st.markdown("### Skills aid (optional)")
@@ -545,8 +627,8 @@ def render_control_panel(manager, characters):
         st.success("The world engine is running — Amphoreus lives while you are away.")
     else:
         st.info("The world engine is not running — the Heirs wait for you. Start it to "
-                "let the world move on its own (it uses the GPU/RAM for the Ambient "
-                "Director and the Heirs' free days).")
+                "let the world move on its own. On **Online API**, conversation "
+                "leaves this machine's GPU; the world machine still uses local RAM.")
 
     _render_1x_catchup(ws, manager, running)
 
@@ -570,12 +652,14 @@ def render_control_panel(manager, characters):
     st.caption(
         "How fast the world elapses while the engine runs, measured linearly "
         "against real time. **1x** follows GMT+8 on the sanctuary Light Calendar "
-        "(one in-game day per real day; Hours from midnight). Starting **1x** "
-        "after a rest syncs that calendar and asks whether to generate the "
-        "events of the days the world missed. **2x–60x** keep the "
-        "original sim timestamp (Year 4932…) and scale that clock: **60x** = "
-        "24 real minutes per in-game day (each day still needs a little time "
-        "to be lived — every Heir decides for themselves)."
+        "(Hours from midnight). Each Light-Calendar period (~4.8 real hours) "
+        "gets one world-machine tick: Entry and Curtain-Fall stay rest; Lucid, "
+        "Action, and Parting live. Starting **1x** after a rest syncs that "
+        "calendar and asks whether to generate the days the world missed. "
+        "**2x–60x** keep the original sim timestamp (Year 4932…) and scale that "
+        "clock: **60x** = 24 real minutes per in-game day (each day still needs "
+        "a little time to be lived — every Heir decides for themselves when a "
+        "voice model is loaded)."
     )
     _scales = [("1x", 1), ("2x", 2), ("5x", 5), ("10x", 10), ("30x", 30), ("60x", 60)]
     _cur_scale = float(ws.time_scale or 1.0)
@@ -598,7 +682,8 @@ def render_control_panel(manager, characters):
         "because of 8 GB VRAM. **Integrated (Intel) GPU** uses the built-in "
         "GPU through Vulkan — it can hold the whole model in shared memory, "
         "but computes far slower. Changing this restarts the AI engine for "
-        "a few seconds."
+        "a few seconds. The **Online API** voice path ignores this — "
+        "conversation runs on the remote model."
     )
     try:
         from src.core import compute_mode as _cm

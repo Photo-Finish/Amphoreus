@@ -56,6 +56,16 @@ class LLMClient:
         # faster-whisper. This is for hearing music itself.
         self.audio_model = audio_model or os.getenv("AUDIO_MODEL")
 
+    def uses_local_ollama(self) -> bool:
+        """True when the chat endpoint is a local Ollama (think= extra is safe)."""
+        u = (self.base_url or "").lower()
+        return "11434" in u or "localhost" in u or "127.0.0.1" in u
+
+    def _extra_body(self, think: bool) -> dict:
+        if think or self.uses_local_ollama():
+            return {"extra_body": {"think": think}}
+        return {}
+
     @property
     def configured(self) -> bool:
         """Whether a chat backend is available (a key or a local endpoint)."""
@@ -105,7 +115,7 @@ class LLMClient:
             messages=messages,
             temperature=self.temperature if temperature is None else temperature,
             max_tokens=self.max_tokens if max_tokens is None else max_tokens,
-            extra_body={"think": think},
+            **self._extra_body(think),
         )
         content = response.choices[0].message.content
         # Safety net: a reasoning model may still have spent its whole budget
@@ -116,7 +126,7 @@ class LLMClient:
                 messages=messages,
                 temperature=self.temperature if temperature is None else temperature,
                 max_tokens=(max_tokens or self.max_tokens) * 4,
-                extra_body={"think": think},
+                **self._extra_body(think),
             )
             content = response.choices[0].message.content
         return content or ""
@@ -133,7 +143,7 @@ class LLMClient:
             temperature=self.temperature if temperature is None else temperature,
             max_tokens=self.max_tokens,
             stream=True,
-            extra_body={"think": think},
+            **self._extra_body(think),
         )
         for chunk in response:
             if chunk.choices and chunk.choices[0].delta.content:

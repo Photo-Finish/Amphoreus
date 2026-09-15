@@ -736,9 +736,14 @@ def _topic_looks_earth(topic: str) -> bool:
 def maybe_echo_teaching(
     world, teacher_id: str, topic: str, place: str
 ) -> list:
-    """Record secondhand echoes for co-located Heirs. Does not open the wall."""
+    """Record secondhand echoes for co-located Heirs.
+
+    Visitor → Heir → other Heirs (talk or message) is the allowed avenue,
+    including Earth names the star-stranger already taught. The wall stays
+    closed as a *source*; it does not erase what the visitor placed in play.
+    """
     topic = (topic or "").strip()
-    if not topic or _topic_looks_earth(topic):
+    if not topic:
         return []
     place = place or ""
     try:
@@ -793,8 +798,9 @@ def teaching_echo_prompt(world, character_id: str) -> str:
     return (
         "# A lesson overheard nearby\n"
         f"Secondhand only: while near {place}, you caught the edge of a lesson "
-        f"from {teacher} on \"{topic}\". You did not sit the lesson yourself — "
-        "hold it as something in the air, Amphoreus-framed, never as outworld knowledge."
+        f"from {teacher} on \"{topic}\". They heard it from the star-stranger "
+        "and passed it by talk — you did not sit the lesson yourself. Hold it "
+        "as something in the air between you, not as a wall that opened on its own."
     )
 
 

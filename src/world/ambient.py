@@ -185,6 +185,42 @@ NEWS_PALETTE: List[str] = [
     "The Seal Slammers Arena in Okhema is loud tonight; bets are being placed on a favorite.",
 ]
 
+# Phrase → Light Calendar month number. Fallback news/errands that name a
+# month or its feast stay in that month (no Joy rehearsals in Strife).
+_MONTH_BOUND_PHRASES = (
+    ("month of gate", 1),
+    ("month of balance", 2),
+    ("month of evernight", 3),
+    ("month of cultivation", 4),
+    ("month of joy", 5),
+    ("festival of phagousa", 5),
+    ("month of everday", 6),
+    ("month of freedom", 7),
+    ("month of reaping", 8),
+    ("month of weaving", 9),
+    ("month of strife", 10),
+    ("month of mourning", 11),
+    ("month of fortune", 12),
+    ("month of membrance", 13),
+    ("scarlet day", None),  # uncounted; handled via clock.uncounted
+)
+
+
+def _text_fits_month(text: str, month: int, uncounted: Optional[str] = None) -> bool:
+    """True if the line does not name a different Titan-month than today."""
+    blob = (text or "").lower()
+    if uncounted == "scarlet" and "scarlet" in blob:
+        return True
+    if uncounted == "astrorum" and ("astrorum" in blob or "uncounted" in blob):
+        return True
+    for phrase, bound in _MONTH_BOUND_PHRASES:
+        if phrase in blob:
+            if bound is None:
+                return bool(uncounted)
+            if int(month) != int(bound):
+                return False
+    return True
+
 KEEPER_KNOWLEDGE = (
     "AMPHOREUS CANON — ground every choice in this:\n"
     "• Cities: Okhema, the holy city under the slumbering Worldbearing Titan Kephale and "
@@ -335,9 +371,19 @@ class AmbientDirector:
         return ambient
 
     def _generate(self, clock, heirs: Dict[str, dict]) -> dict:
+        try:
+            from src.core.voice_path import is_online
+            if is_online():
+                # Conversations are remote; the Keeper stays on the cheap
+                # local fallback so weather/errands do not load a GPU model.
+                return self._fallback(clock, heirs)
+        except Exception:
+            pass
         if getattr(self.llm, "configured", False):
             try:
-                return self._llm_generate(clock, heirs)
+                models = self.llm.list_models() or set()
+                if models:
+                    return self._llm_generate(clock, heirs)
             except Exception:
                 pass
         return self._fallback(clock, heirs)
@@ -387,6 +433,7 @@ class AmbientDirector:
         else:
             month = getattr(clock, "month", 9)
             lore = MONTH_LORE.get(month, MONTH_LORE[9])
+        month = int(getattr(clock, "month", 9) or 9)
         palette = lore["weather"]
         seed = rng.choice(lore["seed"])
         cities = sorted({info.get("home", "Okhema") for info in heirs.values()})
@@ -396,9 +443,16 @@ class AmbientDirector:
         errands = {}
         for cid, info in heirs.items():
             home = info.get("home", "Okhema")
-            opts = CITY_ERRAND_CAUSES.get(home)
-            if opts:
-                pick = rng.choice(opts)
+            opts = CITY_ERRAND_CAUSES.get(home) or []
+            fitted = [
+                o for o in opts
+                if _text_fits_month(
+                    f"{o.get('ask', '')} {o.get('cause', '')}", month, u
+                )
+            ]
+            pick_from = fitted or opts
+            if pick_from:
+                pick = rng.choice(pick_from)
                 errands[cid] = {
                     "ask": pick["ask"],
                     "cause": f"{pick['cause']} It is {seed}.",
@@ -408,8 +462,11 @@ class AmbientDirector:
                     "ask": f"The people of {home} look to you today, as they always do.",
                     "cause": f"None can say why — only that it is {seed}.",
                 }
+        news_opts = [
+            n for n in NEWS_PALETTE if _text_fits_month(n, month, u)
+        ]
         return {
             "weather": weather,
             "errands": errands,
-            "news": rng.choice(NEWS_PALETTE),
+            "news": rng.choice(news_opts or NEWS_PALETTE),
         }

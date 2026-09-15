@@ -121,3 +121,29 @@ Charter unchanged.
 
 Module: `src/core/visitor_emotion.py`. Suite: `tools/test_visitor_emotion.py`.
 Charter unchanged (knowledge wall).
+
+## Sixth delivery — 1x period ticks & world machine (2026-09-16)
+
+| Feature | Note |
+|---|---|
+| 1x ticks | One GMT+8 overlay **period** (~4.8 h), not one 24 h sample of whatever hour the daemon started. Entry / Curtain-Fall stay rest. Lucid / Action / Parting live. Overlay clock is not advanced. |
+| World machine | Engine keeps running without a conversation model (Keeper fallback, hearths, streets, eco). Heir decide/talk waits for a tagged Ollama model. |
+| Teaching echo | Visitor → Heir → other Heirs (talk / letter / echo) may carry Earth names already taught. |
+| Keeper fallback | News/errands that name a Titan-month stay in that month. |
+| Rest sprites | Resting status uses still art; roamers do not cross the square at night. |
+| Journey chrome | Sidebar follows the bond (not a forever-stranger caption). |
+
+Suites: `tools/test_sanctuary_calendar.py`, `tools/test_society_life.py`, `tools/test_world_machine.py`.
+
+## Seventh delivery — online conversation API (2026-09-16)
+
+| Feature | Note |
+|---|---|
+| Voice path | **Online API** alongside RAG and OPLoRA. Control Panel stores provider, base URL, model, and key. |
+| Key storage | `secrets/online_llm.json` only (gitignored). Placeholder: `online_llm.example.json`. Never in git or `world_state.json`. |
+| What goes remote | Visit chat, group talk, Heir decide/react. |
+| What stays local | World machine (Keeper fallback, hearths, streets, eco). Pictures/music still use local senses models if those are configured. |
+| GPU | Conversation does not load Ollama / OPLoRA. Switching back to RAG restores the local endpoint. |
+
+Suite: `tools/test_online_llm.py`.
+

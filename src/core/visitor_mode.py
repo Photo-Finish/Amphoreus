@@ -17,7 +17,7 @@ in-app Control Panel (both call `reseed_for_mode` below).
 """
 
 import os
-from typing import Dict
+from typing import Dict, Optional
 
 DEFAULT_MODE = "journey"
 
@@ -37,6 +37,25 @@ def current_mode() -> str:
 
 def is_aftermath() -> bool:
     return current_mode() == "aftermath"
+
+
+def journey_sidebar_caption(bond: Optional[dict] = None) -> str:
+    """Journey chrome follows the bond, not a forever-stranger caption."""
+    bond = bond or {}
+    level = str(bond.get("friendship_level") or "stranger").strip() or "stranger"
+    try:
+        visits = int(bond.get("visits") or 0)
+    except Exception:
+        visits = 0
+    if level == "stranger" and visits < 3:
+        return (
+            "Mode: **Journey** — you are newly arrived; "
+            "the Heirs do not know you yet."
+        )
+    return (
+        f"Mode: **Journey** — you walk Amphoreus; "
+        f"they already know you ({level})."
+    )
 
 
 def visitor_framing_block(mode: str | None = None) -> str:

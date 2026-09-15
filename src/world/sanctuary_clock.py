@@ -49,6 +49,9 @@ WEEKS_PER_MONTH = 4
 DAYS_PER_WEEK = 7
 PERIODS_PER_DAY = len(PERIODS)
 MONTHS_PER_YEAR = len(MONTHS)  # 13
+# One real day at 1x; each Light-Calendar period is an equal slice of GMT+8.
+REAL_DAY_SECONDS = 86400
+PERIOD_SECONDS = REAL_DAY_SECONDS / float(PERIODS_PER_DAY)  # 4.8 h
 
 
 def is_light_leap(year: int) -> bool:
@@ -65,6 +68,50 @@ def period_from_civil_hours(h: float) -> int:
     if idx >= PERIODS_PER_DAY:
         return PERIODS_PER_DAY - 1
     return max(0, idx)
+
+
+def civil_hours(dt: datetime) -> float:
+    """Fractional hour of a GMT+8 (or any) datetime in [0, 24)."""
+    return (
+        dt.hour
+        + dt.minute / 60.0
+        + dt.second / 3600.0
+        + dt.microsecond / 3.6e9
+    )
+
+
+def seconds_until_next_period(when: Optional[datetime] = None) -> float:
+    """Real seconds until the next Light-Calendar period on the GMT+8 overlay.
+
+    1x ticks wait here so Entry/Lucid/Action/Parting/Curtain-Fall each fire
+    once per civil day, in sync with the overlay — not once per 24 h at
+    whatever hour the daemon started.
+    """
+    dt = when if when is not None else datetime.now(GMT8)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=GMT8)
+    else:
+        dt = dt.astimezone(GMT8)
+    h = civil_hours(dt)
+    length = 24.0 / float(PERIODS_PER_DAY)
+    idx = period_from_civil_hours(h)
+    next_h = (idx + 1) * length
+    rem_h = next_h - h
+    if rem_h <= 0:
+        rem_h += 24.0
+    return max(10.0, rem_h * 3600.0)
+
+
+def overlay_period_key(clock) -> dict:
+    """Identity of one overlay period (for last-lived / skip-duplicate)."""
+    return {
+        "year": int(getattr(clock, "year", 0) or 0),
+        "month": int(getattr(clock, "month", 0) or 0),
+        "week": int(getattr(clock, "week", 0) or 0),
+        "day": int(getattr(clock, "day", 0) or 0),
+        "period": int(getattr(clock, "period", 0) or 0),
+        "uncounted": getattr(clock, "uncounted", None) or None,
+    }
 
 
 def _day_index(clock) -> int:

@@ -84,11 +84,16 @@ def render_gazette(manager, characters):
 
     # ---- rumors (most recent few, deduped) ----
     rumor_lines = []
+    seen_rumors = set()
     for cid, rl in list(ws.rumors.items())[::-1]:
         if not rl:
             continue
         r = rl[-1]
-        rumor_lines.append(r["text"])
+        text = str(r.get("text") or "").strip()
+        if not text or text in seen_rumors:
+            continue
+        seen_rumors.add(text)
+        rumor_lines.append(text)
         if len(rumor_lines) >= 5:
             break
 

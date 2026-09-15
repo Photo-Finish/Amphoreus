@@ -21,6 +21,7 @@ from src.world.sanctuary_clock import (
     WorldClock,
     is_light_leap,
     period_from_civil_hours,
+    seconds_until_next_period,
 )
 from src.world.world_state import WorldState
 
@@ -77,6 +78,24 @@ def main():
 
     noon = WorldClock.from_gmt8(datetime(2026, 8, 18, 12, 0, tzinfo=GMT8))
     check("GMT+8 noon is Action Hour", noon.period == 2, noon.format_short())
+
+    print("== 1x period wait stays on overlay ==")
+    entry = datetime(2026, 9, 16, 1, 20, tzinfo=GMT8)
+    wait_entry = seconds_until_next_period(entry)
+    check("01:20 GMT+8 waits until Lucid (~4:48)",
+          12400 < wait_entry < 12600, str(wait_entry))
+    check("01:20 overlay is still Entry",
+          WorldClock.from_gmt8(entry).period == 0)
+    action_wait = seconds_until_next_period(
+        datetime(2026, 9, 16, 12, 0, tzinfo=GMT8)
+    )
+    check("noon waits until Parting (~14:24)",
+          8600 < action_wait < 8700, str(action_wait))
+    midnight_wait = seconds_until_next_period(
+        datetime(2026, 9, 16, 0, 0, tzinfo=GMT8)
+    )
+    check("midnight waits a full Entry period (~4.8h)",
+          17200 < midnight_wait < 17360, str(midnight_wait))
 
     print("== Advance: common Fortune → Membrance → Astrorum → Gate ==")
     clk = WorldClock(year=4933, month=12, week=4, day=7, period=4)
