@@ -39,6 +39,9 @@ def render_guide(manager, characters):
         "In Classic look, a small weather window shows the place on a solid-colour page.\n"
         "- **Walk the Land** — stand in a region with **no conversation**. "
         "The region art fills the page (Pictures look) or sits in a small weather window (Classic look).\n"
+        "- **An Eternal Page** — Beyond Time. Cute companions stand on the "
+        "parchment (not Visit chatboxes). Click one, several, or all thirteen, "
+        "then whisper. Same memories as Visit. No weather, no streets.\n"
         "- **A Chronicle of Amphoreus** — the Gazette: sky, news, moods, mailbox.\n"
         "- **Map of Amphoreus** — geography. Click a place or Heir.\n"
         "- **Galgame** — the same talk as a visual novel.\n"
@@ -52,7 +55,8 @@ def render_guide(manager, characters):
         "The **Life on the land** switch paints chimera, grass, stalls, and the rest onto "
         "that picture (on), or leaves the place only (off). Named Presence and the "
         "touch-strip stay hidden while life is off.\n"
-        "The same list is also the Streamlit page nav (Visit / Walk the Land / Control Panel)."
+        "The same list is also the Streamlit page nav "
+        "(Visit / Walk the Land / An Eternal Page / Control Panel)."
     ))
 
     _section("The black tide (optional — a live threat)", (
@@ -86,6 +90,17 @@ def render_guide(manager, characters):
         "If an Heir is with you and authorized (Hyacine tending an ailing chimera, "
         "Hysilens hushing a shore-song, Phainon calming a restless dromas, "
         "Mydei stilling an anvil…), a care glyph appears. Everything else is refused."
+    ))
+
+    _section("An Eternal Page", (
+        "Beyond Time: the parchment where every Chrysos Heir may stand near you "
+        "(officially, the Trailblazer can talk with all of them there).\n\n"
+        "This is **not** Visit an Heir. Companions are cute stickers on the page, "
+        "like desktop buddies: click to stand near, double-click to keep only that "
+        "one, or use **All thirteen**. Whisper in the dock under the picture — "
+        "answers rise as speech bubbles, not a chat list.\n\n"
+        "There is no weather and no street life here. What you say is remembered "
+        "in the same personal history as Visit, in Journey or Aftermath alike."
     ))
 
     _section("Gifts from the market", (
@@ -191,8 +206,9 @@ def render_guide(manager, characters):
         "1. Pick an Heir on the left and say hello on **Visit an Heir**.\n"
         "2. Touch a **figure on the picture** — a chimera howls, a passerby has a name.\n"
         "3. Open **Walk the Land** to stand in Okhema, the Grove, Styxia… without talking.\n"
-        "4. Check the **Chronicle** for the sky, whispers, and your mailbox.\n"
-        "5. When you have grown close, bring a **gift**, and let the deeper story open.\n"
+        "4. Open **An Eternal Page** to stand with cute companions and whisper to one, several, or all.\n"
+        "5. Check the **Chronicle** for the sky, whispers, and your mailbox.\n"
+        "6. When you have grown close, bring a **gift**, and let the deeper story open.\n"
     ))
 
     st.caption(

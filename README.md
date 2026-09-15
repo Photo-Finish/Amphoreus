@@ -1213,5 +1213,11 @@ tide / letter / weather / co-location / aftermath features):
   above Visit dialogue and page wording. The land click-popup sits above
   everything else (`#amp-land-notice-host`). The life iframe no longer steals
   wheel/touch; native scroll is used. Audit: `tools/_audit_life_scroll.py`.
+- **An Eternal Page** — Beyond Time as its own tab/page, distinct from Visit.
+  Official cute PPG stickers stand on the parchment like desktop companions.
+  Click one, several, or all thirteen, then whisper; answers rise as speech
+  bubbles (not Visit chatboxes). Speakers use the same `manager.chat` history
+  as Visit in Journey or Aftermath. No weather, no street life. Suite:
+  `tools/test_eternal_page.py`.
 
 

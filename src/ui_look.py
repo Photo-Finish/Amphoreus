@@ -177,6 +177,7 @@ _WATCHER = """
       var p = window.parent.location.pathname || '';
       if (/Walk_the_Land/i.test(p)) return true;
       if (/Control_Panel/i.test(p)) return false;
+      if (/An_Eternal_Page/i.test(p)) return false;
     } catch (e) {}
     return null;
   }
@@ -185,6 +186,11 @@ _WATCHER = """
     var on;
     var visit = false;
     var walk = false;
+    var eternal = false;
+    try {
+      var pth = window.parent.location.pathname || '';
+      if (/An_Eternal_Page/i.test(pth)) eternal = true;
+    } catch (e) {}
     if (forced === true) {
       on = true;
       walk = true;
@@ -195,12 +201,14 @@ _WATCHER = """
       var name = tabName(t);
       visit = name === 'Visit an Heir';
       walk = name === 'Walk the Land';
+      eternal = name === 'An Eternal Page';
       on = isLand(name);
     }
     doc.documentElement.classList.toggle('amp-land-off', !on);
     /* Visit Heir-tint vs Walk land-gold — both CSS blocks stay mounted. */
     doc.documentElement.classList.toggle('amp-mode-visit', visit);
     doc.documentElement.classList.toggle('amp-mode-walk', walk);
+    doc.documentElement.classList.toggle('amp-mode-eternal', eternal);
   }
   sync();
   doc.addEventListener('click', function(){ setTimeout(sync, 40); }, true);

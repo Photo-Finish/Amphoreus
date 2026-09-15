@@ -157,3 +157,15 @@ Suite: `tools/test_online_llm.py`.
 
 Audit: `tools/_audit_life_scroll.py`.
 
+## Ninth delivery — An Eternal Page (2026-09-16)
+
+| Feature | Note |
+|---|---|
+| Distinct page | Tab **An Eternal Page** and sidebar page `3_An_Eternal_Page.py` — not Visit chatboxes. |
+| Cute companions | Official Pom-Pom Gallery stickers (`assets/eternal_page/cute/`). No geometric placeholders. |
+| Desktop-buddy talk | Click to stand near, double-click for one, All thirteen / Clear, whisper dock, speech bubbles. |
+| Shared memory | Speakers call `manager.chat` (same history.jsonl / bonds as Visit). Listeners still hear the line. Journey and Aftermath use the same store. |
+| No land systems | No weather, ecosystem, chimera, or dromas on this page. Wheel over the stage is passed to the parent. |
+
+Suite: `tools/test_eternal_page.py`. Art: `python tools/fetch_eternal_page_art.py`.
+

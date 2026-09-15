@@ -562,6 +562,7 @@ from src.ui_role import is_visitor as _is_vis_tabs
 _TAB_CORE = [
     "Visit an Heir",
     "Walk the Land",
+    "An Eternal Page",
     "A Chronicle of Amphoreus",
     "Map of Amphoreus",
 ]
@@ -573,6 +574,7 @@ _tab_objs = st.tabs(_TAB_NAMES)
 _tab = dict(zip(_TAB_NAMES, _tab_objs))
 main_tab = _tab["Visit an Heir"]
 walk_tab = _tab["Walk the Land"]
+eternal_tab = _tab["An Eternal Page"]
 chronicle_tab = _tab["A Chronicle of Amphoreus"]
 map_tab = _tab["Map of Amphoreus"]
 admin_tab = _tab.get("Admin Console")
@@ -600,6 +602,13 @@ with walk_tab:
         render_walk_page(key_prefix="walk_tab")
     except Exception as e:
         st.error(f"Walk the Land could not open: {e}")
+
+with eternal_tab:
+    try:
+        from src.ui_eternal_page import render_eternal_page
+        render_eternal_page(manager, key_prefix="eternal_tab")
+    except Exception as e:
+        st.error(f"An Eternal Page could not open: {e}")
 
 with guide_tab:
     # ❓ How to use — a friendly guide to the Sanctuary and its living world.
