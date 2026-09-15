@@ -147,3 +147,13 @@ Suites: `tools/test_sanctuary_calendar.py`, `tools/test_society_life.py`, `tools
 
 Suite: `tools/test_online_llm.py`.
 
+## Eighth delivery — land z-order & native scroll (2026-09-16)
+
+| Feature | Note |
+|---|---|
+| Sprites above dialogue | Life iframe z55, above chat/wordings (z40) and copy (z5). Tabs / look chrome stay higher. |
+| Click popup on top | `#amp-land-notice-host` on the parent page at z400 — above sidebar, tabs, and chat. |
+| Scroll | Life iframe stays `pointer-events: none`. Capture-phase wheel hijack removed so the page scrolls natively. Sprite clicks are hit-tested from the parent. |
+
+Audit: `tools/_audit_life_scroll.py`.
+

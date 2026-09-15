@@ -85,9 +85,8 @@ def look_chrome_css() -> str:
     it) to z-index 80. The picker sits *above* the tabs in the document, so
     without its own stacking context it is painted over and looks missing.
 
-    The life iframe is ``pointer-events: none`` so wheel/touch scroll reaches
-    Walk the Land glass panels and below-fold copy; sprites stay interactive
-    inside the iframe document.
+    The life iframe is ``pointer-events: none`` so native wheel/touch scroll
+    is never stolen. Sprite clicks are hit-tested on the parent page.
     """
     return """
 <style>

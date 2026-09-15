@@ -484,9 +484,11 @@ def page_backdrop_css(image_path, max_width=1920, heir_id=None) -> str:
 
     The JPEG is promoted into ``#amp-land-photo-host`` at z-index 0
     (behind page copy). Pictorial Visit/Walk copy (headings, amp-read, hero
-    portraits) sits at z-index 5. Life sprites and notice popups stay in the land
-    iframe at z-index 35 (above copy, below interactive widgets at 40 and
-    tabs/look chrome). The host mounts as the
+    portraits) sits at z-index 5. Chat and widgets sit at z-index 40. Life
+    sprites paint at z-index 55 (above dialogue, below tabs). The land
+    click-popup is hoisted to ``#amp-land-notice-host`` at z-index 400.
+    The life iframe is ``pointer-events: none`` so native wheel scroll is
+    not stolen. The host mounts as the
     first child of ``[data-testid="stAppViewContainer"]`` (not ``body``) and the
     app shell sits at z-index 1 so a body-level photo at z-index 0 cannot paint
     over the life iframe. ``max_width`` is unused (kept for callers).
@@ -553,7 +555,7 @@ section[data-testid="stMain"] {{
   background-image: none !important;
 }}
 /* Pictorial photo host is z-index 0; the app shell must sit above it on body
-   (z-index 0 beats auto) so the life iframe at z-index 25 stays in front. */
+   (z-index 0 beats auto) so the life iframe at z-index 55 stays in front. */
 [data-testid="stAppViewContainer"] {{
   position: relative !important;
   z-index: 1 !important;
@@ -722,7 +724,8 @@ section[data-testid="stMain"] {{
   --st-secondary-background-color: transparent !important;
   --st-emotion-theme-secondaryBackgroundColor: transparent !important;
 }}
-/* Empty page area lets land life show through; widgets stay above life. */
+/* Empty page area lets land life show through; life sprites paint above
+   chat/wordings (z40). Tabs / look chrome stay higher. */
 .block-container .stMarkdown,
 .block-container .amp-read,
 .block-container .stMarkdown:has(.amp-read),
@@ -731,7 +734,7 @@ section[data-testid="stMain"] {{
   z-index: 10 !important;
   pointer-events: auto !important;
 }}
-/* Pictorial Visit/Walk: read-only page copy under the life layer (z35). */
+/* Pictorial Visit/Walk: read-only page copy under the life layer (z55). */
 html.amp-mode-visit section[data-testid="stMain"] [data-testid="stHeading"],
 html.amp-mode-visit section[data-testid="stMain"] [data-testid="stMarkdown"],
 html.amp-mode-visit section[data-testid="stMain"] [data-testid="stCaptionContainer"],
@@ -801,7 +804,7 @@ section[data-testid="stSidebar"] {{
   margin: 0 !important;
   padding: 0 !important;
   overflow: visible !important;
-  z-index: 35 !important;
+  z-index: 55 !important;
   border: none !important;
   background: transparent !important;
   pointer-events: none !important;
@@ -834,10 +837,20 @@ iframe[data-amp-land-life="1"] {{
   max-width: none !important;
   max-height: none !important;
   border: none !important;
-  z-index: 35 !important;
+  z-index: 55 !important;
   background: transparent !important;
-  /* Click-through except .amp-sprite / notice UI inside the iframe doc. */
+  /* Click-through: sprite hits are picked on the parent page. */
   pointer-events: none !important;
+}}
+#amp-land-notice-host {{
+  position: fixed !important;
+  z-index: 400 !important;
+  pointer-events: auto !important;
+}}
+#amp-land-notice-host .amp-notice-card,
+#amp-land-notice-host .amp-notice-x,
+#amp-land-notice-host .amp-notice-act {{
+  pointer-events: auto !important;
 }}
 [data-testid="stTabPanel"][hidden] iframe[data-amp-land="1"],
 [data-testid="stTabPanel"][hidden] [data-amp-land-wrap="1"],
@@ -1155,7 +1168,8 @@ html.amp-land-off [data-testid="stAppViewContainer"]::after {{
 html.amp-land-off iframe[data-amp-land="1"],
 html.amp-land-off [data-amp-land-wrap="1"],
 html.amp-land-off #amp-land-photo-host,
-html.amp-land-off [data-amp-land-photo-wrap="1"] {{
+html.amp-land-off [data-amp-land-photo-wrap="1"],
+html.amp-land-off #amp-land-notice-host {{
   display: none !important;
   pointer-events: none !important;
 }}

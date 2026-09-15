@@ -1209,5 +1209,9 @@ tide / letter / weather / co-location / aftermath features):
   (gitignored; never `world_state.json`). Placeholder:
   `online_llm.example.json`. The world machine stays local. Suite:
   `tools/test_online_llm.py`.
+- **Land z-order and scroll** — people, dromas, gates, and other figures paint
+  above Visit dialogue and page wording. The land click-popup sits above
+  everything else (`#amp-land-notice-host`). The life iframe no longer steals
+  wheel/touch; native scroll is used. Audit: `tools/_audit_life_scroll.py`.
 
 
