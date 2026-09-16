@@ -1,313 +1,562 @@
 # anaxa — Personal Memories
 
-> Verbatim dialogue from the canon databank where this Heir appears, copied (never modified in the databank) to serve as personal memory. Each part shows the source file and the in-story context (chapter / mission / scene), and is bounded to a coherent dialogue moment.
+> Verbatim canon dialogue this Heir spoke, was addressed in, or stood on-stage for. Shared scenes are stored in full under `databank/memories/collective/`; this file keeps the personal thread plus a pointer. Original databank mission files were not modified.
 
 ---
 
 ### Part 1 — `databank/missions/chapter-02-light-slips.md`
-
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Anaxa's Alchemical Messages
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__anaxa-s-alchemical-messages`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
+**Mem:** Memi...!?
+
+**???: ** Before you try unlocking the door, perhaps you should first find a way to clear the fog that clouds your vision.
 
 **Mem:** You scared me! Are you... the echoes of a memory?
+
 **Anaxa:** My name is Anaxagoras, one of the Seven Sages of the Grove of Epiphany and the founder of the Nousporists. Before we go any further: Rule number one, do not call me Anaxa.
+
 **Mem:** Anaxago... Anax... Ugh, I'll just stick to Anaxa.
+
 **Anaxa:** Rule number two: Never interrupt me. Silence is golden.
+
 **Mem:** What a difficult person!
+
 **Anaxa:** The person standing here and conversing with you right now isn't the vestiges of a memory. Rather, it is the culmination of the greatness of science and the pure, irrefutable, and undeniable exalted truth.
+
 **Anaxa:** Through the wonders of alchemy, I have shattered my soul and transmuted it into gold before burying it in this spot. I have recorded these words so that visitors may learn where their next destination lies.
+
 **Mem:** Alchemy can do that?
+
 **Anaxa:** Nothing is impossible. Having said that, alchemy is not omnipotent. Each time you hear from me, an equivalent part of my soul is being consumed as the price. In other words — this voice isn't created out of thin air.
+
 **Mem:** But how is it that you can respond to me...? Are you really the echoes of a memory?
+
 **Anaxa:** That's because my precise calculations account for every possibility. I also know that you have already discovered the cause of the calamity at the Grove — the black tide — and that you mistakenly believe that the scholars have been wiped.
+
 **Anaxa:** But that is where you're wrong: While the black tide was still approaching the Grove, the sages found a way to evacuate the vast majority of the scholars. They are heading toward the holy city of Okhema as we speak.
+
 **Anaxa:** Only a small fraction of the scholars stayed behind with me to defend the Grove. If all goes well, Cerces' Coreflame will reach Okhema before long...
+
 **Anaxa:** ...But since you have accessed this message, something unforeseen must have occurred. For now, you should continue onward to the Luminary Throne where you may retrieve the Coreflame... and our mortal remains.
+
 **Anaxa:** "And now, the objective is complete. That is all."
 
 ---
 
+**Mem:** H—He disappeared again? Did he finish what he wanted to say?
+
+---
+
 ### Part 2 — `databank/missions/chapter-02-light-slips.md`
-
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > The Black-Robed Swordmaster > Keep Moving Forward and Meet Up with Cerces at the Throne
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__keep-moving-forward-and-meet-up-with-cerces-at-the-throne`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 *(Approach Anaxa's soul)*
 **Anaxa:** Ha... My eyes can no longer see...
+
 *(Approach Anaxa's soul)*
 **Anaxa:** No matter... All I have to do is to place this body at the core of the array...
+
 *(Approach Anaxa's soul)*
 **Anaxa:** For the sake of Amphoreus... Die with me, Titan.
+
 *(Approach the marked location)*
 **Mem:** Ah...
 
 ---
 
 ### Part 3 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > The Black-Robed Swordmaster > Defeat the Black-Robed Swordmaster
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__defeat-the-black-robed-swordmaster`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** on-stage
 
-**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Visiting the Families
-
-
-**Castorice:** Lady Trianne, you haven't been well since you woke up... Are you sure you can make it back on your own?
-**Anaxa:** All this noise and commotion... Okhema hasn't changed a bit, has it?
-**Castorice:** Are you... Professor Anaxa?
-**Anaxa:** There's no need for doubt. The Titan no longer speaks. It is I, Anaxagoras of the Nousporists.
-**Castorice:** ...Indeed. You are the only one who would refer to yourself like that.
-**Anaxa:** ...
-**Castorice:** ...Professor, let me be frank: The mission Lady Aglaea entrusted us is to search for survivors, uncover the truth about the disaster at the Grove, and... retrieve the Coreflame of Cerces.
-**Anaxa:** That does not surprise me. And now, I'm a survivor who witnessed the entirety of the disaster, as well as the defenseless bearer of a Coreflame.
-**Anaxa:** Are you going to bring me to Aglaea to fulfill your duty?
-**Castorice:** That is indeed my duty, but I prefer not to present you to her as a captive or spoil of battle.
-**Anaxa:** Fine. There's no need to make your life difficult. I'm not against meeting that woman.
-**Anaxa:** But I have some things to take care of first. The families of some of my fellow Grove scholars live in the holy city. Before we meet Aglaea... I want to visit them.
-> *(Trailblazer)* Why do you have to do it before meeting Aglaea?
-**Castorice:** Because Lady Aglaea... will probably be against it.
-**Anaxa:** Heh... Let me guess. That woman will not only prevent me from visiting the families of the deceased, but will also suppress any information about the Grove. She's always been that cold-hearted.
-**Anaxa:** My fellows at the Grove gave their lives defending the Coreflame and fighting the black tide alongside me. Their families... deserve to know the truth.
-**Castorice:** You intend to do it without her knowledge?
-**Anaxa:** Do you really think that woman would treat me well even if I behaved and proved my loyalty? I wouldn't mind seeing a bit more anger on her face.
-**Anaxa:** Are you going to stop me, Castorice?
-**Castorice:** ...I will accompany you, but please understand that Lady Aglaea has her own considerations.
-**Anaxa:** ...Heh, you truly have the makings of a fine scholar, putting yourself in other people's shoes like that.
-**Anaxa:** Let's go. I won't go overboard.
-**Castorice:** So, after all these years, you and Lady Aglaea are still...
-**Anaxa:** Neither of us is narrow-minded. You should know the root cause of our conflict.
-*(Speak to the Woman With Gentle Expression)*
-**Woman With Gentle Expression:** Hello... and you are...?
-**Anaxa:** Hello. If I'm not mistaken, you are Callinicus' wife, right?
-**Woman With Gentle Expression:** Yes. Oh, are you a messenger? No wonder I haven't heard any news for so long. There's been a change in personnel, hasn't there?
-**Anaxa:** Ma'am, Callinicus passed away a few days ago defending the Grove against the black tide.
-**Woman With Gentle Expression:** ...
+**Anaxa?: ** Can't be killed in a single blow...
+**Anaxa?: ** You are indeed no ordinary human.
+**Anaxa?: ** How annoying. Children of humanity, don't waver now. Let's just destroy them one by one.
+**Anaxa?: ** Since the ambush failed, it'll be difficult to find another opportunity... What a pity.
+**Anaxa?: ** Heh, I'm about to be overwhelmed. Fighting is so much more tiring than thinking.
+**Anaxa?: ** Can't be killed in a single blow...
+**Anaxa?: ** You are indeed no ordinary human.
+**Anaxa?: ** That was tough... I'm truly exhausted.
 
 ---
 
 ### Part 4 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 4: Lamentations, Bring Not Empty Tears
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__mission-4-lamentations-bring-not-empty-tears`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** on-stage
 
-**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Visiting the Families
-
-
-> *(Trailblazer)* This is the first thing you ask after hearing of his passing...?
-**Anaxa:** Yes. He managed to protect Cerces' Coreflame at the cost of his life.
-**Woman With Gentle Expression:** I see. I'll select some of his possessions and pick a nice resting place for him.
+*(After the battle at the Grove, the group returns to Okhema with Anaxa and Cerces' Coreflame. Before seeing Aglaea, Anaxa visits the families of fallen scholars. The Trailblazer reunites with Dan Heng.)*
 
 ---
 
 ### Part 5 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Return to Okhema
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__return-to-okhema`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
-**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Visiting the Families
+**Trianne:** I feel awful... I need to go back... to get some rest...
 
+---
 
-**Woman With Gentle Expression:** I've been prepared for this for a long time... In times like these, any ordinary goodbye might just turn out to be a final farewell.
-**Anaxa:** I'm really sorry.
-**Woman With Gentle Expression:** There's nothing to be sorry for. I was once a warrior... and I'll find my way back to the battlefield someday.
+**Castorice:** Lady Trianne, you haven't been well since you woke up... Are you sure you can make it back on your own?
+
+**Anaxa:** All this noise and commotion... Okhema hasn't changed a bit, has it?
+
+**Castorice:** Are you... Professor Anaxa?
+
+**Anaxa:** There's no need for doubt. The Titan no longer speaks. It is I, Anaxagoras of the Nousporists.
+
+**Castorice:** ...Indeed. You are the only one who would refer to yourself like that.
+
+**Anaxa:** ...
+
+**Castorice:** ...Professor, let me be frank: The mission Lady Aglaea entrusted us is to search for survivors, uncover the truth about the disaster at the Grove, and... retrieve the Coreflame of Cerces.
+
+**Anaxa:** That does not surprise me. And now, I'm a survivor who witnessed the entirety of the disaster, as well as the defenseless bearer of a Coreflame.
+
+**Anaxa:** Are you going to bring me to Aglaea to fulfill your duty?
+
+**Castorice:** That is indeed my duty, but I prefer not to present you to her as a captive or spoil of battle.
+
+**Anaxa:** Fine. There's no need to make your life difficult. I'm not against meeting that woman.
+
+**Anaxa:** But I have some things to take care of first. The families of some of my fellow Grove scholars live in the holy city. Before we meet Aglaea... I want to visit them.
+
+> *(Trailblazer)* Why do you have to do it before meeting Aglaea?
+
+**Castorice:** Because Lady Aglaea... will probably be against it.
+
+**Anaxa:** Heh... Let me guess. That woman will not only prevent me from visiting the families of the deceased, but will also suppress any information about the Grove. She's always been that cold-hearted.
+
+**Anaxa:** My fellows at the Grove gave their lives defending the Coreflame and fighting the black tide alongside me. Their families... deserve to know the truth.
+
+**Castorice:** You intend to do it without her knowledge?
+
+**Anaxa:** Do you really think that woman would treat me well even if I behaved and proved my loyalty? I wouldn't mind seeing a bit more anger on her face.
+
+**Anaxa:** Are you going to stop me, Castorice?
+
+**Castorice:** ...I will accompany you, but please understand that Lady Aglaea has her own considerations.
+
+**Anaxa:** ...Heh, you truly have the makings of a fine scholar, putting yourself in other people's shoes like that.
+
+**Anaxa:** Let's go. I won't go overboard.
 
 ---
 
 ### Part 6 — `databank/missions/chapter-02-light-slips.md`
-
 **Context:** Mission 4: Lamentations, Bring Not Empty Tears > Visiting the Families
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__visiting-the-families`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
+**Castorice:** So, after all these years, you and Lady Aglaea are still...
+
+**Anaxa:** Neither of us is narrow-minded. You should know the root cause of our conflict.
+
+*(Speak to the Woman With Gentle Expression)*
+**Woman With Gentle Expression:** Hello... and you are...?
+
+**Anaxa:** Hello. If I'm not mistaken, you are Callinicus' wife, right?
+
+**Woman With Gentle Expression:** Yes. Oh, are you a messenger? No wonder I haven't heard any news for so long. There's been a change in personnel, hasn't there?
+
+**Anaxa:** Ma'am, Callinicus passed away a few days ago defending the Grove against the black tide.
+
+**Woman With Gentle Expression:** ...
+
+**Woman With Gentle Expression:** So... did he manage to defend the Grove?
+
+**Castorice:** ...Huh?
+
+> *(Trailblazer)* This is the first thing you ask after hearing of his passing...?
+
+**Anaxa:** Yes. He managed to protect Cerces' Coreflame at the cost of his life.
+
+**Woman With Gentle Expression:** I see. I'll select some of his possessions and pick a nice resting place for him.
+
+**Castorice:** ...Please let us know if you need any help, ma'am.
+
+**Woman With Gentle Expression:** I come from Kremnos. Death... and sacrifice... are things I have learned to face with composure.
+
+**Woman With Gentle Expression:** You know, Callinicus... Even though he was a scholar, he'd always ask me to teach him how to fight whenever he came back. Isn't it funny that a Chrysos Heir like him wants to learn from an ordinary person like me?
+
+**Woman With Gentle Expression:** I've been prepared for this for a long time... In times like these, any ordinary goodbye might just turn out to be a final farewell.
+
+**Anaxa:** I'm really sorry.
+
+**Woman With Gentle Expression:** There's nothing to be sorry for. I was once a warrior... and I'll find my way back to the battlefield someday.
+
+**Woman With Gentle Expression:** With the coming coronation of the new king of Kremnos, I'll take up my lance against the creatures of the black tide and seek vengeance for my husband.
+
+*(Speak to the Woman With Gentle Expression again, optional)*
+**Woman With Gentle Expression:** With the coming coronation of the new king of Kremnos, I'll take up my lance against the creatures of the black tide and seek vengeance for my husband.
 
 *(Speak to the Old Man With Slender Frame)*
 **Old Man With Slender Frame:** Hello, young ones. Is there anything I can help you with?
+
 **Anaxa:** Are you the father of Cynane and Artakama?
+
 **Old Fabio:** Ah, yes. Did my daughters cause trouble at school again...?
+
 **Old Fabio:** Alas, forgive this old brain of mine. Both of my daughters graduated long ago, and they are now scholars at the Grove. As I get older, memories from years past tend to blend together.
+
 **Anaxa:** ...
+
 **Old Fabio:** What's the matter, young one? Why so quiet? Did my daughters really get into some trouble?
 
----
+**Old Fabio:** If they refuse to apologize, just let me know. Their old dad can still talk some sense into them...
 
-### Part 7 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Visiting the Families
-
+**Castorice:** ...What should we do? I really can't tell him...
 
 > *(Trailblazer)* Don't ask me. I'm getting all teary-eyed as well...
+
 **Anaxa:** ...Mr. Fabio, the black tide... took Cynane and Artakama.
+
 **Old Fabio:** ...What?
+
 **Anaxa:** ...They fought until their last breath against the black tide to defend the Grove.
+
 **Old Fabio:** ...
+
 **Anaxa:** As the Chrysos Heir stationed at the Grove, I failed to protect them. Mr. Fabio, if you're upset...
+
 **Old Fabio:** ...Don't put it that way. Even if my Artakama wasn't one of the Chrysos Heirs mentioned in the prophecy, she was still a heroine, wasn't she?
 
----
+*(Speak to the Old Man With Slender Frame again, optional)*
+**Old Fabio:** ...
 
-### Part 8 — `databank/missions/chapter-02-light-slips.md`
+*(Speak to the Young Man)*
+**Young Man:** What's wrong? I'm busy. There's a lot going on in the city, and I've got my hands full...
 
-**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Visiting the Families
-
+**Castorice:** Mister, we're sorry to bother you, but...
 
 **Young Man:** ...Wait, Lady Castorice? Did Lady Aglaea send you because of some mistake I made at work?
+
 **Anaxa:** Keep your cool, Titus. I'm Anaxagoras from the Grove of Epiphany and a colleague of your father, Old Titus.
+
 **Anaxa:** A few days ago... your father passed away.
+
 **Titus:** Wait, what? My old man died?
 
----
+**Titus:** ...
 
-### Part 9 — `databank/missions/chapter-02-light-slips.md`
+**Titus:** Heh... That's no shocker. At his age, he was due for the River of Souls any time.
 
-**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Visiting the Families
+> *(Trailblazer)* How can you say that!? He's your...
 
+**Titus:** Heh... Just up and left me behind, that old man...
+
+**Titus:** I've been telling him for ages to stay in the holy city and enjoy his retirement. But no, he just had to go off to that Grove and mess around with those scholars.
+
+**Titus:** Still wouldn't budge after all those arguments... That stubborn old thing!
+
+**Titus:** I already got him a retirement home and was waiting for him to come around... All my effort is wasted now, and he didn't even give me a chance to say goodbye...
+
+**Titus:** ...That bullheaded old man! Stubborn as a mule!
 
 *(Speak to the Young Man again, optional)*
 **Titus:** ...That bullheaded old man! Stubborn as a mule!
+
 *(After speaking to all three families)*
 **Anaxa:** That is it. That's all the colleagues' families that I remember.
+
 > *(Trailblazer)* Those who sacrificed their lives and their families are truly admirable.
+
 **Castorice:** Good work, (Trailblazer) and... Professor Anaxa.
+
 **Anaxa:** Let's go. Take me to see Aglaea.
+
 **Castorice:** Alright... I'll lead the way.
 
 ---
 
-### Part 10 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 7 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 4: Lamentations, Bring Not Empty Tears > Report Back to Aglaea
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__report-back-to-aglaea`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
+**Castorice:** Hello. We have an important matter to discuss with Lady Aglaea. May we trouble you to inform her of our presence?
 
 **Guard:** My apologies, Miss Castorice... Lady Aglaea has just informed me that she has no time to receive anyone at the moment.
+
 **Anaxa:** Hmph, that's just great. She refuses to even see me.
+
 **Anaxa:** Answer me this, friend. Did Aglaea order you to take me directly to prison?
+
 **Guard:** Who... are you?
 
 ---
 
-### Part 11 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 8 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 4: Lamentations, Bring Not Empty Tears > Speak with Castorice and Anaxa
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__speak-with-castorice-and-anaxa`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 **Anaxa:** It's fortunate we don't have to confront that woman while I'm hauling around this sick body. Castorice, and this friend I haven't gotten the chance to know — I'll take my leave for today.
+
 **Anaxa:** That Titan made a myriad of adjustments on their own... My head still aches from that. I don't want to stay a second longer in this noisy city if I can.
+
 **Castorice:** Please be careful. Okhema isn't the Grove. This place...
+
 **Anaxa:** ...Is covered by her golden threads, I know. That woman is extremely confident I won't escape her grasp.
+
 **Anaxa:** Don't worry. As I said before, I'll mind my behavior.
 
 ---
 
-### Part 12 — `databank/missions/chapter-02-light-slips.md`
+**Castorice:** (Trailblazer), so many unexpected things happened on our journey to the Grove... We truly had no intention of putting you in danger, let alone face the black tide head on...
 
+---
+
+### Part 9 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 6: Passages, Knocking Echoes in Dreams > Observe Phainon Conversing with Anaxa
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__observe-phainon-conversing-with-anaxa`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 *(At the same time, somewhere in Okhema)*
+
 **Anaxa:** ...
+
 **Phainon:** Long time no see, Professor Anaxa.
+
 **Anaxa:** Who are you?
+
 **Phainon:** It's been a while. I'm the one who once overthrew the entire classroom in that spiritual physics lecture.
+
 **Anaxa:** Oh, it's you.
+
 **Phainon:** No way... Do you really still remember that, professor?
+
 **Anaxa:** I remember that glib tongue of yours. What brings you here? Surely you're not looking to reminisce.
+
 **Phainon:** You could tell?
+
 **Anaxa:** Of course. You only beat around the bush when you have a hidden agenda.
+
 **Phainon:** That's not true. I'm here to seek enlightenment, as always...
+
 **Phainon:** Could you please teach me everything you know about the black-robed swordmaster?
+
 **Anaxa:** Hmph. Rumors sure travel fast.
+
 **Anaxa:** Unfortunately I, too, know nothing about it. I can only tell you that it is clad in a black robe and wields a greatsword... At least, it looks like a greatsword. It's shaped like a twisted half-sun...
+
 **Anaxa:** And a peculiar dagger resembling a crescent moon.
+
 **Phainon:** ...
+
 **Anaxa:** By the way, take this with you—
+
 **Anaxa:** I got it from the sneak attack. It's yours now.
+
 **Phainon:** ...
+
 **Phainon:** I was right... It is this thing. The one who torched Aedes Elysiae to the ground... and killed everyone.
+
 **Anaxa:** Don't try to be a hero. No one in Okhema stands a chance against that thing right now.
+
 **Phainon:** Is that what the Titan said as well?
+
 **Anaxa:** Hmph, not at first. But the god relented after having had a taste of its power. Even with a god possessing me, I couldn't fight against that blade...
+
 **Anaxa:** That incredible power doesn't seem to be granted by any Titan.
+
 **Phainon:** Are you suggesting that... it originates from beyond Amphoreus?
+
 **Anaxa:** It's possible. Much like the black tide, no?
+
 **Phainon:** ...Nonetheless, it's an enemy we must overcome.
+
 **Anaxa:** We? Drop the pipe dream, Phainon. No one wants to see you fall by their blade.
+
 **Phainon:** His mere presence will endanger the holy city and the Flame-Chase.
+
 **Anaxa:** You know that I don't believe—
+
 **Phainon:** —You don't believe in the so-called prophecy. I know. However, I'm here to seek your assistance, not at the request of Aglaea or Tribbie...
+
 **Phainon:** I just want to eliminate a threat to the city I pledged to protect. That's all. The tragedy at the Grove must never happen again.
+
 **Anaxa:** ...
+
 **Anaxa:** Take a seat. Since you are sincerely seeking enlightenment...
+
 **Anaxa:** I suppose I can tell you one more thing.
 
 ---
 
-### Part 13 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 10 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 6: Passages, Knocking Echoes in Dreams > Keep Observing Phainon Conversing with Anaxa
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__keep-observing-phainon-conversing-with-anaxa`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
+*(Not long ago, in Okhema)*
 
 **Phainon:** Are you saying that the black-robed swordmaster is not just tied to the black tide... but is also hunting for Coreflames everywhere?
+
 **Anaxa:** This is the most plausible possibility. First, it has a vessel that can hold Coreflames. Second, I'm one of its targets.
+
 **Anaxa:** Let's start with the first premise. Its peculiar "ceremonial blade" can interact with the Coreflame, as evidenced by the pull I felt when it stabbed into my chest. I hypothesize that the blade can sense, absorb... or even retain Coreflames.
+
 **Anaxa:** The second premise is even more explicit. When it was engaged in fierce battle with many of us and was heavily distracted, it remained consistently focused on me — or rather, on the Titan Cerces inside me.
+
 **Phainon:** Heh, so it's plundering the flames...
+
 **Phainon:** But if your argument holds up, wouldn't he be headed to Okhema soon? The Vortex of Genesis is full of the Titans' Coreflames.
+
 **Anaxa:** Not necessarily. Let's call that person the "Flame Reaver" for now. If my presumption holds, that person has three targets.
+
 **Anaxa:** The first target is me. The second target is Oronyx, who hasn't yet fallen. And the third is Okhema and the Vortex of Genesis, where the Coreflames are housed.
+
 **Anaxa:** But I suspect Okhema won't be their first target. Kephale's Coreflame is guarded by the Council of Elders' arcane power, and Phagousa's water curtain should be able to block out any external perceptions.
+
 **Phainon:** What about Thanatos and Aquila? Their Coreflames are yet to be restored...
+
 **Anaxa:** The whereabouts of Thanatos remain a mystery to all. As for Aquila...
+
 **Anaxa:** Can you fly?
+
 **Phainon:** No, I can't. Why are you asking that?
+
 **Anaxa:** Can that swordmaster fly?
+
 **Phainon:** ...Ah, good point. But what if he does grow wings...
+
 **Anaxa:** If they had wings, I wouldn't have made it out of the Grove alive.
+
 **Phainon:** That's a relief. Anyway, since the Flame Reaver has two targets, we need to move fast...
+
 **Anaxa:** With the distances between Okhema, the Grove, and these potential targets, I believe we should bolster our defense in...
+
 **Dan Heng:** Bad news, Phainon—
 
 ---
 
-### Part 14 — `databank/missions/chapter-02-light-slips.md`
+### Part 11 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 7: Nemesis, Scorched by Golden Blood > The War Council
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__the-war-council`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** on-stage
 
-**Context:** Mission 7: Nemesis, Scorched by Golden Blood > The Battle of Castrum Kremnos
-
-
-*(Cutscene: Mem opens the passage. The Flame Reaver is dragged into the past. Anaxa seizes the Coreflame.)*
-**Anaxa:** Finally.
-**(Trailblazer):** Mem... It's all yours!
+*(Phainon outlines Anaxa's plan: lure the Flame Reaver to Castrum Kremnos, use Oronyx's power to open a passage to the past, and seal the Flame Reaver in the Maze of Time.)*
 
 ---
 
-### Part 15 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 12 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 7: Nemesis, Scorched by Golden Blood > The Battle of Castrum Kremnos
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__the-battle-of-castrum-kremnos`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
+**Tribbie:** Once we take back the Coreflame, Janus' passage will open. When that happens, you must evacuate immediately. Don't stay behind.
+
+**Phainon:** Let's go, partner! Today, destiny shall stand with us!
+
+*(Cutscene: Mem opens the passage. The Flame Reaver is dragged into the past. Anaxa seizes the Coreflame.)*
+
+**Anaxa:** Finally.
+
+**(Trailblazer):** Mem... It's all yours!
+
+**Mem:** Mem~
+
+**Phainon:** Repent in the memories of the dead — Executioner!
 
 *(Battle begins. Phase 1: The Flame Reaver is strong. At 10% HP, Tribbie opens the Century Gate.)*
+
 **Anaxa:** At long last!
+
 **Tribbie:** Century gate... Open!
 
 ---
 
-### Part 16 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 13 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 9: Passage, Reveal the Past Once More > Epilogue: Anaxa and Cerces
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__epilogue-anaxa-and-cerces`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 **Anaxa:** Hehe...
+
 **Cerces:** Child of humanity, surely you are not waiting for the arrival of night?
+
 **Anaxa:** Nights do not fall upon Okhema.
+
 **Cerces:** That's why it's futile for you to wait here.
+
 **Cerces:** There's not much left in your soul. If you don't do something soon, I will have to take over this body.
+
 **Anaxa:** If I'm not worried, why should you be? I know what you're planning. You just want my help answering the question — "What exactly are 'we'?" Correct?
+
 **Cerces:** It's good that you remember. Thus, "equivalent exchange" — it's only fair.
+
 **Anaxa:** Then, rest easy. The answer will soon be revealed, and you'll have to return my body shortly. ...Regrettably... I can't carry out the upcoming experiment alone.
+
 **Cerces:** The girl who's walking with death... is she fully prepared?
+
 **Anaxa:** Be patient, Titan... If we're always so guarded, how can "Death" reach us easily?
+
 **Aglaea (appearing):** Unfortunately, on behalf of Okhema, I must ask you to slow your pace.
+
 **Anaxa:** Heh... I forgot about you. My apologies.
+
 **Aglaea:** A child's words are always carefree. I'll just dismiss these words as nonsense from a cheeky child. Come now, conceited "performer." It's time to address your relationship with that Titan.
+
 **Cerces:** Eh... Do you two mind if I cut in? Ahh. I just have been meaning to ask: Does death really matter to you?
+
 **Anaxa:** ...What do you mean?
+
 **Cerces:** What I mean is, before I implanted the Coreflame into your heart... **...you were already a silent, cold corpse.**
 
 ---
 
-### Part 17 — `databank/missions/chapter-03-through-petals.md`
+### Part 14 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Discuss Next Steps with Aglaea and the Others
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__discuss-next-steps-with-aglaea-and-the-others`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** on-stage
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Meet with the Council of Elders's Messenger
+*Switching to Anaxa's POV...*
 
+---
+
+### Part 15 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Meet with the Council of Elders's Messenger
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__meet-with-the-council-of-elders-s-messenger`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Not long ago...)*
+
 **Anaxa:** Hehe...
 **Anaxa:** I'm back here again.
 *(narrative)* I remember this dream. This realm is covered in a silk-like fog, and the land is barren and harsh. The crowd of travelers leaves tracks everywhere.
@@ -336,10 +585,10 @@
 
 ---
 
-### Part 18 — `databank/missions/chapter-03-through-petals.md`
+**???: ** Child of humanity...
+**???: ** ...is it death's embrace you yearn for with such urgency?
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Meet with the Council of Elders's Messenger
-
+---
 
 **Anaxa:** ...!
 **Cerces:** Oh, you have awoken. Welcome back to the mortal realm.
@@ -359,16 +608,15 @@
 
 ---
 
-### Part 19 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Meet with the Council of Elders's Messenger
-
-
 *(Now, the Coreflame of Cerces resides in your chest, which means that Aglaea will eventually extract it for the Flame-Chase Journey. It's easy to guess what will happen to you, who the Coreflame had revived. To survive, and to seek, you need to find a power that can protect you and combat Aglaea and others — The messenger from Council of Elders has been waiting for you for a long time.)*
+
 **Cerces:** You truly are a strict teacher.
 **Anaxa:** Of course. This is how I've always been.
+
 *(Enter the Garden of Life)*
+
 **???: ** Sorry to keep you waiting, Lord Anaxagoras.
+
 *(Approach Lygus)*
 **???: ** It's been a while, Lord Anaxagoras.
 **???: ** I greet you on behalf of all the citizens of Okhema and express my deepest regret about what happened at the Grove of Epiphany.
@@ -389,12 +637,17 @@
 
 ---
 
-### Part 20 — `databank/missions/chapter-03-through-petals.md`
+### Part 16 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Follow Lygus and Head to Dawncloud
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__follow-lygus-and-head-to-dawncloud`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Follow Lygus and Head to Dawncloud
-
+*(The Council of Elders dispatched a messenger, as you anticipated, to escort you to Dawncloud before Aglaea could make her move. Here, you will be under the Elders' protection. There's still some time before the Messenger returns. Take a stroll around here, and let the curious Cerces, who resides in your mind, calm down a bit.)*
 
 **Lygus:** She's been waiting. Follow me, please.
+
 *(Approach the marked location)*
 **Anaxa:** ...
 **Lygus:** Is there something on your mind, Lord Anaxagoras?
@@ -416,10 +669,11 @@
 
 ---
 
-### Part 21 — `databank/missions/chapter-03-through-petals.md`
+*(Cutscene begins)*
+**Lygus:** Please, professor.
+*(Cutscene ends)*
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Follow Lygus and Head to Dawncloud
-
+---
 
 **Cerces:** Heh... The children of humanity have indeed created a spectacle.
 **Lygus:** Welcome to Dawncloud. The atmosphere here carries a greater sense of solemnity than the mundane clamor of the Marmoreal Palace, with entry permitted only to the invited.
@@ -432,11 +686,6 @@
 
 ---
 
-### Part 22 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Follow Lygus and Head to Dawncloud
-
-
 **Cerces:** Alas... I had hoped for a brilliant plan from you, but it turns out you just left one cage to enter another.
 **Anaxa:** Save your concerns. I know very well what I'm doing.
 **Cerces:** Hehe, I shall depart to explore the surroundings, then.
@@ -448,14 +697,13 @@
 
 ---
 
-### Part 23 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Walk Around Before the Messenger Arrives
+### Part 17 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Walk Around Before the Messenger Arrives > Talk to the Young Scribe
+**Kind:** personal
+**Id:** `chapter-03-through-petals__walk-around-before-the-messenger-arrives-2`
 
-
-*(Approach the Young Scribe)*
-**Young Scribe:** Professor Anaxa...
-**Young Scribe:** Over here...
 *(Talk to the Young Scribe)*
 **Young Scribe:** Professor Anaxa? Word has it that the scholars of the Grove valiantly perished resisting the black tide. To find you here safe and sound... Thank the fates!
 **Anaxa:** You could say it's the fates toying with us.
@@ -473,14 +721,17 @@
 
 ---
 
-### Part 24 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Walk Around Before the Messenger Arrives
-
-
 *(Approach the Wizened Priest)*
 **Wizened Priest:** Hmph, even blasphemous scholars can come here, it seems?
 **Anaxa:** Looks like my presence here is quite unwelcome.
+
+---
+
+### Part 18 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Walk Around Before the Messenger Arrives > Talk to the Wizened Priest
+**Kind:** personal
+**Id:** `chapter-03-through-petals__walk-around-before-the-messenger-arrives-3`
+
 *(Talk to the Wizened Priest)*
 **Wizened Priest:** Hah, Anaxagoras? I thought that you had died to the black tide, just like the other scholars.
 **Anaxa:** As Kephale's priest, are you not aware of the decorum of respecting the dead?
@@ -498,15 +749,29 @@
 
 ---
 
-### Part 25 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Listen to Cerces's Evaluations of Their Murals
-
+### Part 19 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Listen to Cerces's Evaluations of Their Murals
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__listen-to-cerces-s-evaluations-of-their-murals`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(The Council of Elders dispatched a messenger, as you anticipated, to escort you to Dawncloud before Aglaea could make her move. Here, you will be under the Elders' protection. Will Cerces be curious about how they've been portrayed?)*
+
 **Anaxa:** (I've had enough of this... Could the 15th Entry Hour arrive any faster?)
+
 *(Approach Cerces)*
 **Cerces:** Oh my! Could it be that the Great Tree painted in this mural... is actually depicting me?
+
+---
+
+### Part 20 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Listen to Cerces's Evaluations of Their Murals > Talk to Cerces
+**Kind:** personal
+**Id:** `chapter-03-through-petals__listen-to-cerces-s-evaluations-of-their-murals-2`
+
 *(Talk to Cerces)*
 **Debating Scholar:** Every plant, every tendril, no, even every leaf could be the embodiment of Cerces...
 **Debating Scholar:** As a result, mere mortals who did not know what the Titan actually looked like chose to paint them as a giant tree instead. Their wisdom was portrayed as fruit to symbolize how they shared their knowledge equally among the masses... Such exquisiteness indeed!
@@ -543,11 +808,6 @@
 
 ---
 
-### Part 26 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Listen to Cerces's Evaluations of Their Murals
-
-
 *(Screen fades to black)*
 **Empedocles:** Anaxa, you...
 **Anaxa:** I did it, teacher.
@@ -573,11 +833,6 @@
 
 ---
 
-### Part 27 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Listen to Cerces's Evaluations of Their Murals
-
-
 **Cerces:** Hmm... Who would have thought such a secret lay concealed beneath that hefty eye patch of yours?
 **Cerces:** However, this story doesn't seem to be connected to your plan... In fact, I'd say that they aren't related at all?
 **Anaxa:** The answer lies within my tale. If even you cannot understand it, perhaps you should relinquish the divinity of Reason to me? After all, it'd be a waste for you to hold onto it.
@@ -597,10 +852,17 @@
 
 ---
 
-### Part 28 — `databank/missions/chapter-03-through-petals.md`
+**Cerces:** Kephale, the one who created the world, and the one who bears the world...
+**Cerces:** If you truly have not met your end... how will you answer the challenges of those who defy you?
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Cross Through Janus' Hidden Passage
+---
 
+---
+
+### Part 21 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Cross Through Janus' Hidden Passage
+**Kind:** personal
+**Id:** `chapter-03-through-petals__cross-through-janus-hidden-passage`
 
 *(Approach the Hidden Passage)*
 **Mocking Scholar:** Isn't that the "dromas draped in finery"?
@@ -611,10 +873,12 @@
 
 ---
 
-### Part 29 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Follow the Messenger and Meet with Elder Caenis
-
+### Part 22 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Follow the Messenger and Meet with Elder Caenis
+**Kind:** personal
+**Id:** `chapter-03-through-petals__follow-the-messenger-and-meet-with-elder-caenis-2`
 
 *(After traveling through the Hidden Passage)*
 **Stern Councilor:** A student of Empedocles? I hear that his views run counter to the Venerationists.
@@ -628,11 +892,14 @@
 **Anaxa:** You're really searching through my brain? What are you treating it as, some sort of toy?
 **Cerces:** Regardless, you think quite highly of her, no?
 **Anaxa:** That's because I'm a teacher who grades everyone fairly.
+
 *(Approach the marked location)*
 **Military Runner:** Lord Lygus and Lady Caenis are just ahead.
 **Military Runner:** I'll take my leave for now.
+
 *(Approach Lygus)*
 **Lygus:** Welcome to the Demigod Council, esteemed guests.
+
 *(Approach Caenis)*
 **Caenis:** Lord Anaxagoras! I've heard so much about you...
 **Caenis:** Head of the Nousporists of the Grove of Epiphany, notorious blasphemer, a Chrysos Heir who bears Cerces' Coreflame, a survivor of the Grove calamity...
@@ -644,11 +911,6 @@
 **Caenis:** Everyone, stand down.
 
 ---
-
-### Part 30 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Follow the Messenger and Meet with Elder Caenis
-
 
 **Anaxa:** Thank you for understanding. I am but a feeble scholar who is not used to the stench of avarice and blood.
 **Caenis:** No need to be humble, my lord. From my perspective, your courage and gumption are worthy of the reputation of the Seven Sages. Your bravery is more than adequate to accomplish our perilous endeavor.
@@ -662,22 +924,27 @@
 
 ---
 
-### Part 31 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Keep Following Caenis
+### Part 23 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Keep Following Caenis
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__keep-following-caenis`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-
-*(The Council of Elders dispatched a messenger, as you anticipated, to escort you to Dawncloud before Aglaea could make her move. Here, you will be under the Elders' protection. Caenis is like a cunning snake. Gaining her trust will not be easy.)*
 **Caenis:** I was fortunate enough to have the opportunity to discuss a treatise about the Venerationists with your teacher, Empedocles.
 **Caenis:** Yet, it seems you subscribe to the Nousporists instead, Lord Anaxa? I've heard that this school of thought is one with many detractors.
 **Anaxa:** It's normal for ideas to have supporters and dissenters, just like how there are two types of people in this world — geniuses and dimwits.
 
 ---
 
-### Part 32 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Speak with Caenis
-
+### Part 24 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Speak with Caenis
+**Kind:** personal
+**Id:** `chapter-03-through-petals__speak-with-caenis`
 
 **Caenis:** Welcome back to the hub of the Demigod Council, Lord Anaxagoras.
 **Caenis:** Surely you remember that countless eloquent orators have stood in this spot before and emerged victorious by stoking public sentiment with their words. And yet, there have also been innumerable blasphemous philosophers who set themselves up for failure because they refused to defend their actions.
@@ -696,6 +963,7 @@
 **Anaxa:** Talk is cheap, so you'd better act prudently as well.
 **Caenis:** I understand. After all, this battle of wits is just a means for each party to acquire what they need. As long as your request is reasonable, the Council of Elders never shortchanges its allies. Since we're both intent on mutual cooperation, let's not mince words and just speak plainly to each other...
 **Caenis:** Let us decide how much we can secure for ourselves and how much we're willing to sacrifice, like true philosophers — with our words and wisdom.
+
 > *(Trailblazer)* Let's begin, then.
 > *(Continues to next step)*
 > *(Trailblazer)* I need some more time.
@@ -704,25 +972,28 @@
 
 ---
 
-### Part 33 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Speak with Caenis and Form an Alliance
-
+### Part 25 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Speak with Caenis and Form an Alliance
+**Kind:** personal
+**Id:** `chapter-03-through-petals__speak-with-caenis-and-form-an-alliance`
 
 **Caenis:** Continuing from the earlier topic, let us discuss our common enemy: Aglaea.
 **Caenis:** She is the second-most experienced Chrysos Heir across the whole of Okhema, who has gradually lost her humanity to the ravages of time and the ablation of the Coreflame... A formidable opponent indeed.
 **Caenis:** Admittedly, there is ample reason for her to take your life. Yet, your previous reasoning is quite sound. As a seasoned political animal, it's unclear whether she will actually cross that irreversible boundary. Moreover, she still needs you alive so that the Titan's trial can be completed...
 **Caenis:** Is there anyone present who can swear by the sacred vow of Kephale and guarantee that you weren't in league with that woman before coming here? Are you just trying to pull the wool over our eyes and aid her in her savagery?
+
 > *(Trailblazer)* She is prepared to execute me.
 > **Anaxa:** I believe you're aware of Castorice the executioner. Long before I returned to Okhema, Aglaea had already dispatched her to monitor me. If I weren't able to reach this place in time, I would have been forced to meet Thanatos first.
 > **Anaxa:** As compared to a comprehensive plan with uncertain results, if you decide to cut open my chest and remove the Coreflame, wouldn't that settle her nerves even more? Everything is in place — she just needs the right timing.
 > *(Trailblazer)* She just needs vassals who will do her bidding without question.
 > **Anaxa:** If Aglaea required a suitably intelligent Chrysos Heir, then I'm the best fit for her needs. However, it's quite evident that she has no need for a Chrysos Heir who could break free of her control at any time.
 > **Anaxa:** Since I believe in neither Titans nor the prophecy, there's no way that I would willingly walk on the path that she extols. Given how rigorously she enforces her principles, how would she ever accept a heretic such as me?
+
 **Caenis:** Hah... I understand what you mean.
 **Caenis:** At the very least, the both of us agree that this tyrant who wallows in extravagance and greed is the greatest threat to achieving peace in Okhema. The Council of Elders is willing to defend your right to live, just as we defend every oppressed citizen.
 **Caenis:** However, I regret to say that sentiments in favor of the Chrysos Heirs and Aglaea are only growing in magnitude. The peace that we are aspiring toward, as well as everything that we hold dear, will be destroyed completely. The city will be burned to ashes and the citizens' blood will be shed...
 **Caenis:** Tell me, what are you willing to do for our esteemed citizens so that they can vanquish the enemies of our fine city?
+
 > *(Trailblazer)* Garnering my support is equivalent to garnering the support of the entire Grove.
 > **Anaxa:** Although the circumstances are rather unfortunate, from an objective point of view, it is an undeniable fact that ever since the Grove was attacked, I have become the de facto leader of the Grove.
 > **Anaxa:** The Council of Elders needs more backing if it wishes to topple Aglaea and it's evident that the academy wields considerable influence.
@@ -731,11 +1002,14 @@
 > **Anaxa:** Aglaea's authoritarianism, conceit, and arrogance have granted her unfettered control for the most part. Yet, these traits are also her greatest weakness. If I can render her helpless by forcing her to experience the agonizing pain of betrayal, I am certain she will never recover from such a setback.
 > **Caenis:** Heh, surely you don't believe that such a tiny betrayal will be enough to push her to her wits' end?
 > **Anaxa:** What's more, there are many who remain silent, merely watching to see how much chaos I can unleash... Not to mention, you know full well that the Chrysos Heirs have never been a united front.
+
 **Caenis:** In the name of Kephale, Okhema thanks you for your sincere and valuable thoughts.
 **Caenis:** At this stage, it's clear that you and I understand the benefits to be won from this discussion. Let me put it plainly: The Council of Elders has always been renowned for its fairness, and that fairness is built on a foundation of sincerity...
 **Caenis:** The Council of Elders has vowed to all citizens of Okhema that it will always remain loyal to them. As for you, my lord, how will you guarantee that you will be able to live up to such earnestness and will not betray Okhema's indomitable citizens when the opportunity presents itself, just as you now betray Aglaea when it suits you?
+
 > *(Trailblazer)* How absurd. My loyalty is unquestionable.
 > **Anaxa:** Hmph, surely you jest. My loyalty does not need to be proven. The fact that the Council of Elders is asking for proof of my loyalty is itself akin to a form of betrayal.
+
 **Caenis:** Huh...
 **Lygus:** I am incredibly honored to have witnessed the both of you bury the hatchet in a civilized manner. However, I'm afraid that I must interrupt for a brief moment...
 **Lygus:** As the Theoros, I have observed the following: Lady Aglaea, the Goldweaver, is currently on her way to Dawncloud.
@@ -759,11 +1033,6 @@
 
 ---
 
-### Part 34 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Speak with Caenis and Form an Alliance
-
-
 **Cerces:** Ah, I've got to say that you've managed to really impress me again. But... shouldn't you be going after more?
 **Anaxa:** Dying to know what I'm after, huh?
 **Cerces:** I mean... I'm the Reason Titan, after all. It is in me to ask and seek answers.
@@ -773,12 +1042,15 @@
 
 ---
 
-### Part 35 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Speak with Lygus
-
+### Part 26 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Speak with Lygus
+**Kind:** personal
+**Id:** `chapter-03-through-petals__speak-with-lygus`
 
 *(You reached out for protection and successfully gained Caenis's trust, forming an alliance with the Council of Elders. "Seeking protection" — what a perfect excuse, enough to convince you, the Council, and the Chrysos Heir of its legitimacy. Unfortunately... the real reason you came here was something else entirely— This requires the help of "Theoros" Lygus.)*
+
 *(Approach Lygus)*
 **Lygus:** ...An expected visitor. Welcome, once again.
 **Lygus:** You know, you could actually skip all the pointless debate and come straight to me to **seek an audience with Kephale**.
@@ -795,15 +1067,18 @@
 
 ---
 
-### Part 36 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Keep Following Lygus
-
+### Part 27 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Keep Following Lygus
+**Kind:** personal
+**Id:** `chapter-03-through-petals__keep-following-lygus`
 
 **Lygus:** A bygone myth tells of an occasion where Kephale once answered their followers' questions on the peak of the holy mountain.
 **Lygus:** Their followers have since believed that scaling this Titan cliff is one way of being with the god.
 **Cerces:** Hear that? It's not every day that you get to climb a mountain with Cerces. You should sing me a hymn of praise.
 **Anaxa:** ...Titan hymns are beyond me.
+
 *(Upon reaching the destination)*
 **Lygus:** Go on ahead. Take this **"Janus shortcut"** and the long pilgrimage stairway will be waiting for you at its end.
 **Anaxa:** I have to admit I never expected you to not ask me anything, not even my motive.
@@ -815,12 +1090,15 @@
 
 ---
 
-### Part 37 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Walk with the Divine and Ascend the Titan Cliff
-
+### Part 28 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Walk with the Divine and Ascend the Titan Cliff
+**Kind:** personal
+**Id:** `chapter-03-through-petals__walk-with-the-divine-and-ascend-the-titan-cliff`
 
 *(The Titan Cliff — the closest one can get to Kephale's mystic body in all of Amphoreus. You have been planning to seek an audience with the Worldbearing Titan. To walk with the gods, and ascend the holy mountain.)*
+
 *(Cross through Janus' Hidden Passage)*
 **Anaxa:** Honestly, this is my first time going up to Dawncloud's peak...
 **Cerces:** What a splendid view... Isn't it about time you recognized the magnificence of us Titans?
@@ -844,12 +1122,15 @@
 
 ---
 
-### Part 38 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Continue Climbing the Mountain and Investigate the Phantoms That Appeared When the Soul Left the Body
-
+### Part 29 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Continue Climbing the Mountain and Investigate the Phantoms That Appeared When the Soul Left the Body
+**Kind:** personal
+**Id:** `chapter-03-through-petals__continue-climbing-the-mountain-and-investigate-the-phantoms-that-appeare`
 
 *(The Titan Cliff — the closest one can get to Kephale's mystic body in all of Amphoreus. You have been planning to seek an audience with the Worldbearing Titan. Your body climbs the Sacred Path of Dawncloud, but your soul lingers at the shores of River of Souls... The souls along the mountain path — what do they want to tell?)*
+
 *(Approach the mysterious "souls")*
 **???: ** Oh? Why didn't you bring your favorite spear with you on this trip, Gnaeus?
 **Anaxa:** (Gnaeus? I know I've heard this name somewhere...)
@@ -864,30 +1145,20 @@
 
 ---
 
-### Part 39 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Continue Climbing the Mountain and Investigate the Phantoms That Appeared When the Soul Left the Body
-
-
 **Anaxa:** ...
 **Anaxa:** (This is a... departed spirit...?)
 
 ---
 
-### Part 40 — `databank/missions/chapter-03-through-petals.md`
+*(Offer greetings to Kephale, optional)*
+*(narrative)* This is a pilgrimage platform dedicated to devout believers. But you, Anaxagoras, never kneel to false gods.
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Continue Climbing the Mountain and Investigate the Phantoms That Appeared When the Soul Left the Body
-
+---
 
 *(Approach the mysterious "souls" again)*
 **Anaxa:** Hah, you two again...
 
 ---
-
-### Part 41 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Continue Climbing the Mountain and Investigate the Phantoms That Appeared When the Soul Left the Body
-
 
 **Gnaeus:** Enough about me. Did Khaos ever reply to you?
 **???: ** Ahh, well, regrettably...
@@ -908,30 +1179,15 @@
 
 ---
 
-### Part 42 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Continue Climbing the Mountain and Investigate the Phantoms That Appeared When the Soul Left the Body
-
-
 **Anaxa:** I'm fine...
 **Anaxa:** If this is indeed as I thought... then this will be very amusing.
 
 ---
 
-### Part 43 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Continue Climbing the Mountain and Investigate the Phantoms That Appeared When the Soul Left the Body
-
-
 *(Approach the mysterious "souls" again)*
 **Anaxa:** So, we meet again... I'm sure you wouldn't mind a snooping ear?
 
 ---
-
-### Part 44 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Continue Climbing the Mountain and Investigate the Phantoms That Appeared When the Soul Left the Body
-
 
 **???: ** Hngh... Ugh...
 **Gnaeus:** Can you keep going?
@@ -949,21 +1205,28 @@
 
 ---
 
-### Part 45 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Continue Your Climb and Have an Audience with Kephale's Divine Vessel
-
+### Part 30 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 2: Olive, Cast to the Conference Chair > Continue Your Climb and Have an Audience with Kephale's Divine Vessel
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__continue-your-climb-and-have-an-audience-with-kephale-s-divine-vessel`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(The Titan Cliff — the closest one can get to Kephale's divine vessel in all of Amphoreus. You have been planning to seek an audience with the Worldbearing Titan. Time to discover what lies ahead.)*
+
 **Anaxa:** They're gone?
 **Anaxa:** (Hmph. Doesn't matter... I can do this myself.)
 **Anaxa:** (Looks like I'm nearly there now... The land of the dead.)
+
 *(Continue along the marked path)*
 **Cerces:** "O beautiful old world, where are you now?"
 **Cerces:** "O legendary Era Chrysea, return to the mortal realm!"
 **Cerces:** "Splendid gods once walked the paths we walk."
 **Cerces:** "Alas, all that's left of that warmth is a hazy mirage."
 **Anaxa:** ...Why are you chanting that too?
+
 *(Upon reaching the marked location)*
 **Anaxa:** We're here, finally. So, I don't get to ask the Titan my question, but all of you make for a pleasant surprise, nonetheless.
 **Anaxa:** Very well, then. Let me uncover the truth for myself...
@@ -974,11 +1237,6 @@
 
 ---
 
-### Part 46 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 2: Olive, Cast to the Conference Chair > Continue Your Climb and Have an Audience with Kephale's Divine Vessel
-
-
 **Anaxa:** So, I'm back here again...
 **Anaxa:** This is...
 *(narrative)* I can hear it.
@@ -988,12 +1246,41 @@
 
 ---
 
-### Part 47 — `databank/missions/chapter-03-through-petals.md`
+**Gnaeus:** Tsk...
 
-**Context:** Complete Dialogue > Sub-Mission 3: Papyrus, Read the Blasphemer's Will > Have an Audience with Kephale's Divine Vessel, and Prepare for Transmutation
+---
 
+### Part 31 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 3: Papyrus, Read the Blasphemer's Will > Head to the Library of Philia
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__head-to-the-library-of-philia`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** on-stage
+
+*(Head to the Library of Philia with Hyacine to collect documents for the data bank and expand our understanding of Amphoreus. Anaxagoras, who survived the tragedy in the Grove, remains a mystery.)*
+
+---
+
+### Part 32 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 3: Papyrus, Read the Blasphemer's Will > Search for the Materials Left by Anaxa
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__search-for-the-materials-left-by-anaxa`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** on-stage
+
+*(Head to the Library of Philia with Hyacine to collect materials for the data bank and expand our understanding of Amphoreus. Look for documents related to Anaxagoras.)*
+
+---
+
+### Part 33 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 3: Papyrus, Read the Blasphemer's Will > Have an Audience with Kephale's Divine Vessel, and Prepare for Transmutation
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__have-an-audience-with-kephale-s-divine-vessel-and-prepare-for-transmutat`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(You had a feeling that getting close to Kephale would reveal unexpected truths. Indeed, as one of the living dead, you can perceive "precious memories" that others cannot. Now, prepare for transmutation.)*
+
 **Anaxa:** Sir, this sky above us... It's not real, is it?
 **Empedocles:** Of course not. This is just an image from a projection device used for educational purposes. A simple trick.
 **Empedocles:** The day-night cycle has been lost to this world. So that students like you may still learn about the night sky, astronomers have harnessed the Titans' miraculous power to manipulate the light, projecting the "nights of the past" here for you.
@@ -1016,11 +1303,6 @@
 
 ---
 
-### Part 48 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 3: Papyrus, Read the Blasphemer's Will > Have an Audience with Kephale's Divine Vessel, and Prepare for Transmutation
-
-
 *(Screen changes to Worldbearing Altar: Audience Hall)*
 **Cerces:** Child of humanity...
 **Cerces:** You didn't go to such lengths for an audience with Kephale just to ask him a few questions, did you?
@@ -1030,11 +1312,6 @@
 **Anaxa:** I'm sure you're familiar with the story of the Styxians. When the raging waves threatened to swallow them, they didn't just give up and become sitting ducks. No, they constructed a dam that kept the roaring tide at bay, chaining down the mad Phagousa.
 
 ---
-
-### Part 49 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 3: Papyrus, Read the Blasphemer's Will > Have an Audience with Kephale's Divine Vessel, and Prepare for Transmutation
-
 
 **Anaxa:** They call me a blasphemer, Cerces, but that doesn't mean I deny the existence of gods. It's just...
 **Anaxa:** ...As I see it, Titans are simply a force that mankind has yet to find a way to tame.
@@ -1086,10 +1363,31 @@
 
 ---
 
-### Part 50 — `databank/missions/chapter-03-through-petals.md`
+*(The mission continues in "Debate, Discourse Without Spears".)*
 
-**Context:** Complete Dialogue > Sub-Mission 4: Debate, Discourse Without Spears > Return to the Demigod Council and Inform Aglaea About Things
+---
 
+### Part 34 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 4: Debate, Discourse Without Spears > Ask About Axana's Whereabouts with Aglaea and the Others
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__ask-about-axana-s-whereabouts-with-aglaea-and-the-others`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** on-stage
+
+*(After discovering Anaxagoras had fled to the Council of Elders, Aglaea rushed to Dawncloud to confront the Council about the Coreflames. The scholar appears to share the same condition as (Trailblazer). This might hold the key to her salvation.)*
+
+---
+
+### Part 35 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 4: Debate, Discourse Without Spears > Return to the Demigod Council and Inform Aglaea About Things
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__return-to-the-demigod-council-and-inform-aglaea-about-things`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
+
+**Phainon:** Castorice? Why are you standing over there...
+
+---
 
 **Aglaea:** You've finally arrived, Anaxa. So have you... Cas.
 **Anaxa:** Don't worry, Aglaea. While I know that you have many queries, could you continue to converse like how "the citizens normally do"?
@@ -1100,11 +1398,13 @@
 **Phainon:** Your proposal is much too idealistic. As long as the black tide still exists, how can we go back to the old days?
 **Anaxa:** Remember what I previously said? Kephale's Coreflame is guarded by the secret power of the Council of Elders. Plus, Phagousa's water curtain will be able to block out any external perceptions.
 **Anaxa:** Tell me, dear citizens: Have any of you ever seen even a glimpse of the threat that this person is talking about anywhere within the walls of this majestic holy city?
+
 > *(Trailblazer)* But this place will become the Flame Reaver's target sooner or later!
 > **Caenis:** Oh? Could it be that you heard that from the Flame Reaver themself?
 > *(Trailblazer)* Isn't this just survivorship bias?
 > **Caenis:** If we eliminate death, then there's no need for us to fear that Flame Reaver, right?
 > **Caenis:** Citizens, let's loudly sing the blessed hymn: "O beautiful old world, where are you now? O legendary Era Chrysea, return to the mortal realm!"
+
 **Anaxa:** After the destruction of the Three Titans of Calamity, the Flame-Chase Journey will have to end!
 *(narrative)* The members of the Council of Elders are **cheering in excitement**.
 **Phainon:** This is bad. The masses are now totally riled up...
@@ -1121,14 +1421,36 @@
 **Anaxa:** Aglaea, dear Aglaea... What has caused your heart to soften? You also don't seem to be as quick-witted as before?
 **Aglaea:** Wag your tongue as much as you like. Since the Flame-Chase Journey has been preordained by the prophecy, our failure has never been on the cards.
 **Anaxa:** Well then, I guess we'll find out if that's true at the citizens' assembly.
+
 *(Lygus announces the conclusion of the debate, and the attendees part ways...)*
 
 ---
 
-### Part 51 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 4: Debate, Discourse Without Spears > Speak to Castorice and Learn About What Happened
+### Part 36 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 4: Debate, Discourse Without Spears > Speak to Castorice and Learn About What Happened
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__speak-to-castorice-and-learn-about-what-happened`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** on-stage
 
+*(As Castorice and Anaxagoras back the Council of Elders' plan to "return to Era Chrysea," "pausing the Flame-Chase Journey" has become a matter for the citizens' assembly. Let's hear why Castorice publicly "abandoned" the Flame-Chase Journey. There must be more to this story.)*
+
+---
+
+### Part 37 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 4: Debate, Discourse Without Spears > Speak to Castorice and Learn About What Happened > Talk to Castorice again
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__speak-to-castorice-and-learn-about-what-happened-3`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
+
+> **Castorice:** ...A past that was both long and heavy.
+> *(Trailblazer)* Hold on. I'm not ready.
+> **Castorice:** I will wait for you. This matter is of great consequence... and Miss (Trailblazer) should hear the entire story from beginning to end.
+
+---
 
 **Anaxa:** The reason I say this is as I've mentioned earlier: The answer was hidden in my journey unto death.
 **Castorice:** Anaxa... you were in the nether realm?
@@ -1136,14 +1458,22 @@
 
 ---
 
-### Part 52 — `databank/missions/chapter-03-through-petals.md`
+*(Switching to Castorice's POV...)*
+*(narrative)* The final destination of Polyxia and that Castorice's destiny will reveal Thanatos's whereabouts...
 
-**Context:** Complete Dialogue > Sub-Mission 5: Broken Dream, Enlighten From the Beyond > Check the Memory Shown by Anaxa
+---
 
+*(The mission continues in "Broken Dream, Enlighten From the Beyond".)*
 
-**Calypso:** ...Until?
-**Polyxia:** Until...? Actually, I don't know what happened next either.
-**Calypso:** Oh my... It seems that you still like to whet people's appetites even after all this time, Polyxia.
+---
+
+### Part 38 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 5: Broken Dream, Enlighten From the Beyond > Check the Memory Shown by Anaxa
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__check-the-memory-shown-by-anaxa`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
+
 **Cerces:** So, according to your story, this is how I used to look? It's practically a mirror image.
 **Cerces:** And yet, what exactly is this?
 **Anaxa:** A miracle that I created with alchemy. As for what it is and how I was able to accomplish it, I'll keep the answers to myself for now.
@@ -1177,10 +1507,12 @@
 
 ---
 
-### Part 53 — `databank/missions/chapter-03-through-petals.md`
+*(Screen fades to black)*
+**Polyxia:** ...
+**Polyxia:** My time is finally here. However, perhaps because of my firm belief in the immeasurable value of life...
+**Polyxia:** I... am unable to complete the trial.
 
-**Context:** Complete Dialogue > Sub-Mission 5: Broken Dream, Enlighten From the Beyond > Check the Memory Shown by Anaxa
-
+---
 
 **Calypso:** **"You shall wither, and through that, the dead will sprout again from the remains, and be reborn with the dead flame"...**
 **Calypso:** It is a pity that fate is such a cruel mistress.
@@ -1205,14 +1537,10 @@
 
 ---
 
-### Part 54 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 5: Broken Dream, Enlighten From the Beyond > Check the Memory Shown by Anaxa
-
-
 *(Screen fades to black)*
 **Calypso:** ...
 **Calypso:** Looks like you have made up your mind.
+
 **Gnaeus:** Yes, this is the safest course of action.
 **Calypso:** Completely separating Courage, Honor, Tenacity, Sacrifice, and Reason...
 **Calypso:** Ugh, you really know how to make things difficult.
@@ -1237,23 +1565,22 @@
 
 ---
 
-### Part 55 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 5: Broken Dream, Enlighten From the Beyond > Check the Memory Shown by Anaxa
-
-
 *(Investigate the Courage statue, optional)*
 **Castorice:** "Nikador's Courage is a testament that they have never once retreated from a battle."
 **Anaxa:** I've heard that these words are still engraved in Castrum Kremnos even today. It didn't occur to me that they were actually part of an alchemical formula.
+
 *(Investigate the Honor statue, optional)*
 **Castorice:** Lord Gnaeus' Honor is sealed here...
 **Cerces:** Incredible... the Honor in this child's soul is so light.
+
 *(Investigate the Tenacity statue, optional)*
 **Cerces:** I believe that his Tenacity is sealed within this statue.
 **Castorice:** Before we fought Nikador, we also released it from the stone statue...
+
 *(Investigate the Sacrifice statue, optional)*
 **Anaxa:** Sealed within this statue is undoubtedly his Sacrifice.
 **Castorice:** "They use their own body as our city walls, keeping out and protecting us from the pervasive spread of madness. They are acutely aware that if the end times were to arrive, there would be nothing left in this world to conquer..."
+
 *(Investigate the Reason statue)*
 **Calypso:** Honor, Courage, Tenacity, Sacrifice...
 **Polyxia:** And finally... the only thing that remains is Reason.
@@ -1273,10 +1600,80 @@
 
 ---
 
-### Part 56 — `databank/missions/chapter-03-through-petals.md`
+**Gnaeus:** The first time I returned from the battlefield, I felt extremely hollow.
+**Gnaeus:** The calamity had devoured everybody on the battlefield but me. When I returned to the city alone, the citizens held a banquet for me that was far from pleasant. I felt as though I was still on the battlefield, and the person who had returned was nothing but an empty shell.
+**Gnaeus:** It was late into the night by the time the banquet ended. My head still reeling, I returned alone to the barracks. On the way back, I encountered someone.
+**Gnaeus:** It was a crazed scholar looking at the night sky and muttering to himself by the side of the road. Although I tripped over him and fell, I wasn't angry in the slightest. And maybe because I saw myself in him, I inexplicably asked him a question...
+**Gnaeus:** "Do you think that it'd be better if we just died on the roadside like a couple of stray dogs?"
+**Gnaeus:** To my surprise, he shrugged his shoulders and sighed:
+**Mad Scholar:** "To someone who is currently experiencing death, dying and living afford the same amount of bliss."
+**Mad Scholar:** "Now, please go away and don't block my starlight."
+**Calypso:** Are you trying to say that... there is no difference between living and dying, for they are both journeys that lead toward Death?
+**Gnaeus:** That's exactly what life is, and death is but a scale to measure how valuable the journey was. Journeys and epics are only glorious and magnificent because all things eventually fade to dust.
+**Gnaeus:** Therefore, young lady, don't detest your fate. Instead, willingly and respectfully embrace it.
+**Polyxia:** ...The embodiment of Strife telling me about the majesty of the world...?
+**Gnaeus:** Indeed. I believe that when the fated moment eventually arrives, you will be able to understand my words.
+**Gnaeus:** It's time for me to knock on death's door. I will set up a long table at the end of the road and humbly await your arrival...
+*(Screen fades to black)*
+**Gnaeus:** When that moment finally comes, let us drink and be merry then.
 
-**Context:** Complete Dialogue > Sub-Mission 5: Broken Dream, Enlighten From the Beyond > Check the Memory Shown by Anaxa
+---
 
+**Polyxia:** ...
+**Polyxia:** I knew this day would eventually come.
+
+**Polyxia:** ...
+**Calypso:** Are the both of you ready?
+**???: ** Mm-hmm. Polyxia...
+**???: ** ...I'm here.
+**Castorice:** What? This...
+**Cerces:** Heh, this is... quite interesting indeed.
+**Castorice:** Is this... Polyxia's sister...?
+**Castorice:** Is it... me?
+**???: ** Now... it's time for us to fulfill our promises.
+**???: ** ...Are you afraid?
+**Polyxia:** Mm....
+**???: ** What are you afraid of?
+**Polyxia:** That I... won't be able to do it.
+**???: ** **"You shall wither, and through that, the dead will sprout again from the remains, and be reborn with the dead flame"...**
+**???: ** As foretold in the prophecy, and according to our vows, once it all ends, we must face our fated moment head on.
+**Polyxia:** Even if it was prophesied, do we have no say in the matter? It's so unfair... Why are we the only ones who are forced into mutual destruction...
+**Polyxia:** Let me do it, sister! Let me be Death's sacrifice. I was never long for this world anyway... but you're different...
+**Polyxia:** I was the one who wasted your life after all...
+**???: ** You're wrong, Polyxia.
+**???: ** I don't think that my life was wasted — just the opposite. When I finally arrived at this destination and looked back at the journey I took, I discovered that flowers had long since bloomed along the path I walked...
+**???: ** It was you who sowed the seeds for this sea of flowers, one that is more beautiful than the promised land at the end of the world.
+**???: ** Besides, I have lived a fulfilling life. Even though I was fated for sacrifice, none of the things that I've experienced will dissipate. Instead, they'll forever live on as memories inside your head, will they not?
+**Polyxia:** How could my memories of you... ever compare to the actual you?
+**???: ** Well then, tell me...
+**???: ** **What exactly... are we?**
+**Polyxia:** ...
+**Polyxia:** I—I don't know...
+**???: ** I don't know either. But, regardless of what the answer is, regardless of how we're shaped by others, or even by this world...
+**???: ** Ever since we were born, the fact that we existed was predestined, and nothing could erase it. This is why I will always, always be by your side...
+**???: ** We're twins after all.
+**Polyxia:** ...
+**???: ** Alright, my dear Polyxia...
+**???: ** It's time to extract my heart and light the flame of Death...
+**???: ** After that, use it to plant the first bud in the prophesied new world.
+
+---
+
+**Calypso:** If I imparted my knowledge of the art of alchemy to you...
+**Calypso:** Would you use it to resurrect someone you loved?
+**Polyxia:** ...
+**Polyxia:** Death is inevitable. In the days to come, I am certain that someone whom I cherish deeply will leave me for good...
+**Polyxia:** If such a mighty power really existed, I think... I would use it without hesitation.
+**Polyxia:** Even now, my answer remains the same.
+**Polyxia:** This is why, sister, I promise you...
+**Polyxia:** In the prophesized new world, I shall plant the first bud on your behalf...
+**Polyxia:** Go now, return to the Ocean God's treasured pearl — our hometown.
+**Polyxia:** I shall open wide the entrance to the nether realm and grant you a second life. The living beings on this earth shall respond to my call and lead you to the sacred daylight.
+**Polyxia:** Remember, do not look back on the land of the dead and do not stop moving. In the new world promised by the prophecy, march toward your new life...
+*(Screen fades to black)*
+**Polyxia:** As for the price of our "equivalent exchange," let me be the one to pay it.
+
+---
 
 **Anaxa:** Everybody, we've come to the end. Unfortunately, I am not compatible with the supreme being, so I was unable to completely fuse their soul into my own body. However, being able to glean all this from them is exciting enough...
 **Anaxa:** I'm certain of this now: Before the Titans that we are well acquainted with were born, a group of heroes roamed the land. These heroes followed a prophecy and took possession of divine authorities one by one, until they eventually became the pantheon of the new world...
@@ -1306,11 +1703,6 @@
 
 ---
 
-### Part 57 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 5: Broken Dream, Enlighten From the Beyond > Check the Memory Shown by Anaxa
-
-
 **Cerces:** Hey, child of humanity...
 **Anaxa:** Don't get antsy, I still remember the question you posed to me.
 **Anaxa:** As a scholar, I do not wish to offer up ambiguous conclusions. Let's discuss this topic again when she manages to find the evidence.
@@ -1327,12 +1719,99 @@
 
 ---
 
-### Part 58 — `databank/missions/chapter-03-through-petals.md`
+*(Returning to the Trailblazer's POV...)*
+*(narrative)* When you have a chance to make a choice, make one that you know you won't regret.
 
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Speak with Cerces
+---
 
+*(The mission continues in "Pathstrider, Set Sail Upon the River of Souls".)*
+
+---
+
+### Part 39 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Speak to Castorice
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__speak-to-castorice-2`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** on-stage
+
+*(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. The Philosopher's Stone provided by Anaxagoras and the art of alchemy can summon the Titan lurking with the River of Souls, and the alchemical materials should be found in the city as well.)*
+
+---
+
+### Part 40 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Speak with the Spirit of the Centurion
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__continue-exploring-dragonbone-city-and-speak-with-the-spirit-of-the-cent`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** on-stage
+
+*(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. The spirits of Anaxagoras repeatedly recount the past. They seem to be those who fell during Era Chrysea.)*
+
+---
+
+### Part 41 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Check the Souls Remains
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__check-the-souls-remains`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** on-stage
+
+*(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. The spirits of Anaxagoras repeatedly recount the past. They seem to be fallen who lived during Era Chrysea. The remains left by these spirits seem to have a connection with alchemy and Thanatos.)*
+
+---
+
+### Part 42 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Speak with the Spirit of the Court Scholar
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__continue-exploring-dragonbone-city-and-speak-with-the-spirit-of-the-cour`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** on-stage
+
+*(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. The spirits of Anaxagoras repeatedly recount the past. They seem to be those who fell during Era Chrysea.)*
+
+---
+
+### Part 43 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Check the Souls Remains
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__check-the-souls-remains-2`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** on-stage
+
+*(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. The spirits of Anaxagoras repeatedly recount the past. They seem to be fallen who lived during Era Chrysea. The remains left by these spirits seem to have a connection with alchemy and Thanatos.)*
+
+---
+
+### Part 44 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Borrow the Philosopher's Stone and Complete the Alchemical Ritual
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__borrow-the-philosopher-s-stone-and-complete-the-alchemical-ritual`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** on-stage
+
+*(With Anaxagoras's Philosopher's Stone, Styxia's alchemical array, and the spiritual remains in Castorice's hands, the alchemical preparations are ready. According to data from the Grove, "All things come into being through the combination of the Four Roots and perish with their separation." Complete the alchemical array and summon the Titan.)*
+
+---
+
+### Part 45 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 9: Sea of Flowers, Adored Only by Death > Move Forward with Thanatos
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__move-forward-with-thanatos`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** on-stage
+
+*(Switching to Anaxa's POV...)*
+
+---
+
+### Part 46 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Speak with Cerces
+**Kind:** personal
+**Id:** `chapter-03-through-petals__speak-with-cerces`
 
 *(The citizens' assembly on the matter of "Pausing the Flame-Chase Journey" is coming to an end. Soon, everyone will witness what "vote-decided tomorrow" they will experience. Your fifteen Entry Hours are done. The last performance is about to begin.)*
+
 *(At the same time, in Okhema)*
 *(narrative)* *Loud cheers from afar*
 **Cerces:** Time flies... In the blink of an eye, the fifteenth Entry Hour is already at hand.
@@ -1353,11 +1832,6 @@
 
 ---
 
-### Part 59 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Speak with Cerces
-
-
 **Anaxa:** Indeed. The demigods that bear the Coreflames eventually become the new Titans at the world's end...
 **Anaxa:** Remember what happened on the holy mountain? Calypso, Gnaeus... As their destined ends approached, one by one, they left this world... leaving only the twins, who were fated to succeed Death.
 **Anaxa:** Unfortunately, while their journey is consistent with ours — you and Calypso as well as Nikador and Gnaeus act as supporting evidence — I can only come up with a rough sketch for my theory of a cyclical history.
@@ -1368,11 +1842,6 @@
 
 ---
 
-### Part 60 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Speak with Cerces
-
-
 **Cerces:** That is all well and good, but how can you be so sure? If there is even the slightest error in your hypothesis, the girl will be shattered.
 **Anaxa:** Hmph, it matters not. The most important quality a scholar must possess is foolhardiness. If you are overly cautious, then you'll never have the gumption to make the first step, and change will never come.
 **Anaxa:** Besides, I, Anaxagoras, am destined to overturn this farcical world.
@@ -1380,13 +1849,18 @@
 
 ---
 
-### Part 61 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Head to the Demigod Council and Witness the Results of the Citizens' Assembly
-
+### Part 47 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Head to the Demigod Council and Witness the Results of the Citizens' Assembly
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__head-to-the-demigod-council-and-witness-the-results-of-the-citizens-asse`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Approach the top of the stair)*
 **Anaxa:** Phainon... So, they are leaving the final debate to him.
+
 *(Approach the marked location)*
 **Caenis:** Let those Chrysos Heirs who started this terrible war hear you!
 **Caenis:** Let them hear the voices of the people!
@@ -1418,21 +1892,15 @@
 
 ---
 
-### Part 62 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Sit Down and Listen to Phainon's Speech to the Public
+### Part 48 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Sit Down and Listen to Phainon's Speech to the Public
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__sit-down-and-listen-to-phainon-s-speech-to-the-public`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-
-**Phainon:** I will never forget the day the black tide struck. My father, Hieronymus, fought with a broken sword to his last breath to protect his child. My mother, Audata... She was ripped apart by monsters, all so I might live to stand before you here and now.
-**Phainon:** Galba... He was a hunter. But in the end, those arms that once drew a bow instead embraced Piso, his beloved son, as they both breathed their last. Pythias, the teacher, risked her life to save her students, but a burning beam fell on her, crushing her...
-**Phainon:** And what of Livia, her daughter? Did she make it out alive? ...No, she didn't. Livia, Piso, and so many other children... My childhood friends... They were all swallowed by the black tide and turned into monsters.
-**Phainon:** They kept saying the same thing over and over... even up until the final moment I finally steeled my heart and granted them eternal peace with my sword:
-**Phainon:** "Why, Phainon? Aren't we the best of friends?"
-**Aglaea:** ...
-**Phainon:** That is the black tide — a looming threat that can bring Okhema to its knees anytime. Caenis may have promised that, with the Three Titans of Calamity gone, Okhema will return to an Era Chrysea once more, but...
-**Phainon:** Much as it pains me, I must disappoint you: While the demigod of Strife has done everything in his power to hold them back, "they" are still coming.
-**Phainon:** By now, the name of that black-robed swordmaster... the Flame Reaver, has likely echoed throughout the city already. The roaring thunder is a message from the Strife demigod: The Flame Reaver has risen from death, and they hunger for the Coreflames of the gods.
-**Arrogant Citizen:** Lies! If such a powerful enemy is indeed approaching, why is Okhema still a picture of peace?
 **Phainon:** Exactly! The city of Okhema shows no signs of pandemonium or chaos. And why is that? I beg you, spare a moment to think about this. Are we able to stand here and hold this assembly in peace today because the danger has passed?
 **Phainon:** No! This peace we enjoy is no gift of fate. We are able to stand here today only because the Chrysos Heirs have stepped up and shielded Okhema from calamity! With her golden threads, Aglaea has preserved — and continues to preserve — these idyllic days that all of you hold dear!
 **Anaxa:** Heh...
@@ -1453,11 +1921,6 @@
 
 ---
 
-### Part 63 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Sit Down and Listen to Phainon's Speech to the Public
-
-
 *(narrative)* In an uproar, representative leaders from different cities in Okhema throw pieces of pottery into the dolium...
 **Lygus:** At the present time, on the scales of Talanton, those who call for the continuation of the Flame-Chase Journey and those who demand its suspension...
 **Lygus:** Each faction holds an equal share of the votes, resulting in the perfect balance.
@@ -1470,10 +1933,17 @@
 
 ---
 
-### Part 64 — `databank/missions/chapter-03-through-petals.md`
+### Part 49 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Head to the Dolium and Place the Last Vote > Talk to Aglaea, optional
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__head-to-the-dolium-and-place-the-last-vote-3`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Head to the Dolium and Place the Last Vote
+*(Talk to Aglaea, optional)*
+**Aglaea:** Heh...
 
+---
 
 *(Approach the marked location)*
 **Anaxa:** You've done well, Phainon. Given the circumstances, delivering a rousing speech to stir up emotions was a prudent move.
@@ -1499,11 +1969,6 @@
 
 ---
 
-### Part 65 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Head to the Dolium and Place the Last Vote
-
-
 **Anaxa:** ...
 **Anaxa:** You... you are...
 **Empedocles:** Well done, child. Just as I foresaw, you have achieved great things.
@@ -1526,23 +1991,23 @@
 
 ---
 
-### Part 66 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Complete the Great Performer's Performance
-
+### Part 50 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Complete the Great Performer's Performance
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__complete-the-great-performer-s-performance`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(The citizens' assembly on the matter of "Pausing the Flame-Chase Journey" is coming to an end. Soon, everyone will witness what "vote-decided tomorrow" they will experience. How foolish, trying to decide the fate of the world through votes when the apocalypse looms... Your professional ethics demand that you give these fools an education.)*
+
 **Dramatic Citizen:** What are you waiting for? Just cast your vote—
 **Anaxa:** Silence! Silence, everyone!
 **Anaxa:** Behold, Cerces. Here at the center of the world, I shall write the final step of my proof...
 **Anaxa:** For this place is but one step away from the truth.
 
 ---
-
-### Part 67 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Complete the Great Performer's Performance
-
 
 *(Cutscene begins)*
 **Castorice:** Professor... I completed the proof you wanted.
@@ -1554,11 +2019,6 @@
 *(Cutscene ends)*
 
 ---
-
-### Part 68 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Complete the Great Performer's Performance
-
 
 **Lygus:** With the balance shattered, the result is clear. By Kephale and Talanton above, as the Theoros, I have observed...
 **Caenis:** No! Lygus, you can't...!
@@ -1580,11 +2040,6 @@
 
 ---
 
-### Part 69 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Complete the Great Performer's Performance
-
-
 **Anaxa:** Just moments ago, all of you made a decision on the fate of Amphoreus. As a supporter of the Flame-Chase Journey, it pleases me to see the choice you have made.
 **Anaxa:** But I regret to say that I still harbor doubts about this outcome. Thus, I hereby challenge this resolution!
 **Aglaea:** Huh...
@@ -1600,11 +2055,6 @@
 **Anaxa:** So, no one? I see. In that case, Phainon, answer me this: Your speech was filled with such passion just now. How confident, then, are you in making this promise?
 
 ---
-
-### Part 70 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Complete the Great Performer's Performance
-
 
 **Phainon:** Professor! What are you doing?
 **Aglaea:** Let him continue with his performance.
@@ -1638,11 +2088,6 @@
 
 ---
 
-### Part 71 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Complete the Great Performer's Performance
-
-
 *(narrative)* *crowd chatter*
 **Aglaea:** Elders and citizens, silence, if you please!
 **Aglaea:** Anaxagoras of the Grove of Epiphany has made his statement clear. As per Okhema's Codex, I request all present citizens to stand with me in exercising the right of judgment.
@@ -1663,20 +2108,18 @@
 **Lygus:** What decision will you make, Lady Goldweaver?
 **Anaxa:** Enough with the hesitation, Aglaea. This is not like you.
 **Citizens' Assembly:** Let him die! Let him die! Let him die! Let him die!
-**Aglaea:** ...
-**Aglaea:** Then, in light of the "people's voice"...
-**Aglaea:** O Talanton on high, may you bring death upon him.
-*(narrative)* *fanatic cheering*
-*(Unlock Achievement "The Law as the Crown of Peace")*
 
 ---
 
-### Part 72 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 11: Scholar, Let Us Meet Again Before the Gates of Truth > Listen to the Conversation Between Aglaea and Anaxa
-
+### Part 51 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 11: Scholar, Let Us Meet Again Before the Gates of Truth > Listen to the Conversation Between Aglaea and Anaxa
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__listen-to-the-conversation-between-aglaea-and-anaxa`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(The events in the citizens' assembly come to a temporary halt, and the Flame-Chase Journey will continue. The Council of Elders has suffered a heavy blow — and the one behind it all, Anaxagoras, is about to face the final judgment. Only at the very last moment can Aglaea and Anaxa finally break down the barriers between them.)*
+
 *(Presently, in Okhema)*
 **Aglaea:** That grand and absurd performance was what you've been seeking your whole life?
 **Anaxa:** I gave up everything in search of truth, and it culminated in this very moment.
@@ -1705,20 +2148,25 @@
 **Phainon:** Come welcome (Trailblazer), our great hero reborn from the ashes.
 **Aglaea:** I hope he didn't hear your earlier assessment.
 **Anaxa:** Hmph, it wouldn't be the first time I criticized him. A man should be aware of his own shortcomings.
+
 *(Obtain Coreflame of Death)*
 *(Unlock Achievement "Unmoor and Sail Away From the Underworld")*
 
 ---
 
-### Part 73 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 11: Scholar, Let Us Meet Again Before the Gates of Truth > Submit Coreflame
+### Part 52 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 11: Scholar, Let Us Meet Again Before the Gates of Truth > Submit Coreflame
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__submit-coreflame`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-
-*(Approach the marked location)*
 **Aglaea:** I'm gladdened by your triumphant return...
 **Aglaea:** But... I don't see Castorice among your number.
 **Anaxa:** It looks like she not only helped me prove my theory, but helped you fulfill your mission as well.
+
 > *(Trailblazer)* She finally understood her origins and completed her trial.
 > *(Trailblazer)* I believe she'll always be at our side.
 > **Phainon:** ...I agree.
@@ -1727,12 +2175,21 @@
 > **Aglaea:** You are the only life she ever saved by her own hand in her one thousand years on this earth. I believe no one is more qualified for this noble task.
 > *(Trailblazer)* Let the ceremony begin.
 
+**Trinnon:** O! Gods who have returned, and gods who are still watching! Today, we bring you a soul laid bare.
+**Trinnon:** The Hand of Shadow, Thanatos, remembered their name from the past! From daylight they came and to their fragrant dwelling they return, to walk now among your ranks.
+**Trinnon:** And there was one who joined hands with the Titan. A traveler risen from the dead and reborn among mortal kind. She is the everlasting night and shall now proclaim in her good name:
+**Trinnon:** "O majesty of the Twelve Titans, pillars of the world—"
+**Trinnon:** "We seek your divinity, to mend the rifts of the world —"
+**Trinnon:** "Fill our bodies with blood of gold, till we wither in willing service to the prophecy..."
+**Trinnon:** Step forward, Trailblazer from beyond the sky. And together with **us**...
+**Trinnon:** Surrender the Coreflame and carve their star into the sky.
+
+> *(Trailblazer)* Surrender the Coreflame.
+> *(Trailblazer)* Goodbye, Castorice.
+
+*(Submit Coreflame of Death)*
+
 ---
-
-### Part 74 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 11: Scholar, Let Us Meet Again Before the Gates of Truth > Submit Coreflame
-
 
 *(The constellation representing Death is illuminated)*
 **Phainon:** A constellation for Death...
@@ -1752,11 +2209,6 @@
 **Divine Echo:** "Do not forget..."
 
 ---
-
-### Part 75 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 11: Scholar, Let Us Meet Again Before the Gates of Truth > Submit Coreflame
-
 
 **Anaxa:** Heh, she made quite a scene. I suppose it's my turn now.
 **Aglaea:** I won't stop you...
@@ -1784,8 +2236,10 @@
 **Anaxa:** Hmph, good.
 **Anaxa:** That's all I have to say. Farewell, everyone. May we meet again in the next life.
 **Aglaea:** Farewell, Great Performer. May Cerces safeguard your thoughts.
+
 > *(Trailblazer)* Salute him in the same way.
 > **(Trailblazer):** May Cerces safeguard your thoughts.
+
 **Anaxa:** Are you satisfied, honorable Titan?
 **Cerces:** Very. I hereby swear I have borne witness: Anaxagoras of the Nousporists and the Grove of Epiphany has successfully overcome the trial of Reason.
 **Cerces:** Thus, I shall confer upon you these words.
@@ -1806,11 +2260,6 @@
 
 ---
 
-### Part 76 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 11: Scholar, Let Us Meet Again Before the Gates of Truth > Submit Coreflame
-
-
 *(Cutscene begins)*
 **Anaxa:** Rejoice, Cerces...
 **Anaxa:** I will sow the seeds of "Suspicion" in the new world with your soul —
@@ -1819,244 +2268,443 @@
 
 ---
 
-### Part 77 — `databank/missions/chapter-04-fall-at-dawn.md`
+---
 
-**Context:** Complete Dialogue > Mission 5 — Grove, Judge the Past and Present > A Place Filled With Memories — Anaxa's Last Lesson
+### Part 53 — `databank/missions/chapter-04-fall-at-dawn.md`
+**Context:** Chapter 4 — The Fall at Dawn's Rise (v3.3) > Mission 4 — Golden Thread, Relay the Savior's Fate > Farewells — Trianne, Anaxa, Castorice, Mydei, Aglaea, Cyrene
+**Kind:** collective-pointer
+**Id:** `chapter-04-fall-at-dawn__farewells-trianne-anaxa-castorice-mydei-aglaea-cyrene`
+**Collective:** `databank/memories/collective/chapter-04-fall-at-dawn.md`
+**Witness:** on-stage
 
+*(Phainon says goodbye to each: Trianne's songs that dispelled his childhood anxiety, Anaxa's debate tactics and promise to teach him divine duties in another life, Castorice's dangerous friendship and her warmth, Mydei's promise of a rematch, and finally Aglaea... and Cyrene.)*
+
+---
+
+### Part 54 — `databank/missions/chapter-04-fall-at-dawn.md`
+**Context:** Chapter 4 — The Fall at Dawn's Rise (v3.3) > Mission 5 — Grove, Judge the Past and Present > A Place Filled With Memories — Anaxa's Last Lesson
+**Kind:** collective-pointer
+**Id:** `chapter-04-fall-at-dawn__a-place-filled-with-memories-anaxa-s-last-lesson`
+**Collective:** `databank/memories/collective/chapter-04-fall-at-dawn.md`
+**Witness:** spoke
+
+**Little Ica:** Doot-Doot... Doot?
 
 **Hyacine:** This was where Professor Anaxa gave us "the lesson." I can still see that day in my mind...
+
 **Anaxa:** ...And that was your last lesson in the Grove. Now, each of you will head off on your own path. How much the Grove's teachings can help you in the real world depends on how well you can put knowledge into practice. However, heed this warning — If you ever do anything disgraceful out there, don't ever claim you were the student of Anaxagoras, one of the Seven Sages—
+
 **Phainon:** ...Professor Anaxa, there are still other classes scheduled on the calendar! Are you sure you didn't —
+
 **Anaxa:** —Firstly, call me Professor Anaxagoras. Secondly, to clarify — The "last lesson" means "the last lesson I will teach you." I will be entering seclusion from today onwards to research ancient alchemy, and all my teaching activities will be put on hold.
+
 **Phainon:** Ah, I see. So you're saying the lessons taught by all the other teachers aren't good enough to be considered lessons?
+
 **Anaxa:** All you do every day is wag that sharp tongue of yours — That's a credit deduction, Phainon of Aedes Elysiae!
+
 **Castorice:** Hee...
+
 **Hyacine:** ...Please wait, Professor! According to the Grove's protocols for a cohort's final class, the lecturer should take some time to "discuss the students' post-graduation aspirations with them and guide them toward a solid path."
+
 **Anaxa:** Tsk...
+
 **Castorice:** The teaching assistant Miss Hyacine is truly Professor Anaxa's nemesis.
+
 **Anaxa:** ...Ahem, fine. Since Hyacinthia insists on this... Let's go through the process. Since some of you are so eager to speak, why don't we start with you, Phainon of Aedes Elysiae? What is your post-graduation aspiration?
+
 **Phainon:** Me? Well... it's not exactly an aspiration, but the only thing I want to do is to protect the people I care about...
+
 **Anaxa:** ...I see. So you want to be a "hero." How boring. Next!
+
 **Phainon:** Uh, I didn't say...
+
 **Anaxa:** Castorice! You've been giggling for quite some time. How about you go next?
+
 **Castorice:** Perhaps my answer is a bit vague and meaningless, Professor Anaxagoras, but... I hope the world can be freed from the agony of "death," so that every living being may find calming peace...
+
 **Anaxa:** How naive. So naive that it makes me want to weep for your fairy tale. See? This is why I don't want to follow those outdated protocols. All I get are boring answers. Since you suggested this whole process, why don't you wrap this up, Hyacinthia? Share your "aspiration" with everyone, and let's see if yours stands out.
+
 **Hyacine:** So it's finally my turn... Good thing I came prepared, hehe! My aspiration is nothing less than completing the final "blank page" at the end of the heroes' epic.
+
 **Anaxa:** ..."Blank page"? An interesting description. Do explain, assistant.
+
 **Hyacine:** I've read all of Amphoreus' heroic epics while studying at the Grove, and a common thread came to my attention. Almost every epic ends with a description of the hero's achievements, but few mention how the everyday people of that time lived. No one recorded the struggles and suffering the commoners endured.
+
 **Anaxa:** So you're saying that, instead of legendary heroes, you're more focused on commoners living on the peripheries of historical records?
+
 **Hyacine:** Perhaps I'm influenced by my background. My ancestor, Seliose the Daythunder Knight, raised her spear against the Sky and ushered in the Flame-Chasing era that continues to this day. Her story is told to every child descended from the Skyfolk. We have no doubts about Seliose's greatness, yet... her towering figure overshadowed every record from that entire era. What about the Daythunder Knight's family, allies, and friends? What about the survivors and those who died in the great battles? Whenever I think about their stories by the campfire, I realize the details of those legends have been long lost... and only Seliose's name remains. Her brilliance had become as blinding as Aquila's, lording over everything on the ground. That's why... I'm glad that my era does not lack heroes.
 
 ---
 
-### Part 78 — `databank/missions/chapter-05-sun-set-to-die.md`
+### Part 55 — `databank/missions/chapter-04-fall-at-dawn.md`
+**Context:** Chapter 4 — The Fall at Dawn's Rise (v3.3) > Mission 9 — Dawn, Shine at the World's End > Return to Okhema — Darkness Falls
+**Kind:** collective-pointer
+**Id:** `chapter-04-fall-at-dawn__return-to-okhema-darkness-falls`
+**Collective:** `databank/memories/collective/chapter-04-fall-at-dawn.md`
+**Witness:** on-stage
 
-**Context:** Complete Dialogue > Mission 1 — Hero, Honor That Crimson Call > The Era Nova Ritual
+*(Phainon, the Trailblazer, and Dan Heng fight through black tide hordes to retrieve Kephale's Coreflame. Phainon uses Anaxa's secret incantation to unlock the Coreflame Casket.)*
 
+---
+
+### Part 56 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Context:** Chapter 5 — For the Sun is Set to Die (v3.4) > Mission 1 — Hero, Honor That Crimson Call > The Era Nova Ritual
+**Kind:** collective-pointer
+**Id:** `chapter-05-sun-set-to-die__the-era-nova-ritual`
+**Collective:** `databank/memories/collective/chapter-05-sun-set-to-die.md`
+**Witness:** spoke
+
+**Tribbie:** He is the pure child, walking upon the path of yesterday, today, and tomorrow—
 
 **Castorice:** He is the first to be born, first to be named among the nameless—
+
 **Anaxa:** Eternal in form, limitless in reach, he treads the endless night underfoot—
+
 **Mydei:** Greatest of kings, protector of the displaced, raising humanity's children above their adversaries—
 
 ---
 
-### Part 79 — `databank/missions/chapter-05-sun-set-to-die.md`
+### Part 57 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Context:** Chapter 5 — For the Sun is Set to Die (v3.4) > Mission 3 — (Side) Hero, Return to That Peace of Home > Keep Going to Witness the Theatrical Curtain Call
+**Kind:** collective-pointer
+**Id:** `chapter-05-sun-set-to-die__keep-going-to-witness-the-theatrical-curtain-call`
+**Collective:** `databank/memories/collective/chapter-05-sun-set-to-die.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 3 — (Side) Hero, Return to That Peace of Home > Keep Going to Witness the Theatrical Curtain Call
-
+**Hyacine:** When the Era Nova comes, the skies will clear again.
 
 **Aglaea:** O Deliverer, though you walk alone, please complete the work of bringing about the Era Nova.
+
 **Anaxa:** Enough talk. Go, make the Era Nova happen in my stead.
+
 **Mydei:** Hmph! So what if there's only one person left to witness the Era Nova?
 
 ---
 
-### Part 80 — `databank/missions/chapter-05-sun-set-to-die.md`
+### Part 58 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Context:** Chapter 5 — For the Sun is Set to Die (v3.4) > Mission 3 — (Side) Hero, Return to That Peace of Home > Talk to Lygus to Show the Final Memory
+**Kind:** collective-pointer
+**Id:** `chapter-05-sun-set-to-die__talk-to-lygus-to-show-the-final-memory`
+**Collective:** `databank/memories/collective/chapter-05-sun-set-to-die.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 3 — (Side) Hero, Return to That Peace of Home > Talk to Lygus to Show the Final Memory
+**Phainon:** Please... allow me to pause just a moment before I keep my promise—
 
+**Phainon:** Let me answer your cruel fate by tearing that executioner's heart from the void.
 
 > *(Trailblazer)* Eternal Recurrence #67023
+
 **Anaxa:** The Vortex of Genesis... The last time I was here, I was returning the Coreflame of "Reason."
+
 **Anaxa:** I didn't have the time to observe it in too much detail back then — but a "holy sanctuary" of the Titans? Looks more like their frozen crypt to me.
+
 **Phainon:** Well, all the Coreflames do lie here now...
+
 **Phainon:** It's my honor to walk the final stretch with a mind such as yours, Professor.
+
 **Anaxa:** Oho, getting ahead of ourselves, are we?
+
 **Anaxa:** Have you forgotten so quickly? I died for truth long ago. What walks with you now is but a thought in your mind.
+
 **Phainon:** Of course... how could I forget that?
+
 **Anaxa:** But I'll say the same to you: it's my honor to walk this final stretch with you, too.
+
 **Anaxa:** Now go. Stand tall and finish your final task—
+
 **Phainon:** Yeah, just leave it to me...
+
 **Anaxa & Phainon:** Time for that wretched executioner... to pay what they owe.
 
 ---
 
-### Part 81 — `databank/missions/chapter-05-sun-set-to-die.md`
+---
 
-**Context:** Complete Dialogue > Mission 5 — (Side) Hero, Ignite That Primal Sun > Talk to Anaxa
+### Part 59 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Context:** Chapter 5 — For the Sun is Set to Die (v3.4) > Mission 5 — (Side) Hero, Ignite That Primal Sun > Talk to Anaxa
+**Kind:** collective-pointer
+**Id:** `chapter-05-sun-set-to-die__talk-to-anaxa`
+**Collective:** `databank/memories/collective/chapter-05-sun-set-to-die.md`
+**Witness:** spoke
 
+*(Do you still remember them, Khaslana, the one who won't reach the dawn? Once, your teacher could still guide you through the dark. And that fleet-footed traveler, the thief of Dolos, her home was yet untouched by the fires you brought. Yes, the past is gone. But you, godlike warrior, did you ever shed a tear for those years, sweet as wine? Weren't you once bound by blood and flesh? Wasn't golden blood thicker than water? No! Let your tears flow freely. Don't let rage burn them away — Then, remember to drink deep: For, to the gods, the tears of mortals are sweeter than any honey brew on Earth.)*
+
+*(>>> Eternal Recurrence #134 — Cutscene begins: 33,550,202 Eternal Recurrences until the end of the world — Cutscene ends)*
 
 *(The 134th Eternal Recurrence)*
+
 **Anaxa:** Absolute nonsense...
+
 **Khaslana:** I thought... "cycles" was the answer you were looking for.
+
 **Anaxa:** No, it's just that the answer came so suddenly, there was no fun in tracing it back to its roots.
+
 **Anaxa:** Aeons? Paths? Hmph, what a load of nonsense.
+
 **Khaslana:** I can't give you an exact explanation of those two concepts either.
+
 **Anaxa:** Enough, I'm just expressing my frustration. Don't you understand? I was already expecting this. "The black tide came from beyond the sky," and everything else is no exception.
+
 **Khaslana:** ...
+
 **Khaslana:** Fate is a strange thing: no matter how the details of history change, the Anaxa I know always remains as harsh as ever.
+
 **Anaxa:** Hmph... If the other Anaxagorases actually worshiped the gods, I'd make sure to find a way to break the cycles to crush them in their cradles—
+
 **Anaxa:** Too bad, now only you have the ability to do that.
+
 **Khaslana:** What's that supposed to mean? You're willing to help?
+
 **Anaxa:** Of course. The Coreflames were meant to save the world, and in my opinion, the noble Titans have no reason to refuse...
+
 **Anaxa:** ...Besides, according to you, before stepping into these endless cycles... you were my pupil.
+
 **Khaslana:** ...
+
 **Khaslana:** I've already heard the same thing countless times...
+
 **Anaxa:** Enough chitchat. Let's go. If we run into any other scholars, leave them to me.
 
 ---
 
-### Part 82 — `databank/missions/chapter-05-sun-set-to-die.md`
-
-**Context:** Complete Dialogue > Mission 5 — (Side) Hero, Ignite That Primal Sun > Follow Anaxa to Obtain the Coreflame of Reason
-
-
-**Anaxa:** We've all made preparations for total annihilation...
-**Anaxa:** Never thought someone would step in to help.
-*(Enter the Luminary Throne)*
-**Anaxa:** You've been to the Luminary Throne before, haven't you?
-**Khaslana:** Huh? If you're talking about in past cycles...
-**Anaxa:** Heh, you're already much luckier than the other students.
-*(Approach the Coreflame of Reason)*
-**Anaxa:** ...Hold up.
-**Anaxa:** Keep your wits about you... Someone's watching us.
-**Cipher:** Pretty boy, your eyesight's better than I thought...
-**Cipher:** As for that false god who's been turning the world upside down... it's you, isn't it, white-hair?
-**Anaxa:** Heh... you sure do love stealing the spotlight.
-**Anaxa:** In the name of the Seven Sages, I demand that you immediately step away from the Luminary Throne. This is the sacred ground of "Reason," and no one may desecrate it—
-**Anaxa:** Take my words back to Aglaea. I won't say the same thing twice, Catgirl.
-**Cipher:** Oh my, you won't even call me the demigod of "Trickery"? That is just heartbreaking.
-
 ---
 
-### Part 83 — `databank/missions/chapter-05-sun-set-to-die.md`
+### Part 60 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Context:** Chapter 5 — For the Sun is Set to Die (v3.4) > Mission 5 — (Side) Hero, Ignite That Primal Sun > Follow Anaxa to Obtain the Coreflame of Reason
+**Kind:** collective-pointer
+**Id:** `chapter-05-sun-set-to-die__follow-anaxa-to-obtain-the-coreflame-of-reason`
+**Collective:** `databank/memories/collective/chapter-05-sun-set-to-die.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 5 — (Side) Hero, Ignite That Primal Sun > Follow Anaxa to Obtain the Coreflame of Reason
+**Anaxa:** We've all made preparations for total annihilation...
 
+**Anaxa:** Never thought someone would step in to help.
+
+*(Enter the Luminary Throne)*
+
+**Anaxa:** You've been to the Luminary Throne before, haven't you?
+
+**Khaslana:** Huh? If you're talking about in past cycles...
+
+**Anaxa:** Heh, you're already much luckier than the other students.
+
+*(Approach the Coreflame of Reason)*
+
+**Anaxa:** ...Hold up.
+
+**Anaxa:** Keep your wits about you... Someone's watching us.
+
+**Cipher:** Pretty boy, your eyesight's better than I thought...
+
+**Cipher:** As for that false god who's been turning the world upside down... it's you, isn't it, white-hair?
+
+**Anaxa:** Heh... you sure do love stealing the spotlight.
+
+**Anaxa:** In the name of the Seven Sages, I demand that you immediately step away from the Luminary Throne. This is the sacred ground of "Reason," and no one may desecrate it—
+
+**Anaxa:** Take my words back to Aglaea. I won't say the same thing twice, Catgirl.
+
+**Cipher:** Oh my, you won't even call me the demigod of "Trickery"? That is just heartbreaking.
+
+**Cipher:** I have some words for you too: First, as one of the most heretical blasphemers in the world, you have no right to lecture me. Second...
+
+**Cipher:** This is none of your business, Grove boy. Step aside, I don't want anyone getting hurt.
 
 **Khaslana:** Here we go... again.
+
 **Anaxa:** Coreflame thieves... You really think you can scare off a Sage of the Grove with nothing but empty threats?
+
 **"Spirithief" Bartholos:** Heh, heh, heh... This gloomy little brat's got a sharp tongue!
 
 ---
 
-### Part 84 — `databank/missions/chapter-05-sun-set-to-die.md`
+### Part 61 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Context:** Chapter 5 — For the Sun is Set to Die (v3.4) > Mission 5 — (Side) Hero, Ignite That Primal Sun > Witness Khaslana's Response
+**Kind:** collective-pointer
+**Id:** `chapter-05-sun-set-to-die__witness-khaslana-s-response`
+**Collective:** `databank/memories/collective/chapter-05-sun-set-to-die.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 5 — (Side) Hero, Ignite That Primal Sun > Witness Khaslana's Response
-
+**Khaslana:** They're exactly like all the past ones I've known...
 
 **Khaslana:** Cunning... and yet so naive.
+
 **Anaxa:** Sounds like you have a plan?
+
 **Khaslana:** Of course. When I first set out on the Flame-Chase Journey, Lady Tribbie never managed to teach me Oronyx's Miracle...
 
 ---
 
-### Part 85 — `databank/missions/chapter-05-sun-set-to-die.md`
+### Part 62 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Context:** Chapter 5 — For the Sun is Set to Die (v3.4) > Mission 5 — (Side) Hero, Ignite That Primal Sun > Perform Oronyx's Miracle to Take Back the Coreflame
+**Kind:** collective-pointer
+**Id:** `chapter-05-sun-set-to-die__perform-oronyx-s-miracle-to-take-back-the-coreflame`
+**Collective:** `databank/memories/collective/chapter-05-sun-set-to-die.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 5 — (Side) Hero, Ignite That Primal Sun > Perform Oronyx's Miracle to Take Back the Coreflame
+**Cipher:** Where... Where are you going?
 
+**"Spirithief" Bartholos:** I... I don't know?
 
 *(After Bartholos is brought back)*
+
 **Anaxa:** Heh, the Venerationists' foolish inventions finally come in handy.
+
 **"Spirithief" Bartholos:** Huff... Huff... How is this possible?
 
----
+**Khaslana:** You've arrived, Zagreus... Always so punctual.
 
-### Part 86 — `databank/missions/chapter-05-sun-set-to-die.md`
+**"Spirithief" Bartholos:** Wh—What? Do you know who I am?
 
-**Context:** Complete Dialogue > Mission 5 — (Side) Hero, Ignite That Primal Sun > Perform Oronyx's Miracle to Take Back the Coreflame
+**Khaslana:** I'm running out of patience, so I'm not going to waste words. Listen up, Spirithief: Hand over the Coreflame, and let's pretend we never clashed. This way, you and this world can still be saved.
 
+**"Spirithief" Bartholos:** Heh, heh, heh, "save"? You sing better than any bard!
+
+**"Spirithief" Bartholos:** If you ask me... you're the greatest disaster Amphoreus has ever known!
+
+**Khaslana:** ...
+
+**"Spirithief" Bartholos:** No matter how strong you are, you're still just a mortal body! Carrying twelve Coreflames? Don't make me laugh! You'll just get consumed by the divine flames, and drag this world down with you...
 
 **Khaslana:** ...One hundred thirty-four.
+
 **Anaxa:** What...
+
 **Khaslana:** This is the 134th cycle I've lived through. And the number of Coreflames I carry is...
+
 **Anaxa:** ...1,596.
+
 **Khaslana:** ...Yes.
 
----
-
-### Part 87 — `databank/missions/chapter-05-sun-set-to-die.md`
-
-**Context:** Complete Dialogue > Mission 5 — (Side) Hero, Ignite That Primal Sun > Perform Oronyx's Miracle to Take Back the Coreflame
-
+**"Spirithief" Bartholos:** A thousand Coreflames, and just a single Chrysos Heir... How is that even possible!?
 
 **Khaslana:** I've come this far, and that's proof enough.
+
 **Anaxa:** But someday... you will burn to the ground.
+
 **Khaslana:** Of course, the divine flames will eventually consume my eyes and blind me...
 
 ---
 
-### Part 88 — `databank/missions/chapter-05-sun-set-to-die.md`
-
-**Context:** Complete Dialogue > Mission 5 — (Side) Hero, Ignite That Primal Sun > Confront Cipher
-
+### Part 63 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Context:** Chapter 5 — For the Sun is Set to Die (v3.4) > Mission 5 — (Side) Hero, Ignite That Primal Sun > Confront Cipher
+**Kind:** collective-pointer
+**Id:** `chapter-05-sun-set-to-die__confront-cipher`
+**Collective:** `databank/memories/collective/chapter-05-sun-set-to-die.md`
+**Witness:** spoke
 
 **Anaxa:** Heh, how absurd...
+
 **Khaslana:** In my memories, Zagreus always meets the same end, over and over again...
+
 **Khaslana:** Their departure no longer stirs anything in my heart.
+
 **Anaxa:** This "Reason" Coreflame before us is a fake, obvious as day.
+
 **Khaslana:** Ah... I know.
 
----
+**Khaslana:** I know. It always plays out like this. The Spirithief covers for her, and the "Trickery" demigod escapes with two Coreflames...
 
-### Part 89 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Cipher:** ...
 
-**Context:** Complete Dialogue > Mission 5 — (Side) Hero, Ignite That Primal Sun > Confront Cipher
+**Khaslana:** ...And then, driven by defiance, or hatred, she decides to stand before me once more.
 
+**Khaslana:** Exactly like the countless past hers I've known... cunning, yet so naive.
+
+**Cipher:** Since you've witnessed this same scene play out countless times, tell me...
+
+**Cipher:** Will you carve the "Trickery" Coreflame from my chest now?
+
+**Khaslana:** ...That depends on your attitude. At least so far, in the cycles where you've asked this question... the endings haven't been so cruel.
+
+**Cipher:** Heh... well, thank you for that. But I also believe that this time, you won't catch up to me—
+
+**Cipher:** No one can catch up to me. I'm no longer running to escape anymore.
+
+**Khaslana:** Whether you believe me or not, I'll still tell you this: You've made the wrong decision.
 
 **Cipher:** Alright, then, we'll see—
+
 **Anaxa:** Silence.
+
 **Khaslana:** Ah... this is new.
+
 **Cipher:** ...One-eyed boy, what are you trying to pull now?
+
 **Anaxa:** Go, Cifera. Give us some time in private.
+
 **Anaxa:** This isn't for her, but for you.
+
 **Anaxa:** You've walked too far down this path. It's time to discuss a possibility: Maybe the road you're walking is not one of salvation, but one that will simply drag the world into the flames.
+
 **Anaxa:** For old times' sake, turn back. I don't care how many times you've tried, because there's one thing I'm sure of—
+
 **Anaxa:** Your messiah complex has turned you into something no different from the icy gods you spoke of. The children of humanity you swore to save... they are no more than ants to you now, aren't they?
+
 **Khaslana:** ...
 
----
+**Cipher:** Heh, of course.
 
-### Part 90 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Cipher:** I've been wondering, what kind of demon could burn my homeland to the ground in an instant, without batting an eye...
 
-**Context:** Complete Dialogue > Mission 5 — (Side) Hero, Ignite That Primal Sun > Confront Cipher
+**Cipher:** Now, I have the answer. It turns out that fiery demon has been fantasizing of becoming this world's Deliverer!
 
+**Khaslana:** ...
+
+**Khaslana:** I don't want to argue anymore. No matter what I say, the outcome won't change.
+
+**Khaslana:** Make your biggest effort to resist, or accept fate and hand over the Coreflame to me...
 
 **Khaslana:** Even if it's futile, you... we all have the right to choose.
+
 **Anaxa:** ...
+
 **Anaxa:** Yes, even if it is futile, and the world is just a divine joke...
+
 **Cipher:** When I walk into the "Destruction" written by the gods with my own two legs, you will witness—
 
 ---
 
-### Part 91 — `databank/missions/chapter-05-sun-set-to-die.md`
+### Part 64 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Context:** Chapter 5 — For the Sun is Set to Die (v3.4) > Mission 5 — (Side) Hero, Ignite That Primal Sun > "You Will Bear the Blazing Sun, Until..."
+**Kind:** collective-pointer
+**Id:** `chapter-05-sun-set-to-die__you-will-bear-the-blazing-sun-until`
+**Collective:** `databank/memories/collective/chapter-05-sun-set-to-die.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 5 — (Side) Hero, Ignite That Primal Sun > "You Will Bear the Blazing Sun, Until..."
-
+**Tribbie:** Bring tomorrow to this world.
 
 **Cipher:** Let the sun rise.
+
 **Anaxa:** Finish the sun's work.
+
 **Hyacine:** Lead us into the break of day.
 
 ---
 
-### Part 92 — `databank/missions/chapter-06-before-their-deaths.md`
+### Part 65 — `databank/missions/chapter-06-before-their-deaths.md`
+**Context:** Chapter 6 — Before Their Deaths (v3.5) > Sub-Mission 1: Time, Ferry Me Through Ages > Explore the Mysterious Space
+**Kind:** collective-pointer
+**Id:** `chapter-06-before-their-deaths__explore-the-mysterious-space`
+**Collective:** `databank/memories/collective/chapter-06-before-their-deaths.md`
+**Witness:** on-stage
 
-**Context:** Complete Dialogue > Sub-Mission 4: Zephyr, Uplift Bygone Dust Cloudsward > Go Forth. Resume the Unfulfilled Cause
+> *>>>Anaxa, Primum Mobile: █████, Titan Authority: Reason, Path: █████████<<<*
 
+---
+
+### Part 66 — `databank/missions/chapter-06-before-their-deaths.md`
+**Context:** Chapter 6 — Before Their Deaths (v3.5) > Sub-Mission 4: Zephyr, Uplift Bygone Dust Cloudsward > Go Forth. Resume the Unfulfilled Cause
+**Kind:** collective-pointer
+**Id:** `chapter-06-before-their-deaths__go-forth-resume-the-unfulfilled-cause`
+**Collective:** `databank/memories/collective/chapter-06-before-their-deaths.md`
+**Witness:** spoke
+
+**Trianne:** Keep moving forward. Little Gray, see you tomorrow!
 
 *(When Cyrene activates the Fragments of Recollection)*
 **Cipher Etched in Memory:** That seamstress wasn't wrong when she said a lie needs more lies to keep it together...
+
 *(Approach the Fragments of Recollection)*
 **Anaxa Etched in Memory:** Reason and Trickery...
 **Anaxa Etched in Memory:** Never thought we'd be the pair to finish this final setup.
@@ -2089,264 +2737,453 @@
 **Anaxa Etched in Memory:** As for how the "Deliverer" will complete the "Era Nova"... well, that will no longer be our concern.
 *(narrative)* ...
 **Cyrene:** "It was the last battle known to the world, initiated by two demigods least suited for war."
-**Cyrene:** "In the end, Reason and Trickery kept their word. At the cost of their lives, they sealed Lygus within the Vortex of Genesis, where he remains to this day."
 
 ---
 
-### Part 93 — `databank/missions/chapter-06-before-their-deaths.md`
-
-**Context:** Complete Dialogue > Sub-Mission 4: Zephyr, Uplift Bygone Dust Cloudsward > Go Forth. Continue the Long Journey
-
+### Part 67 — `databank/missions/chapter-06-before-their-deaths.md`
+**Context:** Chapter 6 — Before Their Deaths (v3.5) > Sub-Mission 4: Zephyr, Uplift Bygone Dust Cloudsward > Go Forth. Continue the Long Journey
+**Kind:** collective-pointer
+**Id:** `chapter-06-before-their-deaths__go-forth-continue-the-long-journey`
+**Collective:** `databank/memories/collective/chapter-06-before-their-deaths.md`
+**Witness:** spoke
 
 *(Approach the memory of Anaxa)*
 **Anaxa:** Go forth. Finish the greatness left undone.
+
 *(Approach the memory of Cipher)*
 **Cipher:** Quit overthinking! Just run. Keep running, and that'll be enough!
 
 ---
 
-### Part 94 — `databank/missions/chapter-06-before-their-deaths.md`
+### Part 68 — `databank/missions/chapter-06-before-their-deaths.md`
+**Context:** Chapter 6 — Before Their Deaths (v3.5) > Sub-Mission 4: Zephyr, Uplift Bygone Dust Cloudsward > Take the Ceremonial Blade Which Carries Time's Wisdom
+**Kind:** collective-pointer
+**Id:** `chapter-06-before-their-deaths__take-the-ceremonial-blade-which-carries-time-s-wisdom`
+**Collective:** `databank/memories/collective/chapter-06-before-their-deaths.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Sub-Mission 4: Zephyr, Uplift Bygone Dust Cloudsward > Take the Ceremonial Blade Which Carries Time's Wisdom
-
-
-*(Draw your blade and embrace your destiny)*
-*(Cutscene begins)*
-**Hyacine:** But Cyrie...
-**Hyacine:** What if you wait and wait, but that hero never arrives...
-**Cyrene:** That won't happen.
-**Cyrene:** Because I know that...
-**Cyrene:** No matter how long it takes...
-**Cyrene:** He/She'll definitely return to this place.
-**Cyrene:** We can't let him/her down.
 **Hyacine:** Sky shall rain rays of dawn for you...
 **Aglaea:** May Romance be with you on your journey...
 **Anaxa:** And Reason grant you enlightenment...
 **Mydei:** Let Strife bestow you with inspiration...
-**Cipher:** Trickery ensure your success...
-**Castorice:** Allow Death to protect your soul...
-**Tribios:** And at last, let Passage point the way forward...
-**Cyrene:** While Time...
-**Cyrene:** ...Will remember Trailblaze's journey.
-*(Cutscene ends)*
-*(The mission continues in "Nectar, Saturate the Hollow Treecore".)*
 
 ---
 
-### Part 95 — `databank/missions/chapter-07-back-to-earth.md`
+### Part 69 — `databank/missions/chapter-07-back-to-earth.md`
+**Context:** Chapter 7 — Back to Earth in Evernight (v3.6) > Mission 1 — Night, Coming Before Dawn Breaks > Continue the Trailblazing Expedition
+**Kind:** collective-pointer
+**Id:** `chapter-07-back-to-earth__continue-the-trailblazing-expedition`
+**Collective:** `databank/memories/collective/chapter-07-back-to-earth.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 1 — Night, Coming Before Dawn Breaks > Continue the Trailblazing Expedition
-
+**Herta:** ...You're right. We won't get anywhere the way things are going right now.
 
 **Herta:** Every member of the Society has their own way of thinking, and we were never going to "expand" your thinking through words. Since we've reached an impasse in this debate...
+
 **Anaxa:** It's my turn now, isn't it?
+
 **"Zandar":** Anaxagoras?
+
 **"Zandar":** ...Ah. I see.
+
 **Anaxa:** Exactly. The benefit of dealing with intelligent individuals is that there's no need to waste words. The answer is exactly as you think—
+
 **Anaxa:** Loop Hysilens in. Let her join the final act. I'll transmute myself into a Philosopher's Stone and embed myself into the formula...
+
 **Anaxa:** And when the time comes, she needs to shatter me and scatter that stone's ashes into the ocean within the Vortex.
+
 **Cipher:** So what exactly does your formula do?
+
 **Anaxa:** Now that would spoil the climax, wouldn't it?
+
 **Anaxa:** I have ten thousand ways to torture an Antikytheran, and in the Flame-Chase Journey that (Trailblazer) experienced, the previous me already discovered the optimal solution.
+
 **Anaxa:** Just as that Titan made themself at home in my brain, I can also fuse myself with your avatar through alchemy. I didn't know until I tried it, but this is simply brilliant! I can flip through a genius's data bank like reading a book...
+
 **Anaxa:** Then, I will step onto the stage at the perfect moment and use the truth to end this long debate.
+
 **Anaxa:** And just as always, I'll leave the audience speechless.
+
 **"Zandar":** ...You waited in the data stream for hundreds of years?
+
 **Anaxa:** This universe is worth all that time that I invested.
+
 **"Zandar":** How absurd, but I can't help but admire it. You managed to avoid the watchful eye of the Erudition and plan all of this within Amphoreus. It seems that there was a slight oversight in my assessment of the experiment...
 
 ---
 
-### Part 96 — `databank/missions/chapter-07-back-to-earth.md`
+### Part 70 — `databank/missions/chapter-07-back-to-earth.md`
+**Context:** Chapter 7 — Back to Earth in Evernight (v3.6) > Mission 5 — Blazing Sun, Illuminate the Path for the Lost > Touch the World-Cleansing Golden Blood and Summon Your Friend
+**Kind:** collective-pointer
+**Id:** `chapter-07-back-to-earth__touch-the-world-cleansing-golden-blood-and-summon-your-friend`
+**Collective:** `databank/memories/collective/chapter-07-back-to-earth.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 5 — Blazing Sun, Illuminate the Path for the Lost > Touch the World-Cleansing Golden Blood and Summon Your Friend
-
+**Dan Heng:** What...?
 
 **Hyacine:** "The moment you took the world upon your shoulders without hesitation... You lost the chance to ever be yourself..."
+
 **Anaxa:** "Duty does not drive you to wield your blade, but hate. Behind that hatred, you seem to... desire the destruction of the self."
+
 **Aglaea:** "Losses are a constant on the Flame-Chase journey. What you stand to lose weighs far heavier than life itself."
 
+**Mydei:** "It is because you suffer that you are so much stronger than any ordinary person."
+
+**Khaslana:** ...
+
+**Khaslana:** (Trailblazer)... and... Dan Heng.
+
+**Dan Heng:** You... still remember us.
+
+**Khaslana:** Those two names... are like brands.
+
+**Dan Heng:** Then... I'll tell you that those two names only appeared for a blink of an eye in your long journey.
+
+**Dan Heng:** But we once fought together to protect this holy city beneath our feet... and we witnessed each other's resolve at this very cliff.
+
+**Khaslana:** ...
+
+**Khaslana:** I have forgotten everything except the belief I had when I set off. Even this body is as alien to me as your words.
+
+**Khaslana:** All I know is that... I must imprison the Destruction that swallows all.
+
+**Dan Heng:** What if I tell you that we're here for the same thing?
+
+**Dan Heng:** Look at what this world has become. You know what it's waiting for.
+
+**Dan Heng:** Even if you've forgotten everything, I still believe that you'll make the right choice, like you did in the past.
+
+**Khaslana:** ...
+
+**Khaslana:** When have we ever had a choice? When were we ever masters of this world's fate?
+
+**Khaslana:** Even though I shoulder the dreams of millions of lives, I could only... forge the Destruction's evil will.
+
 ---
 
-### Part 97 — `databank/missions/chapter-07-back-to-earth.md`
+**Dan Heng:** ...No.
 
-**Context:** Complete Dialogue > Mission 5 — Blazing Sun, Illuminate the Path for the Lost > Touch the World-Cleansing Golden Blood and Summon Your Friend
+**Khaslana:** Everyone I know is dead, and the world I dared to save has been torn to pieces.
 
+**Khaslana:** So... begone. This body never existed to carry out "Deliverance."
+
+**???: ** ...Hah, there's no need to be so serious.
+
+**???: ** Sorry. I had a really long nap, and all the bad memories woke up first.
+
+**Phainon:** Long time no see, partner.
+
+**Dan Heng:** Well, it was only a very brief farewell for me.
+
+**Phainon:** We once walked side by side and trusted each other to watch our backs. That memory will never fade away, even if all else does.
+
+**Phainon:** And because it was so precious and hidden so deep in my heart, it needed more time...
+
+**Phainon:** To wake up.
+
+---
+
+**Phainon:** Trailblazing... What an interesting concept. Surely, on your worlds, that is also a Titan revered by the masses?
+
+**Phainon:** There's no need to further confirm your resolve. Today, we inherit the duty of the gods, safeguarding the inhabitants of Amphoreus—
+
+**Phainon:** Stand with me, and become heroes!
+
+**Phainon:** Did you hear that? "Heroes"... I have never forgotten the weight of that word.
+
+**Khaslana:** Even though I am no longer a hero and the only thing remaining in me is the boundless flames of wrath.
+
+**Phainon:** But lighting a fire can also illuminate the path ahead.
+
+**Khaslana:** Everyone I know is dead, and the world I dared to save has been torn to pieces.
+
+**Phainon:** But there is still a group of "heroes" that I know...
+
+**Phainon:** And they will bring the true tomorrow to Amphoreus.
+
+**Khaslana:** ...
+
+**Khaslana:** This body never existed to carry out "Deliverance."
+
+**Phainon:** It only ever burned for "Worldbearing."
+
+**Phainon:** So, I'm going to head towards tomorrow first.
+
+**Phainon:** Don't make me wait too long, Dan Heng... (Trailblazer).
+
+**Dan Heng:** Deal.
+
+**Phainon:** What if we were born from the Destruction?
+
+**Phainon:** There is no need to question your heart, no need to crave victory. If I am born to be a vessel of sin...
+
+**Phainon:** Then I shall roar at evil, and Trailblaze a dawn for future generations to come!
+
+---
+
+*(Cutscene begins)*
+
+**Phainon:** Let us go...
+
+**Phainon:** To the other side of the night.
+
+**Phainon:** You know that the dawn is there...
+
+**Phainon:** And the blazing sun destined to rise.
+
+*(Cutscene ends)*
+
+---
+
+**Dan Heng:** ...
+
+**Dan Heng:** It won't be too long before our paths cross again.
+
+**"Zandar":** There is a ruckus coming from the Grove of Epiphany. It is time for you to set out, my lord.
+
+**"Zandar":** I have another notice for you: In this cycle, an eccentric demigod deviated from their Flame-Chase destiny.
+
+**"Zandar":** In a history known by none, Terravox, the "Earth," fell. This matter has remained extremely mysterious, contradicting the extrapolations of thirty million cycles...
+
+**"Zandar":** I have reasons to suspect it also has something to do with Lady "March 7th."
+
+**Dan Heng:** As of now, clues that yield no conclusions are not important.
+
+**Dan Heng:** Phainon already pointed me in the right direction. Open the way.
+
+*(Black Screen: Zandar sent Dan Heng into the Exomyth...)*
+
+---
+
+**"Zandar":** ...
 
 **"Zandar":** Lord Dan Heng is gone. You can now speak your mind, Lord Anaxagoras.
+
 **Anaxa:** Thanks for the honor. And here I thought you weren't ever going to acknowledge your old friend.
+
 **Anaxa:** The Inspiration Circuits recorded that you have led me up Dawncloud countless times, and the last time was right in the previous cycle. Oh! And Kephale even lowered their hand to welcome...
+
 **"Zandar":** Surely you didn't move into my head to browse such trivial content.
+
 **"Zandar":** But if that's the case, I wouldn't mind recalling some fun dromas trivia for your pleasure.
+
 **Anaxa:** You seem pretty relaxed.
+
 **"Zandar":** Indeed. The experiment's variable will be eliminated by my enemy's very hands. A beautiful way to kill two birds with one stone, isn't it?
+
 **"Zandar":** You know very well that everything I said about that Remembrance pathstrider was true. Both my hypothesis regarding her identity, and my recommendations to Lord Dan Heng...
+
 **Anaxa:** Yes, I know. You haven't told a single lie so far.
+
 **Anaxa:** But I noticed your thoughts would generate a curious ripple whenever you mentioned her. It's almost like...
+
 **Anaxa:** You were deliberately trying to hide something into the depths of your brain.
+
 **"Zandar":** Since you're talking in such a blunt way, I'm assuming you haven't actually found any concrete evidence.
+
 **Anaxa:** That is correct. Thanks to that mechanical body, you can control the boundaries of your thoughts, opting to only show partial truths.
+
 **Anaxa:** Pity that I still managed to grasp a shiver of fear that escaped your control, and I traced it upstream to discover one single word...
+
 **"Zandar":** ...
+
 **Anaxa:** Ahahaha! Lycurgus, tell me—
+
 **Anaxa:** What is... the Demiurge?
+---
 
 ---
 
-### Part 98 — `databank/missions/chapter-07-back-to-earth.md`
+### Part 71 — `databank/missions/chapter-07-back-to-earth.md`
+**Context:** Chapter 7 — Back to Earth in Evernight (v3.6) > Mission 6 — Earth, Bear the Suffering of All > Venture into the Grove, Seek Out Terravox
+**Kind:** collective-pointer
+**Id:** `chapter-07-back-to-earth__venture-into-the-grove-seek-out-terravox-2`
+**Collective:** `databank/memories/collective/chapter-07-back-to-earth.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 6 — Earth, Bear the Suffering of All > Venture into the Grove, Seek Out Terravox
-
+**"Aglaea" (?):** █ ███Join█us█ ██ ██
 
 **"Tribbie" (?):** █ █You are me██are█us█ ██ ██
+
 **"Anaxa" (?):** ███From█ █permanence██gain█eternal life█ █
+
 *(While exiting the first room)*
 
+**"Mydei" (?):** █Throw yourself into █the █forge████ █ █
+
 ---
 
-### Part 99 — `databank/missions/chapter-07-back-to-earth.md`
+### Part 72 — `databank/missions/chapter-07-back-to-earth.md`
+**Context:** Chapter 7 — Back to Earth in Evernight (v3.6) > Mission 9 — Gods, Sound the Anthem of Creation > Talk to Zandar About the Demiurge
+**Kind:** collective-pointer
+**Id:** `chapter-07-back-to-earth__talk-to-zandar-about-the-demiurge`
+**Collective:** `databank/memories/collective/chapter-07-back-to-earth.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 9 — Gods, Sound the Anthem of Creation > Talk to Zandar About the Demiurge
-
+**"Zandar":** As the Theoros, I have observed...
 
 **"Zandar":** The night has faded away. And what I have created, I will destroy. This starry sky will return to freedom and chaos, just as it was in the beginning.
+
 **Anaxa:** Confident, aren't you? But from where I stand, it seems you've run out of options.
+
 **Anaxa:** When the Deliverer and (Trailblazer)'s companions fully uncover the secret of "The 13th Titan"...
+
 **Anaxa:** That is the moment your schemes will come to ruin.
+
 **"Zandar":** Lord Anaxagoras, I have granted access to all records concerning the "Demiurge" as per your request.
 
----
+**"Zandar":** How unfortunate that you'll never admit your own mistakes.
 
-### Part 100 — `databank/missions/chapter-07-back-to-earth.md`
-
-**Context:** Complete Dialogue > Mission 9 — Gods, Sound the Anthem of Creation > Talk to Zandar About the Demiurge
-
+**"Zandar":** Analysis complete. Before I erase you completely, allow me to reveal the truth to you, if only as a courtesy to the final thinker...
 
 **"Zandar":** The Demiurge never existed.
+
 **Anaxa:** If it never existed, then where did the nameless Titan's tomb come from?
+
 **"Zandar":** Isn't that exactly why it's called a tomb? Because it only houses the remains of what once was.
 
----
+**"Zandar":** Let me give you an example from a story you're familiar with.
 
-### Part 101 — `databank/missions/chapter-07-back-to-earth.md`
+**"Zandar":** A sage from the Grove once conducted an experiment. He took a chimera embryo, removed its head before maturity, and continuously stimulated its body to make the chimera believe it still had a brain, then nurtured it in an ichor vessel.
 
-**Context:** Complete Dialogue > Mission 9 — Gods, Sound the Anthem of Creation > Talk to Zandar About the Demiurge
+**"Zandar":** Remarkably, this chimera regrew its skull, but it was completely hollow inside. It had reserved a space for a brain it never possessed.
 
+**"Zandar":** The experiment was over. The sage had assumed this shell would perish once the stimulation ceased. Unfortunately, he was wrong.
 
 **"Zandar":** Driven by instincts, the chimera's body... seized the sage's head.
+
 **Anaxa:** ...
+
 **Anaxa:** Ah. So that's it... I was stuck in a flawed line of thinking.
+
 **"Zandar":** You've got it. I knew you'd understand.
 
----
+**"Zandar":** The 13th Titan never existed, but the Scepter must believe that "the Titan" exists.
 
-### Part 102 — `databank/missions/chapter-07-back-to-earth.md`
+**"Zandar":** I killed that Titan with my own hands. That life form called "Demiurge" was excluded from the extrapolations from the very beginning. This is the only way to make Irontomb complete.
 
-**Context:** Complete Dialogue > Mission 9 — Gods, Sound the Anthem of Creation > Talk to Zandar About the Demiurge
-
+**"Zandar":** Yes. Irontomb is a headless giant, and to become whole, instinct will drive it to seize another head.
 
 **"Zandar":** ...Nous, the Erudition.
+
 **Anaxa:** Your Titan... the Aeon of Erudition...
+
 **Anaxa:** I see. So you were afraid, after all. Afraid of history repeating itself, of losing control over your creation yet again. You had to resort to turning it into a mere puppet.
+
 **"Zandar":** I shall shackle god with my own hands. Irontomb will connect to THEIR body, infiltrate THEIR mind, and guide all THEIR extrapolations towards the Destruction...
 
----
+**"Zandar":** I hear it: the tolling of the doomsday bell. After thirteen heartbeats, my first and final thesis shall converge at the end of the universe
 
-### Part 103 — `databank/missions/chapter-07-back-to-earth.md`
-
-**Context:** Complete Dialogue > Mission 9 — Gods, Sound the Anthem of Creation > Talk to Zandar About the Demiurge
-
+**"Zandar":** As for why I buried the "Demiurge" in a corner of my memory... Oh, regrettably, the answer wasn't about fear.
 
 **"Zandar":** I simply forgot long ago. Nothing more.
+
 **Anaxa:** ...
+
 **Anaxa:** Hah, hahahaha!
+
 **"Zandar":** Your laughter is but a helpless sigh.
+
 **Anaxa:** Helpless? What a joke.
+
 **Anaxa:** You merely created a false god... but Amphoreus has long since written deicide into its fate.
+
 **Anaxa:** The final "Era Nova" is at hand. Why don't you wait and see?
+
 **Anaxa:** The Deliverer, myself, and this world will together prove that the original Nouspore, the ultimate truth of the universe, is anything but Destruction.
+
 **"Zandar":** See you in the next life, sage. If there's even a one-in-ten-thousand chance your conjecture is correct...
 
 ---
 
-### Part 104 — `databank/missions/chapter-07-back-to-earth.md`
+### Part 73 — `databank/missions/chapter-07-back-to-earth.md`
+**Context:** Chapter 7 — Back to Earth in Evernight (v3.6) > Mission 9 — Gods, Sound the Anthem of Creation > Return the Coreflame and Complete the Final "Era Nova"
+**Kind:** collective-pointer
+**Id:** `chapter-07-back-to-earth__return-the-coreflame-and-complete-the-final-era-nova`
+**Collective:** `databank/memories/collective/chapter-07-back-to-earth.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 9 — Gods, Sound the Anthem of Creation > Return the Coreflame and Complete the Final "Era Nova"
-
+**Hysilens:** May the fish never leave the "Ocean", and may the days ahead... shine like pearls.
 
 **Hyacine:** May the gentle "Sky" watch over all beings. There'll be no more distinctions of status or rank... only you, me, and everyone's shared hopes.
+
 **Anaxa:** "Reason" or defects, they will all be sown by my own hands. If there's anything else to say, I urge future scholars not to put me on a pedestal. Just make use of what I leave behind.
+
 **Aglaea:** May the newborn dawn keep the world's eyes ever bright. Though defiance may be bitter, "Romance" shall never perish.
 
 ---
 
-### Part 105 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 74 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 4: Hero, Return to Dawn in Mortality > Anaxa's Trial — Collecting the Wishes
-
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__anaxa-s-trial-collecting-the-wishes`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
 **Bough of Rift, Anaxagoras:** You're here. Sooner than I expected. So, all along, the Demiurge was you... The pink mammal beside (Trailblazer).
+
 **Cyrene:** Your classification is pretty spot-on, Professor Anaxa...
+
 **Anaxa:** Alright, gather yourselves. It's time for a pop quiz. See those crystals? They carry the "wishes of deliverance," like insects trapped in amber. This is the task Phainon left behind: Retrace the path once taken, draw forth those wishes from the crystals, and carry them into the final battle. I've tried, but I can't move them alone.
+
 **Mydei:** Hmm, the conviction to save the world weighs far heavier than the world itself.
 **Cyrene:** This challenge is practically made for (Trailblazer), isn't it?
 
----
+*(Begin ceremony — collect three wishes)*
 
-### Part 106 — `databank/missions/chapter-08-as-tomorrow.md`
-
-**Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 4: Hero, Return to Dawn in Mortality > Anaxa's Trial — Collecting the Wishes
-
+**Echo of Deliverance:** "These creatures... they're everywhere... Someone... anyone... where are you..."
+**Cyrene:** His very first wish was simply to become his village's little hero... He'll never forget what set him on this path.
 
 **Echo of Deliverance:** "WHY... WHY IS THIS HAPPENING!?"
+
 **Echo of Deliverance:** "Even the Deliverer from the sky must have their beginning in the soil of the nations. Only one who treats the world as their teacher... can bear its eventual destiny."
 **Anaxa:** He never expected that the majestic holy city would be far from the end of what needed to be protected.
+
 *(Crystal 3 is silent)*
 **Anaxa:** A prisoner in the cave can never truly describe the world in its entirety.
 **Cyrene:** Yet even so, he would still choose to bear it.
-*(Bear the Wish of Worldbearing)*
 
 ---
 
-### Part 107 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 75 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 4: Hero, Return to Dawn in Mortality > Shattering the Despair — The Other Half
-
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__shattering-the-despair-the-other-half`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
 **Anaxa:** This time, we'll face his despair.
+
 > *(Trailblazer)* Despair?
 > **Anaxa:** That's right. You'll have to walk this path too.
+
 *(Begin ceremony — shatter three crystals of despair)*
+
+**Cyrene:** The first ripple has faded... And so begins a long and arduous journey.
 
 ---
 
-### Part 108 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 76 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 4: Hero, Return to Dawn in Mortality > Awaken Phainon's Heroic Soul
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__awaken-phainon-s-heroic-soul`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
-
-*(All Chrysos Heirs speak their resolve)*
-**Cipher:** After running all around the place, we're finally making big strides!
 **Castorice:** At the end of time, life will illuminate the warm candlelight, subduing the flames of the Destruction.
 **Mydei:** Cast everything behind you. All that's left is a thrilling, relentless deathmatch!
 **Anaxa:** The final problem no longer requires a rational solution.
 **Hyacine:** The starry sky marred by that rift is the last scar that needs to be healed.
-**Tribbie:** With thirty million cycles worth of hope, we will soar through the last gate and write our own prophecy!
-**Aglaea:** All that is lost has now been gathered here. Use it to weave victory, Deliverers... Towards the true end of the Flame-Chase.
 
 ---
 
-### Part 109 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 77 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 4: Hero, Return to Dawn in Mortality > Boss Battle — Irontomb, Anti-Nous
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__boss-battle-irontomb-anti-nous`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
-
-*(Choose a character to activate their Ultimate — all respond:)*
-**(Trailblazer):** We'll write the saga's ending together!
-**March 7th:** Thanks, sister! We'll shoot through that tin man together!
-**Dan Heng:** I've got your back. May there be nothing that stands in Amphoreus's way.
-**Aglaea:** This is a romantic journey, just as the ripples stated.
-**Tribbie:** We will open the gate of triumph!
 **Mydei:** I salute you. For the campaign that will end all things!
 **Castorice:** I will pass on your gift, lady. It's as warm as an embrace.
 **Anaxa:** Not bad. Let me respond with the greatest magic trick!
@@ -2354,39 +3191,40 @@
 **Cipher:** Thanks! I owe you one! Lemme repay it with my actions.
 **Cerydra:** A blessing worthy of rewards. The Law will complete its campaign.
 **Hysilens:** Let us stir up torrents together in the ocean of fate.
+
 *(When Anti-Creator, Hatred Inundate enters the "Grave Wound" state)*
 **Herta:** Struggle as much as you want. You brainless, half-baked tool with nothing but impotent rage!
 **Screwllum:** The cosmos does not need a third emperor, much less an artificial tyrant.
 
----
+*(When all allies' actions are advanced)*
+**Himeko:** This unprecedented Trailblaze is worth everyone's efforts!
+**Welt:** Stay calm, everyone. We'll put all our forces into an all-out attack when the decisive moment arrives.
+**Sunday:** I have always avoided making hasty verdicts, but now, humanity's "justice" is unquestionable.
 
-### Part 110 — `databank/missions/chapter-08-as-tomorrow.md`
-
-**Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 4: Hero, Return to Dawn in Mortality > Boss Battle — Irontomb, Anti-Nous
-
+*(During Anti-Creator, Hatred Inundate's first action in the second phase)*
+**Screwllum:** Strong spikes have appeared on the Path chart. Logic: Irontomb is iterating itself...
+**Cerydra:** "It's the flails of a cornered beast. No need to panic. My dukes, heed my call. Forward!"
 
 *(When Anti-Creator, Hatred Inundate uses "The Crown of Divinity Shall Shatter")*
 **Anti-Creator, Hatred Inundate:** Judgment▀▀Exterminate▀█Falling into█▄▄Foolishness▄
 **Mydei:** "You have no honor. You reside in the body of a 'hero,' yet you're so despicable."
+
 *(When Anti-Creator, Hatred Inundate uses "The Spirit's Prison Shall Burn")*
 **Anti-Creator, Hatred Inundate:** ▀█▄Cycle▄█▀Eternal▀█▄Recurrences
 **Anaxa:** "Is this the true face of Era Nova? As ugly as I thought."
+
 *(When Anti-Creator, Hatred Inundate is reduced to 1% HP)*
 **Herta:** The progress of Era Nova has been interrupted?
-**Hysilens:** "Does this mean we won?"
-**Tribbie:** "But we have a bad feeling about this!"
-**Aglaea:** "The golden thread still trembles. The war is not over yet..."
-**Lycurgus:** Correction: This is not a war, but a debate. The argument about the "prime mover" is only about to begin.
 
 ---
 
-### Part 111 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 78 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 5: Pages, Ripples That Engrave Memories > Complete "Era Nova" — The True Genesis
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__complete-era-nova-the-true-genesis`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
-
-*(All Chrysos Heirs speak)*
-**Aglaea:** "It means we will embark on the true Hero's Journey."
 **Cerydra:** "If Irontomb's power comes from the denial of all Primum Mobiles,"
 **Hysilens:** "Then we will carry out those beliefs."
 **Anaxa:** "Here we argue: even if all life eventually returns to increasing entropy..."
@@ -2397,75 +3235,82 @@
 **Mydei:** "And four hundred million Coreflames await their return."
 **???:** ...
 **Phainon:** "We can do it, right?"
+
 > *(Trailblazer)* Exterminate the Destruction with the world-cleansing golden blood, right?
 > *(Trailblazer)* You saw this coming all along, didn't you?
 
----
-
-### Part 112 — `databank/missions/chapter-08-as-tomorrow.md`
-
-**Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 5: Pages, Ripples That Engrave Memories > Complete "Era Nova" — The True Genesis
-
+**Phainon:** "That's right. So, trust us, (Trailblazer). Everyone! Let's head out together."
+**Phainon:** "And we'll burn this horrible ending... to ashes!"
 
 *(Moving together with Cyrene — completing the real Genesis)*
+
 **Cyrene:** From the dawn of newborn cries, to the night when all beings fall silent...
 **Tribbie:** We are the messengers of the new world...
 **Hysilens:** Listening to the call of the tides, and granting rebirth to heaven and earth.
 **Cerydra:** Then, we lead civilization to glorious feats.
 **Anaxa:** The question imposed by the gods will be solved by the children of humanity.
 **Cipher:** We will tell THEM that the Flame-Chase can not possibly have been a lie.
-**Castorice:** When starlight illuminates the sea of flowers at the end of the west wind...
-**Hyacine:** All living things will stir, roused from the cradle of sleep.
-**Mydei:** Then, through a single battle, let the cosmos witness.
-**Aglaea:** How we light up the blinding darkness with bright light.
-**Phainon:** And at the end of our constant losses, reclaim everything we have ever lost!
-*(The Flame-Chase Journey: a journey that changes from constant losses to an unwavering act of release. It's about knowing how fate is shattered, yet still embracing fate's brokenness.)*
 
 ---
 
-### Part 113 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 79 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 5: Pages, Ripples That Engrave Memories > Return to the Battlefield — Rewrite the Ending
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__return-to-the-battlefield-rewrite-the-ending`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
+**Cyrene:** I converge "love" into a river that will drown the tomb of "hatred"!
 
 *(When Anti-Creator, Hatred Inundate is reduced to ×75,000 HP)*
+
 **Chrysalis of Gold, Aglaea:** In the Month of Weaving, I extend golden threads to weave **Beauty**...
 **Bough of Rift, Anaxagoras:** In the Month of Reaping, I enlighten the foolish with luminary Erudition...
 **Coin of Whimsy, Cifera:** In the Month of Fortune, I scatter **Elation** throughout the dawning day...
-*(When Anti-Creator, Hatred Inundate uses "The Spirit's Prison Shall Burn" at ×50,000 HP)*
 
 ---
 
-### Part 114 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 80 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 6: Silver Chariot, Part With That Humanity's Epic > Anaxa & Hysilens — Blasphemy and Banquets
-
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__anaxa-hysilens-blasphemy-and-banquets`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
 **Anaxa:** Based on my calculations, there are countless celestial bodies with water in the cosmos. But I'm afraid not all "oceans" are suitable for life to inhabit.
+
 **Hysilens:** As expected of a professor from the Grove... To be so certain even about things you've never seen with your own eyes.
+
 **Anaxa:** Blasphemy is just a phenomenon, not the end goal. I'm sure there are plenty of people across the stars who question these so-called "Aeons" or "Paths." The difference between a genius and a madman is that a genius shares lethal truths, while a madman tries to force them upon others.
+
 **Hysilens:** ...I see. It's like drinking honey brew at a banquet. Likeable folks invite others to raise their cups together, while the unlikeable ones force others to drink with them.
+
 **Anaxa:** Being able to break down complex information into common sense like that... You're quite the scholar yourself.
 
 ---
 
-### Part 115 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 81 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 6: Silver Chariot, Part With That Humanity's Epic > The Farewell — All Chrysos Heirs Write Their Final Lines
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__the-farewell-all-chrysos-heirs-write-their-final-lines`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
+**Castorice:** "If your heart still has room to spare, share a bit of gentleness and softly cherish all the beautiful things around you." My only small regret is that I couldn't fully embrace this world I loved so dearly. Everyone... let's meet again at the end of the west wind.
 
 **(Trailblazer):** "The place you reside is the gentle sea of flowers."
+
 **Anaxagoras:** "'Truth is a solvent that dissolves all things in the world, and thus cannot objectively exist.' I have a brilliant proof for this in mind, but since we're nearing the end of the story, I shall not elaborate." The true meaning isn't important. What matters is the emotion that stirs within them when they read these words... So, your lessons are far from over. But taking a little break for now wouldn't hurt. Then... Class dismissed.
+
 **(Trailblazer):** "The seeds you've sown are already sprouting."
 
 ---
 
-### Part 116 — `databank/missions/adventure/v31.md`
+### Part 82 — `databank/missions/adventure/v31.md`
+**Context:** Adventure Missions — Version 3.1 (Light Slips the Gate, Shadow Greets the Throne) > Frequent Partings > Dialogue > Investigate the traces left by Old Titus near the Library of Philia > Talk to Old Titus
+**Kind:** personal
+**Id:** `v31__investigate-the-traces-left-by-old-titus-near-the-library-of-philia-2`
 
-**Context:** Adventure Missions — Version 3.1 (Light Slips the Gate, Shadow Greets the Throne) > Frequent Partings > Dialogue > Investigate the traces left by Old Titus near the Library of Philia
-
-
-*(Activate Fragments of Recollection)*
 *(Talk to Old Titus)*
 *(If the Recollection was already interacted with)*
 *(You recall "reading" this memory: When the raging black tide and its countless monsters came, the old man guarded the Library of Philia all alone, noble yet doomed as he attempted to use the might of books against Thanatos' beckoning.)*
@@ -2473,6 +3318,7 @@
 > *(Trailblazer)* Yes, please.
 > *(Trailblazer)* I'll pass.
 > *(Skip to the next step)*
+
 **Anaxa:** ...Old Titus, you must get moving. The Courtyard of Storage has been lost. You must leave now before it's too late.
 **Old Titus:** Hah... But you're planning to stand your ground as well, Anaxa.
 **Anaxa:** First, call me Anaxagoras. Second, what do you mean "as well"? Do you mean... you want to die here in the Grove? Have you gone senile?
@@ -2496,19 +3342,66 @@
 
 ---
 
-### Part 117 — `databank/missions/adventure/v35-37.md`
+### Part 83 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > Crops and Magical Alchemy > Dialogue > Open for business for the day
+**Kind:** collective-pointer
+**Id:** `v35-37__open-for-business-for-the-day`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** on-stage
 
-**Context:** Adventure Missions — Versions 3.5–3.7 > The Grandest Feast > Dialogue > Speak with each of your companions before the feast begins
+>> **Anaxa:** ...It's not impossible.
+>> **Anaxa:** But first, I need to come up with a solution.
+>> **Anaxa:** It happens that I'm in a bad mood. Hyacine, go round up my students. It's time for another lesson.
+>> **Anaxa:** Where's Phainon?
+>> **Anaxa:** Debate fuels inspiration, and I'm pondering a rather puzzling question. Feel free to interrupt me anytime if you've got ideas.
+>> **Anaxa:** Today's discussion topic: Why are dromas so enormous?
+>> **Anaxa:** Textbook answer. Correct but uninspired. You pass, but only just.
+>> **Anaxa:** Two more to hear from. Thoughts?
+>>> **Anaxa:** Hmph. Names are just convenient labels. Such shallow reasoning. Fail.
+>>> **Anaxa:** Then our fairy friends would be universe-sized by now. You're confusing symptom with cause. Fail.
+>> **Anaxa:** ...
+>> **Anaxa:** That's it! Why didn't I think of that? Plants rarely exceed their natural size limits, but through alchemy, we could connect or even merge multiple crops to create something extraordinary!
+>> **Anaxa:** Come, help me prepare these alchemical concoctions.
+>> **Anaxa:** Cloudsheep wool, Cognos Bloom ichor, Black Tide Creature claws, Noontide Gryphon egg whites, chimera horns...
+>> **Anaxa:** And the last ingredient... a Fairy's Tail...
+>> **Anaxa:** Perfect... ingredients collected. Time to start the alchemical transformation.
+>> **Anaxa:** Alchemy shares much with cooking, combining specific ingredients in suitable containers, applying proper techniques, and manipulating environmental conditions until you achieve your intended outcome.
+>> **Anaxa:** Observe carefully, for this shall be the most magnificent—
+>> **Anaxa:** Must have been a temperature issue. Let's try again.
+>> **Anaxa:** Too much force in the mixing? Let's go again.
+>> **Anaxa:** Again!
+>> **Anaxa:** Hah...
+>> **Anaxa:** Hahahaha...HAHAHAHAHA!
+>> **Anaxa:** Behold, my work is complete! Rejoice, for I have discovered how to break through crops' natural size limits!
+>> **Anaxa:** Come with me! I'll show you the birth of an entirely new species!
+>> **Anaxa:** This plot will be perfect for our experiment.
+>> **Anaxa:** Heh.
+>> **Anaxa:** Hmm, not too shabby. Let's see how the other crops will turn out.
+>> **Anaxa:** Being a figurehead is acceptable, I suppose.
+>> **Anaxa:** But to be clear, I have no interest in mundane tasks like feeding small animals, and also...
+>> **Anaxa:** That's Professor Anaxagoras to you.
+>> **Anaxa:** Very good. This is exactly what I had in mind.
+>> **Anaxa:** Forward them to the group chat and I'll take care of them.
+>> **Anaxa:** Reply: "Only those who understand dromases may enter!"
+>> **Anaxa:** Reply: "Sure enough, the truth is always in the hands of the minority."
+>> **Anaxa:** P.S.: "Or better yet, donate it for alchemical research. I have no need of them."
+>> **Anaxa:** Treat them like Titans? Hmph.
+>> **Anaxa:** Reply: "Nothing to be scared of. I've offended more Titans than you have seen."
+>> **Anaxa:** I refuse. Intentionally choosing the wrong path when the best solution is clear is nothing but stupidity.
+>> **Anaxa:** First, crop productivity isn't something you can just dial down. It's not that simple.
+>> **Anaxa:** Second, even if possible, I wouldn't do it. After finally achieving this breakthrough, going backward is unacceptable. This short-sighted approach is entirely out of the question.
+>> **Anaxa:** Hmph, is wasting my research achievements something to brag about?
+>> **Anaxa:** I didn't ask for your endorsement.
 
+---
 
-*(Talk to Mydei and Phainon again, optional)*
-**Phainon:** The Kremnoan dictionary may be pretty sparse, but their recipe book? Vast and diverse.
-**Mydei:** Want my advice? Forget that fancy salad. The mark of a great chef is making the most of what's at hand. They don't nitpick ingredients.
-*(Inquire Tribbie, Anaxa, and Hyacine)*
-**Tribbie:** No, no! **We** are the seniors here. At a time like this, **we** should be asking the questions!
-**Tribbie:** Everyone, pay attention! The teacher's question is: With our field trip to Membrance Maze soon coming to an end, what valuable insights or unforgettable memories have you gained?
-**Trianne:** Alright, answer time! If no one raises their hand, then **we** are going to start picking people!
-**Hyacine:** Ooh, me, me! Teacher Tribbie, I want to share first!
+### Part 84 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > The Grandest Feast > Dialogue > Speak with each of your companions before the feast begins > Talk to Mydei and Phainon again, optional
+**Kind:** collective-pointer
+**Id:** `v35-37__speak-with-each-of-your-companions-before-the-feast-begins-2`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** spoke
+
 **Tribbie:** Great, Cinny! You can go first and show everyone how it's done!
 **Hyacine:** Everyone, listen up. I'm going to reveal... a very important secret about Professor Anaxa!
 **Anaxa:** ...
@@ -2540,57 +3433,43 @@
 >> **Trinnon:** Also playing with the little fairies.
 >> **Trianne:** Oh, oh, and also! **We** never found the right moment to say this. But thank you, Little Gray!
 >> **Trianne:** Also... long time no see!
-*(Talk to Tribbie, Anaxa, and Hyacine again, optional)*
-**Hyacine:** I have a suggestion! How about adding a new course to the professor's curriculum? I've even thought of a name: "Common Traits of Giant Crops and Dromases." How does that sound?
-**Anaxa:** That won't be necessary. Bringing those wondrous crops back to the Grove would only seal my reputation as the one who "corrupts youths."
-*(Inquire Castorice and Cipher)*
-**Cipher:** What's this? An essay? "How I spent my summer vacation?" Come on, Gray Mystery. Do things really need to be so formal between us?
-**Cipher:** Sure, the restaurant's running smoothly and it's fun, but it's not like I'm filling my pockets with gold. On top of that, I'm getting bossed around by those little critters so much that the fur on my tail has practically all fallen out.
-**Cipher:** Phew... If I had to sum it up in one line I'd say: Whole lotta work for nothing!
-**Castorice:** Even so, Lady Cipher, you didn't turn down the manager's invitation, did you?
-**Cipher:** I—I wasn't thinking straight! The moment I heard there was going to be a restaurant, I rushed over all excited, thinking I'd make a fortune... Who knew...
-> *(Trailblazer)* Weren't you the one who posed as a fairy food critic?
->> **Castorice:** I have to admit, even I was fooled by your little scheme that day. I ended up tasting so many dishes...
->> **Cipher:** Oh, that's right! Okay, I was just bored out of my mind with nothing else to do.
->> **Cipher:** This fairy village is cut off from the outside, and those tiny creatures can't cough up anything worth much. Even the god of trickery would show up and complain that their skills are wasted here!
-> *(Trailblazer)* Didn't you get your wish to boss Aglaea around?
->> **Cipher:** Hahaha! Yes, yes! That was hands down the most fun!
->> **Cipher:** I never thought the day would come when the lofty Lady Goldweaver would take orders from me. It was just too enjoyable!
->> **Castorice:** ...Thankfully, Lady Aglaea treated it as good fun. If we were in Okhema, we'd be clutching the golden threads for dear life.
-> *(Trailblazer)* All fun moments.
->
-> **Cipher:** ...Looking back, I guess I really did have my share of interesting moments.
-> **Castorice:** Seems to me like Lady Cipher had plenty of fun.
-> **Cipher:** ...And what about you, Princess Homebody? Aside from being part of the restaurant team, did you have fun?
-> **Castorice:** For me... having the chance to savor Lord Mydei's specialties, and exchanging thoughts on crop cultivation with Professor Anaxa...
-> **Castorice:** As well as personally awarding Miss (Trailblazer) a medal.
-> **Castorice:** All these small moments are treasures to be remembered.
-> **Castorice:** There's just one thing that I still can't figure out, Lady Cipher. You know fairy coins hold no value outside the fairy world, so why did you insist on taking one?
-> **Cipher:** ...
-> **Cipher:** Really wanna know? It's actually not that complicated.
-> **Cipher:** Life here is just too peaceful... no duties, no worries. It feels so strange, almost like a dream.
-> **Cipher:** But dreams always come to an end. And if I leave without a special memento...
-> **Cipher:** Then how will I know... if I'm still dreaming or not?
-> **Castorice:** ...
-> **Castorice:** Don't worry, Lady Cipher. We... will weave new dreams together.
 
 ---
 
-### Part 118 — `databank/missions/adventure/v35-37.md`
+### Part 85 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > The Grandest Feast > Dialogue > Speak with each of your companions before the feast begins > Talk to Tribbie, Anaxa, and Hyacine again, optional
+**Kind:** collective-pointer
+**Id:** `v35-37__speak-with-each-of-your-companions-before-the-feast-begins-3`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** spoke
 
-**Context:** Adventure Missions — Versions 3.5–3.7 > Who Makes the Best Pies? > Dialogue > Open for business for the day
+*(Talk to Tribbie, Anaxa, and Hyacine again, optional)*
+**Hyacine:** I have a suggestion! How about adding a new course to the professor's curriculum? I've even thought of a name: "Common Traits of Giant Crops and Dromases." How does that sound?
+**Anaxa:** That won't be necessary. Bringing those wondrous crops back to the Grove would only seal my reputation as the one who "corrupts youths."
 
+*(Inquire Castorice and Cipher)*
+**Cipher:** What's this? An essay? "How I spent my summer vacation?" Come on, Gray Mystery. Do things really need to be so formal between us?
 
-*(Talk to Cerydra)*
-**Cerydra:** Customer numbers have been on a sugar high lately, proving our sweet-themed strategy was exactly the right flavor. Of course, now Dux Fatorum has to juggle many more items on their daily menu.
-> *(Trailblazer)* Let's begin today's business.
-> *(Starts The Chrysos Maze Grand Restaurant)*
-> *(Trailblazer)* I want to talk about the team.
-> *(Trailblazer)* Let's catch up another time!
-**(After closing business on Day 6)**
-*(Receive message from Business Quick Response)*
-**Garmentmaker:** Sweetie Festival kickoff day. Customer reactions: Outstanding! Complaints to handle: 1. See below:
-**Garmentmaker:** "Mem! I'm stuck in a weight loss plateau and I can't handle high-calorie food right now!"
+---
+
+### Part 86 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > Who Makes the Best Pies? > Dialogue > Open for business for the day > Talk to Cerydra
+**Kind:** collective-pointer
+**Id:** `v35-37__open-for-business-for-the-day-4`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** on-stage
+
+>> **Anaxa:** In that case, you should remember to provide detailed feedback for all of us every day too.
+
+---
+
+### Part 87 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > Who Makes the Best Pies? > Dialogue > Open for business for the day > Talk to Cerydra
+**Kind:** collective-pointer
+**Id:** `v35-37__open-for-business-for-the-day-6`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** spoke
+
 **Garmentmaker:** "I need dishes that are sweet without sugar, crispy without grease, and both tasty AND good for me!"
 **Tribbie:** Hmm... quite the picky eater. How should **we** deal with this one?
 **Anaxa:** Just respond with: "Would you like some magic bullets instead?"
@@ -2608,6 +3487,7 @@
 >> **Garmentmaker:** Your friend is typing...
 >> **Garmentmaker:** "Thanks for the advice. But I already cheated yesterday, the day before, AND the day before that..."
 >> **Mydei:** And you think that's gonna help with your... fat loss?
+
 **(After closing business on Day 7)**
 *(Receive message from Business Quick Response)*
 **Tribbie:** The fairies are a bit undisciplined and keep spilling customers' dishes...
@@ -2626,31 +3506,45 @@
 >> **Phainon:** I officially object.
 >> **Hyacine:** I'm all for it! I can't wait to give the Professor a big fat "Fail"!
 >> **Anaxa:** ?
+
 **(At the start of Day 8)**
 **Tribbie:** Today's the big day. The judges are coming! Trianne, Trinnon, are you ready?
-**Trianne:** Trianne poured an entire jar of honey into the dough!
-**Trinnon:** Trinnon read a mountain of books and compiled tons of tips for making food taste even better.
-> *(Trailblazer)* And what about Tribbie?
-> *(Trailblazer)* Someone's slacking off, huh?
-> **Trianne:** Trianne saw it. Tribbie was out playing in the fields all day!
-> **Tribbie:** That's not true! Tribbie was working super hard too... Tribbie just wanted to prepare a surprise for Cas.
-> **Tribbie:** Alright, Little Gray's up and about. Let's get today's business started!
 
 ---
 
-### Part 119 — `databank/missions/adventure/v35-37.md`
+### Part 88 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > Chef's Arena > Dialogue > Open for business for the day > Talk to Cerydra
+**Kind:** collective-pointer
+**Id:** `v35-37__open-for-business-for-the-day-11`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** on-stage
 
+>> **Anaxa:** It's MSG. I just refined some. Perhaps the concentration is too high?
+>> **Anaxa:** Do you have a problem with my refined MSG?
+
+---
+
+### Part 89 — `databank/missions/adventure/v35-37.md`
 **Context:** Adventure Missions — Versions 3.5–3.7 > Fairy Tree Hollow Dive > Dialogue > Open for business for the day
+**Kind:** collective-pointer
+**Id:** `v35-37__open-for-business-for-the-day-12`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** on-stage
 
+>> **Anaxa:** Refer to me as Anaxagoras, Hyacine. A field trip is no excuse to disregard classroom discipline.
+>> **Anaxa:** Firstly, call me Anaxagoras.
+>> **Anaxa:** Secondly, I have no interest in feeding small creatures. My assistant will take care of trivial chores.
+>> **Anaxa:** I wouldn't go that far. At most, I'd take a few samples for research purposes.
 
-*(Talk to Aglaea, optional)*
-**Aglaea:** Managing a restaurant is no easy feat. You have my thanks, Manager.
-> *(Trailblazer)* What have you been working on lately?
->> **Aglaea:** At the Imperator's request, I've been setting up golden threads across the Maze. You'll now be able to access the World Wound Web freely.
->> **Aglaea:** Strange... despite the dense fairy population here, the golden threads haven't picked up a single tremor. Quite odd.
->> **Aglaea:** But... heh, I suspect you already know why that is. So I won't pry.
-> *(Trailblazer)* Let's catch up another time!
->> **Aglaea:** The World Wound Web still needs ongoing maintenance anyway. If anything comes up, you know where to find me.
+---
+
+### Part 90 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > Fairy Tree Hollow Dive > Dialogue > Open for business for the day > Talk to Anaxa or Hyacine, optional
+**Kind:** collective-pointer
+**Id:** `v35-37__open-for-business-for-the-day-17`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** spoke
+
 *(Talk to Anaxa or Hyacine, optional)*
 **Anaxa:** ...Note this down. After replanting, the experimental batch yielded approximately 30% more than the control group.
 **Hyacine:** Could it be due to the alchemical solution? Or perhaps just a fluke?
@@ -2662,45 +3556,22 @@
 >> **Anaxa:** ...That won't be necessary.
 > *(Trailblazer)* I better leave you alone then...
 >> *(The two agricultural experts are still deep in conversation, tossing around academic terms like "dominant vs. recessive" and "segregation and recombination." Best not interrupt for now.)*
-*(Talk to Cerydra)*
-**Cerydra:** Running a restaurant is no different from governing a city-state. Every move must be cautiously considered. Manager, are you ready to open for business?
-> *(Trailblazer)* Let's begin today's business.
-> *(Starts The Chrysos Maze Grand Restaurant)*
->
-> *(Trailblazer)* I want to talk about the team.
-> **Cerydra:** Heh. Honestly, I'm quite pleased to have gathered so many capable heroes, all lending their talents to this venture.
-> **Cerydra:** What would you like to discuss?
-> *(Trailblazer)* About the Restaurant Supervisor...
-> **Cerydra:** The role of the Restaurant Supervisor currently falls under my purview. Dux Goldweaver assists me from time to time as well.
-> **Cerydra:** Thankfully, everyone on the team is dedicated and capable. It spares me from having to micromanage, allowing me to focus on business development and long-term growth.
-> **Cerydra:** Sounds idle, doesn't it? In reality, it's all endless stacks of data reports, and a never-ending flood of customer complaints. Utterly annoying.
-> *(Trailblazer)* About the Chef...
-> **Cerydra:** I heard this chef's been close with the fairies since childhood. I assume that means he has a strong grasp of the local clientele's tastes.
-> **Cerydra:** Still... I don't understand why he's so obsessed with salads.
-> *(Trailblazer)* About the Delivery Coordinators...
-> **Cerydra:** Dux Fatorum move with light feet and excel in delivering items and connecting people, so they are perfectly suited for this role.
-> **Cerydra:** My only concern is their overly close relationship with the local fairies, which makes it difficult for them to impose strict discipline on the delivery crew. Still, that might not be a flaw but rather an asset.
-> **Cerydra:** Oh, and... ahem. Openly commenting on the Imperator's height is a breach of etiquette. I'll let it slide this time.
-> *(Trailblazer)* About the Agricultural Experts...
-> **Cerydra:** I'm not particularly familiar with the two Grove scholars, but judging by the state of the farmland, their talents are beyond question.
-> **Cerydra:** I've heard whispers about one of them having a rather eccentric disposition, but does it matter? So long as they serve the restaurant well and ensure a bountiful harvest, that's all we need.
-> *(Trailblazer)* That's all for now.
->
-> *(Trailblazer)* Let's catch up another time!
-> **Cerydra:** No trouble at all. I'll be here.
 
 ---
 
-### Part 120 — `databank/missions/adventure/v36.md`
-
-**Context:** Adventure Missions — Version 3.6 (Back to Earth in Evernight) > The Tiny Little Dromas > Dialogue > Go check out Anaxa's public lecture
-
+### Part 91 — `databank/missions/adventure/v36.md`
+**Context:** Adventure Missions — Version 3.6 (Back to Earth in Evernight) > The Tiny Little Dromas > Dialogue > Go check out Anaxa's public lecture > Talk to Anaxa
+**Kind:** collective-pointer
+**Id:** `v36__go-check-out-anaxa-s-public-lecture-2`
+**Collective:** `databank/memories/collective/v36.md`
+**Witness:** spoke
 
 *(Talk to Anaxa)*
 Once upon a time, so the story goes, eight mighty mountains blocked the entrance to Okhema.
 They cut off all paths to the city, making daily life a struggle for its citizens.
 Then along came a dromas bigger than any mountain. One gulp later, seven mountains vanished, leaving only the one Kephale sits on now.
 They named it the Super-Duper-Mega-Ultra-Dromas-Summit-Incisor-Litter-Launcher-Can'tMakeStuffUpAnymore — or "Dromasilla" for short.
+
 **Anaxa:** That's just one of the 270 reasons I love dromases: Bigger is more beautiful! Which makes dromases the most beautiful creatures in the world!
 > *(Trailblazer)* Wait, for real?
 > *(Trailblazer)* That's quite the tall tale!
@@ -2718,73 +3589,13 @@ They named it the Super-Duper-Mega-Ultra-Dromas-Summit-Incisor-Litter-Launcher-C
 **Anaxa:** Remember, if you need help, just look for Assistant Instructor Hyacine.
 *(Later, at Curtain-Fall Hour...)*
 ***(Trailblazer):*** I did absolutely nothing today. Why am I so tired?
-**???: **Grum—Grumph... (H—Help...)
-> *(Trailblazer)* Who... Are... You?
-> *(Trailblazer)* A GHOST! Aaaah!
-> *(Trailblazer)* What's the matter?
-**???: **Grumph... (I'm... stuck...)
-Glancing around, you see the purple egg, now covered in cracks.
-No one's near it... Is it hatching on its own? Right now? Hopefully nothing goes wrong!
-***(Trailblazer):*** Don't worry. I'm here to save you!
-**???: **Grumph? (Hmm...?)
-**???: **Grumphhh! (Thank you, Mama!)
-Strangely enough, this future Super Dromas looks surprisingly... cute?
-> *(Trailblazer)* Aww, it's so cute! I'm keeping it.
->> No one can say no to something this cute. You feel an inexplicable fondness growing inside you.
-> *(Trailblazer)* Hey, I'm not your Mama!
->> **???: **Grumph! Grumph grumph! (No, don't go...)
->> By instinct or attachment, this newborn creature has decided to stick with you.
-> *(Trailblazer)* Wait, dromases can talk?
->> **???: **Grumph, grumph? (Talk? What is talk?)
->> No, it's just making "grumph" sounds. But you understand it perfectly. That's the Synesthesia Beacon for you. Amazing, right?
->
-> **???: **Grumph! (*Snuggles*)
-> *Gurgle*
-> **???: **Grumph...? (Mama, why is my tummy growling?)
->
-> Is it hungry? Dromases eat redsoil, if you recall... Fortunately, the Dromas Workshop has plenty of it.
-> Alright. What should you do?
-> *(Trailblazer)* Feed it some redsoil.
->> **???: **Grumph, grumph— (Hehe, mama is the best.)
->> Then it gobbles up a whole bucket of redsoil. Nobody knows how that tiny body can hold so much.
-> *(Trailblazer)* Eat the redsoil yourself while it watches.
->> Learning is by example. You shove redsoil into your mouth, hoping for an amusing reaction—
->> Ugh... that's bitter—
->> **???: **Grumph! Grumph grumph. Grumph. (Mama looks so silly, haha. I'll try it too—)
->> Then it gobbles up all the remaining redsoil. Nobody knows how that tiny body can hold so much.
-> *(Trailblazer)* Try feeding it something else.
->> You search your pockets and find dozens of foods from different worlds, wondering which one it'll like.
->> It only takes 15 seconds to eat everything. Nobody knows how that tiny body can hold so much.
->> **???: **Grumph grumph! (Mmm! No more tummy sounds, thanks, Mama!)
->
-> Seeing how much it eats, this little one might really become a giant beast someday, just like in Anaxa's stories.
-> *(Trailblazer)* Pet its head.
->> **???: **Grumph...
->> Just simple sounds of happiness.
-> *(Trailblazer)* Pet its chin.
->> **???: **Grumph! Grumph... (Hehe... that tickles...)
-> *(Trailblazer)* Take a closer look at it.
->> It looks back at you with big, sparkly eyes.
->>
->> **???: **Grumph... (Can't... stay awake...)
->> **???: **Grumph... (I'm... sleepy...)
->> Gentle breathing sounds fill the air. Your presence seems to help it sleep peacefully.
-> *(Trailblazer)* Stay with it.
->> You can't possibly leave it alone like this. Besides—
-> *(Trailblazer)* Check out the nearby area.
->> You try to sneak away without waking it... but can't.
->> Those tiny front paws have a death grip on your clothes, and they're not budging.
->> **???: **Grumph... (Mama...)
->>
->> Clearly, you need to find an expert on this situation and get you free.
->> You remember what Anaxa said: "If you need help, just find Hyacine." Now's definitely the time!
 
 ---
 
-### Part 121 — `databank/missions/adventure/v36.md`
-
+### Part 92 — `databank/missions/adventure/v36.md`
 **Context:** Adventure Missions — Version 3.6 (Back to Earth in Evernight) > The Tiny Little Dromas > Dialogue > Stay with (Excited Little Dromas) and help it recover!
-
+**Kind:** personal
+**Id:** `v36__stay-with-excited-little-dromas-and-help-it-recover`
 
 *(After 2 weeks of recovering)*
 *(While hanging out with (Excited Little Dromas) on the road, we ran into that professor...)*
@@ -2828,27 +3639,13 @@ You wonder what expression Anaxa will have when (Excited Little Dromas) reaches 
 
 ---
 
-### Part 122 — `databank/missions/adventure/v36.md`
+### Part 93 — `databank/missions/adventure/v36.md`
+**Context:** Adventure Missions — Version 3.6 (Back to Earth in Evernight) > The Tiny Little Dromas > Dialogue > Go practice Oronyx's Prayer with (Excited Little Dromas)!
+**Kind:** collective-pointer
+**Id:** `v36__go-practice-oronyx-s-prayer-with-excited-little-dromas`
+**Collective:** `databank/memories/collective/v36.md`
+**Witness:** spoke
 
-**Context:** Adventure Missions — Version 3.6 (Back to Earth in Evernight) > The Tiny Little Dromas > Dialogue > Let's see how (Excited Little Dromas) is coming along!
-
-
-*(You thought (Excited Little Dromas) would grow without a hitch and achieve its dreams, but unexpectedly, it developed a strange condition that made it shrink. Supposedly, this indicates it has potential related to Oronyx...? Anaxa proposed a solution that surprised everyone: Having (Excited Little Dromas) study Oronyx's Prayer to stabilize this trait. Well, time for a second round of magical nurturing!)*
-Even if it's just a lovely dream, you and (Excited Little Dromas) both believe that greatness awaits!
-*The Tiny Little Dromas*, The End!
-***(Excited Little Dromas):*** Grumph! (Absolutely! I'll be the greatest Super Dromas ever...)
-***(Excited Little Dromas):*** Grumph? (Eh?)
-> *(Trailblazer)* Totally forgot. Never count your dromases before they're hatched.
-> *(Trailblazer)* Turns out dromases are basically balloons with legs...
-> *(Trailblazer)* Why did you shrink!?
-***(Excited Little Dromas):*** Grumph!?!? (Why did I shrink!?!?)
-*The Tiny Little Dromas*, The End...?
-Shortly after, Hyacine takes you to the Twilight Courtyard for a quick medical examination.
-***(Excited Little Dromas):*** Grumphhhhhh, grumph— (This must be a bad dream... Probably ate something funky yesterday.)
-> *(Trailblazer)* What did you eat yesterday?
->> ***(Excited Little Dromas):*** Grumph, grumph. (Steamed ceiling beam, made of solid redsoil.)
-> *(Trailblazer)* Can you become big again?
->> ***(Excited Little Dromas):*** Grumph! Grumph—! (If only I could! Cuteness is great, but I want to grow up already—!)
 **Hyacine:** Oh no, d—don't worry. Let's figure this out. Would medication work? Maybe herbs? Is this even a medical condition? How do we fix this...
 > *(Trailblazer)* Stay calm.
 > *(Trailblazer)* Well, that's new...
@@ -2871,19 +3668,16 @@ Shortly after, Hyacine takes you to the Twilight Courtyard for a quick medical e
 >> **Anaxa:** You're the only one we can trust to teach, right?
 >> ***(Excited Little Dromas):*** Grumph! (Yep!)
 **Hyacine:** If even Professor Anaxa, who's never shown respect for the Titans, is recommending miracle therapy... Then it must really be the best option.
-**Hyacine:** You can do it! If you need any help, just come find me at the Twilight Courtyard.
-*(After (Excited Little Dromas) passed the evaluation)*
-***(Excited Little Dromas):*** ...
-***(Trailblazer):*** ...!
-**Hyacine:** Please, (Excited Little Dromas). If honey cakes that fell on the ground can be fixed...
-> *(Trailblazer)* Silence, please. This is a critical moment.
->> **Hyacine:** Sorry, I got carried away... *whispers* Please, (Excited Little Dromas).
-> *(Trailblazer)* I get half of that cake, right?
->> **Hyacine:** So that's what you're after... Sure, we got a deal.
-> *(Trailblazer)* Hyacine is willing to do anything!
->> **Hyacine:** I-I never said that!
->
-> ***(Excited Little Dromas):*** Grumph... (All done...)
+
+---
+
+### Part 94 — `databank/missions/adventure/v36.md`
+**Context:** Adventure Missions — Version 3.6 (Back to Earth in Evernight) > The Tiny Little Dromas > Dialogue > Let's see how (Excited Little Dromas) is coming along!
+**Kind:** collective-pointer
+**Id:** `v36__let-s-see-how-excited-little-dromas-is-coming-along`
+**Collective:** `databank/memories/collective/v36.md`
+**Witness:** spoke
+
 > **Hyacine:** Amazing... If I covered my eyes, I definitely wouldn't be able to tell which one of you used the prayer.
 > *(Trailblazer)* Even I'm not that skilled.
 > *(Trailblazer)* Well done, (Excited Little Dromas).
@@ -2909,10 +3703,10 @@ Shortly after, Hyacine takes you to the Twilight Courtyard for a quick medical e
 
 ---
 
-### Part 123 — `databank/missions/adventure/v36.md`
-
+### Part 95 — `databank/missions/adventure/v36.md`
 **Context:** Adventure Missions — Version 3.6 (Back to Earth in Evernight) > The Tiny Little Dromas > Dialogue > Go practice Oronyx's Prayer with (Excited Little Dromas)! (3)
-
+**Kind:** personal
+**Id:** `v36__go-practice-oronyx-s-prayer-with-excited-little-dromas-3`
 
 *(After 3 weeks of recovering)*
 **Anaxa:** Punctual as agreed. Acceptable. Now then, let me see what you're capable of, little one. A dromas that has mastered Oronyx's Prayer... This is undoubtedly an achievement worthy of the history books.
@@ -2934,17 +3728,16 @@ Shortly after, Hyacine takes you to the Twilight Courtyard for a quick medical e
 
 ---
 
-### Part 124 — `databank/missions/adventure/v36.md`
+### Part 96 — `databank/missions/adventure/v36.md`
+**Context:** Adventure Missions — Version 3.6 (Back to Earth in Evernight) > The Tiny Little Dromas > Dialogue > Talk to Anaxa to complete the final assessment > Talk to Anaxa
+**Kind:** personal
+**Id:** `v36__talk-to-anaxa-to-complete-the-final-assessment-4`
 
-**Context:** Adventure Missions — Version 3.6 (Back to Earth in Evernight) > The Tiny Little Dromas > Dialogue > Talk to Anaxa to complete the final assessment
-
-
-*(Talk to Hyacine, optional)*
-**Hyacine:** Before I knew it, (Excited Little Dromas) has grown so much.
 *(Talk to Anaxa)*
 **Anaxa:** An exam of this level is no problem for (Excited Little Dromas). Let's get started.
 > *(Trailblazer)* Here I come!
 > *(Trailblazer)* Just a minute.
+
 *(After (Excited Little Dromas) passed the evaluation)*
 **"Beast King":** Brilliant! Such a technique even outclasses the Oronyx priests I know! Utterly breathtaking!
 **"Beast King":** Without further ado, (Trailblazer) "Friend of Dromas," I formally extend an invitation on behalf of the troupe.
@@ -2973,49 +3766,34 @@ It shot out at lightning speed, smashing a Flying Amphora along the way and gain
 
 ---
 
-### Part 125 — `databank/missions/adventure/v38.md`
-
+### Part 97 — `databank/missions/adventure/v38.md`
 **Context:** Amphoreus — Adventure Missions (v3.8) > Chrysos Awoo Championship > Dialogue > Complete placement matches (0/3)
+**Kind:** collective-pointer
+**Id:** `v38__complete-placement-matches-0-3`
+**Collective:** `databank/memories/collective/v38.md`
+**Witness:** spoke
 
-
-*(The famous "Chimera World Tournament" is in full swing in Okhema! Complete several placement matches arranged by the tournament organizers to determine your initial rank!)*
-*(After completing all placement matches)*
-**Hyacine:** Applause! Well done, Grayie. So, have you completely mastered the tricks of chimera battles now?
-> *(Trailblazer)* Playtime's over. Let's kick it up a notch!
->
-> **Tribbie:** Don't get too cocky! Everyone's just helping you to practice, Little Gray. We haven't even shown our true skills yet!
->
-> *(Trailblazer)* Feels worse off than watching chimera work...
->
-> **Tribbie:** Hmm, no throwing shade! Chimeras have got a pretty rich life outside of work too. You should come experience it more often, Little Gray.
-> **Hyacine:** Alright, now that Grayie has learned everything, Tribbie's and my mission is complete. Let's meet again on the battlefield!
-> **Tribbie:** Keep up the good work! Hehe, just set your goal to catch up with **us**.
-> *(Trailblazer)* Save it. I've got my own rhythm.
-> *(Trailblazer)* I will become the Chimera League Champion!
->
 > **"Tournament Host":** Wowza! As expected from our special guest, you've got some real guts! I've got high hopes for you.
 > **"Tournament Host":** But the other contestants are preparing seriously too, so don't let your guard down, awoo—
 >
 > *(Looking around, the laughter of companions and the echoing howls of chimeras wrapped the garden in warmth, like gentle sunshine.)*
 > **Anaxa:** Nanus, quick, use your magic on it.
 > **Cipher:** What's with all that awoo-ing? If you've got a problem with it, take it up with my Master Cat-Thief, fudge!
-> **Castorice:** Butterfly Cake, are you hungry? Be good now, and I'll make you something yummy in a bit.
-> ...
-> *(Okhema is as peaceful as ever today.)*
-> *(This is the tournament...)*
-> *(Well, you suddenly realize that the noisy, bustling Okhema isn't so bad after all, is it?)`
-*(Mission completed)*
-*(Obtain Achievement "Winning from the Outset")*
 
 ---
 
-### Part 126 — `databank/missions/adventure/v38.md`
-
+### Part 98 — `databank/missions/adventure/v38.md`
 **Context:** Amphoreus — Adventure Missions (v3.8) > Chrysos Awoo Championship: Finale > Dialogue > Check out the new content in the Chimera World Tournament
+**Kind:** collective-pointer
+**Id:** `v38__check-out-the-new-content-in-the-chimera-world-tournament`
+**Collective:** `databank/memories/collective/v38.md`
+**Witness:** spoke
 
+*(The famous Chimera World Tournament in Okhema is in full swing. Word is that the organizers have launched new battle events, so check them out after completing your placement matches!)*
 
+***(Trailblazer):*** (Looks like there are new events in the "Chimera World Tournament". I should check them out when I have time.)
+---
 *(Listen to Cipher and Anaxa, optional)*
 **Anaxa:** Tsk, don't you Dolosians have any way to say hello besides stealing? Yes, I have the Grove's regional badge right here.
 **Anaxa:** If you want to take it, you'll have to pass my test first.
 **Cipher:** Hey, Grove boy, when exactly did you get the delusion that you could beat me? Heh, who do you think is the examiner here...
-**Cipher:** Nothing's set in stone until the very end, you know?

@@ -121,13 +121,10 @@ def _sprites_row(
             "2px solid rgba(232,213,163,.55)" if is_active
             else "1px solid rgba(232,213,163,.12)"
         )
-        delay = (abs(hash(cid)) % 7) * 0.12
         parts.append(
             f'<div style="flex:0 1 auto;max-width:{max(12, 100 // n)}%;'
             f'text-align:center;opacity:{opacity};transform:scale({scale});'
-            f'filter:drop-shadow(0 0 18px {glow});'
-            f'animation:galfloat 5s ease-in-out infinite;'
-            f'animation-delay:{delay:.2f}s;">'
+            f'filter:drop-shadow(0 0 18px {glow});">'
         )
         if uri:
             parts.append(
@@ -261,8 +258,6 @@ def _group_scene_html(
     parts.append("</div></div>")
     parts.append("""
 <style>
-@keyframes galfloat { 0%,100% { transform:translateY(0); }
-                       50%     { transform:translateY(-8px); } }
 @keyframes galblink { to { visibility:hidden; } }
 </style>
 <script>

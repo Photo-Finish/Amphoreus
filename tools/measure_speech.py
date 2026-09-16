@@ -38,6 +38,7 @@ sys.path.insert(0, str(ROOT))
 
 from src.core.heir_folders import HEIR_FOLDERS  # noqa: E402
 from src.knowledge.kb_builder import CHARACTER_ALIASES  # noqa: E402
+from src.knowledge.mission_memories import is_heir_speaker_label  # noqa: E402
 
 SPEAKER_RE = re.compile(r"^\s*>?\s*\*\*(.+?):\*\*\s*(.*)$")
 PART_RE = re.compile(r"^### Part \d+ — `([^`]+)`")
@@ -56,7 +57,7 @@ CONTRACTIONS = re.compile(
 )
 
 
-def own_lines(path: Path, aliases) -> list:
+def own_lines(path: Path, aliases, heir_id: str | None = None) -> list:
     """The Heir's own spoken lines (text only, stage directions excluded)."""
     out = []
     for ln in path.read_text(encoding="utf-8").splitlines():
@@ -66,7 +67,10 @@ def own_lines(path: Path, aliases) -> list:
         speaker, text = m.group(1).strip(), m.group(2).strip()
         if not text:
             continue
-        if not any(a.lower() in speaker.lower() for a in aliases):
+        if heir_id:
+            if not is_heir_speaker_label(heir_id, speaker):
+                continue
+        elif not any(a.lower() in speaker.lower() for a in aliases):
             continue
         if STAGE_RE.match(text):
             continue
@@ -172,7 +176,7 @@ def main():
             print(f"  ! {heir_id}: missing memory/card")
             continue
         aliases = CHARACTER_ALIASES.get(heir_id, [heir_id])
-        lines = own_lines(memory, aliases)
+        lines = own_lines(memory, aliases, heir_id=heir_id)
         if len(lines) < 5:
             print(f"  ! {heir_id}: only {len(lines)} own lines — skipped")
             continue

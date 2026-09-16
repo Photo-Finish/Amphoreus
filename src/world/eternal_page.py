@@ -79,6 +79,7 @@ STATE_ROTATE = "amp_eternal_rotate"
 STATE_EVERYONE = "amp_eternal_everyone"
 STATE_LAYOUT = "amp_eternal_layout"
 STATE_CMD = "amp_eternal_cmd"
+STATE_GESTURES = "amp_eternal_gestures"
 
 SpeakFn = Callable[[str, str], str]
 NameFn = Callable[[str], str]
@@ -160,58 +161,29 @@ def move_companion(overlay: Optional[dict], character_id: str, left: float, bott
     return out
 
 
-def pet_companion(character_id: str, world=None) -> bool:
+def pet_companion(character_id: str, world=None, overlay: Optional[dict] = None) -> bool:
     """A touch on the page — warms mood, never authors Heir speech."""
-    if character_id not in all_ids():
-        return False
-    if world is None:
-        try:
-            from src.world.world_state import WorldState
-            world = WorldState()
-        except Exception:
-            world = None
-    if world is None:
-        return True
-    try:
-        from src.world import living_world as lw
-        lw.set_mood(world, character_id, 1, "a gentle touch on the Eternal Page")
-    except Exception:
-        m = getattr(world, "mood", None)
-        if not isinstance(m, dict):
-            world.mood = {}
-            m = world.mood
-        cur = m.get(character_id) or {}
-        try:
-            valence = int(cur.get("valence", 0) or 0) + 1
-        except Exception:
-            valence = 1
-        valence = max(-3, min(3, valence))
-        ts = ""
-        try:
-            ts = world.clock.format_short()
-        except Exception:
-            ts = str(cur.get("ts") or "")
-        m[character_id] = {
-            "valence": valence,
-            "reason": "a gentle touch on the Eternal Page",
-            "ts": ts,
-        }
-    try:
-        world.save()
-    except Exception:
-        pass
-    return True
+    from src.world.eternal_gesture import apply_gesture
+
+    result = apply_gesture(character_id, "pet", world=world, overlay=overlay)
+    return bool(result.get("ok"))
 
 
 def parse_command(raw: str) -> Optional[tuple]:
-    """Parse a parent-bridge command: click/solo/pet/drag."""
+    """Parse a parent-bridge command: click/solo/drag or a gesture."""
     text = str(raw or "").strip()
     if not text:
         return None
     parts = text.split(":")
     kind = (parts[0] or "").strip().lower()
     cid = (parts[1] if len(parts) > 1 else "").strip()
-    if kind not in {"click", "solo", "pet", "drag"}:
+    allowed = {"click", "solo", "pet", "drag", "ask"}
+    try:
+        from src.world.eternal_gesture import GESTURE_IDS
+        allowed = set(allowed) | set(GESTURE_IDS)
+    except Exception:
+        pass
+    if kind not in allowed:
         return None
     if cid not in all_ids():
         return None

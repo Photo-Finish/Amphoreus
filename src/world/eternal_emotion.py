@@ -107,6 +107,24 @@ FALLBACKS: dict[str, tuple[str, ...]] = {
     "tease": ("joy", "warm", "calm"),
 }
 
+# Default sticker marks for each feeling (CSS class stems: mk-<name>).
+EMOTION_VFX: dict[str, tuple[str, ...]] = {
+    "joy": ("sparkle", "heart"),
+    "warm": ("flush",),
+    "calm": ("glow",),
+    "weary": ("zzz",),
+    "sad": ("tear",),
+    "anger": ("vein", "steam"),
+    "fear": ("sweat",),
+    "surprise": ("bang", "shock"),
+    "tease": ("sparkle",),
+}
+
+
+def vfx_for(emotion: Optional[str] = None) -> tuple[str, ...]:
+    return EMOTION_VFX.get(normalize_emotion(emotion or DEFAULT), ())
+
+
 MOOD_VALENCE = {
     3: "joy",
     2: "warm",
@@ -223,12 +241,21 @@ def _mood_emotion(world, character_id: str) -> tuple[str, int]:
         return DEFAULT, 0
 
 
-def ongoing_signals(character_id: str, world=None, memory=None) -> Counter:
+def ongoing_signals(
+    character_id: str,
+    world=None,
+    memory=None,
+    last_gesture: Optional[dict] = None,
+) -> Counter:
     """Sanctuary life that should colour the face even before a new line."""
     scores: Counter[str] = Counter()
     emo, weight = _mood_emotion(world, character_id)
     if weight:
         scores[emo] += 1 + weight
+    if isinstance(last_gesture, dict) and last_gesture.get("emotion"):
+        felt = normalize_emotion(str(last_gesture.get("emotion") or ""))
+        if felt:
+            scores[felt] += 6
     if world is None:
         return scores
     try:
@@ -269,10 +296,18 @@ def detect_emotion(
     world=None,
     last_reply: str = "",
     extra_text: str = "",
+    last_gesture: Optional[dict] = None,
 ) -> str:
     """Combine conversation contents and sanctuary ongoings into one feeling."""
     scores: Counter[str] = Counter()
-    scores.update(ongoing_signals(character_id, world=world, memory=memory))
+    scores.update(
+        ongoing_signals(
+            character_id,
+            world=world,
+            memory=memory,
+            last_gesture=last_gesture,
+        )
+    )
 
     convo = _history_blob(memory, character_id)
     if extra_text:
@@ -318,6 +353,7 @@ def circle_emotions(
     world=None,
     bubbles: Optional[Iterable[dict]] = None,
     extra_text: str = "",
+    gestures: Optional[dict] = None,
 ) -> dict[str, str]:
     """Feeling for every Heir on the page."""
     from src.world.eternal_page import all_ids
@@ -335,13 +371,26 @@ def circle_emotions(
         text = str(row.get("text") or "").strip()
         if cid and text:
             last[cid] = text
+    overlay = dict(gestures or {})
     out = {}
     for cid in all_ids():
+        row = overlay.get(cid) if isinstance(overlay.get(cid), dict) else None
+        fresh = False
+        if row:
+            try:
+                from src.world.eternal_gesture import overlay_fresh
+                fresh = overlay_fresh(row)
+            except Exception:
+                fresh = False
+        if fresh and row.get("emotion"):
+            out[cid] = normalize_emotion(str(row.get("emotion")))
+            continue
         out[cid] = detect_emotion(
             cid,
             memory=memory,
             world=world,
             last_reply=last.get(cid, ""),
             extra_text=extra_text,
+            last_gesture=row if fresh else None,
         )
     return out

@@ -43,6 +43,7 @@ sys.path.insert(0, str(ROOT))
 from src.core.heir_folders import HEIR_FOLDERS  # noqa: E402
 from src.core.llm_client import LLMClient  # noqa: E402
 from src.knowledge.kb_builder import CHARACTER_ALIASES  # noqa: E402
+from src.knowledge.mission_memories import is_heir_speaker_label  # noqa: E402
 
 SPEAKER_RE = re.compile(r"^\s*>?\s*\*\*(.+?):\*\*\s*(.*)$")
 PART_RE = re.compile(r"^### Part \d+ — `([^`]+)`")
@@ -107,6 +108,11 @@ def parse_parts(path: Path):
         if ln.startswith("**Context:**"):
             scene = ln.replace("**Context:**", "").strip()
             continue
+        if ln.startswith("**") and ln.split(":**", 1)[0][2:] in {
+            "Kind", "Memory", "Heirs", "Collective", "Witness", "Source",
+            "Role", "Lines", "Id", "Excerpt",
+        }:
+            continue
         if ln.strip():
             lines.append(ln)
     if lines:
@@ -123,7 +129,7 @@ def build_cases(heir_id, parts, limit):
             if not m:
                 continue
             speaker, text = m.group(1).strip(), m.group(2).strip()
-            if not text or not any(a.lower() in speaker.lower() for a in aliases):
+            if not text or not is_heir_speaker_label(heir_id, speaker):
                 continue
             prev = [l for l in lines[max(0, i - 3):i] if SPEAKER_RE.match(l)][-2:]
             if not prev:
@@ -152,6 +158,7 @@ def sample_canon_lines(folder: Path, aliases: list, limit: int = 6, max_words: i
     memory = folder / "personal-memories.md"
     if not memory.exists():
         return []
+    heir_id = next((k for k, v in HEIR_FOLDERS.items() if v == folder.name), None)
     seen, all_lines = set(), []
     for _src, _scene, lines in parse_parts(memory):
         for ln in lines:
@@ -159,7 +166,12 @@ def sample_canon_lines(folder: Path, aliases: list, limit: int = 6, max_words: i
             if not m:
                 continue
             speaker, text = m.group(1).strip(), m.group(2).strip()
-            if not text or not any(a.lower() in speaker.lower() for a in aliases):
+            if not text:
+                continue
+            if heir_id:
+                if not is_heir_speaker_label(heir_id, speaker):
+                    continue
+            elif not any(a.lower() in speaker.lower() for a in aliases):
                 continue
             t = text.strip()
             if 1 <= len(t.split()) <= 40 and len(t) <= 160 and t not in seen:

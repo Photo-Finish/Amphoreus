@@ -30,6 +30,27 @@ if hasattr(sys.stderr, "reconfigure"):
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+ENGINE_PID_PATH = PROJECT_ROOT / "world_runtime" / "engine.pid"
+
+
+def write_engine_pid() -> None:
+    try:
+        ENGINE_PID_PATH.parent.mkdir(parents=True, exist_ok=True)
+        ENGINE_PID_PATH.write_text(str(os.getpid()), encoding="ascii")
+    except Exception:
+        pass
+
+
+def clear_engine_pid() -> None:
+    try:
+        if not ENGINE_PID_PATH.is_file():
+            return
+        if ENGINE_PID_PATH.read_text(encoding="ascii").strip() == str(os.getpid()):
+            ENGINE_PID_PATH.unlink()
+    except Exception:
+        pass
+
 from src.core.character_loader import CharacterLoader
 from src.core.llm_client import LLMClient
 from src.core.memory_store import MemoryStore
@@ -81,13 +102,14 @@ class WorldEngine:
             temperature=0.9,
             max_tokens=160,
         )
-        # The Keeper of Amphoreus — a separate role on a SEPARATE model (by
-        # default the local DeepSeek-R1-Distill-32B, registered from the LM
-        # Studio files; override with --ambient-model). It sets weather,
-        # errands, and news each day. If the model cannot load (RAM), the
-        # director falls back to deterministic seasonal weather automatically.
+        # The Keeper of Amphoreus — optional local LLM for weather/errands/news.
+        # World ticks themselves are CPU (deterministic fallback) when NVIDIA
+        # is offline, CUDA is wedged, or AMP_WORLD_CPU=1. Do not default to
+        # the 32B distill: that load aborts the machine on 8 GB VRAM / no GPU.
         self.director = AmbientDirector(
-            model=ambient_model or "deepseek-r1-distill:32b",
+            model=ambient_model
+            or os.environ.get("AMP_KEEPER_MODEL")
+            or "qwen2.5:14b-instruct",
             base_url=llm_base_url,
             api_key=llm_api_key,
         )
@@ -565,8 +587,16 @@ class WorldEngine:
         except Exception:
             pass
         try:
+            from src.core.local_compute import heir_voice_may_use_local
+            if not heir_voice_may_use_local():
+                self._voice_ok = False
+                self._voice_ok_ts = now
+                return False
+        except Exception:
+            pass
+        try:
             if getattr(self.llm, "configured", False):
-                models = self.llm.list_models() or set()
+                models = self.llm.list_models(timeout=3.0) or set()
                 want = str(getattr(self.llm, "model", "") or "")
                 ok = bool(models) and (
                     want in models
@@ -619,13 +649,20 @@ class WorldEngine:
         waits for a tagged Ollama/OPLoRA voice.
         """
         self._clear_stop()
-        print(f"🌍 The little Amphoreus awakens — {self.world.clock.format()}")
-        if not self._heir_voice_ready():
+        print(f"🌍 The little Amphoreus awakens — {self.world.clock.format()}",
+              flush=True)
+        try:
+            voice_ready = self._heir_voice_ready()
+        except Exception:
+            voice_ready = False
+        if not voice_ready:
             print(
                 "World engine: conversation model not loaded — "
-                "the world machine still runs (weather, hearths, streets). "
+                "the world machine still runs on CPU "
+                "(weather, hearths, streets, eco). "
                 "Heir speech waits for a tagged Ollama model, OPLoRA, "
-                "or an Online API key."
+                "or an Online API key.",
+                flush=True,
             )
 
         failed_days = 0
@@ -753,18 +790,24 @@ def main():
                 print(
                     f"Catch-up: generating {offer['generate']} day(s) "
                     f"the world missed at rest "
-                    f"({offer['from_label']} → {offer['to_label']})."
+                    f"({offer['from_label']} → {offer['to_label']}).",
+                    flush=True,
                 )
                 _rc.generate_missed_days(
                     engine, offer["clocks"], skipped=int(offer.get("skipped") or 0)
                 )
             else:
                 _rc.clear_rest(engine.world)
-                print("Catch-up: no missed days.")
+                print("Catch-up: no missed days.", flush=True)
         except Exception as e:
-            print(f"Catch-up could not run ({e}) — starting the world as it is.")
+            print(f"Catch-up could not run ({e}) — starting the world as it is.",
+                  flush=True)
 
-    engine.run_loop(interval_seconds=args.interval, once=args.once)
+    write_engine_pid()
+    try:
+        engine.run_loop(interval_seconds=args.interval, once=args.once)
+    finally:
+        clear_engine_pid()
 
 
 if __name__ == "__main__":

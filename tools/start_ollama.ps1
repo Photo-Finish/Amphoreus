@@ -36,25 +36,44 @@ $env:OLLAMA_KV_CACHE_TYPE = 'q8_0'
 
 # 2026-08-15: respect the end user's compute-mode choice (Control Panel ->
 # "Compute (GPU)"). nvidia = CUDA autodetect (default); intel = Vulkan
-# backend + integrated GPUs enabled (the Intel iGPU computes instead).
+# backend + integrated GPUs enabled; cpu = no NVIDIA. If nvidia-smi does not
+# see a GPU, force CPU so a missing driver cannot abort serve.
 $computeModePath = Join-Path $root 'world_runtime\compute_mode.json'
+$mode = 'nvidia'
 if (Test-Path $computeModePath) {
     try {
         $cm = Get-Content $computeModePath -Raw | ConvertFrom-Json
-        if ($cm.mode -eq 'intel') {
-            $env:OLLAMA_LLM_LIBRARY = 'vulkan'
-            $env:OLLAMA_IGPU_ENABLE = '1'
-            Write-Host "   compute mode: INTEGRATED (Intel) GPU - Vulkan"
-        } else {
-            Remove-Item Env:OLLAMA_LLM_LIBRARY -ErrorAction SilentlyContinue
-            Remove-Item Env:OLLAMA_IGPU_ENABLE -ErrorAction SilentlyContinue
-            Write-Host "   compute mode: NVIDIA CUDA"
-        }
+        if ($cm.mode) { $mode = [string]$cm.mode }
     } catch {
         Write-Host "WARN  compute_mode.json unreadable - defaulting to NVIDIA CUDA"
     }
+}
+
+$nvidiaOk = $false
+try {
+    $null = & nvidia-smi -L 2>$null
+    if ($LASTEXITCODE -eq 0) { $nvidiaOk = $true }
+} catch { $nvidiaOk = $false }
+
+if ($mode -eq 'intel') {
+    $env:OLLAMA_LLM_LIBRARY = 'vulkan'
+    $env:OLLAMA_IGPU_ENABLE = '1'
+    Write-Host "   compute mode: INTEGRATED (Intel) GPU - Vulkan"
+} elseif ($mode -eq 'cpu' -or -not $nvidiaOk) {
+    Remove-Item Env:OLLAMA_LLM_LIBRARY -ErrorAction SilentlyContinue
+    $env:OLLAMA_IGPU_ENABLE = '0'
+    $env:OLLAMA_NUM_GPU = '0'
+    $env:CUDA_VISIBLE_DEVICES = '-1'
+    if (-not $nvidiaOk) {
+        Write-Host "   compute mode: CPU (NVIDIA GPU offline / nvidia-smi failed)"
+    } else {
+        Write-Host "   compute mode: CPU only"
+    }
 } else {
-    Write-Host "   compute mode: NVIDIA CUDA (default)"
+    Remove-Item Env:OLLAMA_LLM_LIBRARY -ErrorAction SilentlyContinue
+    Remove-Item Env:OLLAMA_IGPU_ENABLE -ErrorAction SilentlyContinue
+    Remove-Item Env:OLLAMA_NUM_GPU -ErrorAction SilentlyContinue
+    Write-Host "   compute mode: NVIDIA CUDA"
 }
 
 # 1. Stop any stale ollama processes (tray app may serve the wrong models dir).

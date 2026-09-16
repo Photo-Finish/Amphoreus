@@ -249,12 +249,8 @@ def _twilight_svg(r):
             f'<animate attributeName="opacity" values="0.12;{op:.2f};0.12" dur="{dur:.2f}s" repeatCount="indefinite"/>'
             f'</circle>'
         )
-    moon = (
-        '<circle cx="236" cy="52" r="70" fill="#f6e7c8" opacity="0.05"/>'
-        '<circle cx="236" cy="52" r="46" fill="#f6e7c8" opacity="0.10"/>'
-        '<circle cx="236" cy="52" r="26" fill="#f6e7c8" opacity="0.90"/>'
-    )
-    return _svg("".join(stars) + moon)
+    # Moon disk is a painted PNG in ``_light_layer``; keep only star motes.
+    return _svg("".join(stars))
 
 
 def _cloud_svg(r, count=3, dark=False, uid="c"):
@@ -297,13 +293,37 @@ def _blacktide_svg(r, count=5):
     return _svg("".join(parts))
 
 
+def _sky_body_uri(stem: str) -> str:
+    """Transparent PNG for sun / moon overlays (Dawn Device, moon)."""
+    p = Path(__file__).resolve().parent.parent / "assets" / "life_sprites" / f"{stem}.png"
+    if not p.is_file():
+        return ""
+    return f"data:image/png;base64,{base64.b64encode(p.read_bytes()).decode('ascii')}"
+
+
 def _light_layer(effect) -> str:
     """The light-source layer (sun / moon / lightning / pulse) or ''."""
     if effect == "clear":
+        uri = _sky_body_uri("dawn")
+        if uri:
+            return (
+                '<img alt="" src="' + uri + '" style="position:absolute;top:3%;right:7%;'
+                'width:min(22vw,200px);height:auto;pointer-events:none;'
+                'filter:drop-shadow(0 0 22px rgba(255,214,130,.7));'
+                'animation:ampwxsun 8s ease-in-out infinite;" />'
+            )
         return ('<div style="position:absolute;inset:0;pointer-events:none;'
                 'background:radial-gradient(circle at 78% 18%,rgba(255,225,150,.5),transparent 34%);'
                 'animation:ampwxsun 8s ease-in-out infinite;"></div>')
     if effect == "twilight":
+        uri = _sky_body_uri("moon") or _sky_body_uri("thief_star")
+        if uri:
+            return (
+                '<img alt="" src="' + uri + '" style="position:absolute;top:4%;right:8%;'
+                'width:min(16vw,140px);height:auto;pointer-events:none;'
+                'filter:drop-shadow(0 0 16px rgba(246,231,200,.55));'
+                'animation:ampwxsun 7s ease-in-out infinite;" />'
+            )
         return ('<div style="position:absolute;inset:0;pointer-events:none;'
                 'background:radial-gradient(circle at 79% 17%,rgba(246,231,200,.4),transparent 30%);'
                 'animation:ampwxsun 7s ease-in-out infinite;"></div>')

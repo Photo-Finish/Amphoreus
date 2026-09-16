@@ -1,10 +1,11 @@
 @echo off
 rem ============================================================
 rem  Project Amphoreus - The Sanctuary of the Chrysos Heirs
-rem  One-click launcher: starts Ollama, opens the browser,
-rem  and runs the visual interface.
+rem  One-click launcher: starts Ollama if needed, starts the world
+rem  engine, opens the browser, and runs the visual interface.
 rem
 rem  Double-click this file (or the desktop shortcut).
+rem  Closing this window does NOT stop the Sanctuary.
 rem ============================================================
 setlocal
 title Project Amphoreus - The Sanctuary of the Chrysos Heirs
@@ -30,6 +31,8 @@ if not exist "%PYTHON%" (
     exit /b 1
 )
 
+if not exist "%ROOT%world_runtime" mkdir "%ROOT%world_runtime"
+
 echo ============================================================
 echo   Project Amphoreus - The Sanctuary of the Chrysos Heirs
 echo ============================================================
@@ -51,27 +54,16 @@ rem   .env - this variable just picks the option.
 set SENSES_MODE=unified
 
 echo [2/4] Ensuring the little Amphoreus keeps living...
-powershell -NoProfile -Command ^
-  "$py='%PYTHON%'; $root='%ROOT%'; $alive=$false; ^
-   try { $alive = (Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -match 'world_engine' }) -ne $null } catch {}; ^
-   if (-not $alive) { ^
-     Start-Process -FilePath $py -ArgumentList '-m','src.world.world_engine','--interval','900' -WorkingDirectory $root -WindowStyle Hidden -RedirectStandardOutput ($root+'world_runtime\engine.log') -RedirectStandardError ($root+'world_runtime\engine.log.err'); ^
-     Write-Host '      World engine started (interval 900s).' ^
-   } else { Write-Host '      World engine already running.' }"
+powershell -NoProfile -Command "Start-Process -FilePath '%PYTHON%' -ArgumentList '-m','src.world.world_engine','--interval','900' -WorkingDirectory '%ROOT%' -WindowStyle Hidden -RedirectStandardOutput '%ROOT%world_runtime\engine.log' -RedirectStandardError '%ROOT%world_runtime\engine.log.err'"
+echo       World engine start requested.
 
 echo [3/4] Starting the interface in the background...
-set UI_OWNS=0
-del "%ROOT%world_runtime\ui_launcher_owns.txt" 2>nul
 powershell -NoProfile -Command ^
-  "if (Test-Path '%ROOT%world_runtime\ui_launcher_owns.txt') { Remove-Item '%ROOT%world_runtime\ui_launcher_owns.txt' -Force -ErrorAction SilentlyContinue }; ^
-   $ok = $false; ^
+  "$ok = $false; ^
    try { $r = Invoke-WebRequest -Uri 'http://127.0.0.1:8501/_stcore/health' -UseBasicParsing -TimeoutSec 2; if ($r.StatusCode -eq 200) { $ok = $true } } catch {}; ^
    if ($ok) { Write-Host '      Interface already running on port 8501 (reusing).'; exit 0 }; ^
-   $p = Start-Process -FilePath '%PYTHON%' -ArgumentList @('-m','streamlit','run','%ROOT%src\ui_app.py','--server.headless','true','--server.port','8501','--server.address','127.0.0.1','--browser.gatherUsageStats','false') -WorkingDirectory '%ROOT%' -WindowStyle Minimized -RedirectStandardOutput '%ROOT%world_runtime\ui.log' -RedirectStandardError '%ROOT%world_runtime\ui.log.err' -PassThru; ^
-   $p.Id | Out-File -FilePath '%ROOT%world_runtime\ui.pid' -Encoding ascii -NoNewline; ^
-   '1' | Out-File -FilePath '%ROOT%world_runtime\ui_launcher_owns.txt' -Encoding ascii -NoNewline; ^
+   $p = Start-Process -FilePath '%PYTHON%' -ArgumentList @('-m','streamlit','run','src\ui_app.py','--server.headless','true','--server.port','8501','--server.address','127.0.0.1','--browser.gatherUsageStats','false') -WorkingDirectory '%ROOT%' -WindowStyle Minimized -RedirectStandardOutput '%ROOT%world_runtime\ui.log' -RedirectStandardError '%ROOT%world_runtime\ui.log.err' -PassThru; ^
    Write-Host ('      Streamlit started (pid ' + $p.Id + ').')"
-if exist "%ROOT%world_runtime\ui_launcher_owns.txt" set UI_OWNS=1
 
 echo [4/4] Waiting for the interface, then opening it in your browser...
 set /a _n=0
@@ -91,19 +83,11 @@ powershell -NoProfile -Command "Start-Process 'http://127.0.0.1:8501/'"
 echo ============================================================
 echo   The Sanctuary is open in your browser:
 echo       http://127.0.0.1:8501
-if "%UI_OWNS%"=="1" (
-echo   This window owns the interface — close it to stop Streamlit.
-) else (
-echo   Interface was already running — closing this window will NOT stop it.
-)
+echo   It keeps running if you close this window.
+echo   Stop the world from the Control Panel, or close Streamlit in Task Manager.
 echo   Senses mode: %SENSES_MODE%
-echo   Press any key (or close this window^) when you are done here.
+echo   Press any key to close this launcher window.
 echo ============================================================
 pause >nul
-
-rem --- closing this window stops the interface only if we started it ---
-if "%UI_OWNS%"=="1" (
-powershell -NoProfile -Command "$id = $null; if (Test-Path '%ROOT%world_runtime\ui.pid') { $id = Get-Content '%ROOT%world_runtime\ui.pid' -ErrorAction SilentlyContinue }; if ($id) { Stop-Process -Id $id -Force -ErrorAction SilentlyContinue }; $owner = (Get-NetTCPConnection -LocalPort 8501 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1).OwningProcess; if ($owner) { Stop-Process -Id $owner -Force -ErrorAction SilentlyContinue }; Remove-Item '%ROOT%world_runtime\ui_launcher_owns.txt' -Force -ErrorAction SilentlyContinue"
-)
 
 endlocal

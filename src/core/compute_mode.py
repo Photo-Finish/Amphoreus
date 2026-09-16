@@ -30,11 +30,22 @@ MODES = {
         "label": "NVIDIA CUDA",
         "library": None,   # backend autodetect -> CUDA
         "igpu": "0",
+        "num_gpu": None,
+        "cuda_visible": None,
     },
     "intel": {
         "label": "Integrated (Intel) GPU — Vulkan",
         "library": "vulkan",
         "igpu": "1",
+        "num_gpu": None,
+        "cuda_visible": None,
+    },
+    "cpu": {
+        "label": "CPU only (NVIDIA optional)",
+        "library": None,
+        "igpu": "0",
+        "num_gpu": "0",
+        "cuda_visible": "-1",
     },
 }
 
@@ -71,8 +82,20 @@ def _base_env() -> dict:
 
 def restart_ollama(mode: str) -> dict:
     """Stop the running Ollama server and start it with the chosen compute
-    mode's environment. Returns {'mode', 'label', 'up'}."""
+    mode's environment. Returns {'mode', 'label', 'up'}.
+
+    NVIDIA mode auto-falls back to CPU env when nvidia-smi does not see a
+    GPU — conversation may still try CPU Ollama; the world machine does not
+    wait on CUDA.
+    """
     mode = mode if mode in MODES else "nvidia"
+    if mode == "nvidia":
+        try:
+            from src.core.local_compute import nvidia_present
+            if not nvidia_present():
+                mode = "cpu"
+        except Exception:
+            mode = "cpu"
     ollama_exe = os.environ.get("OLLAMA_EXE")
     if not ollama_exe:
         ollama_exe = shutil.which("ollama")
@@ -101,6 +124,12 @@ def restart_ollama(mode: str) -> dict:
     else:
         env.pop("OLLAMA_LLM_LIBRARY", None)
     env["OLLAMA_IGPU_ENABLE"] = m["igpu"]
+    if m.get("num_gpu"):
+        env["OLLAMA_NUM_GPU"] = str(m["num_gpu"])
+    else:
+        env.pop("OLLAMA_NUM_GPU", None)
+    if m.get("cuda_visible") is not None:
+        env["CUDA_VISIBLE_DEVICES"] = str(m["cuda_visible"])
     try:
         subprocess.Popen([ollama_exe, "serve"], env=env,
                          creationflags=subprocess.CREATE_NO_WINDOW)

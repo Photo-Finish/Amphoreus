@@ -379,9 +379,17 @@ class AmbientDirector:
                 return self._fallback(clock, heirs)
         except Exception:
             pass
+        # World ticks stay on CPU when NVIDIA/CUDA is offline, the operator
+        # asked for AMP_WORLD_CPU, or a local LLM would block the machine.
+        try:
+            from src.core.local_compute import local_llm_safe_for_world
+            if not local_llm_safe_for_world():
+                return self._fallback(clock, heirs)
+        except Exception:
+            return self._fallback(clock, heirs)
         if getattr(self.llm, "configured", False):
             try:
-                models = self.llm.list_models() or set()
+                models = self.llm.list_models(timeout=3.0) or set()
                 if models:
                     return self._llm_generate(clock, heirs)
             except Exception:
@@ -410,6 +418,7 @@ class AmbientDirector:
              {"role": "user", "content": user}],
             temperature=0.8,
             max_tokens=1000,
+            timeout=20,
         )
         parsed = _extract_json(reply)
         raw_errands = parsed.get("errands") or {}

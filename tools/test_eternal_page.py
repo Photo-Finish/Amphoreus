@@ -260,6 +260,18 @@ def test_html_stage() -> None:
     check("parent command bus", "st-key-amp_eternal_cmd" in ui and "createElement('a')" in ui)
     check("name chips backup", "amp_eternal_names" in ui)
     check("hidden Streamlit hit buttons", "amp_eternal_hit_" in ui)
+    check("vfx overlay classes", "mk-flush" in doc and "mk-vein" in doc and "data-amp-vfx=" in doc)
+    check("keyboard legend on stage", "data-amp-legend" in doc and "Shift+click" in doc)
+    check("hover keys documented", "P pat" in doc and "H hug" in doc)
+    check("parent keydown ignores typing", "typingFocus" in ui and "contenteditable" in ui)
+    check("ep_act query bridge", "ep_act" in ui and "ep_id" in ui)
+    check("companions stay sticker images", doc.count("<img ") == 13 and "<svg" not in doc.lower())
+    check("companions do not hover-bob", "amp-bob" not in doc and "amp-bob" not in ui)
+    check("emotion marks still float", "@keyframes amp-float" in doc and "mk-heart::after" in doc)
+    gal = (ROOT / "src" / "ui_galgame.py").read_text(encoding="utf-8")
+    galg = (ROOT / "src" / "ui_galgame_group.py").read_text(encoding="utf-8")
+    check("galgame portraits do not hover-bob", "galfloat" not in gal)
+    check("group galgame portraits do not hover-bob", "galfloat" not in galg)
 
 
 def test_desktop_pet() -> None:
@@ -288,6 +300,9 @@ def test_desktop_pet() -> None:
         ep.parse_command("drag:aglaea:10:20") == ("drag", "aglaea", 10.0, 20.0),
     )
     check("parse junk", ep.parse_command("explode:cyrene") is None)
+    check("parse pat", ep.parse_command("pat:cyrene") == ("pat", "cyrene"))
+    check("parse poke", ep.parse_command("poke:mydei") == ("poke", "mydei"))
+    check("parse ask", ep.parse_command("ask:hyacine") == ("ask", "hyacine"))
     src = Path(ep.__file__).read_text(encoding="utf-8")
     pet_fn = src.split("def pet_companion", 1)[-1].split("\ndef ", 1)[0]
     check("pet never calls chat", "eternal_talk" not in pet_fn and ".chat(" not in pet_fn)
@@ -383,6 +398,143 @@ def test_emotion_poses() -> None:
     check("living world mood names exist", "calm" in lw.MOOD_NAMES.values())
 
 
+def test_gestures_and_vfx() -> None:
+    print("== gestures and vfx ==")
+    import time
+
+    from src.ui_eternal_page import _apply_command, _consume_clicks, build_stage_html
+    from src.world import eternal_emotion as ee
+    from src.world import eternal_gesture as eg
+
+    art = {cid: "data:image/png;base64,QQ==" for cid in ep.all_ids()}
+    pat = eg.reaction_for("hyacine", "pat")
+    check("hyacine pat is joy", bool(pat) and pat["emotion"] == "joy", str(pat))
+    poke = eg.reaction_for("mydei", "poke")
+    check("mydei poke is anger", bool(poke) and poke["emotion"] == "anger", str(poke))
+    check("mydei poke shows a vein", bool(poke) and "vein" in poke["vfx"], str(poke))
+    fear = eg.reaction_for("castorice", "poke")
+    check("castorice poke is fear", bool(fear) and fear["emotion"] == "fear", str(fear))
+    hands = eg.reaction_for("cyrene", "hands")
+    check("hold hands is social", bool(hands) and hands["social"] and hands["join_near"])
+    check("anger default vfx", "vein" in ee.vfx_for("anger") and "steam" in ee.vfx_for("anger"))
+    check("joy default vfx", "sparkle" in ee.vfx_for("joy") and "heart" in ee.vfx_for("joy"))
+    check("weary default vfx", ee.vfx_for("weary") == ("zzz",))
+    check("unknown gesture", eg.reaction_for("cyrene", "explode") is None)
+
+    world = SimpleNamespace(mood={})
+    touched = eg.apply_gesture("phainon", "pat", world=world, overlay={}, near=["cyrene"])
+    check("pat applies", bool(touched.get("ok")))
+    check(
+        "pat warms mood",
+        int((world.mood.get("phainon") or {}).get("valence") or 0) >= 1,
+        str(world.mood),
+    )
+    reason = str((world.mood.get("phainon") or {}).get("reason") or "")
+    check("pat reason is factual", reason == "a pat on the head on the Eternal Page", reason)
+    hug = eg.apply_gesture(
+        "cyrene", "hug", world=world, overlay={}, near=["phainon", "cyrene"]
+    )
+    check("hug overlay on target", (hug.get("overlay") or {}).get("cyrene", {}).get("gesture") == "hug")
+    wit = (hug.get("overlay") or {}).get("phainon") or {}
+    check("hug marks nearby Heirs", bool(wit.get("witness")) and wit.get("gesture") == "hug")
+
+    now = time.time()
+    faces = ee.circle_emotions(
+        gestures={"aglaea": {"emotion": "anger", "vfx": ["vein"], "ts": now}}
+    )
+    check("gesture overlay sets the face", faces.get("aglaea") == "anger", str(faces.get("aglaea")))
+    stale = ee.circle_emotions(
+        gestures={"aglaea": {"emotion": "anger", "vfx": ["vein"], "ts": now - 10_000}}
+    )
+    check("stale overlay does not stick", stale.get("aglaea") == "calm", str(stale.get("aglaea")))
+    pruned = eg.prune_overlay(
+        {"aglaea": {"emotion": "anger", "ts": now - 10_000}}, now=now
+    )
+    check("prune drops stale overlay", pruned == {})
+
+    cmds = eg.commands_from_query({"ep_act": "pat", "ep_id": "cyrene"})
+    check("consume ep_act", cmds == ["pat:cyrene"], str(cmds))
+    check(
+        "consume legacy pet",
+        eg.commands_from_query({"ep_pet": "hyacine"}) == ["pet:hyacine"],
+    )
+    check(
+        "consume drag query",
+        eg.commands_from_query({"ep_drag": "aglaea,10,20"}) == ["drag:aglaea:10:20"],
+    )
+    check(
+        "consume click query",
+        eg.commands_from_query({"ep_click": "phainon"}) == ["click:phainon"],
+    )
+    parsed = ep.parse_command(cmds[0])
+    check("act query parses", parsed == ("pat", "cyrene"), str(parsed))
+
+    class FakeQuery(dict):
+        pass
+
+    class FakeST:
+        def __init__(self):
+            self.query_params = FakeQuery({"ep_click": "phainon"})
+            self.session_state = {
+                ep.STATE_SELECTED: [],
+                ep.STATE_LAYOUT: {},
+                ep.STATE_GESTURES: {},
+                ep.STATE_CMD: "",
+            }
+
+    fake = FakeST()
+    changed = _consume_clicks(fake)
+    check("consume click changes selection", changed is True)
+    check(
+        "click query stands near",
+        fake.session_state.get(ep.STATE_SELECTED) == ["phainon"],
+        str(fake.session_state.get(ep.STATE_SELECTED)),
+    )
+    fake2 = FakeST()
+    fake2.query_params = FakeQuery({})
+    fake2.session_state[ep.STATE_SELECTED] = ["cyrene"]
+    ok_cmd = _apply_command(fake2, "hands:cyrene", world=SimpleNamespace(mood={}))
+    check("apply hands command", ok_cmd is True)
+    row = (fake2.session_state.get(ep.STATE_GESTURES) or {}).get("cyrene") or {}
+    check("hands writes overlay", row.get("gesture") == "hands", str(row))
+
+    gest_html = build_stage_html(
+        selected=["cyrene"],
+        art=art,
+        names={"cyrene": "Cyrene"},
+        emotions={"cyrene": "anger"},
+        gestures={"cyrene": {"gesture": "poke", "emotion": "anger", "vfx": ["vein", "steam"], "ts": now}},
+    )
+    check("anger vfx class in html", "mk-vein" in gest_html and 'data-amp-emotion="anger"' in gest_html)
+    check("gesture flash marked", 'data-amp-gesture="poke"' in gest_html)
+    for cls in eg.vfx_class_names():
+        check(f"vfx mark {cls}", cls in gest_html)
+    check("legend lists ctrl poke", "Ctrl+click" in gest_html and "poke" in gest_html.lower())
+
+    src = Path(eg.__file__).read_text(encoding="utf-8")
+    ui = Path(ROOT / "src" / "ui_eternal_page.py").read_text(encoding="utf-8")
+    check("gesture module never chats", "eternal_talk" not in src and ".chat(" not in src)
+    check("gesture module never authors I-lines", 'reason": "I ' not in src)
+    bad_bits = ("Nya~", "Nya", "don't poke me", "Don't poke me", "how dare you poke")
+    blob = src + "\n" + ui
+    check(
+        "no canned Heir speech in gestures",
+        not any(b.lower() in blob.lower() for b in bad_bits if b != "Nya"),
+    )
+    # Nya is too short; look for the cute canned form only.
+    check("no Nya canned line", "Nya~" not in blob and "nya~" not in blob.lower())
+    for gid, spec in eg.GESTURES.items():
+        reason = str(spec.get("reason") or "")
+        check(
+            f"{gid} reason is factual",
+            reason.startswith("a ") and "Eternal Page" in reason and " I " not in f" {reason} ",
+            reason,
+        )
+        check(f"{gid} has a vfx", bool(spec.get("vfx")))
+    check("ask line is the visitor's", eg.ASK_USER_LINE == "How did that feel?")
+    check("ask is not a gesture id", "ask" not in eg.GESTURE_IDS)
+
+
 def main() -> int:
     test_roster()
     test_selection()
@@ -394,6 +546,7 @@ def main() -> int:
     test_desktop_pet()
     test_interaction_api()
     test_emotion_poses()
+    test_gestures_and_vfx()
     print()
     print(f"{len(PASSED)} passed, {len(FAILED)} failed")
     for name in FAILED:

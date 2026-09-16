@@ -4,7 +4,7 @@ A separate, OPTIONAL tab — the Classic interface is left completely untouched.
 This view renders the selected Heir's conversation as a visual-novel scene:
 
   • background art (Amphoreus)
-  • the Heir's sprite (their portrait), gently floating, with a name plate
+  • the Heir's sprite (their portrait), standing still, with a name plate
   • a dialogue box whose latest line types itself out (browser-side JS;
     it only re-types when the line actually changes)
   • a small conversation log + bond tag
@@ -105,12 +105,11 @@ def _scene_html(bg_uri, sprite_uri, name, last_user, last_heir, bond, cid, wx=No
         "<div style=\"position:absolute;inset:0;background:linear-gradient(180deg,"
         "rgba(11,10,20,0) 25%, rgba(11,10,20,.92) 90%);\"></div>"
     )
-    # sprite, gently floating
+    # sprite, standing still
     if sprite_uri:
         parts.append(
             f"<div style=\"position:absolute;left:50%;transform:translateX(-50%);"
-            f"bottom:128px;height:400px;filter:drop-shadow(0 0 22px rgba(232,213,163,.28));"
-            f"animation:galfloat 5s ease-in-out infinite;\">"
+            f"bottom:128px;height:400px;filter:drop-shadow(0 0 22px rgba(232,213,163,.28));\">"
             f"<img src='{sprite_uri}' style=\"height:100%;width:auto;object-fit:contain;\"/></div>"
         )
     # bond tag (top-right)
@@ -148,8 +147,6 @@ def _scene_html(bg_uri, sprite_uri, name, last_user, last_heir, bond, cid, wx=No
     parts.append("</div></div>")
     parts.append("""
 <style>
-@keyframes galfloat { 0%,100% { transform:translateX(-50%) translateY(0); }
-                       50%     { transform:translateX(-50%) translateY(-8px); } }
 @keyframes galblink { to { visibility:hidden; } }
 </style>
 <script>

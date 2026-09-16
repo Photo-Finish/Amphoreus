@@ -45,15 +45,21 @@ PPG_PACKS: dict[str, list[str]] = {
     "hyacine": ["Sticker_PPG_22_Hyacine_{nn}.png"],
     "hysilens": ["Sticker_PPG_23_Hysilens_{nn}.png"],
     "mydei": ["Sticker_PPG_21_Mydei_{nn}.png"],
-    "phainon": [
-        "Sticker_PPG_21_Phainon_{nn}.png",
-        "Sticker_PPG_21_Phainon_{nn}.png",
-    ],
-    "tribbie": [
-        "Sticker_PPG_21_Tribbie_{nn}.png",
-        "Sticker_PPG_21_Trianne_{nn}.png",
-        "Sticker_PPG_21_Trinnon_{nn}.png",
-    ],
+    "phainon": ["Sticker_PPG_21_Phainon_{nn}.png"],
+    "tribbie": ["Sticker_PPG_21_Tribbie_{nn}.png"],
+}
+
+# Official files that do not share the main pack's 01–N numbering.
+# Trianne/Trinnon are extra PPG 21 stickers (not Tribbie_03/_04).
+# Castorice PPG 21 is a fifth pose beside PPG 22 01–04.
+PPG_EXTRAS: dict[str, dict[str, str]] = {
+    "tribbie": {
+        "03": "Sticker_PPG_21_Trianne_01.png",
+        "04": "Sticker_PPG_21_Trinnon_01.png",
+    },
+    "castorice": {
+        "05": "Sticker_PPG_21_Castorice_01.png",
+    },
 }
 
 
@@ -142,6 +148,24 @@ def save_variant(cid: str, nn: str, templates: list[str]) -> bool:
     return False
 
 
+def save_named(cid: str, nn: str, filename: str) -> bool:
+    folder = OUT / cid
+    folder.mkdir(parents=True, exist_ok=True)
+    dest = folder / f"{nn}.png"
+    if _have(dest):
+        print(f"  have {cid}/{nn}.png")
+        return True
+    raw = fetch(cdn_url(filename))
+    if not raw:
+        return False
+    png = to_png(raw)
+    if not png:
+        return False
+    dest.write_bytes(png)
+    print(f"  ok  {cid}/{nn}.png  {len(png)}  <- {filename}")
+    return True
+
+
 def sync_default(cid: str) -> None:
     """Keep `{cid}.png` as the calm/default pose (variant 01)."""
     variant = OUT / cid / "01.png"
@@ -175,6 +199,9 @@ def main() -> int:
                 consecutive_miss += 1
                 if i >= 2 and consecutive_miss >= 2:
                     break
+        for nn, filename in PPG_EXTRAS.get(cid, {}).items():
+            if save_named(cid, nn, filename):
+                got_any = True
         sync_default(cid)
         if not got_any and not _have(OUT / f"{cid}.png"):
             missing.append(cid)

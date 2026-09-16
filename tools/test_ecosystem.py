@@ -584,6 +584,13 @@ check(
     usl._resolved_bottom("chimera", "14%", page_layer=False) == "14%",
 )
 _page_css = usl._css()
+check("idle life sprites do not hover-bob", "amp-bob" not in _page_css)
+_roam_block = _page_css.split("@keyframes amp-sprite-roam")[1].split("@keyframes")[0] if "@keyframes amp-sprite-roam" in _page_css else ""
+check(
+    "sprite roam stays horizontal",
+    "translateX" in _roam_block and "translateY" not in _roam_block,
+    _roam_block[:180],
+)
 check(
     "page-layer zeroes cell-scaled foot margin",
     ".amp-pict-page .amp-sprite" in _page_css
@@ -603,22 +610,27 @@ check(
     )[1][:80],
 )
 check(
-    "page-layer hides full-width ground ambient",
-    ".amp-pict-page .amp-shore-band,\n.amp-pict-page .amp-wheat-row,\n.amp-pict-page .amp-fountain" in _page_css
-    and "display: none" in _page_css.split(
-        ".amp-pict-page .amp-shore-band,\n.amp-pict-page .amp-wheat-row,\n.amp-pict-page .amp-fountain"
-    )[1][:80],
+    "page-layer hides leftover geometric ambient",
+    ".amp-pict-page .amp-grass-blade" in _page_css
+    and "display: none" in _page_css.split(".amp-pict-page .amp-grass-blade")[1][:200],
 )
 _fountain_amb = usl.life_overlay_html(
     [{"kind": "fountain", "hotspot": {"left": "44%", "bottom": "10%"}}],
     "Okhema",
 )
-_fountain_tag = _fountain_amb[_fountain_amb.find('class="amp-fountain"'):]
-_fountain_tag = _fountain_tag[:_fountain_tag.find("></div>") + 2] if "></div>" in _fountain_tag else _fountain_tag[:120]
 check(
-    "fountain ambient follows hotspot not floor",
-    "bottom:10%" in _fountain_tag and "bottom:0" not in _fountain_tag,
-    _fountain_tag,
+    "no geometric fountain overlay",
+    'class="amp-fountain"' not in _fountain_amb,
+)
+_dawn_mk = usl._sprite_markup("dawn")
+check(
+    "dawn Device uses painted PNG not SVG disk",
+    "data:image/png" in _dawn_mk and "<svg" not in _dawn_mk,
+)
+_wx_src = (ROOT / "src" / "ui_weather.py").read_text(encoding="utf-8")
+check(
+    "clear sky uses Dawn Device picture",
+    '_sky_body_uri("dawn")' in _wx_src,
 )
 from src.ui_weather import page_photo_object_position, ground_css_position
 check(

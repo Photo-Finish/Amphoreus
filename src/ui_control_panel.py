@@ -5,6 +5,7 @@ Everything the end user may want to steer, in one place: the experience mode
 mailbox. All choices persist in the world state.
 """
 
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -12,6 +13,7 @@ from pathlib import Path
 import streamlit as st
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+ENGINE_PID_PATH = PROJECT_ROOT / "world_runtime" / "engine.pid"
 
 
 # --------------------------------------------------------------------------- #
@@ -19,25 +21,13 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 # --------------------------------------------------------------------------- #
 def _engine_running() -> bool:
     try:
-        import psutil
-        for p in psutil.process_iter(["name", "cmdline"]):
-            try:
-                nm = (p.info.get("name") or "").lower()
-                cl = " ".join(p.info.get("cmdline") or [])
-            except Exception:
-                continue
-            if "python" in nm and "world_engine" in cl:
-                return True
-    except Exception:
-        pass
-    try:
-        out = subprocess.run(
-            ["powershell", "-NoProfile", "-Command",
-             "if (Get-CimInstance Win32_Process -Filter \"Name='python.exe'\" | "
-             "Where-Object { $_.CommandLine -match 'world_engine' }) { exit 0 } "
-             "else { exit 1 }"],
-            capture_output=True, timeout=25)
-        return out.returncode == 0
+        pid = int(ENGINE_PID_PATH.read_text(encoding="ascii").strip())
+        if pid <= 0:
+            return False
+        os.kill(pid, 0)
+        return True
+    except OSError:
+        return False
     except Exception:
         return False
 
@@ -46,20 +36,28 @@ def _engine_start() -> bool:
     """Launch the world engine fully detached (survives Streamlit restarts).
     Refuses to double-start: if an engine is already alive, nothing is spawned.
     The base interval is one real day (1x); the Control Panel's time flow
-    multiplies it linearly."""
+    multiplies it linearly.
+    """
     if _engine_running():
         return False
     try:
-        log = PROJECT_ROOT / "world_runtime" / "engine.log"
-        err = PROJECT_ROOT / "world_runtime" / "engine.log.err"
+        runtime = PROJECT_ROOT / "world_runtime"
+        runtime.mkdir(parents=True, exist_ok=True)
         from src.world.world_engine import REAL_DAY_SECONDS
+        env = os.environ.copy()
+        env["PYTHONUNBUFFERED"] = "1"
+        creation = getattr(subprocess, "CREATE_NO_WINDOW", 0) if sys.platform == "win32" else 0
+        log = open(runtime / "engine.log", "a", encoding="utf-8")
+        err = open(runtime / "engine.log.err", "a", encoding="utf-8")
         subprocess.Popen(
-            ["powershell", "-NoProfile", "-WindowStyle", "Hidden", "-Command",
-             f"Start-Process -FilePath '{sys.executable}' "
-             f"-ArgumentList '-m','src.world.world_engine','--interval','{REAL_DAY_SECONDS}' "
-             f"-WorkingDirectory '{PROJECT_ROOT}' -WindowStyle Hidden "
-             f"-RedirectStandardOutput '{log}' -RedirectStandardError '{err}'"],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            [sys.executable, "-m", "src.world.world_engine",
+             "--interval", str(REAL_DAY_SECONDS)],
+            cwd=str(PROJECT_ROOT),
+            stdout=log,
+            stderr=err,
+            env=env,
+            creationflags=creation,
+        )
         return True
     except Exception:
         return False
@@ -677,21 +675,24 @@ def render_control_panel(manager, characters):
     # ---------------- 3c. Compute (GPU) ----------------
     st.markdown("### Compute (GPU)")
     st.caption(
-        "Which processor carries the Heirs' minds. **NVIDIA CUDA** uses the "
-        "RTX GPU — fast, but the 10 GB model is split 62/38 with the CPU "
-        "because of 8 GB VRAM. **Integrated (Intel) GPU** uses the built-in "
-        "GPU through Vulkan — it can hold the whole model in shared memory, "
-        "but computes far slower. Changing this restarts the AI engine for "
-        "a few seconds. The **Online API** voice path ignores this — "
-        "conversation runs on the remote model."
+        "Which processor carries the Heirs' **conversation**. The world machine "
+        "(hours, hearths, streets, eco, Keeper fallback) always ticks on CPU "
+        "and does not need NVIDIA. **NVIDIA CUDA** uses the RTX GPU for talk — "
+        "fast, but the 10 GB model is split 62/38 with the CPU because of 8 GB "
+        "VRAM. **Integrated (Intel) GPU** uses Vulkan. **CPU only** keeps Ollama "
+        "off the NVIDIA device (GPU offline / driver missing). "
+        "The **Online API** voice path ignores this."
     )
     try:
         from src.core import compute_mode as _cm
         _cur_cm = _cm.get_compute_mode()
+        _cm_opts = ["nvidia", "intel", "cpu"]
+        if _cur_cm not in _cm_opts:
+            _cur_cm = "nvidia"
         _cm_choice = st.radio(
             "Which processor for the Heirs?",
-            ["nvidia", "intel"],
-            index=0 if _cur_cm == "nvidia" else 1,
+            _cm_opts,
+            index=_cm_opts.index(_cur_cm),
             format_func=lambda m: _cm.MODES[m]["label"],
             key="ctl_compute",
         )

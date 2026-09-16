@@ -1,8 +1,9 @@
 @echo off
 rem ============================================================
-rem  Amphoreus Sanctuary — DESKTOP WINDOW (new Stage-2 shell)
-rem  Opens the same Streamlit UI in a native window, not a browser tab.
-rem  Original browser launcher remains: launch_sanctuary.cmd
+rem  Amphoreus Sanctuary — DESKTOP WINDOW (Stage-2 shell)
+rem  Same Streamlit UI in a native window. Always uses the project
+rem  venv + tools\desktop_sanctuary.py so code changes are picked up.
+rem  Browser launcher remains: launch_sanctuary.cmd
 rem ============================================================
 setlocal
 title Amphoreus Sanctuary (Desktop)
@@ -14,23 +15,18 @@ if exist D:\ (
 )
 
 set ROOT=%~dp0
-set EXE=%ROOT%AmphoreusSanctuary.exe
 set PYTHON=%ROOT%.venv\Scripts\python.exe
 if not exist "%PYTHON%" set PYTHON=%ROOT%..\.venv\Scripts\python.exe
 
-if exist "%EXE%" (
-    start "" "%EXE%"
-    exit /b 0
-)
-
 if not exist "%PYTHON%" (
-    echo [ERROR] Neither AmphoreusSanctuary.exe nor the project venv was found.
-    echo         Build the exe:  powershell -ExecutionPolicy Bypass -File tools\build_desktop_exe.ps1
+    echo [ERROR] Project venv not found.
+    echo         Expected: %ROOT%.venv\Scripts\python.exe
+    echo         or:       %ROOT%..\.venv\Scripts\python.exe
     pause
     exit /b 1
 )
 
-echo AmphoreusSanctuary.exe not found — running the desktop shell via Python.
+echo Starting the Sanctuary desktop window via Python...
 "%PYTHON%" "%ROOT%tools\desktop_sanctuary.py"
 if errorlevel 1 pause
 endlocal

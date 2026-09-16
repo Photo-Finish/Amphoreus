@@ -1,80 +1,97 @@
 # castorice — Personal Memories
 
-> Verbatim dialogue from the canon databank where this Heir appears, copied (never modified in the databank) to serve as personal memory. Each part shows the source file and the in-story context (chapter / mission / scene), and is bounded to a coherent dialogue moment.
+> Verbatim canon dialogue this Heir spoke, was addressed in, or stood on-stage for. Shared scenes are stored in full under `databank/memories/collective/`; this file keeps the personal thread plus a pointer. Original databank mission files were not modified.
 
 ---
 
 ### Part 1 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 1 — Silver Chariot, Away to that Blackened Land > Castorice — The Shadow of Death
-
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 1 — Silver Chariot, Away to that Blackened Land > Castorice — The Shadow of Death
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__castorice-the-shadow-of-death`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 **Phainon:** ...What a mess. This is Marmoreal Market, the most important residential area. Pushing through by force would result in needless casualties... But now our backup is here.
+
 **??? (Castorice):** Lord Phainon. And... the two guests. Welcome to Okhema.
 **Dan Heng:** These enemies... aren't moving?
 **Phainon:** When I heard your footsteps, I thought Death was already writing my final chapter... Miss Castorice.
+
 **Castorice:** An abrupt ending to an epic that has barely begun might also amaze the people. But today, Lord Phainon... Okhema needs you.
 **Phainon:** Well, if the "mortician" of the holy city says I'm needed, then it sounds like I'm gonna live through this mess.
+
 **Castorice:** All I can do is clear the obstacles and guide you to the place of Nikador's descent. Dear guests, if you would, please follow me... And kindly keep five paces distance.
 
 ---
 
+---
+
 ### Part 2 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 1 — Silver Chariot, Away to that Blackened Land > Follow Castorice
-
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 1 — Silver Chariot, Away to that Blackened Land > Follow Castorice
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__follow-castorice`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 **Dan Heng:** Their hostility has ceased?
 **Castorice:** In the face of death, Strife will also cause hesitation to arise. I... am the shadow of death.
+
 *(If you try to get too close: The chilling aura fills you with unease. An overwhelming darkness engulfs you... You're teleported back.)*
+
 *(Idle enemy chatter)*
 **Celestial Monster:** Keep away from her... Servant of Thanatos... Shadow of Death... Begone...
+
 **Castorice:** Hmm... There are also some enemies who are difficult to subdue by presence alone.
 
 ---
 
-### Part 3 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 1 — Silver Chariot, Away to that Blackened Land > Follow Castorice
-
-
 **Soldier of Nikador:** The scent of blood... Are you an attendant of the Hand of Shadow?
 **Castorice:** ...No, I'm nobody's attendant.
 **Soldier of Nikador:** You can try to hide it, but you obviously came from the world of the dead. Okhema, Chrysos Heirs — what cowards. We live by loyalty and glory, while you live by weakness and deceit.
+
 **Phainon:** I'm so glad that you're not my history teacher. How much can we trust the words of someone who has sunk so deep into madness? However, if you're standing here out of loyalty and glory, then I shall draw my blade and grant you a warrior's end.
 
----
-
-### Part 4 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 1 — Silver Chariot, Away to that Blackened Land > Follow Castorice
-
+**Soldier of Nikador:** Come, to arms!
 
 *(Battle)*
+
 *(After the battle)*
 **Phainon:** As you wish.
 **Castorice:** Lady Aglaea once said that your time is extremely valuable and shouldn't be wasted on unnecessary conflict. I have the power to lay them to rest.
 **Phainon:** It's pointless to waste your strength on these pawns. Let's go. It's time to face "Strife".
+
 **Castorice:** Once there... You must turn into birds and fly toward the final battlefield.
 **Phainon:** Miss Castorice, why aren't you joining us?
 **Castorice:** I must stay here and ensure that these soldiers do not destroy the city. Although faith is more important to the vast majority, there are still quite a number of citizens who care more about their worldly possessions. The citizens have been evacuated and the only living things in the vicinity... are the three of you. As Lady Aglaea instructed, no civilians will be affected.
+
 **Phainon:** ...Do excuse my impropriety. Well then, I'll see you later, Miss Castorice.
 **Castorice:** Then... Could you all quietly leave?
 
 ---
 
-### Part 5 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 2 — Distant Travelers, Listen to this World's Prayer > Continue to Explore Okhema
+### Part 3 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 2 — Distant Travelers, Listen to this World's Prayer > Continue to Explore Okhema > Talk to Chartonus, optional
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__continue-to-explore-okhema-2`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
+**Chartonus:** Your spear, not too serious, the damage. Has been completed, the repair.
+
+---
 
 **Dan Heng:** That's... the lady we encountered previously.
+
 **Castorice:** Ah... It's our two distinguished guests.
 **Castorice:** Welcome to the dwelling of the dromases... Well, I'm also just passing by.
+
 > *(Trailblazer)* The air here isn't too fresh...
 > **Castorice:** Really? I find it rather sweet... It's the fragrance of life.
 > *(Trailblazer)* You're also here to unwind?
 > **Castorice:** Yes. I enjoy the air here. It's rather sweet... Full of the fragrance of life.
+
 **Dan Heng:** Speaking of which, is Miss Castorice also a Chrysos Heir?
 **Castorice:** Yes.
 **Castorice:** ...
@@ -82,6 +99,7 @@
 **Castorice:** Thank you, Mr. Dan Heng.
 **Dan Heng:** ...
 **Castorice:** ...
+
 > *(Trailblazer)* Should I show off my dance moves?
 > **Dan Heng:** ...No, thank you. Unless you wish to make things worse.
 > *(Trailblazer)* (point at the dromas) Let's liven up the atmosphere!
@@ -89,20 +107,25 @@
 > **Dan Heng:** ...It seems to have understood you, but it's choosing to ignore you.
 > *(Trailblazer)* (Remain silent.)
 > **(Trailblazer):** ...
+
 **Dromas:** ...Grumph!
 **Castorice:** Oh, this child looks hungry.
 **Castorice:** Since you are here, do you two want to try feeding the dromases?
 
 ---
 
-### Part 6 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 2 — Distant Travelers, Listen to this World's Prayer > Take Out a Small Amount of Dromas Feed
-
+### Part 4 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 2 — Distant Travelers, Listen to this World's Prayer > Take Out a Small Amount of Dromas Feed
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__take-out-a-small-amount-of-dromas-feed`
 
 **Castorice:** Their feed is dry redsoil and it's very clean. There is some over there.
+
 *(Interact with the Redsoil Feed)*
 **Castorice:** Since it's your first time feeding, just a small piece will do.
+
 > *(Trailblazer)* Can I have a taste?
 > **Castorice:** Of course, but it's very bitter and hard to digest.
 > *(narrative)* ...Her serious tone immediately quashes your wild idea.
@@ -111,16 +134,22 @@
 
 ---
 
-### Part 7 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 2 — Distant Travelers, Listen to this World's Prayer > Feed the Dromas
-
+### Part 5 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 2 — Distant Travelers, Listen to this World's Prayer > Feed the Dromas > Talk to Castorice again, optional
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__feed-the-dromas`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 *(Talk to Castorice again, optional)*
 **Castorice:** Their feed is dry redsoil and it's very clean. There is some over there.
+
 **Dromas:** Grumph...
 *(narrative)* The dromas lets out a slow but joyful sound, clearly anticipating your performance as its new caretaker.
 *(narrative)* Should it get what it wants so easily, or...?
+
 > *(Trailblazer)* Offer the feed to Dan Heng.
 > **Dan Heng:** ...That's not gonna happen.
 > *(narrative)* Darn it, when did he learn to read minds?
@@ -140,33 +169,33 @@
 > *(narrative)* The dromas lets out a mocking cry. Now, you've not only earned its ridicule, but also the ongoing duty of feeding it...
 > **Castorice:** Haha...
 > **Castorice:** That was a little unexpected. Don't worry. There's a lot more feed over there. Just go get another piece.
+
 *(Taking another Redsoil Feed; feeding the dromas again)*
 **Dromas:** Grumph...
 *(narrative)* The dromas lets out a slow but joyful sound, clearly anticipating your performance as its new caretaker.
 *(narrative)* Should it get what it wants so easily, or...?
+
 > *(Trailblazer)* Offer the redsoil feed to the dromas.
+
 **Dromas:** Grumph... Grumphhh!
 **Dromas:** Grumphhhh... Grumphhh!
 *(narrative)* The big guy in front lets out a satisfied sound.
 *(narrative)* You don't know how it chews and digests these clumps of clay — but to them, these hard red clays must be as delicious as a freshly sizzling steak.
 **Dromas:** Grumphhh!
 **Castorice:** It looks very happy. Perhaps... you could try petting it?
+
 > *(Trailblazer)* Gently pat it on the head.
 > **Dromas:** Grumphhh... Grumphhh!
 > *(Trailblazer)* Rub its neck with some strength.
 > **Dromas:** Grumphhh... Grumphhh!
 > **Castorice:** It seems to enjoy it a lot. You get along very well with the dromas.
 > **Castorice:** It makes me envious.
+
 > *(Trailblazer)* Don't you want to try petting it as well?
 > *(Trailblazer)* It will also like you.
 > **Castorice:** Me? No, thanks. It's alright...
 
 ---
-
-### Part 8 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 2 — Distant Travelers, Listen to this World's Prayer > Feed the Dromas
-
 
 **Dan Heng:** Miss Castorice, are you concerned about something? Since we've just arrived in this area, we hope to build closer relationships with everyone through our actions.
 **Castorice:** Please don't misunderstand. When you helped Okhema, you already showed ample goodwill. It's just that I...
@@ -174,41 +203,57 @@
 **Castorice:** So, please don't take it to heart.
 **Dan Heng:** ...Alright. (Trailblazer), take a photo of the dromas as well. It's rare to encounter such an amazing creature.
 **Castorice:** Would you two like a photo with this child? In that case, I might be able to help.
+
 > *(Trailblazer)* Do you enjoy taking photos?
 > **Castorice:** Yes, it is an interest of mine.
 > *(Trailblazer)* You don't have to force yourself.
 > **Castorice:** That's not it. Photography is an interest of mine.
+
 **Dan Heng:** Alright then. Thanks for your help.
 **Castorice:** No problem. Please place the photostone on the ground.
+
 > *(Trailblazer)* On the ground?
 > *(Trailblazer)* Can't I just hand it to you?
 > **Dan Heng:** ...Let's just do as she says.
+
 *(narrative)* You put March 7th's camera on the ground, and Castorice bends down to pick it up...
+
 **Castorice:** What beautiful colors. It's... very cute.
 **Castorice:** The aperture, exposure index, and preset filter... Although it looks different on the outside, it actually has the same internal structure. There won't be any issues.
 **Castorice:** Alright, get into position.
+
 **Castorice:** And we're done. I hope that you like it.
+
 *(narrative)* Castorice gently places the camera on the ground, and you bend down to pick it up.
+
 **Dan Heng:** ...But, what's the reason behind using the black and white filter?
 **Castorice:** Ah... My apologies, it's just personal preference. I like black and white photos. If it bothers you, I can take another photo.
 **Dan Heng:** That won't be necessary. This is fine.
 **Castorice:** I'm glad that I could help.
 **Castorice:** Then, I'll take my leave now. Please continue playing with the dromases.
+
 **Dan Heng:** ...
 
 ---
 
-### Part 9 — `databank/missions/chapter-01-heroic-saga.md`
+### Part 6 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 2 — Distant Travelers, Listen to this World's Prayer > Enter the Vortex of Genesis via the Spirit Basin
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__enter-the-vortex-of-genesis-via-the-spirit-basin`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** on-stage
 
-**Context:** Complete Dialogue > Mission 3 — Night Stars, Accompany My Slumber > Submit to Aglaea's Interrogation — It's Better to Speak the Truth
+*(Cutscene: You and Dan Heng arrived at the Vortex of Genesis, only to find your hands tied with golden thread. Castorice appeared behind you, and Aglaea demanded your "honesty.")*
 
+---
 
-> *(Trailblazer)* Why is this happening again?
-> *(Trailblazer)* We've been made...
-> *(Trailblazer)* As expected.
-**Aglaea:** This is no laughing matter. It's an interrogation.
-**Aglaea:** While the both of you were roaming the city, someone was paying attention to your every move. Unfortunately... you have broken your promises.
-**Dan Heng:** So, you are indeed aware of our transgression... However, we only did so to save a life.
+### Part 7 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 3 — Night Stars, Accompany My Slumber > Submit to Aglaea's Interrogation — It's Better to Speak the Truth
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__submit-to-aglaea-s-interrogation-it-s-better-to-speak-the-truth`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
+
 **Aglaea:** The holy city's fate is as fragile as thread. I must exercise prudence in order to eliminate sources of potential disaster.
 **Aglaea:** I will grant the both of you another chance to mend our broken trust. The golden thread shall judge on my behalf. If you're truthful, you will live, else... you will perish.
 **Castorice:** We meet again, distinguished guests.
@@ -220,6 +265,7 @@
 **Aglaea:** However, Aquila's divine punishment fell the instant the fleet of skyships took flight. An entire city-state, along with all of its subjects, was reduced to ash in that moment.
 **Aglaea:** It's not that Amphoreus is unwilling to head toward the stars. Yet, anyone who even thinks about breaching the firmament would undoubtedly infuriate the gods, causing this land of the living to burn and an entire nation of mortals to perish. The Eye of Twilight is only one example of this.
 **Aglaea:** This is forbidden territory which can never be ventured into.
+
 > *(Trailblazer)* So you're saying that it's better to pretend it doesn't exist instead?
 > **Dan Heng:** Humanity has always longed for the sky... and this is something that you can't prevent.
 > *(Trailblazer)* We mean no harm toward Amphoreus...
@@ -229,35 +275,94 @@
 
 ---
 
-### Part 10 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 3 — Night Stars, Accompany My Slumber > Submit to Aglaea's Interrogation — It's Better to Speak the Truth
-
-
 *(With four questions, Aglaea tried to figure out why you came to Amphoreus and helped Okhema, and whether your power might endanger Okhema or the Flame-Chase Journey.)*
+
 **Aglaea:** Three steps, Castorice.
 **Castorice:** ...Yes, Lady Aglaea.
 **Aglaea:** I shall ask you four questions. Dishonest answers will cause the golden thread to vibrate, while truthful responses will not affect the thread.
 **Aglaea:** The number of times that the thread trembles... is the number of steps forward that the executioner will take.
 **Aglaea:** If she isn't standing behind you after all four questions have been asked and answered, the both of you will have passed this test. If she is... your journey will end here.
 **Castorice:** You'll fall asleep amid the warm embrace of flowers and feel no pain... That I can guarantee.
+
 > *(Trailblazer)* There's no need for such guarantees!
 > *(Trailblazer)* Does this mean that we can lie up to two times?
 > **Aglaea:** If you treat your lives as mere trifles, then you may do as you wish.
 > **Dan Heng:** Regardless of what she says, (Trailblazer), we'll be fine as long as our consciences are clear.
 
+**Aglaea:** Well then, let us begin. Question One.
+**Aglaea:** Outlanders, **why have you come to Amphoreus?**
+
+> *(Trailblazer)* To solve the problems plaguing this world.
+> *(narrative)* The golden thread trembles slightly.
+> **Aglaea:** A half-truth that still conceals some facts. Yet, the rules leave no room for compromise. A step will be recorded.
+> *(Trailblazer)* To allow our journey to continue.
+> *(narrative)* The golden thread remains calm and unchanged.
+> **Aglaea:** A truthful response. A step will not be recorded.
+> *(Trailblazer)* To turn this place upside down!
+> *(narrative)* The golden thread trembles violently.
+> **Aglaea:** Jokes cannot conceal your true intentions. Opportunities are fleeting and you've just wasted one.
+
+**Aglaea:** Question Two.
+**Aglaea:** Outlanders, **why did you lend your aid to Okhema?**
+
+> *(Trailblazer)* Because of our courageous spirit and selfless hearts!
+> *(narrative)* The golden thread trembles slightly.
+> **Aglaea:** A response that is certainly full of spirit, but lacking in sincerity... A step will be recorded.
+> *(Trailblazer)* I regret what we did. We shouldn't have aided Okhema at all!
+> *(narrative)* The golden thread trembles violently.
+> **Aglaea:** You've let your anger consume you. A step will be recorded.
+> *(Trailblazer)* To allow our journey to continue.
+> *(narrative)* The golden thread remains calm and unchanged.
+> **Aglaea:** No fluctuations detected. A step will not be recorded.
+
+**Aglaea:** Question Three.
+**Aglaea:** Outlanders, **if the current situation changed dramatically, could you eventually point your blades at Okhema and its citizens?**
+
+> *(Trailblazer)* I... can't make any guarantees.
+> *(narrative)* The golden thread remains calm and unchanged.
+> **Aglaea:** A response that lacks embellishment. You have no misgivings about the friction or suspicion that your answer might cause. A step will not be recorded.
+> *(Trailblazer)* Not a chance!
+> *(narrative)* The golden thread trembles slightly.
+> **Aglaea:** Although you attempted to make a promise, your resolve didn't match your response... A step will be recorded.
+> *(Trailblazer)* I use a baseball bat, not a blade.
+> *(narrative)* The golden thread trembles violently.
+> **Aglaea:** Trying to hasten your demise by being glib with your response? I can certainly satisfy your desire. A step will be recorded.
+
+**Aglaea:** Final Question.
+**Aglaea:** Outlander, **an unknown but surging power exists within your body... Are you willing to use it to aid the Chrysos Heirs in slaying the gods?**
+
+> *(Trailblazer)* Wait, you can even detect that?
+> *(narrative)* The golden thread trembles violently.
+> **Aglaea:** Response to a question with another question indicates intense suspicion and resistance... A step will be recorded.
+> *(Trailblazer)* I am not willing, and I cannot agree to your request.
+> *(narrative)* The golden thread remains calm and unchanged.
+> **Aglaea:** Such determination... It makes me wonder what secrets are hidden within you. A step will not be recorded.
+> *(Trailblazer)* It's one of the Destruction's seeds of disaster. Be careful, it might backfire.
+> *(narrative)* The golden thread trembles slightly.
+> **Aglaea:** An angry threat... but one laced with uncertainty. You don't understand the power within your body either. A step will not be recorded this time.
+
 ---
 
-### Part 11 — `databank/missions/chapter-01-heroic-saga.md`
+*(If at least 3 questions were not answered truthfully)*
 
-**Context:** Complete Dialogue > Mission 3 — Night Stars, Accompany My Slumber > Submit to Aglaea's Interrogation — It's Better to Speak the Truth
+**Aglaea:** All four questions have been asked and answered.
+**Aglaea:** The golden thread has exposed your hesitations. Regrettably, the both of you have failed the test.
+**Aglaea:** While you may be a ray of hope that fell onto Amphoreus, you may also be... a threat to Amphoreus. You leave me no choice but to shut the doors of your fates.
+**Dan Heng:** Determining our fates with extrajudicial execution... How unreasonable.
 
+> *(Trailblazer)* Talk about burning bridges! After all we've done to help you.
+> *(Trailblazer)* Justice, fairness, impartiality, where art thou?
+> *(Trailblazer)* Someone, anyone, save us...
+> **Dan Heng:** I don't think anybody will be able to hear our cries... given where we are right now.
 
 **Aglaea:** For the holy city, I am willing to bear all the traits that others despise and use every heartless yet effective trick in the book.
 **Aglaea:** Castorice, please give our guests a merciful farewell.
+
 **Castorice:** Don't be nervous...
+
 > *(Trailblazer)* D—Don't come near me...
 > *(Trailblazer)* Wait! Please, just give me one more chance...
+
 **Castorice:** Please... relax.
 *(narrative)* Castorice places her slender, pale finger over your pulse.
 *(narrative)* A chill seeps through your skin, then immediately spreads into your veins.
@@ -268,12 +373,15 @@
 *(narrative)* Then, you finally understand...
 *(narrative)* ...you are currently welcoming your own sweet demise.
 *(narrative)* ...
+
 **???: ** ...Wait! This story can't end just like that.
 **Aglaea:** ...Phainon?
+
 > *(Trailblazer)* I'm still alive.
 > **Phainon:** You bet you are.
 > *(Trailblazer)* I've been reborn on Amphoreus?
 > **Phainon:** Not quite, Friend. You're still alive and kicking.
+
 **Phainon:** You've been on Amphoreus for such a short time. Even someone as ruthless as Thanatos wouldn't end a journey so hurriedly.
 **Phainon:** Aglaea, as the first local to encounter them... I have some thoughts I would like to share regarding their fates.
 **Aglaea:** Do speak your mind.
@@ -296,19 +404,26 @@
 **Dan Heng:** Things don't have to end on a sour note between us.
 **Aglaea:** Regardless of your choice, the Chrysos Heirs will continue to follow the path in the prophecy.
 **Aglaea:** Phainon's words have convinced me to make an exception for you. Whether you stay or go after this is for you to decide.
+
 *(If at least two questions were answered truthfully)*
 
----
+**Aglaea:** All four questions have been asked and answered.
+**Aglaea:** You have earned a second chance with your honesty.
+**Aglaea:** Both of you may continue to stay in Okhema, and its citizens will continue to view you as distinguished guests. However, you must promise that today's farce will not occur again.
+**Dan Heng:** I think it's more appropriate for us to say that last part.
+**Dan Heng:** You seriously still expect us to help you after what we just went through?
+**Aglaea:** Regardless of your choice, the Chrysos Heirs will continue to follow the path in the prophecy.
+**Aglaea:** You may be a ray of hope that fell onto Amphoreus. However, until all has been proven, you cannot be allowed to pose a threat to Amphoreus.
 
-### Part 12 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 3 — Night Stars, Accompany My Slumber > Submit to Aglaea's Interrogation — It's Better to Speak the Truth
-
+> *(Trailblazer)* If we stay, will you continue to monitor us?
+> *(Trailblazer)* Are all Chrysos Heirs as paranoid as you?
+> **Aglaea:** For the holy city, I am willing to bear all the traits that others despise and use every heartless yet effective trick in the book.
 
 **Dan Heng:** Forgive us, but I'm afraid our cooperation cannot continue under these conditions.
 **Dan Heng:** If we cannot gain people's — no, if we cannot gain your trust, Lady Aglaea — we'll depart. Amphoreus isn't the only option for the Nameless.
 **Dan Heng:** Things don't have to end on a sour note between us.
 **Aglaea:** ...I respect your decision.
+
 **???: ** Hold on! Please wait a moment...
 **Aglaea:** ...Phainon?
 **Phainon:** Aglaea, as the first person to encounter them... I have some thoughts I would like to share regarding whether they can stay.
@@ -329,19 +444,24 @@
 
 ---
 
-### Part 13 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 3 — Night Stars, Accompany My Slumber > Listen to What Phainon Has to Say
-
+### Part 8 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 3 — Night Stars, Accompany My Slumber > Listen to What Phainon Has to Say
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__listen-to-what-phainon-has-to-say`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 *(You found out Phainon came because Castorice asked him to stop Aglaea. At the Vortex of Genesis, you saw six Coreflames that had already been lit. When Chrysos Heirs return Coreflames, they become demigods, taking over the Titans' duties and filling their vacant seats. Aglaea and Tribbie were the only two demigods in Okhema and had started the Flame-Chase Journey again. After explaining all this, Phainon suggested listening to the Voice of Constellation.)*
+
 **Phainon:** ...I swear by the honor of the Chrysos Heirs here that your lives were never in danger. Before the interrogation started, Miss Castorice already sent a message to me, hoping that I would stop Aglaea.
 **Castorice:** Only a select few can sway Lady Aglaea, and Lord Phainon is one of them.
+
 > *(Trailblazer)* But she didn't even apologize...
 > *(Trailblazer)* Phainon's a big deal, huh?
 > **Phainon:** Oh, please stop.
 > **Phainon:** Aglaea... She has long sealed her heart in ice, for Okhema's sake.
 > **Phainon:** Maybe this is the price of being a demigod? Standing among mortals, yet still so far from them.
+
 > *(Trailblazer)* Demigod?
 > **Phainon:** Ah... one more thing to explain. Let's not worry about that for now. You'll soon find out that Amphoreus's deepest secrets are all hidden here.
 > **Phainon:** Well, first, kindly look upward. What you see right now is the Astral Zodiac of the Vortex of Genesis, divided into twelve parts that record the Flame-Chase Journey of the Chrysos Heirs.
@@ -350,6 +470,7 @@
 > **Phainon:** The generations before us paid a heavy price for that. The journey of the Chrysos Heirs once faced immense hurdles and made no progress for a very long time...
 > **Phainon:** It was Aglaea and Tribbie who rallied the Chrysos Heirs from all over the world once again, leading us to re-embark on this prophesized journey.
 > **Castorice:** And they are the only two demigods in the holy city.
+
 > *(Trailblazer)* Shouldn't it be the only four?
 > **Phainon:** While Tribbie, Trianne, and Trinnon are three individuals, I suppose they are considered one single divine essence.
 > *(Trailblazer)* So, what exactly is a demigod?
@@ -358,6 +479,7 @@
 > **Phainon:** But here's the problem: **After the fall of the old gods, someone must hold up the broken pillars and fill the vacant seats until the coming of the Miracle of Genesis.**
 > **Phainon:** Otherwise, the entire world will collapse before the prophecy comes true.
 > **Phainon:** Aglaea and Tribbie have already laid their own gods to rest, **making them now both human and divine, as well as the bearers of Amphoreus's fate.**
+
 > *(Trailblazer)* Sounds like quite a responsibility
 > *(Trailblazer)* Will you also become a demigod?
 > *(Trailblazer)* You mentioned persuing the Strife Titan...
@@ -365,21 +487,18 @@
 > **Phainon:** Bringing down the Titans, retrieving the Coreflames, and filling the vacant seats... This is the mission of the Chrysos Heirs, and I'm following in the footsteps of those two.
 > **Castorice:** Mission, huh...
 > **Phainon:** When it comes to the twelve Titans... no words can describe them more vividly than the whispers within the constellations.
-> **Phainon:** Why not step forward and listen to them for yourselves?
 
 ---
 
-### Part 14 — `databank/missions/chapter-01-heroic-saga.md`
+### Part 9 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 3 — Night Stars, Accompany My Slumber > Listen to Lance of Fury's Voice of Constellation > Talk to Castorice, optional
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__listen-to-lance-of-fury-s-voice-of-constellation-3`
 
-**Context:** Complete Dialogue > Mission 3 — Night Stars, Accompany My Slumber > Listen to Lance of Fury's Voice of Constellation
-
-
-*(Talk to Phainon, optional)*
-**Phainon:** Move closer, listen carefully, and you may just catch the whispers echoing in the void.
-**Phainon:** How about you start with the Lance of Fury, the voice of Nikador?
 *(Talk to Castorice, optional)*
 **Castorice:** Chrysos Heirs, demigods... Is what's written in the prophecy truly Amphoreus's only possible fate?
 **Castorice:** Sorry, I was just thinking out loud... Please, step closer and listen to the voices of the Titans.
+
 *(Interact with the basin)*
 *(narrative)* ...The day is silent, and darkness has taken the stage...
 *(narrative)* ...Flames rise higher, and drums fall like rain...
@@ -387,19 +506,30 @@
 *(narrative)* ...Bronze shields you, and brass echoes my sorrow...
 *(narrative)* ...
 
+*(After listening to the Voice of Constellation)*
+*(Unlock Achievement "Gods and Mortals")*
+*(narrative)* As the echoes of the constellations fall silent, the next sound to meet your ears is... waves?
+*(Titan's murmurs)*
+*(narrative)* The unfamiliar call carries a longing to take your soul's essence into the pool...
+
+*(After offering the Celestial Ambrosia)*
+**Voice of the Tides:** ...
+*(narrative)* The water returns to its serene state... How curious — it appears that you just have to bring Celestial Ambrosia back here next time to get something nice.
+
 ---
 
-### Part 15 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 3 — Night Stars, Accompany My Slumber > Speak to Phainon About the Voices of Titans You Heard
+### Part 10 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 3 — Night Stars, Accompany My Slumber > Speak to Phainon About the Voices of Titans You Heard
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__speak-to-phainon-about-the-voices-of-titans-you-heard`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
-
-> *(Trailblazer)* I did...
-> *(Trailblazer)* I couldn't understand it...
-> **Phainon:** The first time I heard the voices of the Titans, I was just a boy playing with swords, oblivious to the meaning of life.
-> **Phainon:** To this day, I still don't know why the prophecy chose me, but I'm grateful for it... Without this journey, I might've already become a wandering soul on the battlefield.
 > **Phainon:** Alright, that's enough of my story. I want to extend a heartfelt invitation to you: join the Chrysos Heirs, and aid us in hunting down Nikador and retrieving the Coreflame from the Titan of Strife.
 > **Phainon:** If you still harbor doubts, I'll do my best to provide you with answers.
+
 > *(Trailblazer)* How are the Chrysos Heirs chosen?
 > **Castorice:** ...Unfortunately, the workings of the prophecy still remain a mystery to us all.
 > **Castorice:** The only reliable speculation is that... **it favors those caught in dire circumstances and bestows miracles upon them.**
@@ -410,15 +540,18 @@
 > *(Trailblazer)* How do you plan to fight Nikador?
 > **Phainon:** Armed with courage and unwavering resolve, our quest will begin as soon as Trianne locates Castrum Kremnos.
 > **Phainon:** Without a doubt, it will be a momentous battle to the death... Prepare yourselves.
+
 > *(Trailblazer)* I've got it all figured out.
 > **Phainon:** The path ahead is bound to be perilous, and I won't impose my will upon you. Yet, if you choose to stay, I, Phainon from Aedes Elysiae, will spare no effort to bridge the gap between you and the Chrysos Heirs.
 > **Castorice:** Thawing the ice in Lady Aglaea's heart won't be easy...
 > **Castorice:** But I will do my best as well.
 > **Dan Heng:** ...(Trailblazer), I'll leave the final decision to you.
+
 > *(Trailblazer)* You don't have any comments?
 > **Dan Heng:** I trust Phainon, but I trust your judgment more.
 > *(Trailblazer)* You're letting me make the decision? Seriously?
 > **Dan Heng:** I trust your judgment more on matters like this.
+
 > *(Trailblazer)* Stay on Amphoreus.
 > **Phainon:** That's wonderful to hear. You truly are the hope of Amphoreus.
 > **Phainon:** I've always believed that the journey of the Chrysos Heirs is not meant to be the saga of a select few, and that we must unite all potential allies, especially heroic figures like you.
@@ -427,6 +560,7 @@
 > **Phainon:** Ah, my apologies. I got a bit carried away. It's been a long first day for you here on Amphoreus.
 > **Phainon:** To leave the Vortex, simply repeat the same ritual in front of the spirit basin.
 > **Phainon:** Be sure to rest well in the bath chamber. I trust that Trianne will have returned with news about Castrum Kremnos by the time the two of you are fully recharged.
+
 > *(Trailblazer)* Leave Amphoreus.
 > **Dan Heng:** So... you'll end things here? Are you sure about that?
 > *(Trailblazer)* Just kidding. We have to press on in our trailblazing expedition.
@@ -435,27 +569,18 @@
 > **Phainon:** You showed empathy toward my struggle earlier, and now it's my turn to return that kindness.
 > **Castorice:** The journey of the Chrysos Heirs... truly is a lonely one.
 > **Phainon:** Let's go, Dan Heng, (Trailblazer). I'll escort you back to where you landed.
-> **Phainon:** I know that a reunion in the future is wishful thinking, but at the very least, we can bid each other a proper farewell.
-> *(narrative)* Escorted by Phainon and the holy city guards, you and Dan Heng return to the crash site in the Abyss. Together, you salvage the Express' coach car.
-> *(narrative)* With the assistance of an Okhema citizen resembling an Intellitron, you depart Amphoreus without suffering the so-called "curse from beyond the sky."
-> *(narrative)* After returning to the Astral Express, you discover Black Swan has already left without telling anyone. March 7th's condition has gotten worse, but no one seems to know what the cause is.
-> *(narrative)* Despite a fuel shortage, you complete a final warp jump, putting your hopes in the next location and how it might resolve all your worries.
-> *(narrative)* As for the fate of Amphoreus, the Eternal Land, and the dramatic changes it will bring to the Cosmos... It has nothing to do with you, at least in your lifetime.
-> *(narrative)* *Credits roll — "Amphoreus, The Eternal Land — The End — Honkai: Star Rail — Lead Actors: (Trailblazer) — Starring: Dan Heng as Dan Heng; Phainon as ??; Castorice as Castorice?; Tribios as Tribbie, Trinnon, Trianne ?? ?? ??...; Aglaea as Aglaea; Mydeimos as Mydei; ?? as ??; Nikador as Nikador — May This Journey Lead Us Starward."*
-> *(narrative)* (Return to the starting screen; return to before speaking with Phainon, with the option removed)
 
 ---
 
-### Part 16 — `databank/missions/chapter-01-heroic-saga.md`
+### Part 11 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 3 — Night Stars, Accompany My Slumber > Take a Photo of the Wondrous Sight of the Vortex of Genesis > Talk to Castorice, optional
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__take-a-photo-of-the-wondrous-sight-of-the-vortex-of-genesis-3`
 
-**Context:** Complete Dialogue > Mission 3 — Night Stars, Accompany My Slumber > Take a Photo of the Wondrous Sight of the Vortex of Genesis
-
-
-*(Talk to Phainon, optional)*
-**Phainon:** Be sure to rest well in the bath chamber. I trust that Trianne will have returned with news about Castrum Kremnos by the time the two of you are fully recharged.
 *(Talk to Castorice, optional)*
 **Castorice:** I'm sorry. I hope... you can forgive me for my actions earlier.
 **Castorice:** I had to follow Lady Aglaea's instructions to avoid arousing her suspicion.
+
 > *(Trailblazer)* Why did she choose you to be the executioner?
 > **Castorice:** ...
 > *(Trailblazer)* I don't blame you.
@@ -463,21 +588,22 @@
 > **Castorice:** Because I... am the shadow of "death."
 > **Castorice:** I'm sorry, but I prefer not to delve into such a heavy topic at the moment. Please follow Lord Phainon's suggestion and return to the bath chamber for some rest.
 > **Castorice:** If you're interested in hearing more of the world's voices, feel free to prolong your stay in the Vortex.
+
 *(Start Taking Photo)*
 *(narrative)* The totems of the Twelve Titans stand like twelve pairs of watchful, imperious eyes, overseeing the world they forged, nurtured, and ultimately brought to ruin.
 *(narrative)* When the twelve constellations align and shine, the "miracle" that the Chrysos Heirs speak of will illuminate — or so their prophecies claim.
 
 ---
 
-### Part 17 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 3 — Night Stars, Accompany My Slumber > Go to the Chrysos Heirs Baths and Meet with Everyone
+### Part 12 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 3 — Night Stars, Accompany My Slumber > Go to the Chrysos Heirs Baths and Meet with Everyone
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__go-to-the-chrysos-heirs-baths-and-meet-with-everyone`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
-
-> *(Trailblazer)* That sounds really dangerous. Is it too late to back out?
-> **Dan Heng:** Lounging in a bath chamber isn't exactly trailblazing.
-> *(Trailblazer)* Guess we have no choice but to give it our all.
-> **Dan Heng:** Are you still not used to it? This is the destiny of a Trailblazer.
 **Mydei:** I, Mydei from Castrum Kremnos, volunteer to join.
 **Mydei:** Nikador has become corrupted over the years, his pride waning, but his might endures. Victory only lies in assembling a full-fledged army.
 **Castorice:** ...I'm willing to join as well, to help guide departing souls and ease everyone's burdens...
@@ -488,50 +614,27 @@
 **Aglaea:** Castorice, you must remain here. Your place is not on the front lines, and the battlefield is best left to the warriors.
 **Castorice:** ...I understand.
 **Aglaea:** As for the two foreign warriors... Select one to accompany you, Phainon. Placing both esteemed guests on the front line would not be proper.
-**Phainon:** (Trailblazer) excels in wielding a range of weapons, and his flaming lance has quelled the enemy's advances multiple times. Mydei and I are both better at offense, so from a tactical standpoint...
-**Phainon:** (Trailblazer), would you be willing to fight alongside us?
-> *(Trailblazer)* Sure, let's do this!
-> *(Trailblazer)* I might not be tanky enough, though.
-> **Dan Heng:** With those two, the battle should end quickly.
-> *(Trailblazer)* We could try letting Dan Heng tank...
-> **Dan Heng:** What are you talking about? Now's not the time for jokes.
-> **Phainon:** If (Trailblazer) has no objections... Aglaea, the three of us will take on the mission to hunt down the Titan.
 
 ---
 
-### Part 18 — `databank/missions/chapter-01-heroic-saga.md`
+### Part 13 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 3 — Night Stars, Accompany My Slumber > Speak with Trianne and Get Ready to Go to Castrum Kremnos > Talk to Castorice, optional
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__speak-with-trianne-and-get-ready-to-go-to-castrum-kremnos-2`
 
-**Context:** Complete Dialogue > Mission 3 — Night Stars, Accompany My Slumber > Speak with Trianne and Get Ready to Go to Castrum Kremnos
-
-
-> *(Trailblazer)* I thought you didn't trust me.
-> *(Trailblazer)* No thanks to you.
-> **Aglaea:** You are Phainon and Mydei's companion. So long as they're willing to entrust you with their lives, my trust in you doesn't matter.
-> **Aglaea:** Go. Stand with the two Chrysos Heirs. Okhema has need of a true god of war. It's time for the mad god Nikador's reign to end.
 *(Talk to Castorice, optional)*
 **Castorice:** Please, come back victorious.
 **Castorice:** I'll pray for you. May your steps be ever quicker than death's relentless pursuit.
-*(Talk to Dan Heng, optional)*
-**Dan Heng:** I plan to stay here for a while and learn more about Amphoreus from Lady Tribbie. You'll handle the action, and I'll deal with the research. We each have a role to play.
 
 ---
 
-### Part 19 — `databank/missions/chapter-01-heroic-saga.md`
+### Part 14 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Discuss a Plan with Aglaea
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__discuss-a-plan-with-aglaea`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Discuss a Plan with Aglaea
-
-
-**Aglaea:** They're back.
-**Dan Heng:** Are you okay? Are you injured? Things didn't sound good in Phainon's message.
-**Phainon:** Aglaea— Wait, where's Tribbie?
-**Aglaea:** She began making the necessary preparations the moment we got your message.
-**Phainon:** The city's citizens are enjoying themselves like it's any other day... Do you not see this as a crisis?
-**Aglaea:** Okhema would be in constant turmoil if we were to raise the alert each time danger befell us. Silently eliminating threats and sparing them from living under the shadow of fear — that is the duty of the Chrysos Heirs.
-**Phainon:** I don't see things this way... but now's not the time for arguments.
-**Phainon:** The Blade of Fury has its aim trained on Kephale's heart. We need to stop the mad Titan, or the entirety of the holy city could be reduced to ash.
-**Phainon:** But Nikador has crafted an indestructible body for himself, one that can't be entirely destroyed. Mydei is buying us time... We need to cherish every second he's fought for.
-**Aglaea:** You're willing yourself to stay calm, Phainon. That's commendable progress.
-**Aglaea:** Castrum Kremnos has been shrouded in the fog far too long, leaving us unable to discover the mystery behind Nikador's undying body.
 **Aglaea:** ...We can only hope to learn the truth from one Titan.
 **Phainon:** You mean...
 **Castorice:** Lord Phainon, I will join you in the audience with Oronyx. Let's hope they can restore the visions of the past and reveal the truth behind Nikador's defiance of death.
@@ -539,28 +642,22 @@
 **Castorice:** Strife and Death used to be inseparable. Nikador valued honor in their glory days, so they would never have betrayed their allies back then.
 **Castorice:** But their pact was broken when Nikador descended into madness. From what we know so far... in the pursuit of an immortal body, Nikador betrayed Death.
 **Phainon:** There's one other thing. We found a slate in Kremnos that mentioned an infiltration...
-**Aglaea:** Don't worry about that. Tribbie and I will do our best to protect the people of our holy city.
-**Aglaea:** Focus on getting to Oronyx and using whatever means possible to learn the mad Titan's secrets.
-**Aglaea:** Tribbie is waiting for you outside the city — go with her to the Abyss. I will pray to Kephale that you will find success.
-*(Talk to Aglaea again, optional)*
-**Aglaea:** Tribbie is waiting for you outside the city — go with her to the Abyss. I will pray to Kephale that you will find success.
 
 ---
 
-### Part 20 — `databank/missions/chapter-01-heroic-saga.md`
+### Part 15 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Head with Tribbie to the Abyss of Fate
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__head-with-tribbie-to-the-abyss-of-fate`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Head with Tribbie to the Abyss of Fate
-
-
-*(After making two round trips to Castrum Kremnos through the Century Gate, Trianne needed time to recover. Tribbie would open the path to Abyss of Fate for you instead.)*
-**Phainon:** Tribbie! We're ready to set off.
-**Tribbie:** Okay, we've been updated on what has happened. Let us send you into the Abyss this time.
-**Phainon:** Are you sure? It's always been Trianne doing this...
 **Tribbie:** The two trips to and from Castrum Kremnos have completely drained Trianne. She'll need some time to recover.
 **Tribbie:** We can handle this, Snowy... This is as much for De as it is for everyone else.
 **Castorice:** High Priest Tribbie... Do you have any suggestions on how we can get Oronyx to respond to us later?
 **Tribbie:** Sorry... We wish we could help, Cas, but Oronyx has never been a Titan to chat or interact with humans.
 **Castorice:** I suppose... we'll have to rely on ourselves, then.
+
 > *(Trailblazer)* But don't they let us use their power?
 > **Phainon:** It's one thing to use their powers and another to be aligned with us in war. If that Titan refuses to be on our side... we'll have to resort to a fight.
 > *(Trailblazer)* Sounds like we're leaving it up to luck...
@@ -570,10 +667,7 @@
 
 ---
 
-### Part 21 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Head with Tribbie to the Abyss of Fate
-
+*(When you reached the Abyss of Fate through the Century Gate, Tribbie handed you the Janus Priest's Talisman and warned you about remaining magical barriers in the temple. She then went back to Okhema to help Aglaea.)*
 
 **Tribbie:** This is it! The Century Gate can only take you this far.
 **Tribbie:** Although the Temple of the Three Fates has been abandoned for a long time, the magical barriers woven by the priests still linger around it. Approaching with Janus's power recklessly could be extremely risky.
@@ -581,20 +675,25 @@
 **Tribbie:** We have to go back to Okhema to help Aglaea. Snowy and Cas, we trust you know how to summon us when you're done.
 **Tribbie:** Here, keep this with you. **This token is proof of a Janus priest**. Hold it up to the Gate of Infinity, and you'll be able to walk through unimpeded.
 **Tribbie:** Take care, alright? May Kephale light your path forward.
+
 **Dan Heng:** We're on our own now.
 **Phainon:** Important decisions will be waiting for us every step of the way. What we're about to do will not only determine Mydei's fate... but also that of every single resident in Okhema.
 **Phainon:** The Temple of the Three Fates is behind the Gate of Infinity, and Oronyx is at the very heart of this temple. We're going to have to find Oronyx and convince them to help us in our battle.
 **Castorice:** May everything go well for us...
+
 *(Obtain Janus Priest's Talisman)*
 
 ---
 
-### Part 22 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Enter the Broken Temple
+### Part 16 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Enter the Broken Temple
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__enter-the-broken-temple`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
-
-*(Inside the temple, you, Dan Heng, Castorice, and Phainon heard the Titan whispering, but only Castorice understood what they said. To reach Oronyx, you had to take down the barriers they created.)*
 **Dan Heng:** Are these... the ruins we saw when we first arrived? They look... somewhat different.
 **???: ** *incomprehensible speech*
 **Dan Heng:** What was that?
@@ -602,25 +701,29 @@
 **Castorice:** I have to listen closely to what they are saying...
 **Titan's Voice:** *Titan's murmurs*
 **Castorice:** "Devious and repulsive humans... Are you here to disturb my peace again, just as disaster approaches?"
+
 > *(Trailblazer)* You know what the Titan is saying?
 > *(Trailblazer)* How can you understand without subtitles?
 > **Phainon:** **Miss Castorice can understand the Titans' words**. That's exactly why we need her on this trip.
+
 **Titan's Voice:** *Titan's murmurs*
 **Castorice:** "Cease your efforts... and let yourself be swallowed by the confusion of time and space..."
 **Phainon:** Oronyx is turning us away? It seems like we've hit an obstacle on the very first step.
 **Castorice:** Could the Titan have created this chaotic scene we see in these ruins as a barrier to hinder us?
 **Phainon:** We'll overcome any obstacle, no matter what they throw at us.
-**Phainon:** Tribbie gave us a demonstration when we had to pass through here the last time... It's up to us to recreate these miracles now.
 
 ---
 
-### Part 23 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Use the Titan Miracle to Switch Space-Time
-
+### Part 17 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Use the Titan Miracle to Switch Space-Time
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__use-the-titan-miracle-to-switch-space-time`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 **Titan's Voice:** *Titan's murmurs*
 **Castorice:** "Curse you mortals... curse your pride and your merciless ways."
+
 *(Investigate the Tome of Miracles)*
 **(Trailblazer):** "Lift the curtain of memory..."
 **(Trailblazer):** "...and once again stir the ripples of past reverie!"
@@ -628,14 +731,15 @@
 **Castorice:** Oronyx is saying something again...
 **Castorice:** "...Who are you to command me? Does your inhumanity know no end?"
 **Phainon:** Are we... actually forcing the Titans to do our bidding with these miracles?
-**Phainon:** We can't afford to stop and think about that right now. Let's press on.
 
 ---
 
-### Part 24 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Try to Open the Entrance
-
+### Part 18 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Try to Open the Entrance
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__try-to-open-the-entrance`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 *(Investigate the gate)*
 **Dan Heng:** ...It won't open?
@@ -644,15 +748,19 @@
 
 ---
 
-### Part 25 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Head to the Temple of the Three Fates
-
+### Part 19 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Head to the Temple of the Three Fates
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__head-to-the-temple-of-the-three-fates`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 **Phainon:** Great. Should be smooth sailing from here.
+
 *(Leave the building)*
 **Dan Heng:** At last, we're out... That place was in total disarray.
 **Castorice:** The distorted time and space... is likely a reflection of Oronyx's own twisted struggles.
+
 *(Take a detour to the landing car's crash site, optional)*
 **Castorice:** Is that...
 **Dan Heng:** This is where we crash-landed. (Trailblazer) and I nearly died when our car was assaulted.
@@ -660,78 +768,82 @@
 
 ---
 
-### Part 26 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Head to the Temple of the Three Fates
-
-
 *(You made it to the Temple of the Three Fates. Castorice and Phainon told you that Tribbie was the demigod who received Janus the Passage Titan's power, proving that not all Titans had to be beaten through combat.)*
+
 **Dan Heng:** This gate looks just as magnificent up close.
 **Castorice:** The Gate of Infinity. It represents the divine power of Janus. According to legend, Janus is the eldest of the Three Titans of Fate. They created the "space" of Amphoreus.
 **Castorice:** But the Titan has long fallen and surrendered their Coreflame. Tribbie is the demigod that inherited their divinity.
+
 > *(Trailblazer)* How did Tribbie defeat a Titan...?
 > **Phainon:** Brute force isn't the only option. Some Titans can also be vanquished... other ways.
-> **Phainon:** But that doesn't mean Tribbie isn't powerful enough... She's one of Amphoreus' most revered heroes.
-> *(Trailblazer)* I didn't realize she was that strong.
-> **Phainon:** Brute force isn't the only option. Some Titans can also be vanquished... other ways.
-> **Phainon:** But you're not wrong, strength is no measure for how powerful Tribbie is. She's one of Amphoreus' most revered heroes.
-> **Phainon:** Let's go. With Tribbie's token, we should be able to go straight into the Temple of the Three Fates.
 
 ---
 
-### Part 27 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Open the Gate of Infinity
-
+### Part 20 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Open the Gate of Infinity
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__open-the-gate-of-infinity`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 **Titan's Voice:** *Titan's murmurs*
 **Castorice:** ...Please pardon me. Words this vile should not be relayed.
 **Phainon:** It's not going to be easy getting Oronyx's help.
+
 *(After you opened the Gate of Infinity, Phainon showed Oronyx the Janus Talisman from Tribbie. You heard heavy mechanical sounds inside the temple as the Time Titan doubted you could pass its tests.)*
+
 **Phainon:** This temple has been forsaken for so long that we have no way of telling what dangers await us behind this gate. From the way Oronyx spoke to us in the ruins, I won't count on her being cordial toward us.
 **Titan's Voice:** *Titan's murmurs*
+
 > *(Trailblazer)* Here we go again...
 > *(Trailblazer)* We need a translation for that.
 > *(Trailblazer)* Blah blah blah...
 > **Castorice:** "Venture no closer... Keep out."
 > **Castorice:** "You won't find anything you desire here... Save for despair and demise."
+
 **Phainon:** Is that you, Oronyx?
 **Phainon:** Forgive me, but if you refuse to help us, then despair and demise will be all that's left on this world!
+
 *(narrative)* Phainon raises the stone talisman of Janus...
 *(narrative)* ...The sound of heavy mechanisms comes from the Temple of the Three Fates.
 **Titan's Voice:** *Titan's murmurs*
 **Castorice:** "You are not welcome here... You have no right."
 **Castorice:** "You'll never pass my challenge."
 **Phainon:** A challenge? Great, at least they're willing to speak to us now. Even if they are only making things difficult for us.
-**Phainon:** Push onward, my friends. But watch your step.
 
 ---
 
-### Part 28 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Continue Forward
-
+### Part 21 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Continue Forward
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__continue-forward`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 *(We successfully entered the Temple of the Three Fates. However, Oronyx does not welcome our presence and complicates our path with various puzzles, blocking us from reaching the temple's deeper chambers.)*
+
 **Dan Heng:** The silence is deafening.
 **Castorice:** This place... isn't as I knew it.
+
 *(You spotted the Scales of Justice, which symbolized Talanton, the Law Titan. You learned the Law Titan's Coreflame had been returned, but the Chrysos Heir who took over Talanton's role was nowhere to be seen.)*
+
 **Phainon:** The Scales of Justice. It's my first time seeing it in its full glory.
 **Dan Heng:** Is this also a symbol of a certain Titan?
 **Castorice:** Talanton, the second of the Three Titans of Fate. They were said to have created the laws that govern our world.
 **Castorice:** Talanton surrendered their Coreflame, though the Chrysos Heir taking over their legacy is... nowhere to be found today.
 **Phainon:** At least the laws that govern our world are still in place. So that demigod must be performing their duty still, no matter where they are.
-**Phainon:** Neither of these are paths we can take, and the exit has been concealed from us. Looks like Oronyx is bent on keeping us out.
-**Phainon:** The Tome of Miracles... We'll just have to try our luck with this, then.
 
 ---
 
-### Part 29 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Try Using the Tome of Miracles to Repair the Scales
-
+### Part 22 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Try Using the Tome of Miracles to Repair the Scales
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__try-using-the-tome-of-miracles-to-repair-the-scales`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 *(Once you fixed the broken scales, Oronyx made sounds of pain. The Titan whispered that "the scales are as much an entrance," so you tried to balance them.)*
+
 **Titan's Voice:** *Titan's murmurs*
 **Castorice:** "Hurts... it hurts... so much."
 **Phainon:** Does performing a miracle really... subject them to that much pain?
@@ -748,28 +860,28 @@
 
 ---
 
-### Part 30 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Try to Balance the Scales
-
+### Part 23 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Try to Balance the Scales
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__try-to-balance-the-scales`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 **Phainon:** There's an abandoned Hand of Zagreus here. Let's use it.
+
 *(Approach the Hand of Zagreus control platform)*
 **Dan Heng:** Does that Titan really intend to deter us with a challenge like this?
 **Castorice:** What do you mean, Mr. Dan Heng?
 **Dan Heng:** This doesn't make sense to me. Oronyx thinks of us as intruders, so isn't it far easier for them to forcefully stop us with their divine powers?
 **Castorice:** Oronyx... based on my understanding, isn't the kind that resorts to brutality.
+
 *(Investigate the lefthand scale, optional)*
 *(narrative)* It seems that the weights have been blessed by the Titans and cannot be seized by the Hand of Zagreus.
 
 ---
 
-### Part 31 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Try to Balance the Scales
-
-
 *(Oronyx didn't accept your balancing attempt, and one side of the scales sank again. The left tray contained Amphoreus's fate, and you had to find "what weighs more than the fate of the world".)*
+
 *(Place a weight on the scale)*
 **Phainon:** Does this mean we've passed the challenge?
 **Phainon:** Oronyx! We completed your challenge. Can you let us pass now?
@@ -783,6 +895,7 @@
 **Castorice:** **"Weights in the left weighing pan... represent the fate of Amphoreus."**
 **Castorice:** "Find... something that weighs more... and place it in the right pan..."
 **Castorice:** **"Find something that has more weight... than the fate of the world."**
+
 > *(Trailblazer)* Is this a brainteaser?
 > *(Trailblazer)* Who's going to understand that!?
 > **Castorice:** They seem somewhat fickle, much like... a child.
@@ -790,35 +903,41 @@
 
 ---
 
-### Part 32 — `databank/missions/chapter-01-heroic-saga.md`
+### Part 24 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Try to Retrieve the Weight Behind the Fence
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__try-to-retrieve-the-weight-behind-the-fence`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Try to Retrieve the Weight Behind the Fence
-
-
-*(Oronyx didn't accept your balancing attempt, and one side of the scales sank again. The left tray contained Amphoreus's fate, and you had to find "what weighs more than the fate of the world".)*
-*(Place a weight on the scale, optional)*
 **Dan Heng:** No movement at all... Not the right item.
 **Titan's Voice:** *Titan's murmurs*
 **Castorice:** "Obtuse... blind fools..."
 **Phainon:** ...They really know how to get under someone's skin.
+
 *(Place a weight on the scale again, optional)*
 **Phainon:** This won't do... We're just wasting our time.
 **Titan's Voice:** *Titan's murmurs*
 **Castorice:** I don't think there's a need for me to convey any words that'll only irritate you further.
+
 *(Continue towards the marked location)*
 **Dan Heng:** There's an obstacle ahead.
 **Castorice:** Perhaps the Miracle Orbs can illuminate the way forward.
+
 *(Engage the Miracle Orb)*
+
+*(Approach the fence)*
+**Phainon:** There, a Prophecy Tablet. It could be the key to unlocking the way.
 
 ---
 
-### Part 33 — `databank/missions/chapter-01-heroic-saga.md`
+### Part 25 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Try Using the Same Weights to Balance the Scales
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__try-using-the-same-weights-to-balance-the-scales`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Try Using the Same Weights to Balance the Scales
-
-
-*(The scales became balanced again, but you still needed to add "what weighs more than the fate of the world" to make one side sink.)*
-*(Place the specified weight on the scale)*
 **Phainon:** It worked! Now, the scales have once again been balanced.
 **Titan's Voice:** *Titan's murmurs*
 **Castorice:** "Futile attempts... Give up... give up."
@@ -828,17 +947,24 @@
 
 ---
 
-### Part 34 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Find Something That Has More Weight Than the "Fate of the World"
-
+### Part 26 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Find Something That Has More Weight Than the "Fate of the World"
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__find-something-that-has-more-weight-than-the-fate-of-the-world`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 **Titan's Voice:** *Titan's murmurs*
 **Castorice:** "You think that you've won? Arrogant... Foolish..."
 **Phainon:** Titan, are you still trying to hold out?
+
 *(You put the flaming lance, bat, and even yourself on the scale, but nothing happened. You and Castorice discussed what could possibly "weigh more than the fate of the world.")*
+
 **Phainon:** We just have to make the weighing pan on this side drop, right?
 **Phainon:** Let's think about it... It shouldn't be that difficult.
+
 > *(Trailblazer)* Place the flaming lance and the baseball bat on it.
 > *(narrative)* You place the flaming lance and the bat on the scale's tray...
 > **Phainon:** It didn't even move an inch...
@@ -860,12 +986,8 @@
 
 ---
 
-### Part 35 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Find Something That Has More Weight Than the "Fate of the World"
-
-
 *(Dan Heng realized that while "the fate of the world" might overwhelm Amphoreus people, you had "companions" from beyond the sky. He placed the camera on the scale, which finally tilted, letting you pass the test.)*
+
 **Titan's Voice:** *Titan's murmurs*
 **Castorice:** ...
 **Phainon:** What did they say, Castorice?
@@ -876,30 +998,21 @@
 **Castorice:** ...No, Lord Phainon.
 **Castorice:** There must be some other way... A more comprehensive way. Even if our time is tight...
 **Dan Heng:** ...
-**Dan Heng:** (Trailblazer), I've got it.
-> *(Trailblazer)* I've also got it.
-> *(Trailblazer)* Have I got it?
-> *(Trailblazer)* You've also got it!?
-> *(Trailblazer)* (Pretend to get it)
-> **Dan Heng:** (Trailblazer), hand me March's camera.
-> **Dan Heng:** Indeed, for the people of Amphoreus, the fate of the world is a weight that is far too heavy.
-> **Dan Heng:** But perhaps even the Titan did not expect that... For outsiders like (Trailblazer) and I, we still have not yet become fully involved with the fate of this world.
-> **Dan Heng:** From our perspective, there is something even more important than this world — or perhaps even the entire cosmos.
-> **Dan Heng:** And that's the companions that we have traveled with.
-> **Dan Heng:** If this indeed is the case, we will have passed the Titan's challenge.
 
 ---
 
-### Part 36 — `databank/missions/chapter-01-heroic-saga.md`
+### Part 27 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Leave the Room and Meet Oronyx
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__leave-the-room-and-meet-oronyx`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Leave the Room and Meet Oronyx
-
-
-*(An item heavier than the "Fate of the World"... We adopted a tricky method and used March 7th's camera to solve this puzzle.)*
 **Phainon:** That was an unexpected solution... Thankfully, we had Dan Heng and (Trailblazer) here with us.
 **Titan's Voice:** *Titan's murmurs*
 **Castorice:** I think that even Oronyx themself is surprised that we managed to clear the challenge.
 **Phainon:** At least they kept their promise and opened the path for an audience.
+
 *(Leave the room)*
 **Titan's Voice:** *Titan's murmurs*
 **Phainon:** This...
@@ -908,12 +1021,15 @@
 
 ---
 
-### Part 37 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Have an Audience with Oronyx, Veil of Evernight
+### Part 28 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Have an Audience with Oronyx, Veil of Evernight
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__have-an-audience-with-oronyx-veil-of-evernight`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
-
-*(We arrived at Oronyx's residence, but they refused to offer any assistance. In a desperate attempt to save Mydei, Phainon was prepared to take drastic measures.)*
 **Phainon:** Oronyx!
 **Titan's Voice:** *Titan's murmurs*
 **Castorice:** "Leave... leave."
@@ -923,18 +1039,17 @@
 
 ---
 
-### Part 38 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Have an Audience with Oronyx, Veil of Evernight
-
+*(You finally met Oronyx. The Titan was furious at the Chrysos Heirs for slaying gods and chasing Coreflames, and refused to help. Phainon got ready to fight. But when you took a picture of the Titan with March 7th's camera, Oronyx suddenly called to you, repeating "Mother" over and over. Oronyx invited you to look back into your past together.)*
 
 **Dan Heng:** A Titan who still possesses reason... both mysterious and awe-inspiring.
+
 > *(Trailblazer)* I really want to take a photo of them.
 > **Dan Heng:** I understand, such a spectacle is rare to witness.
 > *(Trailblazer)* What a strange shape...
 > **Castorice:** The Titans all have vastly different physical forms, with some of them even abandoning their physical shell.
 > *(Trailblazer)* It doesn't feel particularly oppressive.
 > **Castorice:** Not every Titan is as violent as Nikador... They weren't always like that either.
+
 **Phainon:** "I have crossed the myriad passages and been judged by the scales."
 **Phainon:** "It has deemed me innocent and granted me fruits." — O mighty Oronyx. We plead for your assistance!
 **Phainon:** The madness of Nikador is pushing Amphoreus toward the end times. They have abandoned their honor, replicating themself through crazed means, and are fully intending to destroy the sky father and the civilization they protect.
@@ -967,6 +1082,7 @@
 **Castorice:** I don't understand either. But if this means that Oronyx is willing to establish a connection with us, maybe it'll be worth a try.
 **Castorice:** Mr. (Trailblazer), please consider carefully...
 **Titan's Voice:** *Titan's murmurs*
+
 > *(Trailblazer)* Accept Oronyx's invitation.
 > **Titan's Voice:** *Titan's murmurs*
 > **Castorice:** "Come with me... Follow me and join me... as we look far into your past..."
@@ -974,29 +1090,33 @@
 > **Titan's Voice:** *Titan's murmurs*
 > **Castorice:** "Waiting... Hate waiting..."
 > **Dan Heng:** (Trailblazer), if you do plan to accept their invitation... it's best that you don't let them wait for too long.
-*(Talk to Phainon again, optional)*
-**Phainon:** ...
-*(Talk to Dan Heng again, optional)*
-**Dan Heng:** (Trailblazer), if you do plan to accept their invitation... it's best that you don't let them wait for too long.
+
+---
+
+### Part 29 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Have an Audience with Oronyx, Veil of Evernight > Talk to Castorice again, optional
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__have-an-audience-with-oronyx-veil-of-evernight-4`
+
 *(Talk to Castorice again, optional)*
 **Castorice:** Mr. (Trailblazer), please consider carefully...
 
 ---
 
-### Part 39 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Share Your "Non-Existent Memory" with Dan Heng
+### Part 30 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 5 — Night Veil, Shroud the Silent Past > Share Your "Non-Existent Memory" with Dan Heng
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__share-your-non-existent-memory-with-dan-heng`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
-
-> *(Trailblazer)* How long did I pass out for?
-> **Dan Heng:** Pass out? What are you talking about?
-> *(Trailblazer)* That was such a long memory, it seemed like a completely different world...
-> **Dan Heng:** Long? What are you talking about?
-> **Dan Heng:** You were standing here motionless earlier. No matter how much we shouted, you didn't respond.
-> **Dan Heng:** It hadn't even been a full minute when...
 > **Dan Heng:** ...This creature appeared.
+
 **Phainon:** Such a unique animal. I think it's an animal? I have never seen anything like it before.
 **Castorice:** What a cute little creature... Is it a gift from Oronyx?
+
 > *(Trailblazer)* Fuli gazed at me.
 > **Dan Heng:** Fuli? Just now?
 > **Phainon:** Fuli... What's that?
@@ -1004,58 +1124,59 @@
 > **Phainon:** Ahh... A god from the worlds beyond the sky. A miracle that is hard to see with the naked eye... Right?
 > **Phainon:** To earn the gaze of an Aeon, does that mean...
 
----
+> *(Trailblazer)* Mem says that they can help us.
+> *(Trailblazer)* It's time for us to deal with Nikador.
+> **Mem:** Titan, past... Foggy.
+> **Mem:** **Collect. Past... Reappear.**
 
-### Part 40 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 5 — Night Veil, Shroud the Silent Past > Share Your "Non-Existent Memory" with Dan Heng
-
+> *(Trailblazer)* We must collect the memories of Kremnos.
+> *(Trailblazer)* We have to recreate the past.
+> **Phainon:** You can understand what they are saying?
+> **Phainon:** Collect the memories and recreate the past... How can we do that? We don't have much time left.
+> **Mem:** Anxious, no need! I will. Teach you.
 
 > *(Trailblazer)* Mem will tell us what we have to do.
 > *(Trailblazer)* Let's follow them. We don't have any better ideas right now.
 > **Dan Heng:** If they truly are a creation of Fuli, or have some connection to that Aeon, I'm willing to believe they can wield a power greater than Oronyx's Miracle.
 > **Dan Heng:** Let's go, we need to follow them.
+
 **Castorice:** Oronyx... Have you fallen into a slumber?
 **Titan's Voice:** *Titan's murmurs*
 **Castorice:** I don't know who the "Mother" that you're referring to is, but...
 **Castorice:** Thank you for all your hard work. If Titans can dream... May your dream be a sweet one.
+
 *(As the mission has been completed, Tribbie arrives per your summons and brings you back to Okhema.)*
+
+*(The mission continues in "Kremnos, Cleanse Thy Rusted Blood (I)".)*
+---
 
 ---
 
-### Part 41 — `databank/missions/chapter-01-heroic-saga.md`
+### Part 31 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 6 — Kremnos, Cleanse Thy Rusted Blood (I) > Collect the Memory Fragments Related to Castrum Kremnos (0/3)
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__collect-the-memory-fragments-related-to-castrum-kremnos-0-3`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 6 — Kremnos, Cleanse Thy Rusted Blood (I) > Collect the Memory Fragments Related to Castrum Kremnos (0/3)
-
-
-> *(Trailblazer)* Just leave it to me and Mem.
-> *(Trailblazer)* Be careful, you're not indestructible.
-> **Phainon:** Don't worry about me, surviving the impossible is my specialty.
-> **Phainon:** Mydei and I will be waiting for you on the battlefield.
-**Dan Heng:** Let me come too, Phainon. I'd rather be on the front lines, helping ease the burden.
 **Phainon:** ...Thank you. I don't have any reason to refuse.
 **Phainon:** Then this is where we part ways — Dan Heng and I will head to Castrum Kremnos immediately, while (Trailblazer) works on uncovering the secret behind the barbaric god's indestructible body. As for miss Castorice...
 **Castorice:** I'll stay with (Trailblazer) to ensure his/her safety.
 **Phainon:** I'll leave it to you. Tribbie... Could I trouble you once again?
 **Tribbie:** Of course, just leave the Century Gate to us.
+
 **Castorice:** We're the only ones left... Where should we go to find the lost memories?
 **Mem:** Memories... Smell, intense.
-**Mem:** Tracking, found. Past... Recreate.
-> *(Trailblazer)* Let's just believe in Mem's sense of smell.
-> **Mem:** Mem, believe. Follow, friends!
-> *(Trailblazer)* So, you're actually a dog?
-> **Mem:** Pet, not!
-> **Mem:** Mem, believe. Follow, friends!
 
 ---
 
-### Part 42 — `databank/missions/chapter-01-heroic-saga.md`
+### Part 32 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 6 — Kremnos, Cleanse Thy Rusted Blood (I) > Collect the Memory Fragments Related to Castrum Kremnos (0/3) > Talk to Bard Lipos
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__collect-the-memory-fragments-related-to-castrum-kremnos-0-3-2`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 6 — Kremnos, Cleanse Thy Rusted Blood (I) > Collect the Memory Fragments Related to Castrum Kremnos (0/3)
-
-
-*(You talked to the Bard Lipos, who sang you a poem about Nikador's madness. Mem collected memory fragments about Castrum Kremnos from the poem.)*
-*(Talk to Bard Lipos)*
 **Bard Lipos:** Oh, elegant lady! Are you here to listen to Lipos' song?
 **Bard Lipos:** What are you in the mood for? The love stories of the ancient Chrysos Heirs? The turbulent era of the Chrysos War? The rise and fall of the Seaside States? Lipos has it all!
 **Castorice:** I wonder if there is a ballad about Nikador's madness as well as the mystery of Castrum Kremnos vanishing into the fog.
@@ -1070,91 +1191,85 @@
 **Bard Lipos:** "Please grant us the honor to touch your soul with our humble hands, and present to you this sacred Sword Vessel... It shall consecrate your eternal life and enshrine your everlasting glory."
 **Mem:** There, done. Memory, collected.
 **Castorice:** Thank you, esteemed bard with an enchanting voice. Your ballads will endure through the ages, serving as a bulwark for Okhema.
+
 *(Obtain Bard's Memory Fragment)*
 
 ---
 
-### Part 43 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 6 — Kremnos, Cleanse Thy Rusted Blood (I) > Collect the Memory Fragments Related to Castrum Kremnos (0/3)
-
+*(While approaching Chartonus)*
+**Mem:** Here. Here!
+**Mem:** Memory, craftsman... Collect!
 
 *(You talked to Grand Craftsman Chartonus. Castorice asked him to tell the story of making a holy vessel for Castrum Kremnos, but Chartonus couldn't remember it well. Thankfully, Mem could help recover those memories.)*
+
 *(Approach Chartonus)*
 **Castorice:** Chartonus... Come to think of it, I remember hearing about them making a holy vessel for Kremnos.
 **Chartonus:** Oh... Castorice. Outlander, as well.
 **Chartonus:** To Chartonus, what brings you?
 **Castorice:** I remember the Kremnoans commissioned you to craft a divine object before. Do you happen to recall the details?
 **Chartonus:** Ah... Happened it did. Why ask, do you?
+
 > *(Trailblazer)* To vanquish Nikador for good.
 > *(Trailblazer)* To protect Okhema.
 > **Chartonus:** Hm...
 > **Chartonus:** Thousands of marvels of weaponry, I crafted. Remember them all, impossible it is.
 > **Chartonus:** Outlander, forgive me. Help, I cannot.
+
 **Castorice:** That makes sense. With such a long life, the Grand Craftsman can't remember every single item he's made. Is there another way?
 **Mem:** Mem, knows!
-**Mem:** Help, friend! Memory, retrieve!
-*(Unlock Achievement "Rebuilding the Rights of Statues")*
 
 ---
 
-### Part 44 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 6 — Kremnos, Cleanse Thy Rusted Blood (I) > Collect the Memory Fragments Related to Castrum Kremnos (0/3) > Check Chartonus' Memory Fragments
-
+### Part 33 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 6 — Kremnos, Cleanse Thy Rusted Blood (I) > Collect the Memory Fragments Related to Castrum Kremnos (0/3) > Check Chartonus' Memory Fragments
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__check-chartonus-memory-fragments`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 *(Activate Fragments of Recollection)*
 **Castorice:** Mr. (Trailblazer), are you feeling alright?
 **Castorice:** You were in the same state as when you were with Oronyx.
+
 *(Listen to the memory)*
 **Kremnos High Elder:** Grand Craftsman, would it be possible for you to craft a Sword Vessel that can seal divinity?
-**Chartonus:** Anything my forging hammer cannot craft, there is not.
-**Chartonus:** The finest stones in Kremnos, give me. The golden blood of Strife Titan, find me. The Sword Vessel, I shall craft.
-**Kremnos High Elder:** Does that mean we have a deal?
-**Kremnos High Elder:** And what of your payment? For a commission of this magnitude, proper compensation must be ensured.
-**Chartonus:** Payment... simple.
-**Chartonus:** Peace, for my people. Mountain Dwellers, no longer servants or fighters for Kremnos. Ever.
-**Kremnos High Elder:** ...You have my word, Grand Craftsman.
-**Mem:** There, done. Memory, collected.
 
 ---
 
-### Part 45 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 6 — Kremnos, Cleanse Thy Rusted Blood (I) > Collect the Memory Fragments Related to Castrum Kremnos
-
+### Part 34 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 6 — Kremnos, Cleanse Thy Rusted Blood (I) > Collect the Memory Fragments Related to Castrum Kremnos
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__collect-the-memory-fragments-related-to-castrum-kremnos`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 **Castorice:** Mr. (Trailblazer), are you feeling alright? You were—
+
 > *(Trailblazer)* I saw the memory of the Grand Craftsman.
 > **Castorice:** Ah, was it because of this little one? That's incredible!
 > **Castorice:** The ability to look into others' memories sounds like something that could easily be misused. Luckily, you're the one wielding it.
 > **Mem:** Memory, observed. Happiness... take!
+
 *(Obtain Chartonus' Memory Fragment)*
 
 ---
-
-### Part 46 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 6 — Kremnos, Cleanse Thy Rusted Blood (I) > Collect the Memory Fragments Related to Castrum Kremnos
-
 
 *(While approaching Damionis)*
 **Mem:** Here. Here!
 **Mem:** Memories, photos... Collect!
 **Castorice:** Is that... Damionis? Did Lady Aglaea release him already?
+
 > *(Trailblazer)* That guy... He almost got us killed!
 > **Castorice:** He certainly has a bad reputation. If it weren't for him, you and Dan Heng wouldn't have been interrogated by Lady Aglaea.
 > *(Trailblazer)* Has that dude never heard of copyright before?
 > **Castorice:** I've heard some bad things about him. He may have some talent in the arts, but if it weren't for him, you and Dan Heng wouldn't have been interrogated by Lady Aglaea.
 > **Castorice:** But if Mem thinks he has some valuable memories, we'd better ask him in person.
+
 *(You talked to Damionis and found out they let him go after he promised not to tell anyone about "the world beyond the sky." To make it up to you, Damionis gave you photos he took at the Kremnos Festival.)*
 
----
-
-### Part 47 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 6 — Kremnos, Cleanse Thy Rusted Blood (I) > Collect the Memory Fragments Related to Castrum Kremnos
-
+*(Approach Damionis)*
+**Damionis:** ...Hmm? Who's that? I'm busy working on a scene, please don't...
+**Damionis:** Ah, it's the esteemed "outlander." How've you been? It hasn't been all that long since we last met...
 
 > *(Trailblazer)* You almost got me killed!
 > **Damionis:** My apologies, that was entirely my fault. I was determined to prove that a world beyond the sky exists...
@@ -1166,6 +1281,7 @@
 > **Damionis:** Castrum Kremnos? For us unarmed civilians, Nikador's territory is off-limits. Even in the past...
 > **Damionis:** Oh, n–no... Wait, I just remembered! I did visit Castrum Kremnos once. Let me find it for you...
 > **Damionis:** Y–Yes, yes, this is the one! I can't believe I still have it...
+
 **Castorice:** Could you tell us the story behind it?
 **Damionis:** During the final days of the Chrysos War, the final festival took place in Castrum Kremnos. However, due to the tense situation, few outsiders were willing to compete.
 **Damionis:** I gathered the courage to go there, but I found the atmosphere of the festival to be... quite strange. It felt more like the Kremnoans were preparing for a mysterious ceremony.
@@ -1173,35 +1289,31 @@
 **Castorice:** Would you mind giving us the photo? We're... trying to piece together clues from that time.
 **Damionis:** Sure, take it! Think of it as my way of making it up to you.
 **Mem:** Done. Memory, collected.
+
 *(Obtain Damionis' Memory Fragment)*
 
 ---
 
-### Part 48 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 6 — Kremnos, Cleanse Thy Rusted Blood (I) > Collect the Memory Fragments Related to Castrum Kremnos
-
-
 *(Mem let out a cheerful chirp, announcing that all the memories had been gathered. It was time to head to Castrum Kremnos and relive the past. Before setting off, Castorice reported the situation to Aglaea.)*
+
 *(After all three memory fragments were collected)*
 **Mem:** Memory... collected!
 **Mem:** Kremnos... go! Help, friend!
 **Castorice:** What did they say, Mr. (Trailblazer)?
+
 > *(Trailblazer)* All memories have been collected...
 > *(Trailblazer)* ...It's time to head to Castrum Kremnos.
 > **Castorice:** Is everything in order? If so, we need to meet up with Lords Phainon and Mydei.
 > **Castorice:** Before we leave, I'd like to check with Lady Aglaea again. Do you mind waiting for me, Mr. (Trailblazer)?
+
 *(Receive a message from Castorice, Aglaea, and (Trailblazer)'s Group Chat)*
 
 ---
 
-### Part 49 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 6 — Kremnos, Cleanse Thy Rusted Blood (I) > Collect the Memory Fragments Related to Castrum Kremnos
-
-
 *(In your conversation with Castorice, she explained her reason for doing so was to acknowledge Aglaea's dedication to Okhema — she didn't want Aglaea to feel disheartened. Then the three of you set out for Castrum Kremnos together.)*
+
 **Castorice:** Everything's set now. Let's head out, Mr. (Trailblazer).
+
 > *(Trailblazer)* Are you scared of Lady Aglaea?
 > **Castorice:** Scared? No, I just don't want to see her disappointed.
 > *(Trailblazer)* Do you always have to report everything to her?
@@ -1212,22 +1324,30 @@
 
 ---
 
-### Part 50 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Go to the Place in Castrum Kremnos That Serves as the Link to the Past
-
+### Part 35 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Go to the Place in Castrum Kremnos That Serves as the Link to the Past
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__go-to-the-place-in-castrum-kremnos-that-serves-as-the-link-to-the-past`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 *(narrative)* The three of you rush into Castrum Kremnos and arrive at the arena.
+
 *(Approach the door)*
 **Castorice:** ...How can we go back to the past?
 **Mem:** Come, follow!
 **Mem:** Memory... Scent, strong!
+
 *(Enter the large room)*
 **Castorice:** That battle cry... Is that Lord Mydei?
+
 *(Approach stairs leading to the marked location)*
 **Castorice:** Nikador... They're still locked in battle.
+
 *(Upon arriving Castrum Kremnos, the echoes of Mydei's battle cries still mingled with Nikador's roars. Mem gave a confident chirp, already prepared to relive the past as soon as you provided the memory fragments.)*
+
 **Castorice:** The battle is still raging... I can feel the intensity even from here.
+
 > *(Trailblazer)* I wish I could go and help them...
 > **Castorice:** I understand how you feel, Mr. (Trailblazer). But right now, we must head to another battlefield.
 > *(Trailblazer)* We have our own battle to face.
@@ -1235,19 +1355,27 @@
 > *(Trailblazer)* At least we know they're still alive.
 > **Castorice:** We'll only be able to help them once we've seen our own mission through.
 > **Mem:** Here, memory, complete. Give me, fragments.
-> **Mem:** Past... I, recreate.
 
 ---
 
-### Part 51 — `databank/missions/chapter-01-heroic-saga.md`
+### Part 36 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Hand Over the Memory Fragments to Mem
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__hand-over-the-memory-fragments-to-mem`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** on-stage
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Hand Over the Memory Fragments to Mem
+*(You passed the fragments to Mem. A portal to the past shimmered open. Castorice invited you to step through together.)*
 
+---
 
-*(Talk to Mem)*
-**Mem:** Memory, complete. Give me, fragments.
-**Mem:** Past... Recreate, I will.
-*(Submit Bard's Memory Fragment, Chartonus' Memory Fragment, Damionis' Memory Fragment)*
+### Part 37 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Hand Over the Memory Fragments to Mem > Talk to Mem
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__hand-over-the-memory-fragments-to-mem-2`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
+
 **Mem:** Fragments, complete. Memory... appear.
 **Mem:** Past, entrance... Open!
 **Castorice:** Is that the gate to the past?
@@ -1255,14 +1383,20 @@
 
 ---
 
-### Part 52 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Walk Through the Door to the Past in Castrum Kremnos
-
+### Part 38 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Walk Through the Door to the Past in Castrum Kremnos
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__walk-through-the-door-to-the-past-in-castrum-kremnos`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 *(Thanks to Mem's powers, you and Castorice witnessed a vision of Castrum Kremnos in its golden age. To confirm the timeline, you decided to explore the outskirts and investigate further.)*
+
 **Castorice:** Castrum Kremnos...
 **Castorice:** So this is how it looked like before Aquila closed their eyes.
+
 > *(Trailblazer)* Where should we start searching?
 > *(Trailblazer)* What a magnificent sight.
 > **Castorice:** The City of Warriors, its magnificence certainly lives up to its name.
@@ -1276,19 +1410,25 @@
 
 ---
 
-### Part 53 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Head to Castrum Kremnos of Yesteryear
-
+### Part 39 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Head to Castrum Kremnos of Yesteryear
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__head-to-castrum-kremnos-of-yesteryear`
 
 *(Trailblazer unlocked the door to the past in Castrum Kremnos, stepping into the city's former days. It was the time of the Kremnos Festival, and Nikador had just begun to lose their mind. Castrum Kremnos was still prosperous and vibrant with life.)*
+
 **Castorice:** Under all this resplendence... is the distinct stench of death.
 **Castorice:** But even the most magnificent of deaths can never be sweet...
+
 *(You and Castorice encountered a silent warrior. He had come neither to join the competition nor to attend Nikador's festival, and he offered you no answers.)*
+
 *(Approach the marked person)*
 **Silent Gladiator:** ...
 **Castorice:** ...Hello?
 **Silent Gladiator:** ...
+
 > *(Trailblazer)* Anyone home?
 > *(Trailblazer)* Heellooo!
 > *(Trailblazer)* Is he hard of hearing?
@@ -1300,20 +1440,27 @@
 > **Silent Gladiator:** ...
 > **Silent Gladiator:** Utterly foolish...
 > **Castorice:** ...
+
 > *(Trailblazer)* What a cranky guy...
 > **Castorice:** War has left its mark on many from this period, so please don't take it personally...
 
 ---
 
-### Part 54 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Examine the Area Surrounding the Arena to Confirm the Era You're In
-
+### Part 40 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Examine the Area Surrounding the Arena to Confirm the Era You're In
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__examine-the-area-surrounding-the-arena-to-confirm-the-era-you-re-in`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
 *(Try to proceed before going to the marked locations)*
 **Castorice:** Please wait, Mr. (Trailblazer). It's best not to go there yet...
 **Castorice:** Let's try to find more clues around here first.
+
 *(You caught whispers among the Kremnoans that King Eurypon and crown prince Mydeimos have gone their separate ways. Castorice explained that Mydei had once led a faction of his people away from Castrum Kremnos. And in the end, Eurypon fell by Mydei's hand.)*
+
 *(Listen to the group of people)*
 **Resentful Kremnoan:** Crown prince? Chrysos Heir? What a joke!
 **Resentful Kremnoan:** Mydeimos is just a coward! Those who deserted Kremnos with him have brought shame upon the Lance of Fury... Despicable traitors will never bask in glory again!
@@ -1322,6 +1469,7 @@
 **Resentful Kremnoan:** As long as we remain steadfast at his side, we'll reclaim our former glory and sow bloodshed and conquest amongst our foes...
 **Castorice:** King Eurypon...?
 **Castorice:** Right, of course... The people of this time wouldn't know the fate of that old king yet.
+
 > *(Trailblazer)* What fate?
 > **Castorice:** ...He was killed by Lord Mydei.
 > *(Trailblazer)* Mydeimos... is a deserter?
@@ -1330,8 +1478,10 @@
 > **Castorice:** They are entitled to that rage... because Lord Mydei was once the hero of Castrum Kremnos.
 > **Castorice:** But he did not leave out of cowardice... It was, in fact, a courageous choice.
 > **Castorice:** With that, we should have enough to determine the time period we are currently in.
+
 *(Examine the scroll)*
 **Castorice:** It's a scroll written in the common tongue. We should see what it's about.
+
 *(Quick Read — Five Great Virtues and Festival Notice)*
 > ***Festival Notice***
 >
@@ -1346,23 +1496,28 @@
 > *In the spirit of this gladiatorial festival, its warriors are all beacons of valor from all corners of Castrum Kremnos. The arena is in a wide open space — warriors can don sturdy armor and wield sharp lances, marching on a path of onslaught to finally face King Eurypon. Victors will seize fame, their names etched in glory, and the defeated will become fallen souls of heroes, unshaken in their pursuit of courage.*
 >
 > *The festival is a raucous affair, eagerly awaiting a surge of warriors who jostle to pledge themselves to call forth the divinity of the Titans. May Nikador defend Kremnos for eternity!*
+
 **Castorice:** Courage, Honor, Reason, Tenacity, Sacrifice...
 **Castorice:** Nikador did live up to these values in his prime, but now...
 **Castorice:** Kremnos seems to be hosting a festival, where its victor can go on to have an audience with the ruler and be bestowed with honor. It's just as Mr. Damionis described.
 **Castorice:** If we can pose as participants, we might be able to get into the city...
+
 *(Obtain Five Great Virtues and Festival Notice)*
 
 ---
 
-### Part 55 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Examine the Area Surrounding the Arena to Confirm the Era You're In
-
+### Part 41 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Examine the Area Surrounding the Arena to Confirm the Era You're In > Talk to the weapon merchant
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__examine-the-area-surrounding-the-arena-to-confirm-the-era-you-re-in-2`
 
 *(Talk to the weapon merchant)*
 **Weapon Merchant:** Finest weapons for sale! Come take a look! The sharpest blades in all of Kremnos!
 **Weapon Merchant:** Gladiator swords, maces, and bucklers crafted by the Grand Craftsman Chartonus himself!
 **Weapon Merchant:** Looking to breeze through your foes at the Kremnos Festival? I've got the best weapons right here for you!
+
 > *(Trailblazer)* Not getting much business, huh?
 > **Weapon Merchant:** Hmph... Those boorish warriors know nothing about quality gear!
 > *(Trailblazer)* Are these really crafted by Chartonus?
@@ -1371,40 +1526,53 @@
 > *(Trailblazer)* (Look at Castorice.)
 > *(Trailblazer)* Could this be a scam?
 > **Castorice:** The craftsmanship of a weapon reveals the time period it's made... We can afford to take a quick look.
+
 *(If something was purchased)*
 **Castorice:** Mr. (Trailblazer)... Much as we're in a memory of the past, impulse buying is still an undesirable behavior.
 **Weapon Merchant:** Wahaha, you're quite the high-roller! Thank you, and please come again!
 **Castorice:** May I take a look at that weapon, Mr. (Trailblazer)?
+
 *(If nothing was purchased)*
 **Castorice:** I thought you'd be the kind to make impulsive purchases, Mr. (Trailblazer), but you've certainly proven me wrong.
 **Weapon Merchant:** Tsk. So you're just window shopping? What a waste of my time...
 **Castorice:** Mister, can I please have a look at the weapon you're holding on to?
 **Weapon Merchant:** Oh? A gentle lady like you taking an interest in weapons? Why, of course! Please, feel free to take a closer look!
+
 *(narrative)* Castorice carefully takes the weapon in her hand and examines it closely for a moment...
+
 *(After examining the weapon, Castorice hurriedly urged you onward. There was the thick essence of death upon it that she chose not to dwell on. But from the engravings etched into the weapon, she could roughly place the current point in time.)*
+
 **Castorice:** ...
 **Castorice:** ...I've seen enough. Let's go, Mr. (Trailblazer).
 **Weapon Merchant:** Leaving already? Don't you want to browse through my other wares?
 **Weapon Merchant:** Well then, come back anytime... if you make it through the festival today.
+
 > *(Trailblazer)* What's wrong with that weapon?
 > *(Trailblazer)* What was that just now?
 > **Castorice:** Those weapons reek of blood. He made an effort to conceal it, but traces of death aren't something you can easily erase... I shudder to even consider where he got his goods from.
 > **Castorice:** He didn't lie about the weapon being one of Chartonus' handiwork, though. Thanks to its inscription, I now have a fairly good guess of the time period we're in.
+
+---
+
+### Part 42 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Examine the Area Surrounding the Arena to Confirm the Era You're In > Talk to the weapon merchant again, optional
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__examine-the-area-surrounding-the-arena-to-confirm-the-era-you-re-in-3`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
+
 *(Talk to the weapon merchant again, optional)*
 **Weapon Merchant:** Finest weapons for sale! Come take a look! The sharpest blades in all of Kremnos!
 
 ---
 
-### Part 56 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Examine the Area Surrounding the Arena to Confirm the Era You're In
-
-
 *(Castorice and you summarized what you knew so far: This was the final year of the Chrysos War. Crown prince Mydei had gone to seek refuge in Okhema with some of his people. Old King Eurypon still reigned, while Nikador had fallen into a slumber. And Castrum Kremnos was gathering warriors from all over in preparation for their festival. Castorice suggested the best way into the city was to register for the festival as a contestant.)*
+
 *(Once all three locations have been examined)*
 **Castorice:** Let's run through everything we know so far, Mr. (Trailblazer)
 **Castorice:** Lord Mydei has gone to seek refuge in Okhema with some of his people. Old King Eurypon still reigns, though Nikador has fallen into a slumber. And Castrum Kremnos is now gathering warriors from all over in preparation for their festival...
 **Castorice:** It seems that we've traveled back to the last years of the Chrysos War, a time when Castrum Kremnos grappled with both internal strife and the Titan's waning divinity.
+
 > *(Trailblazer)* Do you have a plan in mind?
 > *(Trailblazer)* Talk is cheap. Let's charge in!
 > **Castorice:** That's too risky of a plan. And I might even become a burden to you.
@@ -1416,18 +1584,26 @@
 
 ---
 
-### Part 57 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Go to the Registration Area to Join the Competition
+### Part 43 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Go to the Registration Area to Join the Competition
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__go-to-the-registration-area-to-join-the-competition`
 
+*(To execute their plan as safely as possible, Castorice and (Trailblazer) decided to blend into the festival celebration, forming a trio with a silent warrior and venturing deeper into Castrum Kremnos.)*
+
+*(The Kremnos Festival required teams of three to take part in the trial. At the registration point, you once again ran into that silent warrior and formed a team with him. That was when you finally learned his name: Gnaeus.)*
 
 *(Approach the marked person)*
 **Kremnos Registration Officer:** ...Such a pity! Those three warriors were so close to completing the trial, to emerging as victorious Kremnoan warriors, and to earning an audience with our glorious King Eurypon!
 **Kremnos Registration Officer:** And yet, they collapsed at the final hurdle! The Furiae Praetor swiftly hacked them down, reducing them to mere mincemeat... May Nikador recognize their valor and embrace their heroic spirits.
 **Kremnos Registration Officer:** ...Next! Do we have any more warriors ready for the challenge? King Eurypon awaits, longing for the first brave soul to survive and stand before him!
+
 > *(Trailblazer)* This competition sounds pretty brutal...
 > *(Trailblazer)* Is this competition really that hardcore?
 > **Castorice:** This was a time when life was valued far less than bread. People hardly bat their eyelids at the savagery and death that had become commonplace.
+
 **Kremnos Registration Officer:** Does no one have the courage to take up the challenge? Are you not prepared to wager your glory and set your lives ablaze under the splendor of Kremnos?
 **Silent Gladiator:** ...Let me through.
 **Kremnos Registration Officer:** Why, it's you again, inarticulate fool! Pfft, unarmed, and yet you dare to think you can join the Kremnos Festival? That's an insult to the Lance of Fury!
@@ -1437,6 +1613,7 @@
 **Kremnos Registration Officer:** Hmph, so you're not just inarticulate, but also hard of hearing... Keep up this act of nuisance, and I'll be sure to show you how uncivil we can get!
 **Castorice:** Teams of three...
 **Castorice:** Mr. (Trailblazer), this might be our chance...! We can enter the city with him.
+
 > *(Trailblazer)* Sign me up!
 > *(Trailblazer)* We'll be his teammates!
 > **Kremnos Registration Officer:** Hm? Who are...
@@ -1445,16 +1622,20 @@
 > **Kremnos Registration Officer:** As you wish! Good for you, you now have allies to court death with. Come on up here, fool!
 > **Kremnos Registration Officer:** The adrenaline-pumping scenes are becoming a bit tiresome, so adding a wildly mismatched "interlude" would make for a refreshing change and spice things up.
 > **Kremnos Registration Officer:** Let the trial begin, then! Your only goal is to survive! As long as you still hold the breath of life, you'll either triumph over every trial and claim worldly glory — or leave your soul in Kremnos to become fuel for Strife!
+
 > *(Trailblazer)* The stakes are high...
 > *(Trailblazer)* I'm not sure about this...
 > **Castorice:** Have faith, Mr. (Trailblazer)... Lord Phainon and Lord Mydei are still fighting. We must match their unwavering resolve.
+
 **Silent Gladiator:** ...Can we enter now?
 **Kremnos Registration Officer:** Eager to meet your demise? Very well then, let the trial begin!
 **Kremnos Registration Officer:** Give me your names, warriors.
+
 > *(Trailblazer)* (Trailblazer).
 > **Castorice:** Castorice.
 > **Gnaeus:** ...Gnaeus.
 > **Kremnos Registration Officer:** Castorice, Gnaeus, and (Trailblazer)...
+
 > *(Trailblazer)* I am the Galactic Baseballer!
 > **Castorice:** Castorice.
 > **Gnaeus:** ...Gnaeus.
@@ -1465,19 +1646,25 @@
 
 ---
 
-### Part 58 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Enter the Castrum Kremnos
-
+### Part 44 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Enter the Castrum Kremnos
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__enter-the-castrum-kremnos`
 
 *(Speak to the registration officer again, optional)*
 **Kremnos Registration Officer:** In the name of the five virtues of Nikador, stride through the holy city's gate and embrace your fate.
 **Kremnos Registration Officer:** May your courageous souls satisfy Nikador and fuel the conquests of Kremnos.
+
 *(Approach the gate)*
 **Castorice:** Lord Gnaeus, may I ask what is it you are fighting for?
 **Gnaeus:** Fighting needs no reason. I seek only to crush foolishness.
+
 *(You entered the trial grounds with Castorice and Gnaeus, but no enemies awaited you. Instead, Castorice spotted the Prophecy Tablet nestled within the arena. It seemed that solving its riddle was the key to advancing.)*
+
 **Castorice:** They have fewer guards than I expected. I thought we'd be greeted with something more... intense.
+
 > *(Trailblazer)* Observing formalities before aggression, now that's a thoughtful approach.
 > *(Trailblazer)* Do these battle-hardened people also have a taste for puzzles?
 > **Gnaeus:** Meaningless...
@@ -1490,25 +1677,31 @@
 
 ---
 
-### Part 59 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Ignite the Fire Pit and Complete the Trial
-
+### Part 45 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Ignite the Fire Pit and Complete the Trial
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__ignite-the-fire-pit-and-complete-the-trial`
 
 *(Investigate the exit)*
 **Castorice:** Is this the exit? Oh, it's locked.
 **Castorice:** Let's focus on igniting the braziers first.
+
 *(Solve the prophecy tablet, triggering the pressure mechanism)*
 **Castorice:** Look, we lit the brazier.
 **Gnaeus:** You seem quite familiar with these... devices.
 **Castorice:** Huh? They're all over Amphoreus.
+
 *(Approach shrine)*
 **Gnaeus:** Oronyx...
 **Castorice:** What's wrong, Lord Gnaeus?
 **Gnaeus:** Weak. Reduced to a servant of humans.
+
 *(Trigger the second pressure mechanism)*
 **Castorice:** The gate has opened, as expected.
 **Gnaeus:** A meaningless challenge to erode the patience of warriors.
+
 *(After defeating enemies)*
 **Gnaeus:** Crumble, weakling.
 **Gnaeus:** The Titan's creations? When did they become so weak...?
@@ -1517,29 +1710,36 @@
 
 ---
 
-### Part 60 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Proceed Deeper into Castrum Kremnos and Search for Clues About Nikador
-
+### Part 46 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Proceed Deeper into Castrum Kremnos and Search for Clues About Nikador
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__proceed-deeper-into-castrum-kremnos-and-search-for-clues-about-nikador`
 
 **Castorice:** Barricades... We must find a way to remove them.
 **Castorice:** Could it be a challenge that requires us to use the Hand of Zagreus? Let's get closer and find out.
 
 ---
 
-### Part 61 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Clear the Obstacles Using the Hand of Zagreus
-
+### Part 47 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Clear the Obstacles Using the Hand of Zagreus
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__clear-the-obstacles-using-the-hand-of-zagreus`
 
 *(Engage the Hand of Zagreus — Punch Action)*
+
 *(After punching with the Hand of Zagreus)*
 **Gnaeus:** Zagreus, the embodiment of all things despicable.
 **Gnaeus:** Their legacy reduced to mere playthings for humans...
 **Castorice:** This is a lot more destructive than I expected...
 **Castorice:** Was this giant hand really used for thievery in the past?
 **Gnaeus:** ...Crumble to dust.
+
 *(Once the path forward opened, Castorice tried to explain your purpose to Gnaeus, but he had no interest in your intentions. All he asked was that you not stand in his way as he eradicated the deeply entrenched roots of foolishness within Castrum Kremnos.)*
+
 *(After all obstacles have been cleared)*
 **Castorice:** The way ahead is now clear.
 **Castorice:** Lord Gnaeus, before we move on... there is something we must explain to you.
@@ -1547,6 +1747,7 @@
 **Castorice:** How did you...?
 **Gnaeus:** You've been fighting to suppress your true thoughts within you all this while... You cannot deceive me.
 **Gnaeus:** I know you have no care for that fatuous king's contrived glory. You can keep your motive to yourselves, so long as you stay out of my way...
+
 > *(Trailblazer)* So, what is your motive?
 > **Gnaeus:** I've said it before: To obliterate the deeply entrenched roots of foolishness within Castrum Kremnos.
 > **Castorice:** Now the true challenge begins... This is where it gets difficult.
@@ -1555,17 +1756,27 @@
 
 ---
 
-### Part 62 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Proceed Deeper into Castrum Kremnos and Search for Clues About Nikador
+### Part 48 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Proceed Deeper into Castrum Kremnos and Search for Clues About Nikador
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__proceed-deeper-into-castrum-kremnos-and-search-for-clues-about-nikador-2`
 
+*(After defeating enemies)*
+**???: ** Hmph, these goons are much tougher than they seem...
+**???: ** Wahaha, it's my lucky day...
+**???: ** What a fine weapon! It's a real beauty...
+**???: ** With a bit of sprucing up, no one will guess it's second-hand, heh...
 
 *(Approach the marked location)*
 **Gnaeus:** ...Wait.
+
 > *(Trailblazer)* Got a crick in your back?
 > *(Trailblazer)* No can do, I'm already itching to fight!
 > **Castorice:** Please keep it together, Mr. (Trailblazer).
 > **Gnaeus:** Hush... Listen.
+
 **???: ** Heh heheh...
 **???: ** Looks like I've hit the jackpot this time...
 **Castorice:** I hear it now. That's...
@@ -1574,22 +1785,34 @@
 
 ---
 
-### Part 63 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Investigate the Strange Human Voice
+### Part 49 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Investigate the Strange Human Voice
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__investigate-the-strange-human-voice`
 
+*(Continue up the stairs)*
+**Gnaeus:** Stop at the next turn.
+**Gnaeus:** If there's an assassin... we'll take care of him right there.
+
+*(Approach the marked location)*
+*(narrative)* The three held their breath at the corner, waiting for the voice behind them to approach...
 
 *(You came across the weapon merchant once more, scrounging among the fallen for usable blades. Gnaeus sought to punish such disgrace with death, yet Castorice stayed his hand. To her, death was no trifling matter to be sown recklessly. Thus, the merchant's life was spared.)*
+
 **Gnaeus:** Keep quiet...
 **???: ** *pant* They sure are quick on their feet. One bag won't be enough to hold everything...
 **???: ** After this haul, I shouldn't have to scrounge for leftovers for the next few days. If only this festival could go on longer...
 **Gnaeus:** ...Now.
 **Castorice:** ...Oh.
 **Weapon Merchant:** Huh!?
+
 > *(Trailblazer)* Gah!
 > *(Trailblazer)* Huh?
 > *(Trailblazer)* It's you!
 > **Castorice:** ...That's why all of your weapons reek of blood.
+
 **Weapon Merchant:** Uh... ahem, well... I can explain myself! You see, I—
 **Gnaeus:** Looting the arena like a despicable lowlife... Prepare to meet Thanatos, thief.
 **Weapon Merchant:** No! Stop!
@@ -1611,73 +1834,91 @@
 
 ---
 
-### Part 64 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Proceed Deeper into Castrum Kremnos and Search for Clues About Nikador
-
+### Part 50 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Proceed Deeper into Castrum Kremnos and Search for Clues About Nikador
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__proceed-deeper-into-castrum-kremnos-and-search-for-clues-about-nikador-3`
 
 **Castorice:** It's the same mechanism... We need to ignite the two braziers to unlock the way forward.
 **Castorice:** Let's clear this trial together, Mr. (Trailblazer).
 
 ---
 
-### Part 65 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Ignite the Fire Pit and Complete the Trial
-
+### Part 51 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Ignite the Fire Pit and Complete the Trial
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__ignite-the-fire-pit-and-complete-the-trial-2`
 
 *(Light one brazier)*
 **Castorice:** One more to go.
+
 *(Approach the right side of the puzzle)*
 **Castorice:** The platform on the right is missing an iron ball...
 **Castorice:** Do we have to summon a miracle for it to appear?
+
 *(Approach a broken platform in the puzzle, optional)*
 **Gnaeus:** The bridge ahead is broken. How do we get across?
 **Castorice:** Let's try illuminating it with the Oronyx Orb.
+
 *(Investigate block that appears after using Tome of Miracles, optional)*
 **Gnaeus:** An exquisite stone... It's a shame it appeared somewhere it doesn't belong.
 **Castorice:** We may be able to temporarily remove it with the orb?
+
 *(Light the second brazier)*
 **Castorice:** That... should have done it, right?
+
 *(Once both braziers are lit but the room is not in the correct time dimension to open the gate)*
 **Castorice:** Let's recover the miracle from the tome, Mr. (Trailblazer).
+
 *(Attempt to exit while in the wrong time dimension)*
 **Castorice:** The gate won't budge in this time dimension... How about recovering the "miracle" from the tome?
 
 ---
 
-### Part 66 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Proceed Deeper into Castrum Kremnos and Search for Clues About Nikador
-
+### Part 52 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Proceed Deeper into Castrum Kremnos and Search for Clues About Nikador
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__proceed-deeper-into-castrum-kremnos-and-search-for-clues-about-nikador-4`
 
 *(Step onto elevator)*
 **Castorice:** Are there others who made it this far...?
 **Gnaeus:** Never underestimate those who step into this arena. They are skilled and courageous beyond measure.
+
 *(Head down the hallway)*
 **Chryseus Leo:** Brave one... Step forth...
 **Chryseus Leo:** I sense... a rare aura around you...
 **Chryseus Leo:** You could well be... Castrum Kremnos' salvation...
 **Castorice:** Is that statue... beckoning to us?
+
 *(You spoke with the Chryseus Leo. It claimed that Eurypon was scheming a blasphemous plan to defile Nikador's divinity, and pleaded with you to answer the call of becoming warriors and to save Castrum Kremnos.)*
+
 *(Approach the marked location)*
 **Chryseus Leo:** Brave one... O Brave one! Come closer... Let me get a good look at you...
 **Gnaeus:** ...
 **Gnaeus:** Are you calling out to me, lion?
 **Chryseus Leo:** That's right... I am. You have an unusual aura about you... I have not seen such a blazing soul in a very long time.
 **Chryseus Leo:** The blazing star of Castrum Kremnos has drifted far from us... all that remains is a dim candle, on the verge of being extinguished.
+
 > *(Trailblazer)* Blazing star...
 > *(Trailblazer)* ...Is that Mydei?
 > **Castorice:** I think... you're right.
+
 **Chryseus Leo:** The aging and feeble king is plotting something unspeakable... One that seeks to defile Nikador's divinity, their soul, and the legacy they left to Kremnos.
 **Chryseus Leo:** We need salvation... we need a champion to reignite our hope.
 **Gnaeus:** ...I did not come to save anybody, old lion. I am here to answer a call... to crush greed and foolishness once and for all.
 **Chryseus Leo:** Perhaps... that's what we desperately need.
 **Chryseus Leo:** Forge on then, warrior... heed the call. I am elderly... and weary... but I shall watch you depart and pray for victory in every battle encounter...
+
 *(Continue down the hallway)*
 **Castorice:** Lord Gnaeus, the calling you're heeding...
 **Gnaeus:** Comes from the depths of this city. We're close... so close, in fact, that I can hear the whispers in my ears.
+
 *(In the room, you found the remains of many fallen gladiators. Castorice told Gnaeus that she had come here to find a way to destroy Nikador. Gnaeus replied that finding the Titan would put both their goals within reach.)*
+
 **Castorice:** Such carnage... whose desires does this festival truly serve?
 **Gnaeus:** A beast that has lost sight of its target and is now guided only by its innate bloodlust.
 **Castorice:** Lord Gnaeus, now that we're at the very heart of Castrum Kremnos... it's time to let you in on our goal here.
@@ -1687,6 +1928,7 @@
 **Castorice:** If we do not stop them now, they will pose a grave danger to the future generations of Amphoreus.
 **Gnaeus:** Hmph, grave danger, you say...
 **Gnaeus:** Our goals are not in conflict, girl. Find the Titan and we can both get what we came for.
+
 > *(Trailblazer)* What about the festival?
 > **Gnaeus:** Better off forgotten.
 > *(Trailblazer)* Will we have to battle them...?
@@ -1696,18 +1938,23 @@
 
 ---
 
-### Part 67 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Speak with the Wondering Spirit with the Help of Castorice
-
+### Part 53 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Speak with the Wondering Spirit with the Help of Castorice
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__speak-with-the-wondering-spirit-with-the-help-of-castorice`
 
 *(Castorice reveals the true purpose of our mission to Gnaeus, the silent gladiator. The party presses on, gathering information on the way, vowing to return Nikador's five soul fragments to their rightful place to prevent the creation of their immortal divine body, and to reforge the glory of the Strife Titan.)*
+
 *(Approach marked location)*
 **Castorice:** Reveal yourself, O warrior spirit... I know that you have yet to rest.
 **Castorice:** I ask for you to guide us. Let us see what you once gazed upon, let us hear what your ears once heard...
 **Gnaeus:** You can rouse the dead?
 **Castorice:** No... I can only summon souls that haven't fully passed on.
+
 *(Castorice spoke with the restless spirit, learning the truth behind the festival was nothing but a spurious war that was crafted by the priests to pacify the Titan and suppress their madness.)*
+
 **Castorice:** O, ye who cannot rest in peace... Tell us, what have you heard?
 **Soldier's Echo:** "Do we really just leave them like that? The putrid stench of decay here is almost too much to bear."
 **Priest's Echo:** "Yes. Didn't you hear? This is part of the ritual. We need to offer up sacrifices to the Titan."
@@ -1716,10 +1963,13 @@
 **Gnaeus:** Hmph, fabricating a spurious war in an attempt to calm the Titan. Nikador... has indeed lost their will.
 **Castorice:** This barbaric method of theirs clearly proved to be effective.
 **Castorice:** The soul... can reveal even more to us.
+
 **Castorice:** *cough* *cough*
 **Gnaeus:** What's wrong, girl?
 **Castorice:** Guiding souls takes a lot of energy... but I'm fine, Lord Gnaeus.
+
 *(Castorice spoke with the restless spirit and learned that the priests of Kremnos, terrified of losing their faith and guidance, were attempting to seal away the Titan's soul with the vessel forged by Chartonus.)*
+
 **Castorice:** O, restless soul... *cough* Tell us, what have you heard?
 **Aristocrat's Echo:** "How much longer is this festival going to last? What is King Eurypon waiting for?"
 **Advisor's Echo:** "Be patient, for our plan is still underway... **Sealing a Titan's soul is no easy endeavor**. The priests are already working as fast as they can..."
@@ -1727,6 +1977,7 @@
 **Castorice:** Sealing a Titan's soul...
 **Castorice:** Could it be the Sword Vessel in Lipos' ballad? The one that Chartonus crafted himself...
 **Gnaeus:** Foolishness... Perhaps now you begin to understand the weight of that term.
+
 > *(Trailblazer)* Why are they doing this?
 > **Gnaeus:** Out of cowardice. They are afraid of losing their faith and guidance.
 > **Gnaeus:** Nikador fights against the unseen, they have no time for the folly of mortals.
@@ -1736,11 +1987,15 @@
 > **Castorice:** Lord Gnaeus, you seem to know a lot about that Titan.
 > **Gnaeus:** The whispers I'm hearing may very well be from Nikador themself.
 > **Castorice:** They're beckoning to us from the other side... Continue to guide us through, O wandering soul.
+
 **Castorice:** *cough* *cough*
 **Castorice:** The next one... I need to last till... the next one.
+
 *(Castorice spoke with the spirit, learning that Eurypon had already drawn up plans to launch an attack on Okhema. Gnaeus then came to understand that you and Castorice did not belong to this era, yet shared the same goal of stopping Nikador.)*
+
 **Castorice:** Lost souls... Tell us...
 **Castorice:** *cough* *cough* *cough*
+
 > *(Trailblazer)* Is this one taking more out of you?
 > *(Trailblazer)* Do you need a break, Castorice?
 > **Castorice:** I... I'm fine, Mr. (Trailblazer). There's no need to worry.
@@ -1750,12 +2005,14 @@
 > **Soldier's Echo:** "That's the long-term plan. Our priority for now is still to complete the god-king's... 'project'."
 > **Castorice:** ...
 > **Castorice:** So their plan to attack Okhema was conceived that long ago?
+
 > *(Trailblazer)* Looks like it wasn't Nikador's idea...
 > *(Trailblazer)* Whoever hatched that plan must've long since turned to ash.
 > **Gnaeus:** I knew it.
 > **Castorice:** ...Lord Gnaeus?
 > **Gnaeus:** I've long suspected that you two are not from here... No, not just that. You're not from this era.
 > **Gnaeus:** Is it Oronyx? No... they would not be capable of such power.
+
 > *(Trailblazer)* Yikes, our cover's blown...!
 > *(Trailblazer)* Looks like we'll have to silence him for good!
 > **Castorice:** Calm yourself, Mr. (Trailblazer)... I believe he has no ill intent toward us.
@@ -1763,15 +2020,20 @@
 > **Castorice:** Some day in the distant future... a mad Nikador will drive our companions and our homeland to the brink of destruction. The reason we came back here... is to find a way to prevent Amphoreus from falling to its doom.
 > **Gnaeus:** ...Their madness will last for thousands of years? The destruction created by human folly is more than anyone could imagine. It so happens that we have the same goal.
 > **Castorice:** *cough* *cough* The souls... are still lingering here. Let us keep going...
+
 **Castorice:** *cough* *cough* *cough*
 **Gnaeus:** ...Don't push yourself.
 **Castorice:** We're almost at the end... I can sense it...
+
 *(Castorice spoke with the spirit, learning that Nikador's divinity had been fractured into five. Courage, Honor, Tenacity and Sacrifice were still present, but the fifth, "Reason", was nowhere to be found.)*
+
 **Castorice:** O, restless soul...
 **Castorice:** ...
+
 > *(Trailblazer)* Castorice...
 > *(Trailblazer)* Why don't you take a break...?
 > **Castorice:** I'm fine... Mr. (Trailblazer).
+
 **Castorice:** Lost souls... Tell us, what have you heard?
 **Hero's Echo:** "Courage, Honor, Tenacity, and Sacrifice. Their divinity was split into five parts... but we're missing one fragment."
 **Hero's Echo:** "Oh god-king... Where did you lose your **reason**?"
@@ -1788,67 +2050,100 @@
 
 ---
 
-### Part 68 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Proceed Deeper into Castrum Kremnos and Search for Clues About Nikador
-
+### Part 54 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Proceed Deeper into Castrum Kremnos and Search for Clues About Nikador
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__proceed-deeper-into-castrum-kremnos-and-search-for-clues-about-nikador-5`
 
 **Castorice:** I am sorry... that you had to witness my earlier outburst.
 **Gnaeus:** I understand your pain, child. But you need to set it aside for now.
+
 *(Halfway down the stairs between the double gates)*
 **Gnaeus:** We are nearing the place where they cast and cut the souls.
 **Gnaeus:** It is likely no one survived this far in the festival. Stay alert.
+
 *(Your path was blocked by Strife Titankins. Gnaeus delivered swift judgment to these pitiful, mindless creations.)*
+
 **Castorice:** The Titan's kin... Be careful.
 **Furiae Praetor:** Warrior...
 **Furiae Praetor:** Entry... forbidden...
 **Gnaeus:** Has it lost its sanity? What a woeful creation. I shall put it out of its misery.
 **Furiae Praetor:** Split... soul...
 **Furiae Praetor:** Indestructible... body...!
+
 *(Begin battle)*
+
 *(Your investigation revealed that Eurypon had stripped away Nikador's divinity and sealed it separately, rendering their divine body immortal. But by reuniting Nikador's split soul, there'd be a chance for you to defeat them head-on.)*
+
 *(After the battle)*
 **Castorice:** ...Is it dealt with?
 **Gnaeus:** No... I doubt it'll be that simple.
 **Furiae Praetor:** Split... soul...
 **Gnaeus:** An experiment...
+
 > *(Trailblazer)* What do you mean?
 > *(Trailblazer)* An experiment?
 > **Gnaeus:** King Eurypon wanted to strip Nikador of his divinity and seal it within an intricate vessel for all eternity.
 > **Gnaeus:** That's how he would immortalize Nikador's divine body... Of course, he had to test it out on a Titankin before going on to remold the Titan.
+
 > *(Trailblazer)* How are you so sure about it?
 > **Gnaeus:** The answer's very simple...
 > **Gnaeus:** ...Because the fragments of Nikador's soul are sealed in these statues. The calls that I've been hearing... are coming from them.
 > **Gnaeus:** As long as we reassemble their soul and unite their divine core, they will recover their dignity as a Titan. You will then have a chance to triumph over them in battle.
+
 **Furiae Praetor:** Indestructible... body...
 **Castorice:** We've finally found the root of everything...
 **Castorice:** I'll find a way to stall it. To Titankin that have lost all reason, death is as intoxicating as nectar is to bees.
 **Castorice:** Please, you must find a way to make Nikador's soul whole again. It is only by fixing this point in history... that we can salvage the future of Amphoreus.
+
 > *(Trailblazer)* We can tap into the power of time again.
 > *(Trailblazer)* Ready to travel through time, gladiator?
 > **Gnaeus:** Let's see what you can do, delver of memories.
 
 ---
 
-### Part 69 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Use Oronyx's Miracle to Switch Space-Time
-
+### Part 55 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Use Oronyx's Miracle to Switch Space-Time > Talk to Castorice, optional
+**Kind:** personal
+**Id:** `chapter-01-heroic-saga__use-oronyx-s-miracle-to-switch-space-time`
 
 *(Talk to Castorice, optional)*
 **Castorice:** Stay here, warrior... Do not leave your Goddess of Death. The enticing scent of blood here is meant for you, and only you...
 **Furiae Praetor:** Sweet... death.
 **Furiae Praetor:** Inner... peace.
+
 *(While shifting through time, Gnaeus caught a glimpse of Castrum Kremnos' ruined and desolate future. The sight left him shaken, but more determined than ever to bring this farce to its end.)*
+
+*(Use Oronyx's Miracle)*
+**Gnaeus:** ...Unbelievable.
+**Gnaeus:** This dark and derelict place... is this the future of Kremnos?
+
+> *(Trailblazer)* I can barely believe it myself.
+> **Gnaeus:** The resonance between you and Oronyx must be strong.
+> *(Trailblazer)* Kremnos must have been through a lot since then...
+> **Gnaeus:** History has taken a wrong turn... and must be set on the right course once more.
+> **Gnaeus:** Much time has passed, yet the Titan's soul remains fragmented. That covetous king and his servants would have turned to dust by now... Their scheme that once unfolded here has likewise been buried with them.
+> **Gnaeus:** You and I are both here to bring an end to this absurdity. So, join me comrade. Let us bring death unto that Titan.
 
 ---
 
-### Part 70 — `databank/missions/chapter-01-heroic-saga.md`
+---
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Time for a Decisive Battle with Nikador!
+### Part 56 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Time for a Decisive Battle with Nikador!
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__time-for-a-decisive-battle-with-nikador`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
+*(Gnaeus turns out to be a part of Nikador. Now aware of the agony of this world, he calmly merges with Nikador's long-decayed divine soul, fully completing Nikador. While that destroyed the god's immortality, it also means we're now face-to-face with a Titan at the peak of their power.)*
 
 *(Gnaeus himself was Nikador's lost "Reason." Choosing to return to his origin, he sought to end the god's rampage once and for all. In that act, the glory of god-slaying blossomed. "If you retrieve the Coreflame," he urged, "carry on the fight against black tide.")*
+
 *(Approach the marked location)*
 **Castorice:** Lord Gnaeus, are we almost there?
 **Gnaeus:** Yes... There is just one last thing to do.
@@ -1858,7 +2153,9 @@
 **Castorice:** Could it be...
 **Gnaeus:** The fragment of divinity that they stripped away — the fragment they wanted to preserve the most — was Reason.
 **Gnaeus:** The Titan believed that their Reason would someday respond to their calling, to return to their body... and fulfill their sacred mission.
+
 *(Gnaeus explained that Nikador had been the first Titan to come into contact with the black tide. In resisting its influence, their divinity became corrupted. The Titan had willingly severed their "Reason," believing it would one day return to its vessel.)*
+
 > *(Trailblazer)* Are all these... versions of you from the past?
 > *(Trailblazer)* You're... a part of Nikador?
 > **Castorice:** All of these... They're—
@@ -1866,6 +2163,7 @@
 > **Castorice:** Lord Gnaeus... What do you intend to do?
 > **Gnaeus:** Courage, Honor, Tenacity, and Sacrifice... they're all versions of me. Hearing the murmurs of these soul fragments has led me to a conclusion.
 > **Gnaeus:** **Nikador's soul is corrupted beyond the point of salvation.**
+
 > *(Trailblazer)* What can we do then?
 > **Gnaeus:** There is only one option.
 > *(Trailblazer)* How do we stop them then?
@@ -1883,6 +2181,7 @@
 > **Castorice:** ...
 > **Castorice:** ...The embodiment of Strife telling me about the majesty of the world...? What an irony...
 > **Gnaeus:** Civilizations only grow under strife. Humans instinctively loathe suffering, yet suffering is the only thing that teaches them to stand unyielding and tall...
+
 > *(Trailblazer)* We can't put this off any longer.
 > *(Trailblazer)* I will do as you wish.
 > *(Trailblazer)* If this is meant to be... then I will fight you.
@@ -1894,28 +2193,54 @@
 
 ---
 
-### Part 71 — `databank/missions/chapter-01-heroic-saga.md`
+*(Gnaeus returned to his source, becoming part of Nikador's divinity once more. The restored Titan challenged you to defeat it and grant it an end befitting a warrior.)*
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Time for a Decisive Battle with Nikador!
+*(Cutscene begins)*
+**Phainon:** Did you hear that?
+**Mydei:** What?
+**Phainon:** They've returned!
+**Gnaeus/Nikador:** Best me—
+**Gnaeus/Nikador:** —Grant me an end befitting a warrior.
+*(Cutscene ends)*
 
+*(Begin battle against The Giver, Master of Legions, Lance of Fury)*
+**Phainon:** So this is Nikador's true form? It's incredible...
+**Mydei:** Well done on them... I was prepared to fight till the end of time.
+
+*(Interactive tutorial: Reducing the HP of "Conquer or Be Conquered" restores the corresponding character's Maximum Restorable HP)*
 
 *(When The Giver, Master of Legions, Lance of Fury is reduced to below 40% HP)*
 **Mydei:** Since you've overcome the curse of immortality... destruction shall be your reward!
+
 *(Second phase starts)*
 *(When The Giver, Master of Legions, Lance of Fury takes a turn)*
 **Castorice:** I promise you, Lord Gnaeus...
 **Castorice:** Your nightmare will be over soon.
+
 *(The Giver, Master of Legions, Lance of Fury uses The Fallen Feeds My Might)*
 **Mydei:** Brace yourselves. This strike can obliterate worlds.
 
+*(When The Giver, Master of Legions, Lance of Fury is reduced to below 40% HP once more)*
+**Phainon:** Come on, bring an end to Strife once and for all!
+
+*(When The Giver, Master of Legions, Lance of Fury is reduced to 1% HP)*
+**Phainon:** Victory is at hand! Time for the final blow...!
+
 ---
 
-### Part 72 — `databank/missions/chapter-01-heroic-saga.md`
+*(Nikador unleashed the final attack with the Blade of Fury, while Aglaea and Tribbie used their demigod powers to defend the holy city. Nikador's divine body gradually shattered, finally dispersing into golden dust.)*
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Time for a Decisive Battle with Nikador!
+*(Cutscene begins)*
+**Aglaea:** Master—
+**Aglaea:** —Now.
+**Phainon:** No longer must one wield a sword...
+**Phainon:** From here on, the world shall no longer know "strife."
+*(Cutscene ends)*
 
+---
 
 *(After the Strife Titan fell, you obtained their Coreflame. After some discussion, you decided that Phainon should carry the Coreflame back to the Vortex of Genesis.)*
+
 **Phainon:** It's finally over.
 **Phainon:** Nikador's Coreflame...
 **Castorice:** Time passes quickly. It's been a long time since the last Titan fell...
@@ -1925,6 +2250,7 @@
 **Mydei:** ...Hmph. What's next?
 **Castorice:** I have an agreement with the Titan... The Chrysos Heirs will take away their Coreflame and use it to start a bright blaze that'll illuminate our path onward.
 **Phainon:** You... spoke with Nikador?
+
 > *(Trailblazer)* They were protecting the world from something.
 > **Mydei:** What did they say? Please, I need to know...
 > *(Trailblazer)* There was something out there that sent them into madness.
@@ -1937,34 +2263,34 @@
 > **Mydei:** If you have any idea how exhausting it is to fight a protracted battle...
 > **Mydei:** ...Then you should know that pointless arguments are the last thing I want to get into now.
 > **Phainon:** Meh, a little back and forth wouldn't hurt much. Coming to a decision so easily makes it seem like this is not at all a life-changing undertaking, you know.
+
 *(Phainon approaches the coreflame)*
 **Phainon:** Come with me then, Coreflame. The Vortex of Genesis is awaiting your return.
 
----
+*(You returned to Okhema with Phainon and the others, bringing news of victory. Meanwhile, Castorice attempted to commune with Nikador's fading soul, and would catch up shortly.)*
 
-### Part 73 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Time for a Decisive Battle with Nikador!
-
+**Phainon:** ...
+**Dan Heng:** Are you alright, Phainon?
+**Phainon:** ...I don't think I felt anything at all.
+**Phainon:** Or rather... it felt a lot easier than I expected? I had assumed that bearing the Coreflame would take... a lot more out of me.
+**Phainon:** In any case, let's return to Okhema and share news of our victory with the two demigods.
 
 *(Mydei, Phainon, and Dan Heng depart)*
 **Mem:** ...
 **Mem:** Leave, friend? Return, together?
+
 > *(Trailblazer)* Aren't you coming with us, Castorice?
 > *(Trailblazer)* Did we forget something?
 > *(Trailblazer)* I will always remember Gnaeus.
 > **Castorice:** Although he was but a part of Nikador... he was nevertheless a hero in his own right.
 > **Castorice:** Go with the rest, Mr. (Trailblazer). I will catch up with you later. I would like to talk to Lord Gnaeus again... one last time.
+
 *(narrative)* Castorice picks up a piece of Gnaeus' fragments...
 
 ---
 
-### Part 74 — `databank/missions/chapter-01-heroic-saga.md`
-
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Time for a Decisive Battle with Nikador!
-
-
 *(Castorice questioned Nikador about the Death Titan Thanatos, but Nikador knew nothing of their whereabouts. Still, Castorice promised that the Chrysos Heirs would uphold their vow and continue resisting the black tide.)*
+
 **Castorice:** Lord Gnaeus...
 **Castorice:** ...Lord Nikador, can you hear me?
 **Castorice:** I know that your only wish right now is to rest in peace. But you are the only one with answers to my deepest doubts... So, forgive me for disturbing you.
@@ -1983,12 +2309,42 @@
 
 ---
 
-### Part 75 — `databank/missions/chapter-01-heroic-saga.md`
+*(Phainon reunited with Aglaea and Tribbie, carrying the Coreflame. Aglaea hoped Phainon would take on the mantle of Strife. Phainon was willing to make that sacrifice, but believed Mydei was the one truly fit for it.)*
 
-**Context:** Complete Dialogue > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Return to the Private Bath Chamber and Rest
+*(Some time later...)*
+**Tribbie:** Agy, they're back!
 
+---
+
+### Part 57 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 8 — Kremnos, Cleanse Thy Rusted Blood (II) > Return to the Private Bath Chamber and Rest
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__return-to-the-private-bath-chamber-and-rest`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
+
+> **Mem:** Hnngh... I think I'm getting sleepy. The light feels so nice and warm. Even my fur's toasty warm. I can fall asleep any...
+> *(Trailblazer)* I'll take a break too...
+> **Mem:** Zzz... Zzz...
+
+*(narrative)* Your consciousness sinks into dreams, and at the edge of the dreamscape, you hear a whisper...
+
+*(Tutorials on how to use "As I've Written")*
+> *Open this book,*
+> *I'll be waiting for you in the past.*
+> *Light up the starry sky till the book appears in your hands*
+> *Having learned about Castrum Kremnos' past, now drop in that strand of "Nameless Recollection"*
+> *Record Mydeimos' story on the empty pages*
+> *The Flame-Chaser's Path has been lit*
+
+*(Unlock Achievement "It's In the Book...")*
+
+> *Wake up. Continue the journey, till that "Nameless Recollection" resurfaces*
+
+---
 
 *(Phainon and Castorice once again spoke of "the thing heavier than the fate of the world." Phainon admitted he still often recalled the day his hometown Aedes Elysiae was destroyed. Castorice believed this riddle was far too cruel for him. She urged Phainon to keep his heart calm, and trusted in his ability to pass the trial of the Coreflame of Strife.)*
+
 *(While you were having the strange dream, somewhere else in Okhema...)*
 **Castorice:** You should take this opportunity to rest, Lord Phainon... The Coreflame ritual is tomorrow.
 **Phainon:** Today, tomorrow, what difference does it make? It's always morning in Okhema under Kephale's protection.
@@ -2023,21 +2379,18 @@
 **Castorice:** So High Priest Tribbie can be strict too...
 **Castorice:** Please continue with this mentality, Lord Phainon. I believe you'll be alright.
 **Phainon:** Thank you, Miss Castorice. I think I'll stay here for a little while and keep all of those unruly thoughts out. It's not like anything will come of them, anyway.
-**Phainon:** The sights of Aedes Elysiae — my homeland — have been flashing before my eyes lately.
-**Phainon:** Those Kremnoans mastered some cutting-edge technology... If only I could separate my soul from my body too. That way, I'd be able to fly my soul back to the comforting fields of my homeland any time.
-**Phainon:** That's the only place I can be momentarily at peace...
 
 ---
 
-### Part 76 — `databank/missions/chapter-01-heroic-saga.md`
+### Part 58 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 10 — Hero, Bear Thy Coreflame > Wait for Phainon to Start the Coreflame's Trial
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__wait-for-phainon-to-start-the-coreflame-s-trial`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 10 — Hero, Bear Thy Coreflame > Wait for Phainon to Start the Coreflame's Trial
-
-
-*(Head up the stairs towards the basin)*
-**Trinnon:** "O majesty of the twelve Titans, pillars of the world—"
-**Trinnon:** "We seek your divinity, to mend the rifts of the world—"
 **Trinnon:** "Fill our bodies with blood of gold, till we wither in willing service to the prophecy..."
+
 *(Approach the marked location)*
 **Aglaea:** Your guests are here, Phainon. We can begin the ritual now.
 **Castorice:** Lord Mydei isn't here yet...
@@ -2058,6 +2411,7 @@
 **Trinnon & Phainon:** "We seek your divinity, to mend the rifts of the world—"
 **Trinnon & Phainon:** "Fill our bodies with blood of gold, till we wither in willing service to the prophecy..."
 **Trinnon:** Surrender the Coreflame, Chrysos Heir.
+
 **Phainon:** The Lance of Fury's constellation is illuminated...
 **Phainon:** Why is the Vortex this silent? Was it also like that in the past?
 **Aglaea:** Patience, Phainon. Do not make us question this decision.
@@ -2079,32 +2433,38 @@
 **Trinnon:** "Come with me, Phainon of Aedes Elysiae..."
 **Phainon & Trinnon:** "...In fear, you shall abandon your mortal body, and in suffering, be reborn as a god."
 **Phainon:** Wait for my return, my friends.
+
 **Castorice:** Lord Phainon... is gone?
 **Aglaea:** He has stepped onto the battlefield to fight a campaign that can only be won by him alone.
-**Aglaea:** All we can do is wait... and have faith.
 
 ---
 
-### Part 77 — `databank/missions/chapter-01-heroic-saga.md`
+### Part 59 — `databank/missions/chapter-01-heroic-saga.md`
+**Context:** Chapter 1 — Heroic Saga of Flame-Chase (v3.0) > Mission 10 — Hero, Bear Thy Coreflame > Chat with the Chrysos Heirs
+**Kind:** collective-pointer
+**Id:** `chapter-01-heroic-saga__chat-with-the-chrysos-heirs`
+**Collective:** `databank/memories/collective/chapter-01-heroic-saga.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 10 — Hero, Bear Thy Coreflame > Chat with the Chrysos Heirs
-
-
-*(Talk with Trinnon again, optional)*
 **Trinnon:** Zzz... Zzz...
 **Trinnon:** Snowy... zzz... will succeed...
+
 *(Talk with Castorice, optional)*
 **Castorice:** I pray you truly are prepared, Lord Phainon.
+
 > *(Trailblazer)* You seem worried.
 > **Castorice:** I spoke at length with Lord Phainon before. There was hesitation in his words.
 > *(Trailblazer)* You spoke to him?
 > **Castorice:** Yes, there was hesitation in his words.
 > **Castorice:** The manifestation of the prophecy must have seen this. It saw Lord Phainon's heart wavering.
 > **Castorice:** Wherever he is, whatever he is fighting, I pray he makes it through this test.
+
 *(Talk with Castorice again, optional)*
 **Castorice:** Wherever he is, whatever he is fighting, I pray he makes it through this test.
+
 *(After speaking with Aglaea)*
 **Mydei:** Still too late, huh...
+
 > *(Trailblazer)* Oops, missed the party...
 > *(Trailblazer)* Phainon said you weren't coming.
 > **Mydei:** The constellation of the Lance of Fury is already illuminated. That must mean...
@@ -2113,6 +2473,7 @@
 > **Castorice:** He must conquer his fear and prove himself to the prophecy.
 > **Mydei:** ...I was right to be worried.
 > **Mydei:** I want to formally thank you, outsiders. Were it not for your aid, our campaign against Nikador would have been a hundred times more arduous.
+
 > *(Trailblazer)* Isn't it nice to be polite?
 > **Mydei:** Kremnoans revere strength and military might, but that does not mean we lack etiquette.
 > *(Trailblazer)* Talk is cheap.
@@ -2129,141 +2490,218 @@
 > **Castorice:** The prophecy gave him a new mission, granting him a new life as a Chrysos Heir. But which is more important to him: his new mission or his desire for revenge?
 > **Castorice:** I'm afraid only he knows... No, perhaps he himself is still struggling to get to an answer.
 > **Mydei:** I acknowledge his strength, but... fear is something not even the sharpest of swords can cut through.
-> **Mydei:** I hope you've toughened your resolve, Deliverer...
-> **Mydei:** ...Only a will as tough as stone can shatter the darkest nightmares.
 
 ---
 
-### Part 78 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Complete Dialogue > Await Phainon at the Vortex of Genesis
-
+### Part 60 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Chapter 2 — Light Slips the Gate, Shadow Greets the Throne (v3.1) > Await Phainon at the Vortex of Genesis
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__await-phainon-at-the-vortex-of-genesis`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 **Aglaea:** ...
 **Castorice:** ...
+
 **Mydei:** Aglaea, with all due respect... This trial is taking far too long.
 
----
+> *(Trailblazer)* Don't worry. Have faith in Phainon.
+> *(Trailblazer)* Yeah, he's been gone for a while now...
+> *(Trailblazer)* Bah, it feels like we've already waited for forty-two days.
+> **Dan Heng:** ...How did you even arrive at that number?
 
-### Part 79 — `databank/missions/chapter-02-light-slips.md`
+**Aglaea:** What do you think of this, Trinnon?
 
-**Context:** Complete Dialogue > Await Phainon at the Vortex of Genesis
+**Trinnon:** It's not possible to tell for sure what goes on within the Vortex. All I can hear are fragments of speech and distant battle cries...
 
+**Aglaea:** Is it Phainon's voice?
 
 **Trinnon:** I'm not sure. It's difficult to make out clearly...
 **Trinnon:** ...
 **Trinnon:** ...Ah! Wait, no!
+
 **Castorice:** Lady Trinnon?
+
 **Trinnon:** Snowy's voice... I can't hear him anymore...
 **Trinnon:** There's a sun-like existence in the trial... It's burning him up...!
 
----
+**Aglaea:** It has come to this, after all...
 
-### Part 80 — `databank/missions/chapter-02-light-slips.md`
+**Mydei:** What now?
 
-**Context:** Complete Dialogue > Await Phainon at the Vortex of Genesis
+**Aglaea:** Get ready, Mydeimos.
 
+> *(Trailblazer)* What's going on?
+> **Mydei:** Plan B. We pull him out when something goes wrong.
+> *(Trailblazer)* We need to stop the trial now.
+> **Mydei:** Mm. Time for plan B.
+> *(Trailblazer)* Are you going to leave Phainon to die?
+> **Mydei:** Why would we? The Coreflame is important to us, but it's beyond absurd to even consider sacrificing him to the Titans.
+
+**Mydei:** As I promised you, Aglaea, I will intervene in the trial this time, to bring your Deliverer out to safety... ...But that's as far as I will go.
+
+**Aglaea:** Of course. I know this is not the time to demand any more from you.
 
 **Mydei:** Hmph, discerning. Alright then, to be as prepared as I can, I hope that the two outlander warriors can also join me.
+
 **Castorice:** That... might not be a good idea. The Coreflame trial is many times more complicated than a standard ritual. Even the slightest misjudgment, misstep, or hiccup could result in grave consequences... Our two distinguished guests are not obliged to risk their lives for the Flame-Chase Journey. Let me join you instead, Lord Mydei.
+
 > *(Trailblazer)* It's fine. We've got this.
 > *(Trailblazer)* Exactly. No way am I getting involved.
 > **Dan Heng:** This is a rare opportunity, though... The Coreflame has something to do with the workings of Amphoreus. It's best for us to learn more.
 > *(Trailblazer)* Can't we all go together?
 > **Mydei:** No, someone should stay outside in case we need help.
 
----
-
-### Part 81 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Complete Dialogue > Await Phainon at the Vortex of Genesis
-
+**Dan Heng:** Things have taken a critical turn, especially so with Phainon's life on the line. Of course, we Nameless will do what is necessary. How should we help?
 
 **Mydei:** Join me in the trial to look for Phainon. And when we do, Aglaea's golden threads will guide us back out... ...assuming we survive Nikador's wrath. If something bad were to happen, Castorice, your priority is to ensure the safety of these two. I can find a way out on my own.
+
 **Castorice:** ...Yes, Lord Mydei.
+
 **Mydei:** Thank you both for your valor. Time to get to work, then. Let me have the honor of... ...taking the lead in this battle.
 
 ---
 
-### Part 82 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Complete Dialogue > Interfere with the Trial
-
+### Part 61 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Chapter 2 — Light Slips the Gate, Shadow Greets the Throne (v3.1) > Interfere with the Trial
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__interfere-with-the-trial`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** on-stage
 
 *(Speak with Aglaea and interfere with the trial — when crisis strikes during Phainon's Coreflame trial, you make the snap decision to join Castorice and Mydei in rescuing him)*
-*(Talk to Castorice, optional)*
-**Castorice:** Please... stay safe.
-*(Talk to Trinnon, optional)*
-**Trinnon:** We can't get rid of... all the noise...
 
 ---
 
-### Part 83 — `databank/missions/chapter-02-light-slips.md`
+### Part 62 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Chapter 2 — Light Slips the Gate, Shadow Greets the Throne (v3.1) > Interfere with the Trial > Talk to Castorice, optional
+**Kind:** personal
+**Id:** `chapter-02-light-slips__interfere-with-the-trial-2`
 
-**Context:** Complete Dialogue > Find the Source of Strife > Battle Against the Divine Echo
+*(Talk to Castorice, optional)*
+**Castorice:** Please... stay safe.
 
+---
+
+### Part 63 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Chapter 2 — Light Slips the Gate, Shadow Greets the Throne (v3.1) > Find the Source of Strife > Battle Against the Divine Echo
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__battle-against-the-divine-echo`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
+
+**Dan Heng:** The Coreflame trial is indeed no place for the weak. Let's just hope that Phainon gets through this.
 
 **Aglaea:** There is no need to worry. His soul is in a stable condition. With ample rest for both body and mind, he'll be up and about in no time.
+
 **Castorice:** The greatest fear in the depths of his heart... Lord Phainon must have been forced to relive his past during the trial and revisit his homeland that had fallen to the black tide...
+
 **Mydei:** ...In all likelihood.
+
 > *(Trailblazer)* Is the black tide really that scary?
 > **Dan Heng:** Since coming to Amphoreus, we have heard many talking about this "black tide." Could you tell us more about it?
 > *(Trailblazer)* It's only normal to be unable to overcome your inner demons.
 > **Dan Heng:** Since coming to Amphoreus, we have heard many talking about this "black tide." Could you tell us more about it?
 > *(Trailblazer)* I think Gnaeus mentioned it before...
 > **Castorice:** That is correct. He was willing to entrust the Coreflame to the Chrysos Heirs... because he was also pinning his hopes on us, to succeed him in shouldering the responsibility of resisting the black tide.
+
 **Aglaea:** It is one of the culprits that drives the people of Amphoreus to madness. It was during the Era Bellica that this... unspeakable thing first appeared, like a plague, alongside the Three Titans of Calamity — Death, Strife, and Trickery.
 **Aglaea:** Nobody knows where it came from or how it came to be. What we do know, however, is that it is steadily encroaching upon what little remains of this tranquil land, much like a rising sea closing in on an island from all sides. It is for this very reason that it became known as the "black tide."
 **Aglaea:** Those who succumb to it lose their reason and humanity, becoming vicious, mindless monsters. Mortals are not the only ones susceptible to its influence — even gods and Titans cannot escape from it.
+
 **Castorice:** According to Gnaeus, Nikador, though one of the embodiments of Calamity, also bears the responsibility of fending off the black tide... Perhaps that is also why Lord Phainon threw himself into the trial of Strife so readily.
+
 **Aglaea:** But now, we must look for alternative means of igniting the flames of Strife.
 
 ---
 
-### Part 84 — `databank/missions/chapter-02-light-slips.md`
+### Part 64 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__mission-3-grove-wherefore-are-the-wise-silent`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** on-stage
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Follow Castorice to Meet with Aglaea
+*(Aglaea presents the Trailblazer and Dan Heng with the Dew of Divine Blood, proposing an alliance. Hyacine arrives from the Grove. The Trailblazer, Castorice, and Trianne journey to the Grove — only to find it overrun by the black tide.)*
 
+---
+
+### Part 65 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Speak with Castorice
+**Kind:** personal
+**Id:** `chapter-02-light-slips__speak-with-castorice`
+
+*[Now, in your private bath chamber]*
 
 *Ever since the battle with Nikador, you haven't slept so soundly in ages. Even if Death itself came to rouse you, you'd proudly retort: Why does life slumber? Because the bed is warm... Yet, a chill from the River of Souls wafted by, a sensation hauntingly familiar.*
+
 **Castorice:** Mr./Miss (Trailblazer), you're awake.
+
 > *(Trailblazer)* ...No wonder I felt a chill.
 > **Castorice:** Is the room too cold?
 > *(Trailblazer)* ...Castorice, why does life slumber?
 > **Castorice:** ...That's a complicated question. I'm not sure I can answer that.
 > *(Trailblazer)* ...Why are you here?
+
 **Castorice:** I apologize for arriving uninvited. I saw that you were still asleep, so I took the liberty of waiting nearby. I bring a message from Lady Aglaea. She has prepared a gift for you and Dan Heng, and wishes to present it to you in person.
+
 > *(Trailblazer)* A gift? Gimme, gimme!
 > *(Trailblazer)* What are we waiting for? Let's go!
+
 **Castorice:** I'm glad you're in good spirits. Alright, let's set off.
+
+---
+
+### Part 66 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Follow Castorice to Meet with Aglaea
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__follow-castorice-to-meet-with-aglaea`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
+
 *(While walking with Castorice)*
+
 **Castorice:** The baths are bustling. Now that Nikador has fallen, the soldiers in the city can finally catch a break.
+
 **Castorice:** Is that... Lady Tribbie and Lady Trianne?
+
 *(Approach Tribbie and Trianne)*
 
+**Trianne:** You must have forgotten! This is a precious relic from our hometown! We definitely all saw it back then!
+
 ---
 
-### Part 85 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 67 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Find Out About What's Happening from the Merchants
+**Kind:** personal
+**Id:** `chapter-02-light-slips__find-out-about-what-s-happening-from-the-merchants`
 
+*(Approach the marked location)*
+
+**Merchant:** It's so hard to understand what they're thinking sometimes…
 
 *(Speak to the merchant)*
+
 **Castorice:** Excuse me. If you don't mind, could you tell me what Lady Tribbie and Lady Trianne were discussing just now?
+
 **Merchant:** Oh, it's Miss Castorice! It's been a while! Well, honestly, I'm not quite sure myself.
 
----
+**Merchant:** See, I have a little hobby of collecting handicrafts. Some time ago, I found this trinket being sold at the Marmoreal Market and bought it to use as decoration at my stall.
 
-### Part 86 — `databank/missions/chapter-02-light-slips.md`
+**Merchant:** When Lady Tribbie and Lady Trianne walked by earlier, Lady Trianne happened to catch sight of it and promptly insisted that it was a precious memento from her hometown.
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Continue Following Castorice to Meet with Aglaea
-
+**Merchant:** But Lady Tribbie believed it to be a counterfeit. She said it couldn't possibly be from Janusopolis — the likelihood of such fragile glassware surviving the Chrysos War is simply too low.
 
 **Merchant:** For some reason, Lady Trianne became awfully upset after hearing that.
+
 **Castorice:** I see...
+
 **Castorice:** Madam, would you mind selling this trinket to me?
+
 **Merchant:** Certainly. It's just... if it truly is a relic from Janusopolis, it could be worth a small fortune... Miss Castorice, I'm running a business here, after all, so...
+
 **Castorice:** I understand. Feel free to name your price.
+
 > *(Trailblazer)* Not so fast! I object to this!
 > **Merchant:** And what might your concerns be, my friend?
 > *(Trailblazer)* You've got some nerve trying to rip off a Chrysos Heir.
@@ -2271,25 +2709,43 @@
 > **Merchant:** I... Fine. I'll sell it to you at cost as a sign of goodwill, Miss Castorice. Just promise to support my business in the future!
 > *(Trailblazer)* *(Glare at her in silence.)*
 > **Merchant:** Uh... I suppose I can sell it to you at cost as a sign of goodwill, Miss Castorice. Just promise to support my business in the future!
+
 **Castorice:** Much appreciated.
+
 *(If you vocally objected)*
 **Castorice:** Thanks for helping me out. I'm not one to venture out often, and while I have some savings, it takes a lot out of me to even talk to people, let alone haggle... Had you not been here, I would've been set back plenty.
+
 *(If you glared in silence)*
 **Castorice:** We're lucky that she has a good heart. I'm not one to venture out often, and while I have some savings, it takes a lot out of me to even talk to people, let alone haggle... Had it been another merchant, I would've been set back plenty.
+
 **Castorice:** The authenticity of the piece isn't important. What matters is that it holds special meaning for Lady Trianne and reminds her of her hometown.
+
 **Castorice:** I've long wished to show my gratitude for Lady Trianne's care, but I haven't been able to come up with any ideas for a suitable gift. This chance encounter today feels like divine intervention. Perhaps this is the gift I've been searching for.
+
 **Castorice:** Still, this trinket is admittedly rather fragile. I will have to make some adjustments and stitch it onto wool felt to protect it. That way, no matter how much Lady Trianne runs around, it won't break easily.
+
+---
+
+### Part 68 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Continue Following Castorice to Meet with Aglaea
+**Kind:** personal
+**Id:** `chapter-02-light-slips__continue-following-castorice-to-meet-with-aglaea`
+
 **Castorice:** Alright, back to business after that little detour.
+
 **Castorice:** Let's keep moving. Don't stray far now — we've already kept Lady Aglaea waiting long enough.
 
 ---
 
-### Part 87 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 69 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Speak with Aglaea (Grove Mission)
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__speak-with-aglaea-grove-mission`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 **Hyacine:** It's no trouble at all! The patients are very cooperative when we attend to them. I'm just thrilled to see them all going home healthy again. And ooh! It's Cassie! I've missed you!
+
 > *(Trailblazer)* Who is this...?
 > *(Trailblazer)* Grayie? Dannie?
 > **Hyacine:** Aren't they just the cutest nicknames? Hehe.
@@ -2300,30 +2756,62 @@
 > **Aglaea:** Hehe...
 > **Castorice:** Mis—!
 > **Hyacine:** Wah! You can't say that! Lady Aglaea should always be "Lady Aglaea"!
+
 **Dan Heng:** This girl... She's a natural at making friends.
+
+> *(Trailblazer)* She reminds me of an old friend with pink hair.
+> *(Trailblazer)* So am I!
+> **Dan Heng:** I'll let you take it from here, then.
+
+**Hyacine:** Hehe, as an acolyte of Aquila, I'm here to bring healing light to the world. Plus, I've heard you're also children of the distant skies! Fate must have brought us together! Can we be friends? I'd love to hear your tales of the sky! And ooh, it's a rare occasion that Okhema presents such an invaluable gift to guests. Lady Aglaea, may I have the honor of tasting it, too?
+
+**Aglaea:** Of course you may. Esteemed guests of Okhema, please believe me when I say that this gift carries no hidden agendas. As for the matter of the alliance, you need not give me an answer here and now.
+
+> *(Trailblazer)* Well, if you insist...
+> *(Trailblazer)* Ohh, she's here to help Aglaea recruit us.
+> **Hyacine:** Haha, you're mistaken! The capable Lady Aglaea doesn't need my help with things like this.
+
+**Dan Heng:** ...I see. In that case, we will accept this gift from Okhema. We welcome the chance to talk with you, Lady Hyacine.
+
+**Hyacine:** Yay! Then I'll get started on my questionnaire!
+
+**Dan Heng:** Pardon the question, but I've been meaning to ask this for a while: micro-expressions, tone of voice, questionnaires... Are these all part of the usual skill set for Aquila's priests?
+
+**Aglaea:** Allow me to do the honors. This young lady is Hyacine, assistant lecturer of the Nousporists at the Grove of Epiphany and head nurse at the medical institution known as the Twilight Courtyard. Many of the Chrysos Heirs suffered injuries during Nikador's attack on Okhema, so the Grove sent Lady Hyacine to treat the wounded in Okhema.
+
+**Hyacine:** But what I'm really good at is helping people sort out what ails their mind and spirit. If you're ever feeling troubled, come find me! A little sunbathing in the courtyard will chase all your worries away!
+
+**Dan Heng:** Ah, so you're a therapist. Thank you, we will keep that in mind.
 
 ---
 
-### Part 88 — `databank/missions/chapter-02-light-slips.md`
+**Hyacine:** Well, it looks like everything's sorted out now! The patients have also all recovered. I think it's time for me to head back, Lady Aglaea.
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Speak with Aglaea (Grove Mission)
+**Aglaea:** I would love to keep you in Okhema for a few more days, but I would hate to provoke the ire of the Grove. As it happens, Okhema intends to send a messenger to the Grove for updates about the research on the black tide. We also want to communicate our desire to discuss the retrieval of Cerces' Coreflame at the earliest convenience.
 
+**Hyacine:** That... sounds pretty serious. Lady Aglaea, you can't be asking me to...
 
 **Aglaea:** No need to fret. We won't put you on the spot. Trianne will be going there as the diplomatic messenger of Okhema, and Castorice will be accompanying her.
+
 **Castorice:** I happen to have a few questions for Professor Anaxa as well, regarding the missing Titan Thanatos.
+
 **Dan Heng:** Since this involves Okhema's diplomatic affairs, we'll give you some privacy.
 
 ---
 
-### Part 89 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 70 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Speak with Castorice and Hyacine and Prepare to Head Out
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__speak-with-castorice-and-hyacine-and-prepare-to-head-out`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 *(Speak to Aglaea, optional)*
 **Aglaea:** Make good use of it. Trianne is already waiting for you at the outskirts of Okhema, so I won't keep you any longer. May your journey be smooth.
+
 *(Speak to Castorice)*
 **Castorice:** I'm glad to be in your company again, Mr./Miss (Trailblazer).
+
 > *(Trailblazer)* Tell me about the Titan known as Thanatos.
 > **Castorice:** Thanatos... controls my fate, in a sense. The curse I bear came from them. And they have something of mine... something of great importance that I must get back from them.
 > *(Trailblazer)* Who is Professor Anaxa?
@@ -2331,195 +2819,395 @@
 > *(Trailblazer)* What is the Grove of Epiphany?
 > **Castorice:** The Grove of Epiphany is Okhema's partner academy. They look after the Coreflame of Cerces and are the organization at the forefront of researching phenomena such as the black tide and the Titans. They also provide academic research support for the Flame-Chase Journey.
 > **Castorice:** Several Chrysos Heirs are based in the Grove, including Miss Hyacine and Professor Anaxa.
+
 > *(Trailblazer)* I don't have any more questions. Let's go!
 > **Hyacine:** I came here with a colleague from the Twilight Courtyard. I've asked her to pack her luggage in advance, so she's already waiting for us by the city gates. Let's go meet up with her!
 
 ---
 
-### Part 90 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 71 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Meet Up with Hyacine's Friends
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__meet-up-with-hyacine-s-friends`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
+**Hyacine:** Grayie, Cassie, and Trianne. Would you mind making your way to the Grove first? Once this man is out of danger, Clementine and I will join you.
 
 **Hyacine:** As a healer, I cannot ignore those in need of medical attention.
+
 **Castorice:** I understand. May fate have mercy on this poor man.
+
 **Trianne:** Trianne believes he'll get better!
 
 ---
 
-### Part 91 — `databank/missions/chapter-02-light-slips.md`
+### Part 72 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Speak with Trianne and Prepare to Depart
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__speak-with-trianne-and-prepare-to-depart`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Wait for Trianne to Wake Up
-
+**Trianne:** Down this road we go! To the skies we fly! Leaving Okhema behind!
 
 **Trianne:** Little Cas, Little Gray, are you ready?
+
 > *(Trailblazer)* Are we not using the Century Gate?
 > **Castorice:** You might not be aware of this... but using the Century Gate takes a significant toll on Lady Trianne.
 > **Trianne:** Mm-hmm! Trianne promised Tribbie that we wouldn't open the gate unless we had no other choice!
 > *(Trailblazer)* Let's go.
 > **Castorice:** I'm ready, too.
 > **Trianne:** Okie-dokie! Everybody, let's hold hands! To the Grove we go!
-> *(Exit)* Hang on a minute.
-> **Trianne:** The Grove is far! It's important to be ready!
+
+---
+
+### Part 73 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Wait for Trianne to Wake Up
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__wait-for-trianne-to-wake-up`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
+
 **Castorice:** Hm... It's harder than I thought to sew gemstones onto wool felt...
+
 **Mem:** Cas has such nimble fingers. I want to learn too...
+
 **Castorice:** Hehe, Mem wants to try sewing? Here, why don't you give it a go?
+
 > *(Trailblazer)* How are you two so close already?
 > **Mem:** Cas and I are now good friends after traveling together for so many days!
 > **Castorice:** It's hard not to like Mem when they're so adorable.
 > *(Trailblazer)* I wanna try, too.
 > **Castorice:** Sure.
 > **Mem:** You go first! I'll cheer you on!
+
 **Castorice:** This is amazing... It seems as if their voice has become more intelligible after the battle with Nikador...
+
 **Castorice:** After spending the last few days together, I feel like I'm gradually gaining the ability to understand what they're saying... even if it's just a little.
+
 **Mem:** This shows that I'm learning new things! Once I obtain the memory of poking wool felt, will I grow hands that are as pretty as Cas' hands?
+
 > *(Trailblazer)* That just sounds weird.
 > *(Trailblazer)* Scary. Don't teach her how to sew, Cas.
 > **Mem:** That's horrible! You can't say that to a girl!
 > **Castorice:** Hehe...
+
 **Mem:** I was just kidding! Anyway, I believe that this trip to the Grove of Epiphany will definitely be a fruitful one.
 
----
+**Mem:** How exciting... I wonder what changes I'll experience next?
 
-### Part 92 — `databank/missions/chapter-02-light-slips.md`
+> *(Trailblazer)* You'll learn a powerful new ability!
+> **Mem:** Mm-hmm! Being adorable isn't enough. I need to be strong, too!
+> *(Trailblazer)* You might... become fluffier?
+> **Mem:** Do you like cute little animals that much? ...Are you secretly the type that cares a lot about outward appearances?
+> *(Trailblazer)* Transform into a cute girl! Now!
+> **Mem:** Wah, you don't have to yell!
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Wait for Trianne to Wake Up
-
+*(Trianne joins the conversation)*
+**Trianne:** Phew... Is everybody awake? Little Gray, Little Cas, and... a little pink puppy?
 
 **Mem:** Puppy? I've become a different species altogether...!? And here I thought she would just give me a nickname like Little Memmy...
+
 **Castorice:** It's already Action Hour. Lady Trianne, I hope you're well-rested?
+
 **Castorice:** You were talking in your sleep... Did you dream of many things?
+
 **Trianne:** Sleep talking? Um... What did Trianne say?
+
 **Castorice:** Something like... "Mommy! Doll with sword! Let's fight together! We'll be brave!"
+
 **Trianne:** Eek, so embarrassing...! Please don't make fun of Trianne!
+
 **Castorice:** Of course not. Wasn't Lady Trianne's mother also the Holy Maiden of Janusopolis?
+
 **Trianne:** Uh-huh! Mama was the strongest Holy Maiden in all of our history! She also gave us the Prophecy of Deliverance... and she had red hair that looked like a cute red mushroom!
 
 ---
 
-### Part 93 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 74 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Journey to the Grove > Step onto the Woven Trail
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__step-onto-the-woven-trail`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 *(The group departs Okhema. Trianne leads the way along the Woven Trail.)*
+
 **Castorice:** The Woven Trail... is a gift from the Titan of Fate, Mnestia. It weaves through the entire world of Amphoreus.
+
 **Castorice:** Legend has it that she personally wove this path out of her golden threads of fate, binding the fate of all beings together. As long as we're on this path, we are all connected... to fate.
+
 **Mem:** The Titan of Fate... As expected of Mnestia... I want to learn to weave with fate, too.
 
----
+*(Approach Trianne)*
+**Trianne:** Dun-dun-dun! We've arrived at the very entrance to the Grove of Epiphany!
 
-### Part 94 — `databank/missions/chapter-02-light-slips.md`
+**Trianne:** Little Gray, Little Cas, welcome to the Grove of Epiphany! This is the biggest and most beautiful library in all of Amphoreus!
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Journey to the Grove > Step onto the Woven Trail
+**Trianne:** But before we enter, Trianne wants to ask everyone a question!
 
+**Trianne:** What grows taller the more you prune it?
+
+**Mem:** What grows taller... the more you prune it?
 
 > *(Trailblazer)* Are you asking a riddle?
 > **Trianne:** Mm-hmm! Trianne learned it from a book in the library!
 > **Mem:** Then let me think... What grows taller the more you prune it... Ah, I've got it! It's a fountain! I saw it in the city!
 > *(Trailblazer)* What's the answer, Trianne?
 > **Trianne:** Hehe, the answer is...
+
 **Castorice:** A fountain.
+
 **Trianne:** Ah, Little Cas got it right! A fountain! Trianne will now read the answer from the book!
 
 ---
 
-### Part 95 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 75 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Journey to the Grove > Find the Way to Enter
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__find-the-way-to-enter`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 **Castorice:** Hmm... We seem to have arrived too early. The entrance to the Grove doesn't seem to be open yet.
+
 **Castorice:** The Grove has always welcomed scholars. So too would Cerces give us her delicate leaves and extend her branches in greeting. Yet... it seems both the Grove's messengers and the Titan are indifferent to our arrival.
+
 **Mem:** For now... let's look around and see if we can find out what's happened.
 
 ---
 
-### Part 96 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > The Grove Under Siege > Keep Going and Investigate the Cause
-
+### Part 76 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Journey to the Grove > Pass Through the Janus' Hidden Passage
+**Kind:** personal
+**Id:** `chapter-02-light-slips__pass-through-the-janus-hidden-passage`
 
 *(Locate the hidden passage)*
 **Castorice:** This is... Janus' Hidden Passage. It seems the Janus priests have prepared a secret passage for us.
+
 **Castorice:** Let's pass through. Be careful not to fall behind.
+
+---
+
+### Part 77 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Journey to the Grove > Continue Forward — the Courtyard of Storge
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__continue-forward-the-courtyard-of-storge`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
+
 *(Arrive at the Courtyard of Storge)*
 **Castorice:** This is the Courtyard of Storge. It's a memorial garden where the Grove commemorates its former scholars.
+
 **Mem:** A garden that commemorates the scholars... Let's take a look around.
+
+---
+
+### Part 78 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > The Grove Under Siege > Investigate the White Dryad
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__investigate-the-white-dryad`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
+
 *(Approach the white dryad)*
 **Castorice:** This is... a white dryad, the messenger of the Grove of Epiphany. They carry messages between the Grove and the outside world.
+
 **Castorice:** Something feels off... The Grove has always welcomed scholars. So too would Cerces give us her delicate leaves and extend her branches in greeting. Yet... it seems both the Grove's messengers and the Titan are indifferent to our arrival.
+
 **Mem:** For now... let's look around and see if we can find out what's happened.
+
 *(Investigate the surroundings)*
 **Castorice:** Look! There seems to be a trail of blood... Let's follow it!
+
 *(Follow the blood trail)*
 **Castorice:** The trail leads to the dryad's corpse... Wait, what?
+
 *(Investigate the dryad's corpse)*
 **Castorice:** Its memories have been devoured... I see traces of a powerful force, but I can't tell what kind.
+
 **Mem:** Black... Cloak... Sword... Toward the Great Tree...
+
 **Castorice:** ...I have a bad feeling about this. The deathly fog of Thanatos... is fast approaching.
+
 **Mem:** Deathly fog...? What's that?
+
 **Castorice:** It's a sign that Thanatos is nearby. When the black tide attacks, it is often accompanied by a deathly fog.
+
 **Mem:** Is that so... I see. Let's hurry up and move forward.
+
+---
+
+### Part 79 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > The Grove Under Siege > Investigate the White Dryad > Talk to Castorice
+**Kind:** personal
+**Id:** `chapter-02-light-slips__investigate-the-white-dryad-2`
+
 *(Talk to Castorice)*
 **Castorice:** Hold on... I sense a source of danger approaching. Let's be on guard.
+
+---
+
+### Part 80 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > The Grove Under Siege > Leave the Courtyard of Storge
+**Kind:** personal
+**Id:** `chapter-02-light-slips__leave-the-courtyard-of-storge`
+
 *(A Tide-Eroded Blade appears — begin battle)*
 *(Begin battle)*
+
 **Castorice:** To think the black tide has spread this quickly to the Grove despite its remote location... I'm afraid a world where Strife has fallen is far more dangerous than we ever imagined.
+
+---
+
+### Part 81 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > The Grove Under Siege > Report the Situation to Aglaea
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__report-the-situation-to-aglaea`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
+
 *(Report to Aglaea via Tribbie's telepathic link)*
 **Aglaea (through Tribbie):** ...I understand. The Grove... is lost. Do not act rashly. Our top priority is to locate Anaxa and secure Cerces' Coreflame.
+
 **Castorice:** Understood. We'll head to the Luminary Throne at once.
+
 **Tribbie:** May the grace of the Weft protect you.
+
+---
+
+### Part 82 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > The Grove Under Siege > Keep Going and Investigate the Cause
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__keep-going-and-investigate-the-cause`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
+
 **Castorice:** Let's keep moving. The Luminary Throne is ahead.
+
 **Trianne:** Hmm... Trianne doesn't think that we'll make it to the Luminary Throne so easily.
+
 *(Continue forward)*
 **Castorice:** Huh? Trianne, where are you going?
+
 **Trianne:** Trianne is going to fly into the air to see if there are any dangers up ahead! With the power of the Weft!
+
 **Castorice:** Wait—!
+
 *(Trianne flies off with the Weft)*
+
 **Castorice:** ...
+
+---
+
+### Part 83 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > The Grove Under Siege > Keep Going and Investigate the Cause > Talk to Castorice
+**Kind:** personal
+**Id:** `chapter-02-light-slips__keep-going-and-investigate-the-cause-2`
+
 *(Talk to Castorice)*
 **Castorice:** I'll chase after her. ...I shouldn't have given her the Weft. Now I regret it.
 
 ---
 
-### Part 97 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 84 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Anaxa's Alchemical Messages
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__anaxa-s-alchemical-messages`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
+*(At a sealed gate, Mem tries to use Oronyx's power to open it.)*
 
 **Mem:** I wonder if I'll find any memories.
+
 **Castorice:** So many monsters...
+
 **Mem:** Maybe I'll find some useful memories here... Let me try.
 
----
+*(Investigate the monster on the ground, optional)*
+*The monster's body is twisted like brambles, not allowing any living being to approach.*
 
-### Part 98 — `databank/missions/chapter-02-light-slips.md`
+**Mem:** Let me see...
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Anaxa's Alchemical Messages
+**Mem:** Ow, that hurt! And I didn't even detect any memories...
 
+*(Investigate the monster on the stairs, optional)*
+*The black-colored monster has fallen like a toppled statue. Within its body lie golden ashes, perhaps the same substance as the golden blood that is commonly seen in Amphoreus.*
+
+**Mem:** Mem... Memem...
+
+**Mem:** It's no good... I didn't see anything.
+
+*(Investigate the monster on the balcony, optional)*
+*A despicable, twisted life form — it was once a living soul that could mourn pain, but now it can only turn its head at others, until its soul drifts silently out of its shell.*
+
+**Mem:** Maybe this monster will show us some useful memories...
+
+**Mem:** ...
+
+**Mem:** I shouldn't have gotten my hopes up.
 
 *(Once all three monsters have been investigated)*
 **Mem:** Ugh, I really tried my hardest... Why couldn't I see even a sliver of a memory?
+
 **Castorice:** It could be because when a life is devoured by the black tide... it loses its soul.
+
 *(Investigate the gate)*
 **(Trailblazer):** *(Hm, it's locked...)*
+
 **Castorice:** I can't open it... It was probably sealed in order to ward off the black tide.
+
 > *(Trailblazer)* There's no keyhole in this door...
 > **Castorice:** Yes, most of the doors on Amphoreus are sealed using the power of Janus.
 > *(Trailblazer)* Flaming lance, chaaaarge!
 > **Castorice:** Save your energy. Janus' power... is far stronger than we could ever imagine.
+
 **Mem:** Since this door is a creation of the Three Titans of Fate, maybe the eyes of Oronyx will help me find a way to open it...
+
+**???: ** Are you serious? Just a mere door, and your first instinct is to call on the gods?
+
+**Mem:** Memi...!?
+
+**???: ** Before you try unlocking the door, perhaps you should first find a way to clear the fog that clouds your vision.
+
+**Mem:** You scared me! Are you... the echoes of a memory?
+
+**Anaxa:** My name is Anaxagoras, one of the Seven Sages of the Grove of Epiphany and the founder of the Nousporists. Before we go any further: Rule number one, do not call me Anaxa.
+
+**Mem:** Anaxago... Anax... Ugh, I'll just stick to Anaxa.
+
+**Anaxa:** Rule number two: Never interrupt me. Silence is golden.
+
+**Mem:** What a difficult person!
+
+**Anaxa:** The person standing here and conversing with you right now isn't the vestiges of a memory. Rather, it is the culmination of the greatness of science and the pure, irrefutable, and undeniable exalted truth.
+
+**Anaxa:** Through the wonders of alchemy, I have shattered my soul and transmuted it into gold before burying it in this spot. I have recorded these words so that visitors may learn where their next destination lies.
+
+**Mem:** Alchemy can do that?
+
+**Anaxa:** Nothing is impossible. Having said that, alchemy is not omnipotent. Each time you hear from me, an equivalent part of my soul is being consumed as the price. In other words — this voice isn't created out of thin air.
+
+**Mem:** But how is it that you can respond to me...? Are you really the echoes of a memory?
+
+**Anaxa:** That's because my precise calculations account for every possibility. I also know that you have already discovered the cause of the calamity at the Grove — the black tide — and that you mistakenly believe that the scholars have been wiped.
+
+**Anaxa:** But that is where you're wrong: While the black tide was still approaching the Grove, the sages found a way to evacuate the vast majority of the scholars. They are heading toward the holy city of Okhema as we speak.
+
+**Anaxa:** Only a small fraction of the scholars stayed behind with me to defend the Grove. If all goes well, Cerces' Coreflame will reach Okhema before long...
+
+**Anaxa:** ...But since you have accessed this message, something unforeseen must have occurred. For now, you should continue onward to the Luminary Throne where you may retrieve the Coreflame... and our mortal remains.
+
+**Anaxa:** "And now, the objective is complete. That is all."
 
 ---
 
-### Part 99 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Keep Moving Forward and Head to the Luminary Throne
-
-
 **Mem:** H—He disappeared again? Did he finish what he wanted to say?
+
 **Castorice:** (Trailblazer), judging from your reaction, you must have found a useful memory.
+
 > *(Trailblazer)* *(Recount what you saw in the memory)*
 > **Castorice:** Professor Anaxa? That's a lot to digest at once... I'm sorry, please give me some time.
 > *(Trailblazer)* He said his name is Anaxagoras.
@@ -2533,59 +3221,87 @@
 > *(Trailblazer)* Perhaps Anaxa... did not manage to survive.
 > **Castorice:** I... do not wish to consider this possibility.
 > **Castorice:** Perhaps they were just unable to transfer the Coreflame, but managed to escape...
+
 **Mem:** The Luminary Throne? What sort of place is that? Why would there be a throne in an academy?
+
 **Castorice:** It is located at the top of the giant tree and is where Cerces' Coreflame is kept. According to Anaxa, the Coreflame should still be there.
+
 **Castorice:** But making our way there... won't be as simple as the professor made it sound.
+
 **Mem:** Oh... But on the bright side, it sounds like a place that's easy to defend and difficult to attack.
+
 **Mem:** If that's really the case, I think that everyone including Anaxa will definitely be all right!
+
 **Castorice:** Right... Let's see whether he left any similar directions for us along the way.
+
+---
+
+### Part 85 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Keep Moving Forward and Head to the Luminary Throne
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__keep-moving-forward-and-head-to-the-luminary-throne`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
+
 **Mem:** Hey, the door can finally be opened! It seems like that message also served as a lock.
+
 **Castorice:** Alchemy is truly... incredible.
+
 *(Once the marked location is within view)*
 **???: (singing)** "Happiness abounded in this lush land by gods chosen..."
 
----
+**Mem:** Wh—What's that sound?
 
-### Part 100 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Keep Moving Forward and Head to the Luminary Throne
-
+*(Approach the marked location)*
+**Mem:** Huh...?
 
 **Mem:** There's no one here... Did I just imagine that singing?
+
 **Castorice:** No, you didn't imagine it. I heard it as well.
+
 **Castorice:** I'm afraid that someone's probably nearby. As we are unable to ascertain whether they are friend or foe... we better remain cautious.
+
 **???: (singing)** "Giants raised their glasses in a toast beheld by the twelve constellations..."
 
----
+**Mem:** It's that voice again! This time, it's coming from...
 
-### Part 101 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Find the Source of the Sound
-
+**Mem:** ...I have no clue where it's coming from. There's too much echo in this library!
 
 > *(Trailblazer)* That's why you're supposed to keep quiet in a library.
 > **Mem:** I know! Also, I wasn't even the one singing...
 > *(Trailblazer)* Don't be afraid, I have experience in ghost hunting!
 > **Mem:** Why do you even have experience in that...?
+
 **Castorice:** ...Found it.
+
 **Castorice:** The voice is coming from... over there.
+
 > *(Trailblazer)* The heart?
 > **Mem:** How can a heart possibly speak — and it's not even lit up! I think that something supernatural must be at play here...
 > *(Trailblazer)* The air?
 > **Mem:** How can the air possibly speak! I think that something supernatural must be at play here...
 > *(Trailblazer)* White Dryads?
 > **Mem:** White Dryads... Shadows of dead white dryads just like before?
+
 **Castorice:** No, it seems to be coming from somewhere even further that way...
+
 **???: (singing)** ...
-**Castorice:** Let's go check it out.
-**Mem:** S—Slow down. We don't want to alert them.
 
 ---
 
-### Part 102 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 86 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Find the Source of the Sound
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__find-the-source-of-the-sound`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
+**Castorice:** Let's go check it out.
+
+**Mem:** S—Slow down. We don't want to alert them.
+
+*(Investigate the statue)*
+*A statue resembling an old man draped in robes, seated in deep meditation... and capable of singing.*
 
 > *(Trailblazer)* *(Stare at the statue)*
 > *(Trailblazer)* *(Stroke the statue)*
@@ -2597,70 +3313,83 @@
 > **???: ** What a smooth-talking child... I'll accept your praise.
 > *(Trailblazer)* Ha! Demon, eat my bat!
 > **???: ** What an impatient child... Don't you know that haste makes waste?
+
 **Castorice:** ...Who are you? Keep your distance and identify yourself. Otherwise, you'll face the consequences.
+
 **???: ** The scent of Thanatos... I recognize you. Aidonia's renowned Goddess of Death.
+
 **Castorice:** Since you are aware, stop provoking the authority of Death. Answer my question.
+
 **???: ** Hehe, baring your fangs at me... How cute.
 
----
-
-### Part 103 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Find the Source of the Sound
-
+**Calypso:** Just call me Calypso. I greet you on behalf of the Seven Sages and the Lotophagists.
 
 > *(Trailblazer)* Hi, professor!
 > *(Trailblazer)* I understand what you're saying, but... are you a specter?
 > **Calypso:** Of course not. Just ask the fair lady beside you. She'll definitely know the reason why.
+
 **Castorice:** Be careful, (Trailblazer)... Even if the head of the Lotophagists has never shown their true identity before, we shouldn't trust this person so easily.
+
 **Castorice:** The Weft could not detect her presence just now. That would be out of the ordinary if she were truly a phantom body. But if she is someone who has passed on, I should be able to tell...
+
 **Castorice:** ...Let me test her.
+
 **Calypso:** Do you mind if I join your private conversation?
+
 **Castorice:** That would be rather inappropriate for someone who isn't even willing to reveal their real self. Forget it.
+
 **Castorice:** However, I'm going to ask you some questions. Please answer them truthfully. If you can do so without hesitation, we won't treat you as an enemy for the time being.
+
 **Calypso:** A pop quiz? Well, that sparks my interest. Go ahead.
+
 **Castorice:** What was the topic for the grand finals of the 752nd Great Debate?
+
 **Calypso:** "Is a flying arrow in motion or at rest?"
+
 **Castorice:** Who was your representative?
+
 **Calypso:** Medea. She went up against Phainon of the Nousporists.
+
 **Castorice:** Who won?
+
 **Calypso:** Nobody won because the 752nd Great Debate never took place.
 
----
-
-### Part 104 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Find the Source of the Sound
-
+**Calypso:** What I just mentioned happened during the previous debate. Phainon emerged victorious and obtained his tenth consecutive debate wreath. Also, to alleviate your worries, I shall provide you with a piece of information that's more valuable than the great debate...
 
 **Calypso:** Anaxa the Nousporist is still alive. I saved him, and he is now recuperating at the Luminary Throne... So, are you satisfied with my answers?
+
 **Castorice:** ...
+
 **Calypso:** Hehe, this dumbfounded expression of yours... is much more adorable and likeable than the previous one.
+
 **Calypso:** As the saying goes, "Seeing is believing." Why don't you follow me to the throne and take a look for yourself.
+
 **Castorice:** ...I'll keep my eyes on you at all times.
+
 **Calypso:** Oh, that's truly an honor.
 
 ---
 
-### Part 105 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 87 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Follow Calypso's Guidance and Find a Way to Keep Going Forward
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__follow-calypso-s-guidance-and-find-a-way-to-keep-going-forward`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
+**Calypso:** Why did you suddenly freeze? Do you have another way to make the water wheel turn?
 
 > *(Trailblazer)* Consider it done.
 > *(Trailblazer)* It's simple, I'll just have to turn it.
 > *(Trailblazer)* I can't do it...
 > **Calypso:** Indeed... You can only do so much by yourself.
+
 *(Exits dialogue)*
 **Castorice:** Can you... really do it?
+
 *The pure white girl gazed at you with a subtle expression, while the pink creature's large eyes held a hint of curiosity. And that ghostly woman appeared unwilling to open her eyes.*
 
----
-
-### Part 106 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Follow Calypso's Guidance and Find a Way to Keep Going Forward
-
+*Once the bow is drawn, there's no turning back. You decide to proceed...*
 
 > *(Trailblazer)* Come up with a relatively normal idea.
 > *"Normal"? Gosh, what a pity.*
@@ -2695,17 +3424,23 @@
 > *(Trailblazer)* Admit that you were only joking.
 > *Once spoken, words are irrevocable. As the Kremnoans would often say, "the word 'joke' does not exist in the Trailblazer's dictionary."*
 > *To avoid a guilty conscience, think it over carefully. Don't let your partners down!*
+
 **Castorice:** ...
+
 **Castorice:** ...
+
 > *(Trailblazer)* Please, stop laughing...
 > **Castorice:** ...I'm not.
 > **Mem:** She's laughing. But I managed to hold it in!
 > *(Trailblazer)* Although it failed... I'm sure I can put it to good use next time.
 > **Castorice:** Truly a rare sight to behold.
 > **Mem:** This is indeed an incredibly precious memory.
+
 *(Investigate the heart, optional)*
 **Castorice:** This heart is the source of all water in the Grove...
+
 **Calypso:** Indeed. When the sparks of inspiration burst forth within the Grove, dewdrops fall and land within the pool.
+
 > *(Trailblazer)* Then let me ignite my creativity... Ummmm...
 > *You hold your breath and focus. Drip drip! A drop of water falls into the pool.*
 > **Castorice:** Huh... Can that really work?
@@ -2717,128 +3452,168 @@
 > *A futile effort. Yet your fervent hope to revive this great tree was so intense that some presence from the distant multiverse cast an approving gaze upon you.*
 > *(Obtain: Praise of High Morals)*
 > **Castorice:** It seems like it won't be possible to fill it up with just the few of us...
+
 **Calypso:** Heh... Just come with me.
+
 **Calypso:** We must first retrieve a treasure if we want to awaken the heart.
+
 *(While descending on the elevator)*
 **Castorice:** Is that the... "Chamber of Purifying Tears"?
+
 **Calypso:** You have a good memory.
+
 **Castorice:** ...Why exactly did you bring us here?
+
 *(Approach the marked location)*
 **Calypso:** My intentions should be obvious...
 
----
+**Calypso:** See that shallow pond over there? Water lilies grow there. Initially, Cerces watered them with their tears while Mnestia nurtured them with affectionate love. They are a token of the eternal companionship between the two gods.
 
-### Part 107 — `databank/missions/chapter-02-light-slips.md`
+**Calypso:** All the two of you have to do is to cross the deep well and retrieve the Golden Bough of Vows for me.
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Follow Calypso's Guidance and Find a Way to Keep Going Forward
-
+**Mem:** ...Cal, you're making things sound too complicated. All you want us to do is to retrieve the flower, right?
 
 > *(Trailblazer)* Is this how you're going to test a Nameless?
 > **Calypso:** Indeed. Could it be that you actually do not know how to proceed?
 > *(Trailblazer)* Could the deep well be a trap...?
 > **Calypso:** Heh, you're making it sound so ominous.
+
 **Castorice:** We can retrieve it, but I advise you not to waste your time on any schemes.
+
 **Calypso:** Oh my, I'm helping you to eliminate your worries and obstacles, and yet I receive nothing in return?
 
----
+**Calypso:** Besides, the bough is essential for awakening the heart and drawing water out of the source. If you can't find it this time, we can just remain trapped here for the rest of eternity.
 
-### Part 108 — `databank/missions/chapter-02-light-slips.md`
+**Mem:** What's that supposed to mean!? Are you planning to keep us here forever?
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Follow Calypso's Guidance and Find a Way to Keep Going Forward
+**Calypso:** Heh, you're overthinking things. We're all in the same boat.
 
+**Calypso:** Although, it would be absurd to say that I have no other motives. Since you've brought it up, I might as well take this chance to explain...
+
+**Calypso:** I'm simply making use of this opportunity to see what you two are made of. So, is that truthful enough for you?
+
+**Mem:** See what we're made of... Could you have phrased that any more directly?
+
+**Calypso:** Now is not the time for me to elaborate further. So, please proceed?
 
 **Calypso:** As a student of Anaxa, "equivalent exchange" should be something that you are familiar with.
+
 **Castorice:** ...I cannot deny that.
+
 **Castorice:** (Trailblazer), since our interests are aligned right now, it's better for us to do as she says. Besides, she knows about my past... Even though I'm not able to elaborate much, I can tell you that she has reasons to fear me.
+
 **Castorice:** If you unfortunately turn out to be her ultimate target... Please don't worry. I will promptly intervene.
+
 **Mem:** It's so reassuring to have Cas around. I should put my brain to use too, then.
 
 ---
 
-### Part 109 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 88 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Pass the Deep Wall and Obtain the Golden Bough of Vows
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__pass-the-deep-wall-and-obtain-the-golden-bough-of-vows`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
+*(Use Oronyx's Miracle)*
+**Mem:** This flower looks so soft and fluffy... Heh, watch this!
 
 *(Step onto the flower)*
+
 *(Approach the ichor vessel)*
 **Castorice:** Huh? There are ichor vessels stored here...
+
 *(Destroy the ichor vessel's membrane)*
 **Mem:** Wow... So, this is how flowers are grown!
+
 *(Engage the Miracle Orb)*
 **Calypso:** Hehe... How smart.
+
 *(Approach the water lily pond)*
 **Castorice:** Let's hope that this is not a trap set by her...
+
 *(Interact with the "Golden Bough of Vows")*
 **Castorice:** So, this is the Golden Bough of Vows...
+
 **Castorice:** ...I hope that the Titan will not take their anger out on us.
+
 > *(Trailblazer)* So, what we're doing is simply provoking the Titans...
 > *(Trailblazer)* Don't worry. There are several Aeons that have my back.
 > **Castorice:** ...If only THEY could interfere in the affairs of the Titans.
+
 **Calypso:** Heh, so lustrous and beautiful... It's even more magnificent than before.
 
----
+**Mem:** Hey, Cal!? Don't suddenly appear out of nowhere and scare me like that! My tiny little heart cannot take it... This is already the second time!
 
-### Part 110 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Pass the Deep Wall and Obtain the Golden Bough of Vows
-
+**Calypso:** Understood. My apologies, pink bunny.
 
 **Mem:** It's pink bunny this time? I'm truly an all-encompassing species...
+
 **Castorice:** Is... this the legendary Golden Bough of Vows?
+
 **Calypso:** Hehe, we'll know once we test it.
 
 ---
 
-### Part 111 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 89 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Offer the Golden Bough of Vows to the Heart
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__offer-the-golden-bough-of-vows-to-the-heart`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 **Calypso:** There's a secret passageway behind the pond. It's faster if we take that path.
+
 **Castorice:** ...How do you know this place so well?
+
 **Calypso:** Well... I'm one of the Seven Sages after all.
 
----
+*(Offer the "Golden Bough of Vows")*
+**Calypso:** We're here. Could you kindly pluck a petal for me and place it into the pool?
 
-### Part 112 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Offer the Golden Bough of Vows to the Heart
-
+> *(Trailblazer)* *(Remove a petal from the Golden Bough of Vows.)*
 
 **Calypso:** Now, can our little goddess perform that again?
+
 **Castorice:** Huh?
+
 **Calypso:** That being the oath of Mnestia's priests.
+
 **Castorice:** Right, got it...
+
 **Castorice:** "O Mnestia! With the Weft as my vow, I beseech you: Entwine my body with your golden thread and affection!"
+
 **Mem:** Oh... It really lit up!
 
----
+> *(Trailblazer)* What is the principle behind this?
+> *(Trailblazer)* How dazzling...
 
-### Part 113 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Offer the Golden Bough of Vows to the Heart
-
+**Calypso:** Heh, it's just... an ancient promise between the Titan and humans.
 
 **Calypso:** So, what do you think? It really is the Golden Bough of Vows, and I did not set any traps for you, right?
+
 **Castorice:** That is... indeed true.
+
 **Calypso:** Haha, you look like a sad lost puppy. Even if this is indeed a scheme to get you to lower your guard, you don't have any other choice but to play along, do you?
+
 **Calypso:** Therefore, why don't we just put everything aside and work together? We can always determine who's right and who's wrong once we overcome this.
+
 **Castorice:** Yes... I agree.
+
 **Calypso:** Great. Then, let's ride the water wheel...
+
 **Castorice:** However, giving us half-truths is not the right attitude for cooperation.
+
 **Castorice:** Furthermore, according to the principle of "equivalent exchange," since we have passed your so-called trial, isn't it time for you to make your intentions clear to us?
+
 **Calypso:** Ahh, I really can't bear to look at your sad expressions. Although you only cleared a simple trial... I'm willing to make an exception and treat you with sincerity.
 
----
-
-### Part 114 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Offer the Golden Bough of Vows to the Heart
-
+**Calypso:** I'll allow each of you to ask a question... Ah, but not the little bunny. So, ask away.
 
 **Mem:** What's with this unfair treatment? Is it because I'm too smart and you're afraid that the question I ask will turn Amphoreus upside down?
+
 **Castorice:** Well... In that case, (Trailblazer), please go ahead.
+
 > *(Trailblazer)* What is your true identity?
 > **Calypso:** Hm...
 > **Calypso:** As I've previously mentioned, I'm one of the Seven Sages of the Grove of Epiphany. If you think that this answer is insufficient, then I'll add to it. I'm the leader of the Seven Sages.
@@ -2856,101 +3631,159 @@
 > **Castorice:** ...Let's not get into a game of semantics, Lady Calypso.
 > **Castorice:** (Trailblazer), I will observe her reaction based on your question to determine whether she is being truthful.
 > **Castorice:** So, don't worry about it. Go ahead and ask your question.
+
 *(Go back to the previous options)*
+
 **Calypso:** Well, it's your turn now, little goddess of Death.
+
 **Castorice:** ...
+
 **Castorice:** My question is: Was your previous answer the whole truth and nothing but the truth?
+
 **Calypso:** There's no point in making this unnecessarily complicated.
+
 **Castorice:** That applies to you as well. However, we do not harbor any hostility. We merely want to avoid any potential harm to us.
+
 **Castorice:** Lady Calypso, if you want us to work together more effectively, I advise you to answer my question honestly.
+
 **Calypso:** Hehe... Alright. I was completely truthful in my response just now. I have not deceived you, nor will I.
+
 **Castorice:** With all due respect, omitting facts can also be considered deceit.
+
 **Calypso:** Is that so? Regardless, I still stand by my previous response.
+
 **Castorice:** ...Then, please lead the way. After all, facts speak for themselves. The truth will come to light once we arrive at the Luminary Throne.
+
 **Calypso:** Alright, alright. I originally thought that you were just a beautiful flower planted in the mortal realm by the Hand of Shadow... But now, I see you have some prickly thorns too.
+
 **Castorice:** I'll just consider that a compliment.
+
 **Calypso:** Indeed, I'm complimenting your charming naiveté.
 
 ---
 
-### Part 115 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 90 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Leave the Library of Philia and Head to the Luminary Throne
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__leave-the-library-of-philia-and-head-to-the-luminary-throne`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
+**Mem:** Seriously... Exactly how much do you know about us?
 
 **Calypso:** Hehe, not too much. It's just that I seem to hear the sound of a bee buzzing around.
+
 **Castorice:** Lady, your metaphors... are not worthy of praise at all.
+
 *(Leave the building)*
 **Mem:** Phew, finally! Some fresh air!
 
----
+**Mem:** Brr... But the wind feels so chilly...
 
-### Part 116 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Leave the Library of Philia and Head to the Luminary Throne
-
+*(Approach Trianne)*
+**Trianne:** Woah, it's Little Gray, Little Cas, and the pink puppy!
 
 **Mem:** I... Forget it. I'll just be a puppy. Be forgiving... Be forgiving!
+
 **Castorice:** Lady Trianne! Are you alright? Were you hurt?
+
 **Trianne:** No, Trianne flew high up into the air so the monsters couldn't reach us.
 
----
+> *(Trailblazer)* All that matters is you're alright.
+> **Trianne:** Heh heh, also, the spindle that Agy gave us is so powerful that Trianne seems to have found Nax...
+> *(Trailblazer)* Did you find Anaxa?
+> **Trianne:** Yup! The spindle that Agy gave us is so powerful that Trianne seems to have found Nax...
+> *(Trailblazer)* Air supremacy secured!
+> **Trianne:** "Air supremacy secured!" ...That sounds so cool! But what does it mean?
 
-### Part 117 — `databank/missions/chapter-02-light-slips.md`
+**Trianne:** Wait a minute, let's get back on track! The spindle that Agy gave us is so powerful that Trianne seems to have found Nax...
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Leave the Library of Philia and Head to the Luminary Throne
-
+**Trianne:** He's near the treetop! Even though our perception of him is very weak, it's not like the White Dryads from before.
 
 **Trianne:** But, since Trianne was alone and afraid that it might be dangerous, we did not fly there to take a look.
+
 **Castorice:** It seems like Lady Trianne did not forget our promise.
+
 **Castorice:** Anaxa is indeed still alive, and he's at the Luminary Throne right now... It seems like Lady Calypso did not lie regarding this.
+
 **Trianne:** Hm? Kalipso... Who's that?
 
----
+> *(Trailblazer)* She seems to be the head of the Lotophagists.
+> **Trianne:** Oh, so you found a survivor! But the golden thread doesn't seem to be able to sense the person you're talking about.
+> *(Trailblazer)* A kind-hearted and mysterious passer-by.
+> **Trianne:** Oh, so you received help from a kind-hearted person! But the golden thread doesn't seem to be able to sense the person you're talking about.
+> *(Trailblazer)* A spirit... wandering around the Grove?
+> **Trianne:** Whoa! A spirit... Trianne wants to meet this spirit that even the gold thread can't sense!
 
-### Part 118 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Leave the Library of Philia and Head to the Luminary Throne
-
+**Mem:** Cal, come and meet our other companion!
 
 **Mem:** Hm? Where did she go off to...
+
 **Castorice:** Coming and going without a trace... She's such a strange person.
+
 *(Trianne shows a piece of burnt cloth)*
 **Trianne:** Oh, actually, Trianne also found this. Could this be related to the person you're talking about?
+
 **Castorice:** This is... a piece of burnt cloth?
+
 **Trianne:** Yup! Trianne found it on a branch not long ago. Trianne even used the golden thread to search around and found that the entire Grove is giving off a similar aura.
+
+**Mem:** Maybe... Anaxa left it behind using alchemy, in order to guide us?
+
+**Trianne:** Trianne doesn't think so. Because when Trianne picked it up, we didn't see anything at all... And judging by the golden thread, the aura seems to be all around!
+
+**Castorice:** ...Lady Trianne, where is the aura gathered at right now?
+
+**Trianne:** Mmm...
+
+**Trianne:** It seems to be... a little higher and a little ahead of us.
+
+**Castorice:** The Dome of Devotion...
 
 ---
 
-### Part 119 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 91 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Keep Moving Forward and Pass Through the Dome of Devotion
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__keep-moving-forward-and-pass-through-the-dome-of-devotion`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
-
-**Trianne:** Trianne doesn't think so. Because when Trianne picked it up, we didn't see anything at all... And judging by the golden thread, the aura seems to be all around!
-**Castorice:** ...Lady Trianne, where is the aura gathered at right now?
-**Trianne:** Mmm...
-**Trianne:** It seems to be... a little higher and a little ahead of us.
-**Castorice:** The Dome of Devotion...
 **Castorice:** Calypso... Just what are you hiding?
+
 *(After traveling through the Hidden Passage)*
 **Trianne:** Ugh, the golden thread is vibrating more and more violently...
+
 **Castorice:** Everyone, let's be even more cautious.
+
 *(Once the marked location is within view)*
 **Castorice:** There's no one... Hold on, the Butterfly of Divine Mind is gone?
+
 *(Approach the marked location)*
 **Castorice:** That can't be. Was it for fending off the black tide, or perhaps...
+
 **Trianne:** What exactly is this "Butterfly of the Vine Mine"? Is it a very powerful guardian monster?
+
 **Castorice:** No, how should I put it... It's considered a safeguard for the Titan's Coreflame. This butterfly is created from Mnestia's remaining divine mind and bears the responsibility of guarding the Coreflame.
+
 **Castorice:** Legend has it that someone can only pass the trial of the butterfly by proving they possess pure and unselfish love within their heart. Only then can they awaken the Great Tree to open up the path to meet Cerces.
+
 **Trianne:** But how are we... going to prove it?
+
 **Mem:** Will telling the Titan "I love you" work? Mem is good at doing that!
+
 **Castorice:** Sorry, but even I don't know how... After all, this is a secret among secrets that only a select few in the entire Grove and even Amphoreus know.
+
 **Castorice:** Rather than worry about this, Lady Trianne, did the golden thread react to anything around here?
+
 **Trianne:** Umm, no. That unknown thing seems to be even farther ahead and higher up.
+
 **Mem:** Uhhh, but... Isn't that a dead end up ahead?
+
 **Castorice:** Perhaps we can try again... Let's see if the butterfly will still react to the Golden Bough of Vows despite having dissipated.
+
 **Castorice:** If it's indeed the token mentioned in the legends, there should be a reaction.
+
 > *(Trailblazer)* *(Take a petal from the Golden Bough of Vows)*
 > *You take a single petal from the Golden Bough of Vows and offer it with both hands.*
 > *The butterfly didn't even move one inch.*
@@ -2970,647 +3803,952 @@
 > **Castorice:** "O Mnestia! With the Weft as my vow, I beseech you: Entwine my body with your golden thread and affection!"
 > **Castorice:** ...
 > *The butterfly still didn't move one inch.*
+
 **Trianne:** Waaaah!
+
 **Castorice:** Lady Trianne? ...And even Mem? Where have they disappeared to?
+
 **Trianne:** Little Gray, Little Cas... Look over here... Quick!
 
 ---
 
-### Part 120 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 92 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Find Mem and Trianne by Listening to the Sounds
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__find-mem-and-trianne-by-listening-to-the-sounds`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 **Castorice:** The voice seems to be coming from the Star-Chase Atrium.
+
 *(Approach Trianne)*
 **Trianne:** Waaaah... Little Gray, Little Cas! It's bad... It's very bad!
 
----
+**Mem:** Don't worry, friend... I'm fine...! I just feel... a little warm...!
 
-### Part 121 — `databank/missions/chapter-02-light-slips.md`
+**Mem:** But... It would be best if you could keep me from becoming a snack for these little things...!
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Find Mem and Trianne by Listening to the Sounds
+**Starving Magical Beast:** ███ ██ ███ █ ██ ███ █ ██ █ ██████
 
+**Mem:** Sorry, I shouldn't have called you guys "little things"...!
 
 > *(Trailblazer)* Calm down, we'll be right there!
 > *(Trailblazer)* If that's the case, let's get out of here.
+
 **Castorice:** Lady Trianne, what exactly happened just now?
+
 **Trianne:** Trianne and Memmy were looking around to see if there were any mechanisms nearby...
+
 **Trianne:** But just as they went to take a closer look at that big piece of amber, they were surrounded!
+
 **Castorice:** ...I see.
+
 **Castorice:** Let's get a move on. The orbs belonging to Oronyx's priests should be nearby... Hopefully, they'll be of some use.
+
 **Mem:** I'll... leave it in your capable hands...!
 
 ---
 
-### Part 122 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 93 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Try to Reach Where Mem Is and Rescue Mem
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__try-to-reach-where-mem-is-and-rescue-mem`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
+**Mem:** I see water lilies floating in the sky... So cool! Can we walk on it?
 
 *(Descend on the flower)*
 **Mem:** So warm... much comfort...
+
 *(Descend on the flower to Mem's level)*
 **Castorice:** Oh no, I'm starting to smell something delicious.
+
 **Mem:** Haha... That must be because I can't help giving off an irresistible charm.
 
 ---
 
-### Part 123 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 94 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Defeat the Magical Beasts Surrounding Mem
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__defeat-the-magical-beasts-surrounding-mem`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
-
-> *(Trailblazer)* I'm just so-so, only third best, ya know?
-> **Mem:** Friend, you're too humble! In that case, I'll just have to settle for being second best while Cas can be the best.
-> *(Trailblazer)* Actually, there's four of us.
 > **Mem:** Oh, right! Sorry, I forgot about Trianne.
 > **Trianne:** It's all right! Trianne only just flew down.
+
 **Castorice:** I'm glad that everyone is alright. Speaking of which, this piece of amber is...?
+
 **Calypso:** ...A remnant of Mnestia's Coreflame.
 
----
-
-### Part 124 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Defeat the Magical Beasts Surrounding Mem
-
+**Calypso:** To get to the throne at the treetop, gather the embers before you with the Golden Bough of Vows and present it to the divine butterfly.
 
 **Trianne:** Whoa... Where did you come from!?
+
 **Castorice:** You finally appeared... Lady Calypso.
+
 **Calypso:** Yes... It's been some time. The battle just now was a true delight, and I feel quite elated...
+
 **Calypso:** ...It seems like I'll really be able to rely on all of you to reclaim my true form.
+
 **Castorice:** ...Lady Trianne, how does the golden thread react to her?
+
 **Trianne:** Mmm...
 
+**Trianne:** There's... no reaction at all.
+
+**Calypso:** Hehe, obviously. After all, the fragment that you picked up just now is completely unrelated to me.
+
+**Calypso:** Alright, just do as I say. If you're able to pass the trial, I will tell you everything truthfully.
+
 ---
-
-### Part 125 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Pick the Remaining Fires with the Golden Bough of Vows
-
 
 **Castorice:** Another trial...
+
 **Mem:** Come on, I hate people who don't finish their thoughts!
+
 **Trianne:** But we have to go to the treetop to find Nax anyway, right?
+
 **Castorice:** I've got a hunch. Come, let's collect the embers and go confront her.
+
+---
+
+### Part 95 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Pick the Remaining Fires with the Golden Bough of Vows
+**Kind:** personal
+**Id:** `chapter-02-light-slips__pick-the-remaining-fires-with-the-golden-bough-of-vows`
+
 *(Interact with the "Amber")*
 **Castorice:** According to Calypso, we just have to "gather the embers before us with the Golden Bough of Vows"...
+
 *As the golden water lily touches the amber, flames spill from its petals.*
 
+*Curiously, the fire does not consume the entire flower. Only faint sparks gather at the tips, subtly burning.*
+
+*(Obtain: Burning Golden Bough of Vows)*
+
 ---
 
-### Part 126 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 96 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Offer the Remaining Fires to the Butterfly of Divine Mind
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__offer-the-remaining-fires-to-the-butterfly-of-divine-mind`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 **Castorice:** How incredible...
+
 **Mem:** Uhh, so... We just have to present it to the butterfly?
 
----
-
-### Part 127 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Offer the Remaining Fires to the Butterfly of Divine Mind
-
+*(Offer the Embers)*
+**Calypso:** Hehe, it seems like you managed to gather the embers.
 
 **Calypso:** In that case... just offer it to the divine butterfly.
+
 **Castorice:** It'll be fine. Let's just do as she says.
+
 > *(Trailblazer)* *(Offer the faintly burning Golden Bough of Vows.)*
 
----
+**Trianne:** It's a success! The path has appeared...
 
-### Part 128 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Offer the Remaining Fires to the Butterfly of Divine Mind
-
+**Calypso:** Heh... All of you have indeed passed the trial.
 
 **Mnestia's Illusion:** *Titan's sad cries*
+
 **Castorice:** Hmm? The sound of a butterfly's wings...
+
 **Mnestia's Illusion:** *Titan's sad cries*
 
----
+**Calypso:** ...
 
-### Part 129 — `databank/missions/chapter-02-light-slips.md`
+**Calypso:** I'll be back shortly.
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Offer the Remaining Fires to the Butterfly of Divine Mind
+**Mnestia's Illusion:** *Titan's sad cries*
 
+**Calypso:** Of course, our promise still stands...
+
+**Calypso:** But now... It's time for me to sacrifice myself.
+
+**Mnestia's Illusion:** *Titan's sad cries*
+
+**Calypso:** Hehe...
+
+**Calypso:** If the west wind ever ends, let that be the place where we reunite.
 
 **Calypso:** Farewell... my love.
+
 **Castorice:** Lady Calypso, this is...
+
 **Calypso:** Haha... It's nothing much.
+
 **Calypso:** Thank you so much for your help. Now it's time for me to fulfill my part of the promise.
+
 **Castorice:** Well, in that case, I can start...
+
 **Castorice:** You're... actually Cerces, right?
+
 **Mem:** Wh—What's going on? You're the Titan?
 
----
-
-### Part 130 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Offer the Remaining Fires to the Butterfly of Divine Mind
-
+**Cerces:** Oh my, the children of humanity... have passed the final trial at last.
 
 **Cerces:** I was wondering when you were planning to expose me. How did you know?
+
 **Castorice:** The riddle-like trials, your distrustful yet sincere character, referring to Mnestia as your love, and...
+
 **Castorice:** The head of the Lotophagists is actually called Medea and not Calypso.
+
 **Cerces:** Since you knew from the start that I was not who I said I was, why did you wait until now to expose me?
+
 **Castorice:** Because I did not believe that Cerces would walk this world in a human form. I was also afraid that the Titans were under the control of the black tide and would do us harm...
+
 **Castorice:** Also, "to make a claim, one must have evidence" — this is the precious knowledge that I acquired during my time at the Grove.
+
 **Cerces:** Heh... Excellent. To think we were able to gain a new chance at life in the midst of death — fate truly is a mysterious thing.
+
 **Castorice:** Well... Shouldn't you also tell us why you went through all the trouble of setting up these riddles?
+
 **Cerces:** Oh, the reason's quite simple.
+
 **Cerces:** I needed your help, and just like how you were wary of me, I had to ensure that you were not villains who were trying to get their hands on the Coreflame. I also had to ascertain that you were capable of dealing with the threat at hand.
+
 **Castorice:** Is this threat related to the black tide?
+
 **Cerces:** Indeed, and it's even more related to that lost item from before. Its owner is a quiet and paranoid hunter who seems to have been reborn from the black tide and is attacking along with it.
 
----
+**Cerces:** As I could not do anything about him, I split my body up and escaped to avoid harm. I bided my time for a chance to seek assistance. Unfortunately, this was not a sustainable long-term plan.
 
-### Part 131 — `databank/missions/chapter-02-light-slips.md`
+**Trianne:** Uh... What you mean is that you hid your own Coreflame?
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Offer the Remaining Fires to the Butterfly of Divine Mind
-
+**Cerces:** Indeed, I split it into three. I hid one within the Golden Bough of Vows, and sealed another in the amber along with Mnestia's remaining embers...
 
 **Cerces:** As for the last one... It's currently in Anaxa's body, which is in dire need of repair.
+
 **Castorice:** What? Do you mean that, you're using such a method...
+
 **Cerces:** Hehe, after all, the scholars of the Grove have always been willing to lay down their lives to defend my Coreflame... As a respected god, it would be too embarrassing if I were to do nothing and simply watch the children of humanity give up their lives for me.
 
 ---
 
-### Part 132 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 97 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Climb Upwards and Reach the Luminary Throne
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__climb-upwards-and-reach-the-luminary-throne`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 *(Approach the entryway)*
 **Cerces:** I'll leave it to you, children of humanity. May you be blessed with good fortune.
+
 **Castorice:** It seems like... a fierce battle will be inevitable.
+
 **Trianne:** Don't worry! Trianne will protect everyone!
+
 *(After traveling through the Hidden Passage)*
 **Castorice:** Ahead lies the Luminary Throne...
+
 **Castorice:** And also... the battlefield that we're about to step onto.
+
 **Mem:** Ah, this...
 
----
+**Mem:** Friends, can you feel it?
 
-### Part 133 — `databank/missions/chapter-02-light-slips.md`
+**Trianne:** Memmy, what's wrong?
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > Climb Upwards and Reach the Luminary Throne
-
+**Mem:** The memories here have a very intense smell...
 
 **Mem:** ...It's the scent of bulrush, sand, and the blazing sun.
+
 **Castorice:** Is this...
+
 **Castorice:** Professor Anaxa...
 
 ---
 
-### Part 134 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 98 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 3: Grove, Wherefore Are the Wise Silent > The Black-Robed Swordmaster > Keep Moving Forward and Meet Up with Cerces at the Throne
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__keep-moving-forward-and-meet-up-with-cerces-at-the-throne`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
+**Anaxa:** For the sake of Amphoreus... Die with me, Titan.
 
 *(Approach the marked location)*
 **Mem:** Ah...
+
 **Castorice:** Cerces was right. He's indeed here.
+
 **Trianne:** Who is this black-robed guy...?
 
----
+**Mem:** This person is the source of the smell and the memory... No, he's basically the memory itself!
 
-### Part 135 — `databank/missions/chapter-02-light-slips.md`
+**Mem:** The burning paradise, the shattered sun, and...
 
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > The Black-Robed Swordmaster > Keep Moving Forward and Meet Up with Cerces at the Throne
-
+**Mem:** ...Carnage. Death and destruction.
 
 **???: ** ...
+
 **Castorice:** Everyone, brace yourself... This must be the hunter reborn from the black tide that Cerces was talking about...
+
 **Castorice:** The black sword and cloak...
+
 **Castorice:** The owner of the piece of cloth... The north wind that sent over the deathly fog of Thanatos.
+
 **???: ** You're not... demigods.
 
----
-
-### Part 136 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > The Black-Robed Swordmaster > Defeat the Black-Robed Swordmaster
-
+**???: ** Stand down. Or die.
 
 **Mem:** Quick... run! It's just us... We won't be able to defeat them...
+
 > *(Trailblazer)* Don't worry, I'll protect everyone.
 > *(Trailblazer)* Things will get better when the Titan attacks.
 > **Castorice:** That's right, let's do our best to buy time for Cerces.
 > *(Trailblazer)* I—Is there still time for us to escape now...
 > **Castorice:** He has already discovered us... Let's do our best to buy time for Cerces.
+
 **Trianne:** T—Trianne will also protect everyone! Trianne is brave!
+
 **Castorice:** (Trailblazer)...
+
 **Castorice:** Only this time... may Death protect us!
+
 *(Cutscene begins)*
 **Castorice:** Be careful.
 **???: ** One slash.
 **???: ** Two slashes.
 **???: ** Three slashes... are enough.
 *(Cutscene ends)*
+
+---
+
+### Part 99 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 3: Grove, Wherefore Are the Wise Silent > The Black-Robed Swordmaster > Defeat the Black-Robed Swordmaster
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__defeat-the-black-robed-swordmaster`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
+
 *(Begin battle against ??? — the Flame Reaver of the Deepest Dark)*
 **Castorice:** Who exactly are you...?
+
 *(When ??? begins their turn for the 2nd time)*
 **Castorice:** So powerful... Cerces was right...
+
 **Mem:** Where is she? Is the Coreflame still not pieced together yet!?
+
 *(When ??? begins their turn for the 3rd time)*
 **???: ** Offer your souls... to the fire.
+
 **Castorice:** Not good...!
+
 **???: ** Be reduced to... ashes!
+
 *(Cutscene begins)*
 **Castorice:** In that case...
 **Anaxa?: ** Can't be killed in a single blow...
 **Anaxa?: ** You are indeed no ordinary human.
 *(Cutscene ends)*
+
 *(Battle continues against ???)*
 **Anaxa?: ** How annoying. Children of humanity, don't waver now. Let's just destroy them one by one.
+
 **Anaxa?: ** Since the ambush failed, it'll be difficult to find another opportunity... What a pity.
+
 **Castorice:** Professor Anaxa? No... It's Cerces?
+
 **Mem:** You're finally here! I missed you so much!
+
 *(When any teammate drops below 50% HP)*
 **Anaxa?: ** Heh, I'm about to be overwhelmed. Fighting is so much more tiring than thinking.
+
 **Castorice:** Everyone, watch each other's back!
+
 *(When ??? is reduced to 10% HP)*
 *(Cutscene begins)*
 **Castorice:** In that case...
 **Anaxa?: ** Can't be killed in a single blow...
 **Anaxa?: ** You are indeed no ordinary human.
 *(Cutscene ends)*
+
 **Anaxa?: ** That was tough... I'm truly exhausted.
+
 *(When ??? is reduced to 1% HP)*
 **Trianne:** Wait, no... Look out, everyone!
+
 *(Cutscene begins)*
 **Castorice:** This is bad...
 **Trianne:** Century gate...
-**Trianne:** Open!
-*(Cutscene ends)*
 
 ---
 
-### Part 137 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 100 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 4: Lamentations, Bring Not Empty Tears > Return to Okhema
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__return-to-okhema`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 *(Shortly after, in Okhema)*
+
 **Castorice:** Phew... That was a close call. Thank goodness that we returned to Okhema unharmed.
+
 > *(Trailblazer)* Okhema, your baseballer is back!
 > *(Trailblazer)* I never want to leave the holy city again.
+
 **Trianne:** Ugh... Little Cas, my head... It still hurts. Sorry... I know you... told me... not to open the gate...
+
 **Castorice:** Please don't blame yourself, Lady Trianne. If it weren't for you, we would've already met our end at the Grove.
+
 **Trianne:** I feel awful... I need to go back... to get some rest...
 
 ---
 
-### Part 138 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Return to Okhema
-
-
 **Castorice:** Lady Trianne, you haven't been well since you woke up... Are you sure you can make it back on your own?
+
 **Anaxa:** All this noise and commotion... Okhema hasn't changed a bit, has it?
+
 **Castorice:** Are you... Professor Anaxa?
+
 **Anaxa:** There's no need for doubt. The Titan no longer speaks. It is I, Anaxagoras of the Nousporists.
+
 **Castorice:** ...Indeed. You are the only one who would refer to yourself like that.
+
 **Anaxa:** ...
+
 **Castorice:** ...Professor, let me be frank: The mission Lady Aglaea entrusted us is to search for survivors, uncover the truth about the disaster at the Grove, and... retrieve the Coreflame of Cerces.
+
 **Anaxa:** That does not surprise me. And now, I'm a survivor who witnessed the entirety of the disaster, as well as the defenseless bearer of a Coreflame.
+
 **Anaxa:** Are you going to bring me to Aglaea to fulfill your duty?
+
 **Castorice:** That is indeed my duty, but I prefer not to present you to her as a captive or spoil of battle.
+
 **Anaxa:** Fine. There's no need to make your life difficult. I'm not against meeting that woman.
 
----
-
-### Part 139 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Return to Okhema
-
+**Anaxa:** But I have some things to take care of first. The families of some of my fellow Grove scholars live in the holy city. Before we meet Aglaea... I want to visit them.
 
 > *(Trailblazer)* Why do you have to do it before meeting Aglaea?
+
 **Castorice:** Because Lady Aglaea... will probably be against it.
+
 **Anaxa:** Heh... Let me guess. That woman will not only prevent me from visiting the families of the deceased, but will also suppress any information about the Grove. She's always been that cold-hearted.
+
 **Anaxa:** My fellows at the Grove gave their lives defending the Coreflame and fighting the black tide alongside me. Their families... deserve to know the truth.
+
 **Castorice:** You intend to do it without her knowledge?
+
 **Anaxa:** Do you really think that woman would treat me well even if I behaved and proved my loyalty? I wouldn't mind seeing a bit more anger on her face.
+
 **Anaxa:** Are you going to stop me, Castorice?
+
 **Castorice:** ...I will accompany you, but please understand that Lady Aglaea has her own considerations.
+
 **Anaxa:** ...Heh, you truly have the makings of a fine scholar, putting yourself in other people's shoes like that.
 
 ---
 
-### Part 140 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 101 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 4: Lamentations, Bring Not Empty Tears > Visiting the Families
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__visiting-the-families`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 **Castorice:** So, after all these years, you and Lady Aglaea are still...
+
 **Anaxa:** Neither of us is narrow-minded. You should know the root cause of our conflict.
 
----
+*(Speak to the Woman With Gentle Expression)*
+**Woman With Gentle Expression:** Hello... and you are...?
 
-### Part 141 — `databank/missions/chapter-02-light-slips.md`
+**Anaxa:** Hello. If I'm not mistaken, you are Callinicus' wife, right?
 
-**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Visiting the Families
+**Woman With Gentle Expression:** Yes. Oh, are you a messenger? No wonder I haven't heard any news for so long. There's been a change in personnel, hasn't there?
 
+**Anaxa:** Ma'am, Callinicus passed away a few days ago defending the Grove against the black tide.
+
+**Woman With Gentle Expression:** ...
 
 **Woman With Gentle Expression:** So... did he manage to defend the Grove?
+
 **Castorice:** ...Huh?
+
 > *(Trailblazer)* This is the first thing you ask after hearing of his passing...?
 
----
-
-### Part 142 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Visiting the Families
-
+**Anaxa:** Yes. He managed to protect Cerces' Coreflame at the cost of his life.
 
 **Woman With Gentle Expression:** I see. I'll select some of his possessions and pick a nice resting place for him.
+
 **Castorice:** ...Please let us know if you need any help, ma'am.
+
 **Woman With Gentle Expression:** I come from Kremnos. Death... and sacrifice... are things I have learned to face with composure.
 
----
+**Woman With Gentle Expression:** You know, Callinicus... Even though he was a scholar, he'd always ask me to teach him how to fight whenever he came back. Isn't it funny that a Chrysos Heir like him wants to learn from an ordinary person like me?
 
-### Part 143 — `databank/missions/chapter-02-light-slips.md`
+**Woman With Gentle Expression:** I've been prepared for this for a long time... In times like these, any ordinary goodbye might just turn out to be a final farewell.
 
-**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Visiting the Families
+**Anaxa:** I'm really sorry.
 
+**Woman With Gentle Expression:** There's nothing to be sorry for. I was once a warrior... and I'll find my way back to the battlefield someday.
+
+**Woman With Gentle Expression:** With the coming coronation of the new king of Kremnos, I'll take up my lance against the creatures of the black tide and seek vengeance for my husband.
+
+*(Speak to the Woman With Gentle Expression again, optional)*
+**Woman With Gentle Expression:** With the coming coronation of the new king of Kremnos, I'll take up my lance against the creatures of the black tide and seek vengeance for my husband.
+
+*(Speak to the Old Man With Slender Frame)*
+**Old Man With Slender Frame:** Hello, young ones. Is there anything I can help you with?
+
+**Anaxa:** Are you the father of Cynane and Artakama?
+
+**Old Fabio:** Ah, yes. Did my daughters cause trouble at school again...?
+
+**Old Fabio:** Alas, forgive this old brain of mine. Both of my daughters graduated long ago, and they are now scholars at the Grove. As I get older, memories from years past tend to blend together.
+
+**Anaxa:** ...
+
+**Old Fabio:** What's the matter, young one? Why so quiet? Did my daughters really get into some trouble?
 
 **Old Fabio:** If they refuse to apologize, just let me know. Their old dad can still talk some sense into them...
+
 **Castorice:** ...What should we do? I really can't tell him...
+
 > *(Trailblazer)* Don't ask me. I'm getting all teary-eyed as well...
 
----
+**Anaxa:** ...Mr. Fabio, the black tide... took Cynane and Artakama.
 
-### Part 144 — `databank/missions/chapter-02-light-slips.md`
+**Old Fabio:** ...What?
 
-**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Visiting the Families
+**Anaxa:** ...They fought until their last breath against the black tide to defend the Grove.
 
+**Old Fabio:** ...
+
+**Anaxa:** As the Chrysos Heir stationed at the Grove, I failed to protect them. Mr. Fabio, if you're upset...
+
+**Old Fabio:** ...Don't put it that way. Even if my Artakama wasn't one of the Chrysos Heirs mentioned in the prophecy, she was still a heroine, wasn't she?
+
+*(Speak to the Old Man With Slender Frame again, optional)*
+**Old Fabio:** ...
 
 *(Speak to the Young Man)*
 **Young Man:** What's wrong? I'm busy. There's a lot going on in the city, and I've got my hands full...
+
 **Castorice:** Mister, we're sorry to bother you, but...
+
 **Young Man:** ...Wait, Lady Castorice? Did Lady Aglaea send you because of some mistake I made at work?
+
+**Anaxa:** Keep your cool, Titus. I'm Anaxagoras from the Grove of Epiphany and a colleague of your father, Old Titus.
+
+**Anaxa:** A few days ago... your father passed away.
+
+**Titus:** Wait, what? My old man died?
+
+**Titus:** ...
+
+**Titus:** Heh... That's no shocker. At his age, he was due for the River of Souls any time.
+
+> *(Trailblazer)* How can you say that!? He's your...
+
+**Titus:** Heh... Just up and left me behind, that old man...
+
+**Titus:** I've been telling him for ages to stay in the holy city and enjoy his retirement. But no, he just had to go off to that Grove and mess around with those scholars.
+
+**Titus:** Still wouldn't budge after all those arguments... That stubborn old thing!
+
+**Titus:** I already got him a retirement home and was waiting for him to come around... All my effort is wasted now, and he didn't even give me a chance to say goodbye...
+
+**Titus:** ...That bullheaded old man! Stubborn as a mule!
+
+*(Speak to the Young Man again, optional)*
+**Titus:** ...That bullheaded old man! Stubborn as a mule!
+
+*(After speaking to all three families)*
+**Anaxa:** That is it. That's all the colleagues' families that I remember.
+
+> *(Trailblazer)* Those who sacrificed their lives and their families are truly admirable.
+
+**Castorice:** Good work, (Trailblazer) and... Professor Anaxa.
+
+**Anaxa:** Let's go. Take me to see Aglaea.
+
+**Castorice:** Alright... I'll lead the way.
 
 ---
 
-### Part 145 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 102 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 4: Lamentations, Bring Not Empty Tears > Report Back to Aglaea
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__report-back-to-aglaea`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
-
-> *(Trailblazer)* Those who sacrificed their lives and their families are truly admirable.
-**Castorice:** Good work, (Trailblazer) and... Professor Anaxa.
-**Anaxa:** Let's go. Take me to see Aglaea.
-**Castorice:** Alright... I'll lead the way.
 *(Approach the marked location)*
 **Guard:** Miss Castorice, Lord/Lady (Trailblazer), you're back.
+
 **Castorice:** Hello. We have an important matter to discuss with Lady Aglaea. May we trouble you to inform her of our presence?
+
+**Guard:** My apologies, Miss Castorice... Lady Aglaea has just informed me that she has no time to receive anyone at the moment.
+
+**Anaxa:** Hmph, that's just great. She refuses to even see me.
+
+**Anaxa:** Answer me this, friend. Did Aglaea order you to take me directly to prison?
+
+**Guard:** Who... are you?
+
+**Castorice:** Please don't jest... It's possible that she really is busy. Let's wait here a moment, and I'll try to contact her using the slate.
+
+*(Receive a message from Aglaea, Castorice, and (Trailblazer)'s Group Chat)*
+
+*(Speak to the guard again, optional)*
 **Guard:** My apologies, Miss Castorice... Lady Aglaea has just informed me that she has no time to receive anyone at the moment.
 
 ---
 
-### Part 146 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Report Back to Aglaea
-
-
-**Guard:** Who... are you?
-**Castorice:** Please don't jest... It's possible that she really is busy. Let's wait here a moment, and I'll try to contact her using the slate.
-*(Receive a message from Aglaea, Castorice, and (Trailblazer)'s Group Chat)*
-
----
-
-### Part 147 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 103 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 4: Lamentations, Bring Not Empty Tears > Speak with Castorice and Anaxa
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__speak-with-castorice-and-anaxa`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
+**Anaxa:** It's fortunate we don't have to confront that woman while I'm hauling around this sick body. Castorice, and this friend I haven't gotten the chance to know — I'll take my leave for today.
 
 **Anaxa:** That Titan made a myriad of adjustments on their own... My head still aches from that. I don't want to stay a second longer in this noisy city if I can.
+
 **Castorice:** Please be careful. Okhema isn't the Grove. This place...
+
 **Anaxa:** ...Is covered by her golden threads, I know. That woman is extremely confident I won't escape her grasp.
+
+**Anaxa:** Don't worry. As I said before, I'll mind my behavior.
 
 ---
 
-### Part 148 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 4: Lamentations, Bring Not Empty Tears > Speak with Castorice and Anaxa
-
-
 **Castorice:** (Trailblazer), so many unexpected things happened on our journey to the Grove... We truly had no intention of putting you in danger, let alone face the black tide head on...
+
 > *(Trailblazer)* Trouble is my old friend by now.
 > *(Trailblazer)* We made it back alive. So much for the black tide.
 > **Castorice:** Please do not underestimate the threat the black tide poses.
+
 **Castorice:** The black tide is not just an enemy of Okhema, but all of Amphoreus. Even back when the forces of Strife coveted the holy city, their warriors still undeniably halted the black tide outside Castrum Kremnos.
+
 **Castorice:** Nikador's Coreflame now sits vacant and the black tide has returned... The Grove is an academic city with the best understanding of the black tide. It shouldn't have fallen so easily, and yet it was taken overnight, leaving the city in blood and tears, haunted by the spirits of departed heroes...
+
 **Castorice:** The trial of Strife is imminent. I pray Mydei will be able to steel his resolve soon...
+
 > *(Trailblazer)* And that black-robed swordmaster...
 > *(Trailblazer)* The dreadful enemies of the Grove are also creations of the black tide?
+
 **Castorice:** Lady Tribbie once traveled across thousands of cities in Amphoreus to repel the black tide, but even they have no recollection of this powerful enemy in all their journeys. Perhaps the fall of Strife has triggered even more terrifying events in unseen places...
+
 **Castorice:** As for me... I detected a strong stench of death from that entity, but it wasn't because he had a connection with Thanatos... I'm afraid it's purely because he has sent countless others to their deaths.
+
 **Castorice:** Speaking of Thanatos... (Trailblazer), there is something else I wish to verify with you.
+
 **Castorice:** You must have an idea of the... curse I bear by now. I was born as the Shadow of Death, a poison shunned by all living beings...
+
 **Castorice:** Yet when you caught me in the Grove...
+
 **Castorice:** ...I'm curious why you weren't affected by my power, (Trailblazer)?
+
 > *(Trailblazer)* I had totally forgotten about this until you brought it up.
 > *(Trailblazer)* Maybe it just hasn't taken effect yet?
 > **Castorice:** That might be the case if we only brushed the very tips of our fingers, but back then...
 > *(Trailblazer)* I'm used to it. I'm just special like that.
 > *(Trailblazer)* Now that you mention it, I think the same thing happened in the Vortex...
+
 **Castorice:** My apologies for the abrupt question. For all my life, I've always wondered: What is my connection to death? And why am I inextricably linked to Thanatos?
+
 **Castorice:** (Trailblazer), you must be tired after being on the move these past few days. Please set aside the tragedy at the Grove for now and rest for the day.
 
 ---
 
-### Part 149 — `databank/missions/chapter-02-light-slips.md`
-
-**Context:** Mission 6: Passages, Knocking Echoes in Dreams > Investigate the Dolium Trianne Found
-
+### Part 104 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 6: Passages, Knocking Echoes in Dreams > Continue Following Trianne and Look for "Saffron"
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__continue-following-trianne-and-look-for-saffron`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 **Tribbie:** Come on... This isn't the right time to be playing games.
+
 *(Approach Trianne at the bottom of the bridge)*
 **Castorice:** "Separation and death are two sides of the same coin..."
+
+---
+
+### Part 105 — `databank/missions/chapter-02-light-slips.md`
+**Context:** Mission 6: Passages, Knocking Echoes in Dreams > Investigate the Dolium Trianne Found
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__investigate-the-dolium-trianne-found`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
+
 *(Approach the vision of Castorice)*
 **Castorice:** "Reconciliation doesn't come easily for a mortal."
+
 **Tribbie:** Are these visions also fragments of the past?
 
 ---
 
-### Part 150 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 106 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 9: Passage, Reveal the Past Once More > Trianne's Funeral
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__trianne-s-funeral`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 **Tribbie:** We smell sunlight in the wind of Okhema... This was your favorite spot, wasn't it, Trianne?
+
 **Castorice:** Lady Trianne... Why did it have to end up like this?
+
 **Tribbie:** Take it easy, Cas. Departure is a part of life. It's just that ours isn't as tumultuous as it is for ordinary folks.
 
 ---
 
-### Part 151 — `databank/missions/chapter-02-light-slips.md`
-
+### Part 107 — `databank/missions/chapter-02-light-slips.md`
 **Context:** Mission 9: Passage, Reveal the Past Once More > The Promise of Tomorrow
-
+**Kind:** collective-pointer
+**Id:** `chapter-02-light-slips__the-promise-of-tomorrow`
+**Collective:** `databank/memories/collective/chapter-02-light-slips.md`
+**Witness:** spoke
 
 **Castorice:** Lady Tribbie, do you still think... That everything will be fine tomorrow?
+
 **Tribbie:** Yeah, that's what Trianne would say as well.
+
 **Castorice:** With all due respect... Lady Tribbie, you know perfectly well... that "see you tomorrow" is nothing but a white lie. I hope your toughness is not a mask hiding a lonely heart.
+
 **Tribbie:** Cas, that's not a lie. **"See you tomorrow"** is the greatest prophecy in the world.
+
 **Castorice:** Prophecy...?
+
 **Tribbie:** Listen. In every corner of this land, every heartbeat carries a prayer for that prophecy to come true. It may be that only a few heroes will bring tomorrow to the new world, but the prophecy of leading everyone to tomorrow belongs to all in Amphoreus.
 
 ---
 
-### Part 152 — `databank/missions/chapter-03-through-petals.md`
+### Part 108 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Speak to Castorice and Aglaea
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__speak-to-castorice-and-aglaea`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Speak to Castorice and Aglaea
-
+*(Some time ago.)*
 
 **Aglaea:** Ah, it's you, Cas. I finished the anthology of poems you lent me — here it is.
+
 **Castorice:** I thought you'd be too preoccupied to find time for reading.
+
 **Aglaea:** Precisely because of these obligations, I felt compelled to read it swiftly.
+
 **Castorice:** Wouldn't all these preoccupations slow your pace?
+
 **Aglaea:** On the contrary. Knowing that time is limited can push one to overcome their limitations. The weight of these responsibilities seems to have enhanced my reading efficiency.
+
 **Castorice:** I understand completely. During my time at the Grove, the closer exams drew, the more efficient I became at tackling everyday mundane tasks — anything but my actual studies.
+
 **Aglaea:** Precisely. As I remember, you and Phainon were both disciples of the Nousporists. I assume that Anaxa's exams were as unreasonable as the man himself, correct?
+
 **Castorice:** The courses Professor Anaxa taught were... Introduction to Alchemy and History of Mythology. To be perfectly honest, those two courses were the students' greatest nightmares.
+
 **Aglaea:** The history of mythology, taught by the blasphemous "Great Performer" himself... I can imagine their fear.
+
 **Castorice:** Now that I think about it, students would often rush to the podium during class to challenge him on those blasphemous ideas. May I ask, Lady Aglaea, has your relationship with Professor Anaxa always been like this?
+
 **Aglaea:** He openly dismisses people's faith, and questions the very justification of the Flame-Chase Journey. Our positions have been destined to be at odds. While you were studying there, I assume you must have heard of his nickname.
+
 **Castorice:** ..."a dromas draped in finery"?
+
 **Aglaea:** As I see it, this nickname is more of an insult to the dromas.
+
 **Castorice:** Hehe...
+
 **Aglaea:** Despite his insufferable arrogance, I do hold a certain respect for his nature as a scholar. To remain true to his principles, he is unafraid to stand opposed to the world — and that requires considerable resolve. Anaxagoras' life is almost like a satire: as a Chrysos Heir, he refuses to heed the prophecy, while he disrespects the gods...
+
 **Castorice:** ...The gods have chosen him.
+
 **Aglaea:** He was indeed chosen by Cerces. Is something weighing on you, Cas? The golden thread is quivering. I sense there's more to this exchange than idle chatter.
+
 **Castorice:** With all due respect, I'd like to know what you plan to do with him.
+
 **Aglaea:** In light of his assistance in the battle against the Flame Reaver, I am willing to grant him some time to find a way to remove the Coreflame. However, if Anaxa decides to make any move that places us in danger, I will not hesitate to take extreme measures.
+
 **Castorice:** Just as I feared...
+
 **Aglaea:** The Flame-Chase Journey is the destined path for the Chrysos Heirs, yet he now seems more like an empty shell. Given his strong sense of self-respect, I trust that Anaxagoras will make the right decision.
+
 **Castorice:** Still, I can't help but hope for another possibility... Perhaps Anaxa will also overcome his limitations, now that he knows time is limited.
+
 **Aglaea:** I understand your stance. Let's continue this discussion another time. But now, let's greet our guest.
 
 ---
 
-### Part 153 — `databank/missions/chapter-03-through-petals.md`
+**Aglaea:** You're here, (Trailblazer). Does this mean you're ready to take on Oronyx's trial?
 
-**Context:** Complete Dialogue > Speak to Castorice and Aglaea
+> *(Trailblazer)* WE are ready, Mem and me.
+> **Aglaea:** Mmm, it seems that this sacred beast is just as indispensable, given their intricate ties to the Titan.
+> *(Trailblazer)* I'm still on the fence...
+> **Aglaea:** I understand. It was the sacred beast's idea, after all. However, it warrants careful consideration.
 
+**Mem:** Hehe, thanks to you, I've evolved from a little dog into a sacred beast!
+
+**Aglaea:** Surrendering the Coreflame is a Chrysos Heir's duty. Your selfless assistance is deeply appreciated. However, I urge you to carefully consider the risks of accepting the trial: Becoming a demigod means forsaking your humanity. You will inherit Oronyx's divinity and bear the Time of Amphoreus, all on your own. From that point onward, your fate will be forever intertwined with ours, never to be separated again — until the end of Genesis.
+
+> *(Trailblazer)* Are you trying to talk me out of it?
+> **Aglaea:** On the contrary, you are the only one who qualifies to attain divinity. Yet, for that very reason, I do not wish to pressure you.
+>> *Is there a plan B?*
+> **Aglaea:** It's exceedingly rare to find a capable Chrysos Heir. If this path proves unattainable, I am willing to lower my expectations. There are still many priests of Janusopolis and their descendants in the city. If I'm left with no other option, I'll try to find someone worthy among them.
+>> *Seems like a shot in the dark.*
+> **Mem:** Exactly! We can't have the civilians bear the risks, can we?
+>> *If I do not descend into hell, who will?*
+> **Mem:** Don't worry! With me by your side, even if things go south, you'll be heading straight to heaven!
+>> *Alright, that's it. I am out—*
+> **Mem:** Don't give up now, (Trailblazer)! We've come so far, and everyone is counting on you to be the hero! As for the trial, you have nothing to fear... The Time Titan may be willful at times, but they never caused us any harm. Myth has it that Oronyx opposes mortals, but to me, they just seem a bit timid... like a child.
+
+**Aglaea:** It looks like you know that Titan rather well.
+
+**Mem:** Oddly enough, I don't remember ever meeting them, but the moment I saw (Trailblazer), Oronyx's memories were already in my head.
 
 **Aglaea:** ...Memories that exist outside of your own experiences?
+
 **Castorice:** I can't explain why, but I can vouch for Mem's words. When I was in the Abyss, I heard the Titan's groans — full of pain and grievances, yet without any ill will.
+
 > *(Trailblazer)* I trust you all to make the right call.
 > *(Trailblazer)* Do I even have any say in this?
 > **Mem:** Please, trust me on this. At the very least... can you speak with them in person? I get the feeling that if we don't meet Oronyx, we'll be missing out on something huge!
 
 ---
 
-### Part 154 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Speak to Castorice
-
+### Part 109 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Speak to Castorice
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__speak-to-castorice`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 **(Trailblazer):** (Before leaving, I should go and say hi to Castorice.)
+
 **Castorice:** Mr./Miss (Trailblazer)... May everything go well for you and Mem.
+
 > *(Trailblazer)* You need Aglaea for something too?
+
 **Castorice:** I... It's nothing. I only came to discuss some matters with Lady Aglaea. Previously, I lent her an anthology of poems that Lady Trianne had gifted to me. Tracing back, this anthology was something left for Lady Trianne by a bard before their passing. Although personal properties should be cleared out once their owner has passed on, Lady Trianne gave this book to me since she knew how much I like to read.
+
 > *(Trailblazer)* Can you tell me more about the book? / Is this book... very special?
+
 **Castorice:** No, it's just an ordinary book. It's definitely not some kind of unique copy. It just contains an allegory: In a faraway land, in a city known as Styxia, a dragon corrupted by the black tide descended one day, swooping upon the city like Death itself. It swallowed the princess of the city whole before it was suppressed. After taking down the evil dragon, the warriors discovered that the princess' life had already met its end. Overwhelmed by grief, the queen hired an alchemist to resurrect the princess using the dragon's flesh and blood. However, having lost memories of her previous life, the resurrected princess turned into an evil dragon herself and wreaked havoc on the city... As a result, the prosperous Styxia met its demise.
+
 > *(Trailblazer)* What a dark story...
 > **Mem:** It mustn't have been easy for Cas to narrate this story so calmly...
 > *(Trailblazer)* What a touching story...
 > **Mem:** Huh? How... How was it touching...?
 > **Castorice:** Hm, I actually think so, too.
 > **Mem:** What!? That was the correct option to increase friendship level?
+
 **Castorice:** The author of this book is Archepia, a wandering bard who traveled to many cities. Among the things she left behind are poems, dictionaries, and many tragicomedy scripts. She even clearly underlined and took notes in books that covered myths with her elegant handwriting. While flipping through these books, I felt like I was afforded a glimpse into the life of Archepia... It felt just like I was traveling with someone that I'd never met before. It was as if she had yet to pass on and was still alive.
+
 > *(Trailblazer)* No one goes through life without leaving their mark behind.
 > *(Trailblazer)* She probably did not think much of it while she was writing.
+
 **Castorice:** That's right... Writing, drawing, and taking photographs... It seems like human nature to try and leave records of things. Speaking of taking photographs, when I was helping you to take the photo previously, I did not look through the photos in your photostone out of courtesy. But I'm also very curious about the story of the Rosy Celestial Maiden. Despite having visited many cities in Amphoreus, I still understand nothing about the world beyond the sky. If there is an opportunity... Forget it. Let's talk about this in the future... For now, I only hope that you'll be able to complete the trial safely and obtain Oronyx's blessing.
 
 ---
 
-### Part 155 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Speak with Trinnon
+### Part 110 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Speak with Trinnon > Talk to Castorice, optional
+**Kind:** personal
+**Id:** `chapter-03-through-petals__speak-with-trinnon-3`
 
-
-*(Talk to Aglaea, optional)*
-**Aglaea:** I can still vividly recall when you entered the Vortex of Genesis for the first time. At that time, I could never have imagined that a guest from beyond the sky would shoulder the fate of Amphoreus. Don't feel burdened. Just like during the trial of Strife, Trinnon and Phainon will be waiting for you outside. If something unforeseen were to occur, they will intervene in the trial and rescue you. May Kephale bless you.
 *(Talk to Castorice, optional)*
 **Castorice:** Mr./Miss (Trailblazer)... I'm sorry but I'm not sure what I should say to help calm your nerves. ...Right, perhaps something like: As long as you can successfully complete this trial, the rest of the Flame-Chase Journey will be smooth-sailing? No, that sounds a little strange... Don't worry, it won't take up too much of your time? Um... Don't worry, you'll definitely make it back alive? ...Sorry, it seems like I've made the mood even heavier. In any case... May everything go your way.
 
 ---
 
-### Part 156 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Consult Castorice — "I Cannot Feel Anything"
+### Part 111 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Consult Castorice — "I Cannot Feel Anything"
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__consult-castorice-i-cannot-feel-anything`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
+**Mem:** Oh right, there's something that I have to tell you. The Chrysos Heirs already know everything that has happened to you... I was too worried, so I told them everything... Ugh, please don't hate me, okay?
 
 *(Approach the marked location)*
+
 **Castorice:** Mr./Miss (Trailblazer), I'm right here.
+
 *(Screen fades to black. You hear soft steps coming closer, one step at a time...)*
+
 **Castorice:** Please stay there and slowly turn around...
+
 *(For some reason, you feel you have seen this scene before. The power of Death distorts the screen. You want to turn your head, but you glimpse a dash of purple brushing past your face. Then... A chill seeps through your skin, spreading into your veins. Thump... thump... your heartbeat begins to slow.)*
+
 > *(Trailblazer)* (At this moment, I just want to close my eyes...)
 > *(Trailblazer)* (Remembering the near-death experience... gotta stay on guard...)
 > *(Trailblazer)* (Spin around immediately, and give Castorice a scare...)
+
 **Castorice:** ...Please pardon me.
 
 ---
 
-### Part 157 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Consult Castorice — "I Cannot Feel Anything"
-
-
 *(A subtle fragrance of an unnamed flower fills your senses, its sweetness making you forget the need to breathe. You realize you are still alive — no, to be more precise... your death was not thorough. The coldness of the initial touch disperses as quickly as it came, and replacing it... is the touch of fingertips, and a tremble born of trepidation that originated from a certain lanky arm. Her quivering finger gently brushed against your cheek, causing a faint tickle.)*
+
 **Castorice:** ...
 **Castorice:** Just as I expected... I cannot feel anything...
+
 > *(Trailblazer)* Castorice, you're shaking.
 > *(Trailblazer)* Am... I really dead?
 > *(Trailblazer)* You're invading my personal space.
+
 **Castorice:** I'm sorry, I just wanted to verify once again... Back at the Grove, I was puzzled as to why you were not affected by my curse. I thought that it might have been the special ability of a traveler from beyond the sky. Never did I expect that this would be the true reason... I'm sorry. I should have noticed that something was amiss earlier...
 
 ---
 
-### Part 158 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Consult Castorice — "I Cannot Feel Anything"
-
-
 **Castorice:** Mr./Miss (Trailblazer), if my abrupt behavior just now offended you, I hope that you can forgive me. I'm just thinking... If your soul has really left your body, as a mortician, I might be able to trace where it has gone to.
+
 **Mem:** Cas, did you find anything?
+
 **Castorice:** My apologies, not as of yet... Perhaps I have overestimated my capabilities. But... Mr./Miss (Trailblazer), would you be willing to let me try again? This time, I'll increase the area of contact slightly. Perhaps the result might be different this time...
+
 > *(Trailblazer)* (Agree) There's no harm in trying again.
+
 **Castorice:** I have never touched the living in this way before. If my actions are in any way disrespectful, I hope that you can forgive me...
 *(Castorice once again places her palm on your face. Her shivers calm somewhat this time.)*
+
 **Castorice:** ...
 **Castorice:** ...
+
 > *(Trailblazer)* Did you discover something? / *You scared me.*
+
 **Castorice:** I... seem to have caught a glimpse of something. Your soul is currently roaming someplace and cannot find a way to escape... But perhaps... it might not be a bad thing. If your soul is still wandering around, it means that we still have time... We have a chance to find it before the fingers of Thanatos sweep everything away. Clues... Just a few more. I need more guidance... ...Huh. The connection has been severed. With my strength... I'm not able to trace it.
+
 > *(Trailblazer)* (Refuse) I think I'll pass.
 > **Castorice:** ...My apologies, I will stop making such unreasonable requests.
 > **Mem:** Ahh, don't mind (him/her)... (Trailblazer) is just feeling a little nervous and thinks that... Right, (he/she) thinks that things are moving a little too quickly!
 > **Castorice:** It was me, I was a little too hasty.
+
 **Castorice:** Don't worry, Mr./Miss (Trailblazer). Although we currently have no leads, I will do my best to search for the whereabouts of Thanatos, bring back their Coreflame, and personally return to you... the life that you have lost too soon. I... know that I'm lacking in confidence, but I hope that you can keep this promise of mine in mind. Before I manage to deliver on this promise... please do your best to hang on. Amphoreus... needs you.
+
 > *(Trailblazer)* I'll do my best. / *So, what now?* / *Live on bravely... I understand.*
+
 **Castorice:** Lady Aglaea and Lord Phainon are currently discussing some matters in the baths. They're worried about you, too. If possible, please go there and let them know that you're well. Although I don't actually know whether your current situation can be described as "well"... Also, please accept this Styxian fable... Reading can help one to focus and relax... I hope that reading this can help tide you through this difficult period.
 
 ---
 
-### Part 159 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 3: Papyrus, Read the Blasphemer's Will > Have an Audience with Kephale's Divine Vessel, and Prepare for Transmutation
+### Part 112 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 3: Papyrus, Read the Blasphemer's Will > Have an Audience with Kephale's Divine Vessel, and Prepare for Transmutation
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__have-an-audience-with-kephale-s-divine-vessel-and-prepare-for-transmutat`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-
-**Anaxa:** They call me a blasphemer, Cerces, but that doesn't mean I deny the existence of gods. It's just...
-**Anaxa:** ...As I see it, Titans are simply a force that mankind has yet to find a way to tame.
-**Cerces:** Oh? If power that rivals the Titans' is what you crave, why not conform to the prophecy and brave the trial?
-**Anaxa:** Hah, why stop at harnessing the power of the Titans when I can do so much more?
-**Anaxa:** The source of life is what I wish to grasp... To understand what makes up the soul, and to learn **what we really are**.
-**Anaxa:** Thanks to you, I've had the chance to personally verify — in more ways than one — that the soul indeed ceases to exist in "Death." But where there is death, there is life, and where there is an end, there must also be a beginning.
-**Anaxa:** How, then, is a soul born? That was the only unknown variable left in my calculations.
 **Cerces:** And by the sound of it, you have already formed a conjecture.
 **Anaxa:** No, I have already drawn a conclusion. In my journey unto death just now, I finally saw the answer with my own eyes.
 **???: ** Professor Anaxa...
@@ -3646,30 +4784,16 @@
 **Cerces:** Yes, because you've answered nothing. If I truly was once human as you claim, then where do the children of humanity come from?
 **Castorice:** Even on the off chance that you speak the truth, this brings us no closer to grasping Thanatos' whereabouts. How are we to find them?
 **Anaxa:** Heh, I knew you would say that.
-**Anaxa:** But it matters not. I know what I'm doing. Actually, why don't we have this supreme being standing before us tell us everything?
-**Cerces:** You can revive a Titan?
-**Anaxa:** Humans cannot return from the dead. Neither can gods.
-**Anaxa:** But all we need to do is look at this from a different perspective, and the problem will resolve itself. The solution is simple: Just like what you did to me...
-**Anaxa:** If I'm reborn as Kephale, I can rebuild the world and all within it as they once did. Simple, is it not?
 
 ---
 
-### Part 160 — `databank/missions/chapter-03-through-petals.md`
+### Part 113 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 4: Debate, Discourse Without Spears > Return to the Demigod Council and Inform Aglaea About Things
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__return-to-the-demigod-council-and-inform-aglaea-about-things`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Sub-Mission 4: Debate, Discourse Without Spears > Return to the Demigod Council and Inform Aglaea About Things
-
-
-> *(Trailblazer)* No hesitation! I stand by "Era Nova"!
-> **(Trailblazer):** "Era Nova" is a path of salvation the gods promised. We should not have doubts in the Flame-Chase Journey.
-> *(Trailblazer)* If it's possible to bring "Era Chrysea" back...
-> **(Trailblazer):** But how are we supposed to send Amphoreus back to "Era Chrysea"?
-> **Phainon:** We all know that "Era Chrysea" is a thing of the past, Lady Caenis. Please enlighten me — how does the Council of Elders plan to turn back time?
-**Caenis:** Let the Three Titans of Calamity be born and Era Chrysea is nevermore, but bring demise to those Titans and Era Chrysea will descend upon us again.
-**Caenis:** Know that the Council of Elders is never one to make empty promises. Look at who we have on our side...
-**Caenis:** Anaxagoras, one of the Grove's Seven Sages, and Castorice, Aidonia's "Goddess of Death"!
-**Caenis:** With the help of these two heroes, I can promise all of you that "Era Chrysea" will exist once more!
-**A Member of the Council of Elders:** Aren't they Chrysos Heirs? They're supporting the Council of Elders instead?
-**Another Member of the Council of Elders:** Hmph, it's clear from the start that these heroes do not get along well in their group. All the more proof that Aglaea isn't fit to speak on behalf of every Chrysos Heir. I am in favor of "Era Chrysea"!
 **A Member of the Council of Elders:** Era Chrysea, Era Chrysea!
 **Members of the Council of Elders:** Era Chrysea, Era Chrysea!
 **Castorice:** ...
@@ -3677,24 +4801,30 @@
 
 ---
 
-### Part 161 — `databank/missions/chapter-03-through-petals.md`
+### Part 114 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 4: Debate, Discourse Without Spears > Speak to Castorice and Learn About What Happened
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__speak-to-castorice-and-learn-about-what-happened`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** on-stage
 
-**Context:** Complete Dialogue > Sub-Mission 4: Debate, Discourse Without Spears > Speak to Castorice and Learn About What Happened
+*(As Castorice and Anaxagoras back the Council of Elders' plan to "return to Era Chrysea," "pausing the Flame-Chase Journey" has become a matter for the citizens' assembly. Let's hear why Castorice publicly "abandoned" the Flame-Chase Journey. There must be more to this story.)*
 
+---
 
-**(Trailblazer):** (Castorice... What's going on?)
+### Part 115 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 4: Debate, Discourse Without Spears > Speak to Castorice and Learn About What Happened > Talk to Castorice
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__speak-to-castorice-and-learn-about-what-happened-2`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
+
 *(Talk to Castorice)*
 **Aglaea:** Well, it seems that when I sent you to look for Anaxa, I unintentionally facilitated your partnership with him instead?
 **Castorice:** I...
 **Castorice:** My apologies, everyone. I know that you have many questions to ask me. I will answer them to the best of my knowledge.
 **Aglaea:** In that case, please tell us as much as you can.
-> *(Trailblazer)* What happened when you went to look for Anaxa?
-> **Castorice:** In actuality, he showed me...
-> **Castorice:** ...A past that was both long and heavy.
-> *(Trailblazer)* Hold on. I'm not ready.
-> **Castorice:** I will wait for you. This matter is of great consequence... and Miss (Trailblazer) should hear the entire story from beginning to end.
-*(Talk to Castorice again)*
-**Castorice:** Miss (Trailblazer), are you ready now?
+
 > *(Trailblazer)* What happened when you went to look for Anaxa?
 > **Castorice:** In actuality, he showed me...
 > **Castorice:** ...A past that was both long and heavy.
@@ -3703,10 +4833,23 @@
 
 ---
 
-### Part 162 — `databank/missions/chapter-03-through-petals.md`
+### Part 116 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 4: Debate, Discourse Without Spears > Speak to Castorice and Learn About What Happened > Talk to Castorice again
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__speak-to-castorice-and-learn-about-what-happened-3`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Sub-Mission 4: Debate, Discourse Without Spears > Speak to Castorice and Learn About What Happened
+*(Talk to Castorice again)*
+**Castorice:** Miss (Trailblazer), are you ready now?
 
+> *(Trailblazer)* What happened when you went to look for Anaxa?
+> **Castorice:** In actuality, he showed me...
+> **Castorice:** ...A past that was both long and heavy.
+> *(Trailblazer)* Hold on. I'm not ready.
+> **Castorice:** I will wait for you. This matter is of great consequence... and Miss (Trailblazer) should hear the entire story from beginning to end.
+
+---
 
 **Anaxa:** The reason I say this is as I've mentioned earlier: The answer was hidden in my journey unto death.
 **Castorice:** Anaxa... you were in the nether realm?
@@ -3714,16 +4857,13 @@
 
 ---
 
-### Part 163 — `databank/missions/chapter-03-through-petals.md`
+### Part 117 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 5: Broken Dream, Enlighten From the Beyond > Check the Memory Shown by Anaxa
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__check-the-memory-shown-by-anaxa`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Sub-Mission 5: Broken Dream, Enlighten From the Beyond > Check the Memory Shown by Anaxa
-
-
-**Calypso:** ...Until?
-**Polyxia:** Until...? Actually, I don't know what happened next either.
-**Calypso:** Oh my... It seems that you still like to whet people's appetites even after all this time, Polyxia.
-**Cerces:** So, according to your story, this is how I used to look? It's practically a mirror image.
-**Cerces:** And yet, what exactly is this?
 **Anaxa:** A miracle that I created with alchemy. As for what it is and how I was able to accomplish it, I'll keep the answers to myself for now.
 **Cerces:** My goodness, is this cliffhanger really necessary?
 **Castorice:** ...
@@ -3755,10 +4895,12 @@
 
 ---
 
-### Part 164 — `databank/missions/chapter-03-through-petals.md`
+*(Screen fades to black)*
+**Polyxia:** ...
+**Polyxia:** My time is finally here. However, perhaps because of my firm belief in the immeasurable value of life...
+**Polyxia:** I... am unable to complete the trial.
 
-**Context:** Complete Dialogue > Sub-Mission 5: Broken Dream, Enlighten From the Beyond > Check the Memory Shown by Anaxa
-
+---
 
 **Calypso:** **"You shall wither, and through that, the dead will sprout again from the remains, and be reborn with the dead flame"...**
 **Calypso:** It is a pity that fate is such a cruel mistress.
@@ -3783,14 +4925,10 @@
 
 ---
 
-### Part 165 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 5: Broken Dream, Enlighten From the Beyond > Check the Memory Shown by Anaxa
-
-
 *(Screen fades to black)*
 **Calypso:** ...
 **Calypso:** Looks like you have made up your mind.
+
 **Gnaeus:** Yes, this is the safest course of action.
 **Calypso:** Completely separating Courage, Honor, Tenacity, Sacrifice, and Reason...
 **Calypso:** Ugh, you really know how to make things difficult.
@@ -3815,23 +4953,22 @@
 
 ---
 
-### Part 166 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 5: Broken Dream, Enlighten From the Beyond > Check the Memory Shown by Anaxa
-
-
 *(Investigate the Courage statue, optional)*
 **Castorice:** "Nikador's Courage is a testament that they have never once retreated from a battle."
 **Anaxa:** I've heard that these words are still engraved in Castrum Kremnos even today. It didn't occur to me that they were actually part of an alchemical formula.
+
 *(Investigate the Honor statue, optional)*
 **Castorice:** Lord Gnaeus' Honor is sealed here...
 **Cerces:** Incredible... the Honor in this child's soul is so light.
+
 *(Investigate the Tenacity statue, optional)*
 **Cerces:** I believe that his Tenacity is sealed within this statue.
 **Castorice:** Before we fought Nikador, we also released it from the stone statue...
+
 *(Investigate the Sacrifice statue, optional)*
 **Anaxa:** Sealed within this statue is undoubtedly his Sacrifice.
 **Castorice:** "They use their own body as our city walls, keeping out and protecting us from the pervasive spread of madness. They are acutely aware that if the end times were to arrive, there would be nothing left in this world to conquer..."
+
 *(Investigate the Reason statue)*
 **Calypso:** Honor, Courage, Tenacity, Sacrifice...
 **Polyxia:** And finally... the only thing that remains is Reason.
@@ -3851,13 +4988,28 @@
 
 ---
 
-### Part 167 — `databank/missions/chapter-03-through-petals.md`
+**Gnaeus:** The first time I returned from the battlefield, I felt extremely hollow.
+**Gnaeus:** The calamity had devoured everybody on the battlefield but me. When I returned to the city alone, the citizens held a banquet for me that was far from pleasant. I felt as though I was still on the battlefield, and the person who had returned was nothing but an empty shell.
+**Gnaeus:** It was late into the night by the time the banquet ended. My head still reeling, I returned alone to the barracks. On the way back, I encountered someone.
+**Gnaeus:** It was a crazed scholar looking at the night sky and muttering to himself by the side of the road. Although I tripped over him and fell, I wasn't angry in the slightest. And maybe because I saw myself in him, I inexplicably asked him a question...
+**Gnaeus:** "Do you think that it'd be better if we just died on the roadside like a couple of stray dogs?"
+**Gnaeus:** To my surprise, he shrugged his shoulders and sighed:
+**Mad Scholar:** "To someone who is currently experiencing death, dying and living afford the same amount of bliss."
+**Mad Scholar:** "Now, please go away and don't block my starlight."
+**Calypso:** Are you trying to say that... there is no difference between living and dying, for they are both journeys that lead toward Death?
+**Gnaeus:** That's exactly what life is, and death is but a scale to measure how valuable the journey was. Journeys and epics are only glorious and magnificent because all things eventually fade to dust.
+**Gnaeus:** Therefore, young lady, don't detest your fate. Instead, willingly and respectfully embrace it.
+**Polyxia:** ...The embodiment of Strife telling me about the majesty of the world...?
+**Gnaeus:** Indeed. I believe that when the fated moment eventually arrives, you will be able to understand my words.
+**Gnaeus:** It's time for me to knock on death's door. I will set up a long table at the end of the road and humbly await your arrival...
+*(Screen fades to black)*
+**Gnaeus:** When that moment finally comes, let us drink and be merry then.
 
-**Context:** Complete Dialogue > Sub-Mission 5: Broken Dream, Enlighten From the Beyond > Check the Memory Shown by Anaxa
-
+---
 
 **Polyxia:** ...
 **Polyxia:** I knew this day would eventually come.
+
 **Polyxia:** ...
 **Calypso:** Are the both of you ready?
 **???: ** Mm-hmm. Polyxia...
@@ -3895,10 +5047,21 @@
 
 ---
 
-### Part 168 — `databank/missions/chapter-03-through-petals.md`
+**Calypso:** If I imparted my knowledge of the art of alchemy to you...
+**Calypso:** Would you use it to resurrect someone you loved?
+**Polyxia:** ...
+**Polyxia:** Death is inevitable. In the days to come, I am certain that someone whom I cherish deeply will leave me for good...
+**Polyxia:** If such a mighty power really existed, I think... I would use it without hesitation.
+**Polyxia:** Even now, my answer remains the same.
+**Polyxia:** This is why, sister, I promise you...
+**Polyxia:** In the prophesized new world, I shall plant the first bud on your behalf...
+**Polyxia:** Go now, return to the Ocean God's treasured pearl — our hometown.
+**Polyxia:** I shall open wide the entrance to the nether realm and grant you a second life. The living beings on this earth shall respond to my call and lead you to the sacred daylight.
+**Polyxia:** Remember, do not look back on the land of the dead and do not stop moving. In the new world promised by the prophecy, march toward your new life...
+*(Screen fades to black)*
+**Polyxia:** As for the price of our "equivalent exchange," let me be the one to pay it.
 
-**Context:** Complete Dialogue > Sub-Mission 5: Broken Dream, Enlighten From the Beyond > Check the Memory Shown by Anaxa
-
+---
 
 **Anaxa:** Everybody, we've come to the end. Unfortunately, I am not compatible with the supreme being, so I was unable to completely fuse their soul into my own body. However, being able to glean all this from them is exciting enough...
 **Anaxa:** I'm certain of this now: Before the Titans that we are well acquainted with were born, a group of heroes roamed the land. These heroes followed a prophecy and took possession of divine authorities one by one, until they eventually became the pantheon of the new world...
@@ -3928,13 +5091,17 @@
 
 ---
 
-### Part 169 — `databank/missions/chapter-03-through-petals.md`
+**Cerces:** Hey, child of humanity...
 
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Speak with Aglaea and Discuss Countermeasures
+---
 
+### Part 118 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Speak with Aglaea and Discuss Countermeasures
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__speak-with-aglaea-and-discuss-countermeasures`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-*(Castorice's explanation earned her the Chrysos Heirs' understanding. To find out where Thanatos went, she actively stood with the Council of Elders. This is an essential choice. Someone needs to handle the conference about "pausing the Flame-Chase Journey" and someone needs to find a trace of Thanatos.)*
-*(Currently...)*
 **Phainon:** That's... a lot to take in at once.
 **Aglaea:** Hmph...
 **Castorice:** ...
@@ -3952,6 +5119,7 @@
 **Castorice:** If fate dictates that my path must oppose yours, I will do all I can to resist it, and protect what I aspire to achieve.
 **Aglaea:** Heh...
 **Castorice:** Lord Mydei showed me that without taking the first step, all talk of what follows is moot.
+
 > *(Trailblazer)* Castorice... you've changed.
 > **Castorice:** I...
 > *(Trailblazer)* *unsure of what to say, but offers a smile*
@@ -3964,21 +5132,18 @@
 > **Aglaea:** Castorice, I too look forward to your journey. I wonder what kinds of new interpretations your completed story will bring to the Flame-Chase Journey.
 > **Castorice:** ...Thank you, Lady Aglaea.
 > **Phainon:** I hate to put a damper on this heartwarming moment, but...
-> **Phainon:** If Styxia is now "an island surrounded by the River of Souls' torrents," then how do we find a way in? Lady Tribbie is probably...
-> **Aglaea:** The answer is quite simple.
-> **Aglaea:** In the myths, Zagreus once made the domain of the dead their treasure vault — that is to say, they could enter and leave the nether realm as they pleased.
-> **Aglaea:** And if they could do that... then it follows that the demigod who inherited their divinity must be capable of the same.
-> **Aglaea:** I'll see you at Marmoreal Palace at Action Hour tomorrow. **Cipher** shall be your guide to finding that ancient city.
-*(The tumultuous day finally comes to an end. Everyone disperses, each lost in their own thoughts...)*
 
 ---
 
-### Part 170 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Speak with the Trianne Doll Again Before Heading Out
-
+### Part 119 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Speak with the Trianne Doll Again Before Heading Out
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__speak-with-the-trianne-doll-again-before-heading-out`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(You've spent far too long searching for Thanatos. Now, the closer you seem to get to them, the longer the night seems to last. You still have some things to say to Trianne, and someone else seems to have noticed your thoughts.)*
+
 *(Later, somewhere in Okhema...)*
 *(narrative)* **Castorice:** ...
 **Tribbie:** Cas? What a surprise.
@@ -4001,20 +5166,27 @@
 **Castorice:** ...Thank you, Lady Tribbie.
 **Castorice:** This feeling... It's hard to put into words. I suddenly found myself with so many wishes... so much I want to accomplish before setting off.
 **Tribbie:** Then go do it, Cas!
-**Tribbie:** Trianne... was actually working on a surprise gift for you. It's a pity she didn't get to finish it, but now Trinnon and **I** are working on it, and we'll make sure to give it to you.
-**Tribbie:** So, let's meet back here when you return from Styxia. Safe travels — see you tomorrow!
 
 ---
 
-### Part 171 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > See Who's Knocking at the Door
-
+### Part 120 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > See Who's Knocking at the Door
+**Kind:** personal
+**Id:** `chapter-03-through-petals__see-who-s-knocking-at-the-door`
 
 *(Approach the door)*
 **Castorice:** ...It's me.
+
+---
+
+### Part 121 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > See Who's Knocking at the Door > Talk to Castorice
+**Kind:** personal
+**Id:** `chapter-03-through-petals__see-who-s-knocking-at-the-door-2`
+
 *(Talk to Castorice)*
 **Castorice:** I hope I didn't wake you.
+
 > *(Trailblazer)* Is it another mission from Aglaea?
 > **Castorice:** Huh? No. No...
 > *(Trailblazer)* Sleep is a luxury when you are at my age.
@@ -4036,23 +5208,29 @@
 
 ---
 
-### Part 172 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Walk with Castorice and Learn About What's Happening at the Citizens' Assembly
-
+### Part 122 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Walk with Castorice and Learn About What's Happening at the Citizens' Assembly
+**Kind:** personal
+**Id:** `chapter-03-through-petals__walk-with-castorice-and-learn-about-what-s-happening-at-the-citizens-ass`
 
 *(Castorice's visit isn't only for the purpose of relaxation, but also to have (Trailblazer) follow her to claim a certain item. The vote to support pausing the Flame-Chase Journey or not has become the matter of prime importance among the citizenry of Okhema.)*
+
 *(Approach the bath)*
 **Castorice:** The streets are packed... It seems the vote to pause the Flame-Chase Journey has begun.
 
 ---
 
-### Part 173 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Speak with Castorice
-
+### Part 123 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Speak with Castorice
+**Kind:** personal
+**Id:** `chapter-03-through-petals__speak-with-castorice`
 
 *(Castorice's visit isn't only for the purpose of relaxation, but also to have (Trailblazer) follow her to retrieve a certain item. Castorice would like to illustrate a sequence of memories concerning Aidonia.)*
+
 *(Approach the marked location)*
 **Enraged Oronyx Devotee:** I want to vote! Tell me how I can vote!
 **Rational Talanton Devotee:** Take your ceramic shard engraved with the Kephale rune, select the Council of Elders in your heart, and pray silently until the shard registers your choice. Then toss it into the dolium.
@@ -4061,6 +5239,7 @@
 **Enraged Oronyx Devotee:** Oh, please. The time when these deranged Titans should have vacated their spot to the demigods is long overdue! You'll see soon enough, you old fogey!
 **Rational Talanton Devotee:** And I pray that Talanton smacks some sense into you with their scales. We shall see how this turns out!
 **Castorice:** That was... quite a spectacle.
+
 > *(Trailblazer)* Just another peaceful day in Okhema.
 > **Castorice:** ...I suppose "peaceful" is technically correct if no actual violence happened...
 > *(Trailblazer)* Yeah, watching people squabble is kind of fun.
@@ -4071,8 +5250,10 @@
 > *(Trailblazer)* Shouldn't you have gotten used to it by now?
 > *(Trailblazer)* ...You look very confused.
 > **Castorice:** ...
+
 **Castorice:** Before coming here, I had lived for many years in Aidonia, a city of rime and frost. The people there were devotees of Thanatos, and were well-known for their unique burial rites and traditions.
 **Castorice:** ...Traditions that I played a major role in.
+
 > *(Trailblazer)* Because of the curse on you?
 > **Castorice:** Yes. You now know me as the mortician of Okhema...
 > **Castorice:** But back in those days, I was Aidonia's Maiden of War.
@@ -4085,14 +5266,17 @@
 > **Castorice:** Yes...
 > **Castorice:** No matter how kind or cruel the means, nothing can change the essence of death...
 > **Castorice:** Taking away someone's life is never worthy of religious worship.
+
 *(Begin Sub-Mission "Death, Dripping Like Morning Dew")*
 
 ---
 
-### Part 174 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Walk with Castorice and Continue Your Talk
-
+### Part 124 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Walk with Castorice and Continue Your Talk
+**Kind:** personal
+**Id:** `chapter-03-through-petals__walk-with-castorice-and-continue-your-talk`
 
 **Castorice:** But now... perhaps I might have one last chance.
 **Castorice:** Long ago, Trinnon read a prophecy to me: **"At the end of the sea of flowers, the souls of the living shall warm thy fingertips, and after an embrace... there shall be eternal separation."**
@@ -4101,24 +5285,32 @@
 **Castorice:** And yet things have taken a turn for the better: Now that I can finally have an audience with Thanatos, perhaps I can rewrite the meaning of that fated prophecy.
 **Castorice:** I have no reason not to give it my all...
 **Castorice:** ...for your sake, and for my own.
+
 > *(Trailblazer)* Thank you for telling me your thoughts.
 > **Castorice:** With that... I won't have any regrets.
 > *(Trailblazer)* ...Should I pretend I didn't hear any of that?
 > **Castorice:** Ah! I...
 > **Castorice:** I'm sorry. I probably said too much... I hope I didn't make you uncomfortable.
+
 *(Castorice talks to you about the gifts she gave to other Chrysos Heirs, and before you know it, she arrives at "your gift.")*
 
 ---
 
-### Part 175 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Check Castorice's Gift
-
+### Part 125 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Check Castorice's Gift
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__check-castorice-s-gift`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Castorice's visit isn't only for the purpose of relaxation, but also to have (Trailblazer) follow her to retrieve a certain item. Castorice prepared a gift for (Trailblazer).)*
+
 **Castorice:** Let's put that aside for the moment. We've arrived.
 **Castorice:** I want to retrieve a small gift I specially prepared for you. I made it myself, like the trinket I gave Lady Trianne... I want to leave something for everyone, if possible.
 **Castorice:** The journey to seek an audience with the Death Titan cannot be an easy one... I want to make full use of every moment I have before we depart, so that I don't have any regrets.
+
 > *(Trailblazer)* Is it a brooch with my face on it?
 > **Castorice:** No, it isn't. You'll know when you see it.
 > *(Trailblazer)* That sounds kind of ominous...
@@ -4129,12 +5321,8 @@
 
 ---
 
-### Part 176 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Check Castorice's Gift
-
-
 **Castorice:** What's... going on...?
+
 > *(Trailblazer)* Looks like someone left something behind.
 > **Castorice:** This is a...
 > *(Trailblazer)* I hope the gift wasn't expensive...
@@ -4154,29 +5342,57 @@
 
 ---
 
-### Part 177 — `databank/missions/chapter-03-through-petals.md`
+*(Quick Read)*
+*(narrative)* **Letter from the Phantom Thief Cipher**
+> *(narrative)* Dear Princess Homebody:
+> *(narrative)* Walking through the busy garden, I discovered the remarkable gifts crafted by Princess Homebody. They are truly splendid, and I am most impressed.
+> *(narrative)* I'm also taken with your charming presents prepared for fellow Chrysos Heirs. In your right parlor, I observed the beautiful felt dolls, the beige-and-lavender striped tapestry, the classic Aidonian tripod table, and in the left parlor, the jewelry and exquisite art pieces meant as gifts.
+> *(narrative)* This time, I've claimed only this modest gift. I fear it would attract tasteless little thieves, so I shall safeguard it for now. Naturally, I've left appropriate payment — a single coin. If the price displeases you, feel free to negotiate its return. Though should that happen, I won't be satisfied with merely one coin.
+> *(narrative)* Should you wish to find me, **visit the Marmoreal Market. There lies a Golden Short Spear I've left — you know what to do. It shall guide you to me!** And before you ask — I won't accept any questions.
+> *(narrative)* Please forgive this small intrusion and accept my highest regards.
+> *(narrative)* P.S.: Who displays biological specimens at home? They're quite unsettling. You might want to store them away when entertaining guests.
+> *(narrative)* P.P.S.: Despite your considerable investment in the *Aidonian Ossuary* hanging in your parlor, I regret to inform you it's a fake. The original was craftily switched by those cunning scholars of the Grove of Epiphany. The full story can be found in the yet-unpublished *Memoirs of Cifera*.
+> *(narrative)* Sincerely, Kitty Phantom Thief
 
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Find the Golden Short Spear and Discover Cipher's Whereabouts
+---
 
+*(To retrieve the gift and teach Kitty Phantom Thief a lesson, you head to the market and find the short spear she left behind.)*
+
+*(Obtain Letter from the Phantom Thief Cipher, Cipher's Coin)*
+
+---
+
+---
+
+### Part 126 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Find the Golden Short Spear and Discover Cipher's Whereabouts
+**Kind:** personal
+**Id:** `chapter-03-through-petals__find-the-golden-short-spear-and-discover-cipher-s-whereabouts`
 
 *(Castorice's visit isn't only for the purpose of relaxation, but also to have (Trailblazer) follow her to retrieve a certain item. The gift that Castorice prepared was stolen by the famous Amphorean Kitty Phantom Thief. What's more, the thief left clues.)*
+
 **Castorice:** Look, it's right there—
 *(narrative)* This is the "Golden Short Spear" mentioned in the thief's letter.
+
 *(After repairing the spear)*
 **Castorice:** We'll chase her down.
 
 ---
 
-### Part 178 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Follow the Golden Short Spear
-
+### Part 127 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Follow the Golden Short Spear
+**Kind:** personal
+**Id:** `chapter-03-through-petals__follow-the-golden-short-spear`
 
 *(Approach the marked location)*
 **Castorice:** ...Huh?
+
 *(Investigate the two spears)*
 **Castorice:** ...This is a trick she left for us.
 *(narrative)* Clearly, Kitty Phantom Thief wants to play a little game with you — two short spears, one correct, one wrong.
+
 > *(Trailblazer)* Let me check the hint on the scroll.
 > *(narrative)* Two Golden Short Spears
 > *(narrative)* Only the Golden Short Spear engraved with the truth can lead you to Kitty Phantom Thief.
@@ -4188,14 +5404,10 @@
 > *(narrative)* The words on the scroll should be true, so which short spear do you want to repair?
 > *(Trailblazer)* Repair the left Golden Short Spear.
 > *(Trailblazer)* Repair the right Golden Short Spear.
+
 **Castorice:** Ugh, she's incorrigible... Follow me!
 
 ---
-
-### Part 179 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Follow the Golden Short Spear
-
 
 *(If the right spear was chosen)*
 > *(Trailblazer)* Caught it!
@@ -4207,6 +5419,7 @@
 > **Castorice:** It isn't real.
 > *(narrative)* You notice Castorice doesn't want to waste time, so you immediately repair the left spear.
 > **Castorice:** (Trailblazer), we must pursue her.
+
 *(If the left spear was chosen)*
 **Castorice:** This is how it should be.
 **Castorice:** We'll chase her down.
@@ -4214,16 +5427,15 @@
 
 ---
 
-### Part 180 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Follow the Golden Short Spear's Direction and Find Cipher
+### Part 128 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Follow the Golden Short Spear's Direction and Find Cipher
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__follow-the-golden-short-spear-s-direction-and-find-cipher`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-
-> *(Trailblazer)* Hi, Cipher.
-> **Cipher?:** Grumph...
-> *(narrative)* She seems to be saying, "Hello."
-> *(narrative)* Seeing you treat the dromas with such seriousness, all twelve parts of her complex emotions immediately transformed into one of admiration.
-> *(Trailblazer)* I see. So a dromas is a cat.
 > **Cipher?:** Grumph...
 > *(narrative)* She seems to be saying, "Right. Oh, no, yeah yeah, yes."
 > *(narrative)* After a moment of inner conflict, she reached a definitive conclusion: The dromas is indeed a cat.
@@ -4231,39 +5443,62 @@
 > **Cipher?:** Grumph...
 > *(narrative)* She seems to be saying, "Ah hahah, Cipher does not know."
 > *(narrative)* Hmm, so. She says she doesn't know.
+
 **Castorice:** ...Lady Cipher, please come on out.
 **Cipher?:** Tsk. You're still careless as ever. Shouldn't you keep such a precious gift near your bosom?
 **Castorice:** Since you know it's a gift for someone else, please give it back to me. Stop hiding among the people and letting the wind carry your voice.
 **Cipher?:** Now, now. Since I know it's a gift — That just means I need to milk its worth! The children of the wind never stay for long in one place, unless your offer is tempting enough to still the wind. What say you?
 **Castorice:** Name your price. I'll give you however much you want.
+
 > *(Trailblazer)* Huh?
 > **Castorice:** Hmm? What's wrong?
 > *(Trailblazer)* If you don't want the money, I'd gladly take it off your hands...
 > **Castorice:** ...
 > **Castorice:** Ah... I'm sorry. Bargaining is really not my forte...
+
 **Cipher?:** Pfft...
 **Cipher?:** Hahaha! No wonder they call you Princess Homebody!
 **Cipher?:** Tell you what, why don't you two come over to my place? It'll make a better venue for proper business discussions. You can find where I live through the winds I've sown, right?
 **Castorice:** Piece of cake... I can do that even if I can only sense your soul.
 **Cipher?:** Alright, I'll see you there! Oh, by the way...
 **Cipher?:** Everyone cool with me collecting a deposit before we reach an agreement, right? Hehe. Now, come this way...
+
 *(The Dew of Divine Blood in the backpack has been stolen.)*
 **(Trailblazer):** (Where did my Dew of Divine Blood go...!?)
 **Castorice:** Ugh, she's incorrigible... Follow me!
 
 ---
 
-### Part 181 — `databank/missions/chapter-03-through-petals.md`
+*(Quick Read)*
+*(narrative)* **Letter from the Phantom Thief Cipher (Continued)**
+> *(narrative)* Dear Princess Homebody and Gray Mystery:
+> *(narrative)* You probably guessed already — I had no intention of showing up at the pack beast workshop. This means, of course, I had no plans to return the gift there either... This was just a warm-up for our little game of cat and mouse.
+> *(narrative)* But surely you've realized that the Kitty Phantom Thief never cared about *stealing a mere trinket*, right?
+> *(narrative)* — No, what I'm really after is your hearts.
+> *(narrative)* Just kidding.
+> *(narrative)* I have no interest in your hearts. If Princess Homebody can track my path, then by all means try. I'll be waiting at the end. And rest assured, we'll meet face-to-face this time.
+> *(narrative)* P.S. Gray Mystery, where did you get that Dew of Divine Blood? Don't tell me it's a gift from the seamstress? I'll taste it for you.
+> *(narrative)* Sincerely, Kitty Phantom Thief
 
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Head to Cipher's Secret Hideout
+---
 
+---
+
+### Part 129 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Head to Cipher's Secret Hideout
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__head-to-cipher-s-secret-hideout`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Castorice's visit isn't only for the purpose of relaxation, but also to have (Trailblazer) follow her to retrieve a certain item. Cipher's manufactured mysteriousness is at an end. It's time to see what hides behind the veil.)*
+
 *(Approach the marked location)*
 **Castorice:** ...Here we are.
 **Cipher:** Over here, over here! ...No, not that way. This way!
 **Cipher:** Come on. If I really wanted to hide, you'd never find me.
 **Cipher:** So, relax, you two! No need to get your hackles up. I'm not that scary, am I? Meow!
+
 > *(Trailblazer)* At last! A character that meows has appeared!
 > **Cipher:** Haha, no way! Some people might have been into that a millennium ago, but it's long since gone out of style.
 > *(Trailblazer)* Ew, what kind of quirk—
@@ -4272,32 +5507,67 @@
 
 ---
 
-### Part 182 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Head to Cipher's Secret Hideout
-
-
 **Castorice:** Give me the jewelry piece first... or everything's off the table.
+
 > *(Trailblazer)* And my Dew of Divine Blood!
 > *(Trailblazer)* The gift is a piece of jewelry?
 > **Cipher:** The materials are nothing to wow at, but the workmanship is superb as always... You're still skilled as ever even after all this time. And you've put a lot of heart into this one... Hehe.
 > **Castorice:** ...Mind your own business.
+
 **Cipher:** Oh, come on! Don't be so upset. Relax! Relax...
 **Cipher:** Look! Isn't the view here just great? You can see what everyone is doing and where they're going, and they won't even know you're here.
 **Cipher:** Now that we've broken the ice, let's get to the point — Everything I've said so far has been a joke. I'm inviting you two here for three things:
 **Cipher:** One, the seamstress found me and wants me to take you to Styxia to look for the Death Titan.
 **Cipher:** Two... Ha, the Council of Elders also found me and wants me to make sure the Coreflame of Thanatos ends up in their hands.
 
+> *(Trailblazer)* Look at you! Having your finger in both pies.
+> *(Trailblazer)* You're THAT famous?
+> **Cipher:** Of course. I may keep a low profile, but I'm still a bona fide demigod.
+> *(Trailblazer)* Seamstress?
+> **Cipher:** Goldweaver, control freak, number one beauty of Okhema, Aglaea the Mom... How many more nicknames do you wanna hear?
+> **Cipher:** And last, but not least...
+> **Cipher:** I'm telling you that I'm not interested in doing either of those things.
+> **Cipher:** Don't go look for the Death Titan. The end.
+
+*(Some time ago...)*
+**Cipher:** Whoa, this is some high-quality stuff...
+**Cipher:** And this room is full of it... How much are these worth, hmm? Did you get all of this through that Era Nova gimmick?
+**Aglaea:** Some of it is family fortune, while the rest came from my business as a dressmaster. Don't liken the Flame-Chase work to your shady dealings.
+**Cipher:** Wow... I should have busted down your door instead of going around like a thief.
+**Cipher:** Well, spill. Why are you giving me so much money?
+**Aglaea:** Payment for doing work. You're worth this much.
+**Cipher:** Did you forget my stance to all this? I thought I made myself very clear.
+**Aglaea:** You wish to run away. Run away from your responsibilities, from the prophecy, and from your destiny. **"You shall walk with greed, and die over petty change."**
+**Aglaea:** I understand this prophecy weighs on you immensely. That is why I have never reproached the demigod of Trickery for running away.
+**Aglaea:** But I need you right now, so don't turn me down.
+**Cipher:** Hmm...
+**Cipher:** You know, maybe the gods got your tongue with their golden threads, Aglaea. I'm not hearing any sincerity in your words.
+**Cipher:** Give me a reason why you're bowing your noble head to me.
+**Aglaea:** ...We lost Trianne.
+
 ---
 
-### Part 183 — `databank/missions/chapter-03-through-petals.md`
+**Cipher:** Oh...
+**Aglaea:** The divine power of Passages is running out. I need another demigod to escort Castorice and help her fulfill her lifelong wish.
+**Cipher:** Oh, I get it now. You're sending Castorice to her death, and you want me to die with her.
+**Aglaea:** This is Castorice's own request. I have never seen her so determined.
+**Cipher:** She... brought this up herself? You're not pulling my leg?
+**Aglaea:** She's also made up her mind to leave her confused past behind.
+**Aglaea:** ...As will you, Cipher, when you finally make up your mind.
+**Cipher:** Don't be so sure. Time has hardened the likes of you and I, but Castorice remains pure as driven snow.
+**Cipher:** She can always turn back before the end, you know? Maybe she'll remember Trianne's sacrifice. Maybe she'll remember the countless martyred Chrysos Heirs. Maybe she'll remember you, with your one foot in the grave — I ain't as optimistic as you about what she'll want to do.
+**Cipher:** Tell you what, why don't I take this room of treasures as a security deposit and we make a bet?
+**Aglaea:** Go on.
+**Cipher:** I bet she'll change her mind and turn back. Now, if I lose, I'll do what you want me to do, return this deposit to you, plus giving you another roomful of treasures. How does that sound?
+**Aglaea:** You sound like you have all the confidence in the world.
+**Aglaea:** In that case, let's make a pact with those conditions. I hope you're prepared to lose it all.
 
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Head to Cipher's Secret Hideout
-
+---
 
 **Cipher:** In conclusion...
 **Cipher:** I want to win. So I hope you two can give up on going to Styxia. I'll give all the treasures in that room to you, and you can split it between yourselves however you want.
 **Cipher:** What do you think? Tempting, right?
+
 > *(Trailblazer)* I'm almost dead. What use do I have for money?
 > **Castorice:** I decline. If we don't find the Death Titan, (Trailblazer)'s soul will...
 > *(Trailblazer)* The currency I use isn't the same as the one in Amphoreus.
@@ -4343,20 +5613,38 @@
 > **Cipher:** Oh, nothing really. Just a bit scared of the seamstress' frosty face. I wouldn't stay a second longer in Okhema if it were up to me.
 > **Cipher:** Well, now that we've struck a deal, why don't I give you guys a lift back?
 > **Cipher:** It's gonna be a long ride, so have a good rest!
+
 *(Screen fades to black)*
 **Castorice:** Ahhhh...!!!
 
 ---
 
-### Part 184 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Leave Okhema and Meet with Cipher
+### Part 130 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Wake Up in the Private Bath Chamber
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__wake-up-in-the-private-bath-chamber-2`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** on-stage
 
+*(Plans have changed. Cipher hopes that (Trailblazer) can meet with Castorice outside Okhema. (Trailblazer) awakens groggily in the private baths once more.)*
+
+---
+
+### Part 131 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 6: Pathstrider, Set Sail Upon the River of Souls > Leave Okhema and Meet with Cipher
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__leave-okhema-and-meet-with-cipher`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Plans have changed. Cipher hopes that (Trailblazer) can meet with Castorice outside Okhema. Onward, to Styxia.)*
+
 *(Approach Cipher)*
 **Cipher:** Mmm! Bright and sunny, just the weather for farewells.
 **Castorice:** You're... here.
+
 > *(Trailblazer)* Really? Just the three of us?
 > **Cipher:** Totally. The trio team is the best set up to reach the finals.
 > *(Trailblazer)* I'll go give Aglaea a heads-up...
@@ -4374,17 +5662,16 @@
 > *(Trailblazer)* Just how much have you swindled Castorice of?
 > **Castorice:** Don't worry... it's not a lot...
 > **Cipher:** Alright! Pass me the coin — it's time to get the god's powers going! A fleet-footed trip to the nether realm, here we come!
-> **Cipher:** Oh, one last thing before we go. I gotta give you this piece of advice, especially to you, Princess Homebody —
-> **Cipher:** You can't catch the wind by waiting. You only live once, so make the most of every moment you have.
 
 ---
 
-### Part 185 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 7: Death, Dripping Like Morning Dew > Speak with "Elder" Amunet
-
+### Part 132 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 7: Death, Dripping Like Morning Dew > Speak with "Elder" Amunet
+**Kind:** personal
+**Id:** `chapter-03-through-petals__speak-with-elder-amunet`
 
 *(You remember "Elder" Amunet as well as Aidonia, this city-state that worshiped Thanatos. This is where your memory begins. Of course, you also remember how you became an executioner and a Maiden of War.)*
+
 **Castorice:** I... I can't do it.
 **Castorice:** Their voices... They pierce my ears... The pleading, the thanks...
 **"Elder" Amunet:** Ahh. I know that feeling, child. I was once as lost as you are now.
@@ -4407,10 +5694,14 @@
 
 ---
 
-### Part 186 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 7: Death, Dripping Like Morning Dew > Execute the Unknown Death-Row Prisoner
+### Part 133 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 7: Death, Dripping Like Morning Dew > Execute the Unknown Death-Row Prisoner
+**Kind:** personal
+**Id:** `chapter-03-through-petals__execute-the-unknown-death-row-prisoner`
 
+**Unknown Death-Row Prisoner:** Please... Don't kill me... I don't want to die....
 
 > *(Trailblazer)* A gentle touch.
 > *(Trailblazer)* No. I can't do it.
@@ -4422,6 +5713,7 @@
 > **"Elder" Amunet:** This is your last chance. Do it.
 > **Unknown Death-Row Prisoner:** No, please... I don't want to die... Please, I'm begging you...
 > *(Trailblazer)* A gentle touch.
+
 **Unknown Death-Row Prisoner:** No... No...
 *(Screen fades to black)*
 *(narrative)* You gently touch the prisoner's forehead with your finger. His face is pale, his eyes flicker with fear, and his body trembles uncontrollably.
@@ -4436,25 +5728,33 @@
 
 ---
 
-### Part 187 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 7: Death, Dripping Like Morning Dew > Speak with "Elder" Amunet and Learn About the Duties of an Executioner
-
+### Part 134 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 7: Death, Dripping Like Morning Dew > Speak with "Elder" Amunet and Learn About the Duties of an Executioner
+**Kind:** personal
+**Id:** `chapter-03-through-petals__speak-with-elder-amunet-and-learn-about-the-duties-of-an-executioner`
 
 *(You remember "Elder" Amunet as well as Aidonia, the city-state that worshiped Thanatos. This is where your memory begins. The "Elder" does not wish that you become a merciless executioner, but that you would fully understand the weight of life and death, then carry out with utmost respect the duty with which you were born.)*
+
 **Castorice:** When will this ever end...?
+
 *(Floating texts)* *(narrative)* for granting me release / Monster / Murderer
+
 *(Idle chats)* *(narrative)* You executioner! / You murderer!
+
 *(Approach Amunet)*
 **"Elder" Amunet:** Come. Fulfill your duty.
 **Castorice:** ...What?
 
 ---
 
-### Part 188 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 7: Death, Dripping Like Morning Dew > Speak with "Elder" Amunet and Learn About the Duties of an Executioner
-
+### Part 135 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 7: Death, Dripping Like Morning Dew > Speak with "Elder" Amunet and Learn About the Duties of an Executioner > Talk to Amunet
+**Kind:** personal
+**Id:** `chapter-03-through-petals__speak-with-elder-amunet-and-learn-about-the-duties-of-an-executioner-2`
 
 *(Talk to Amunet)*
 **Castorice:** ...What are you trying to do with me?
@@ -4485,10 +5785,21 @@
 
 ---
 
-### Part 189 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 7: Death, Dripping Like Morning Dew > Defeat Furiae Praetor
+### Part 136 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 7: Death, Dripping Like Morning Dew > Defeat Furiae Praetor
+**Kind:** personal
+**Id:** `chapter-03-through-petals__defeat-furiae-praetor`
 
+*(You remember "Elder" Amunet as well as Aidonia, this city-state that worshiped Thanatos. This is where your memory begins. Actively use your natural-born talent and learn to accept it. "Prove that you're a capable Holy Maiden, or that you have such resolve.")*
+
+**"Elder" Amunet:** Come now. It's time. I have already taught you all that I know...
+**"Elder" Amunet:** Show me that you are a fitting Holy Maiden... or at least, that you possess the resolve to become one.
+
+*(Begin battle against Furiae Praetor (Titankin))*
+
+---
 
 *(After the battle)*
 **Castorice:** ...
@@ -4507,11 +5818,6 @@
 
 ---
 
-### Part 190 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 7: Death, Dripping Like Morning Dew > Defeat Furiae Praetor
-
-
 *(Cutscene begins)*
 **Inmate:** I don't want to die!
 **Inmate:** Please, I'm begging you.
@@ -4520,12 +5826,14 @@
 **Inmate:** I don't want mercy like this!
 **Inmate:** Just... let me go... I need them...I don't...
 **Castorice:** I hate these icy hands.
+
 **"Elder" Amunet:** Get it over with.
 **"Elder" Amunet:** End its suffering.
 **"Elder" Amunet:** The Reaper has blessed your hands.
 **"Elder" Amunet:** Only you can grant them peace.
 **"Elder" Amunet:** Embrace death.
 **"Elder" Amunet:** Walk alongside it.
+
 **Old Woman:** Is that you... Castorice?
 **Old Woman:** All of them... have gone.
 **Old Woman:** heeding Death's summon.
@@ -4547,16 +5855,12 @@
 **Old Woman:** Just like anyone else's.
 **Old Woman:** So go on, don't hold back,
 **Old Woman:** give me a warm hug.
+
 **Castorice:** Can hands like these...
 **Castorice:** really be warm?
 *(Cutscene ends)*
 
 ---
-
-### Part 191 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 7: Death, Dripping Like Morning Dew > Defeat Furiae Praetor
-
 
 **Castorice:** On the day that Oronyx's Trial ended, you must have had many questions, (Trailblazer).
 **Castorice:** I felt just as confused. Why, as someone from beyond the sky, were you so cruelly dragged into Amphoreus's fate?
@@ -4573,13 +5877,21 @@
 
 ---
 
-### Part 192 — `databank/missions/chapter-03-through-petals.md`
+*(The mission continues in "Ferryman, Ferry Me Across the Stream of Souls".)*
 
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Speak to Castorice
+---
 
+### Part 137 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Speak to Castorice
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__speak-to-castorice-2`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. The Philosopher's Stone provided by Anaxagoras and the art of alchemy can summon the Titan lurking with the River of Souls, and the alchemical materials should be found in the city as well.)*
+
 **Castorice:** Are you feeling alright?
+
 > *(Trailblazer)* Ugh... I swear she was speeding...
 > *(Trailblazer)* Where am I? Are we still in Amphoreus?
 > **Castorice:** She's the demigod of Trickery. When she flips the Coin of Whimsy into the air, she gains incredible speed that lets her travel anywhere in an instant.
@@ -4604,18 +5916,24 @@
 > **Castorice:** Indeed. Even one as erudite as Anaxa could only point us to this place, and no further. We will be entering the unknown as soon as we take our first steps... But that won't be the first time in my long journeys.
 > **Castorice:** I believe that...
 > **Castorice:** Rather than standing still, taking action is by far the better option. Perhaps fate might take pity on us today and show some compassion.
+
 *(Unlock Achievement "Cruel Night Oppresses Unfortunate Mortals")*
 
 ---
 
-### Part 193 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Search Dragonbone City and Find the Entrance to the Nether Realm
-
+### Part 138 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Search Dragonbone City and Find the Entrance to the Nether Realm
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__search-dragonbone-city-and-find-the-entrance-to-the-nether-realm`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Approach the bridge)*
 **???: ** Go back whence you came... Go back...
 **???: ** Ahead lies the realm of the dead...
+
 *(Approach the marked location)*
 **Mem:** What a beautiful butterfly. Is it talking to us?
 **Castorice:** This is a Eulogistic Butterfly. They are found in places where many have met their demise.
@@ -4626,19 +5944,25 @@
 
 ---
 
-### Part 194 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Speak with the Styxian Spirit of the Dead
-
+### Part 139 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Speak with the Styxian Spirit of the Dead
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__speak-with-the-styxian-spirit-of-the-dead`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Go through the door)*
 **Castorice:** These shadowy figures... are they illusions reflected by the River of Souls?
+
 *(Listen to the two children, optional)*
 **Young Girl:** Mommy told us to go ahead first, but she's still not here yet.
 **Young Boy:** One, two, three... I don't even know how many days have passed since then.
 **Young Girl:** Perhaps Mommy will be back once you finish counting the days on all ten fingers.
 **Young Boy:** One, two, three... It's been much longer than ten days since we left Mommy.
 **Castorice:** Strange... For reflections in the River of Souls, they seem oddly... animated.
+
 *(Listen to the two blacksmiths, optional)*
 **Apprentice:** But master... Did that lady really lie to us?
 **Apprentice:** The centurion personally instructed us to inlay the inscription into his shield.
@@ -4647,7 +5971,9 @@
 **Blacksmith:** ...
 **Blacksmith:** Come, child, what is the name of that centurion again? Actually... Never mind, forget I said that.
 **Blacksmith:** I'll wait with you for her to come back. When that happens, you'll be able to keep making shields.
+
 **Mem:** Don't be afraid, (Trailblazer). Let's open our eyes wide... together!
+
 *(Approach the merchant)*
 **Marketplace Merchant:** Do you... want to buy any fish?
 **Mem:** Huh? He can see us?
@@ -4667,6 +5993,7 @@
 **Castorice:** I knew it. These people aren't illusions. They're the souls of the deceased.
 **Castorice:** They're supposed to reach the end of the west wind by floating down the River of Souls... Yet they have floundered upon the shoals of the stream, unable to move forward.
 **Castorice:** Did Thanatos reject them? Or perhaps they didn't really die at all?
+
 > *(Trailblazer)* Are they in the same situation as me?
 > *(Trailblazer)* Perhaps all of us can still use some CPR.
 > **Mem:** Why are you identifying as a dead person now? Don't give up on yourself!
@@ -4674,20 +6001,19 @@
 > **Castorice:** Hang on...
 > **Castorice:** Didn't he say... "more living people"? So that means he's seen other members of the living apart from us?
 > **Castorice:** Could it be that these souls are stuck here due to someone's deceit?
+
 **???: ** If something is done out of goodwill, are you really gonna call it "deceit"?
 **Castorice:** Goodwill? I can't see anything good out of—
 **Castorice:** Wait a minute... Lady Cipher?
 
 ---
 
-### Part 195 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Speak with the Styxian Spirit of the Dead
-
+**Cipher:** That's me.
 
 > *(Trailblazer)* What are you doing here?
 > *(Trailblazer)* Are you dead too?
 > **Cipher:** Umm... I still belong to the land of the living as of now, thank you very much!
+
 **Castorice:** Could it be that... You are the living being that those souls met...?
 **Cipher:** I couldn't take their behavior anymore, so I stole some things here and made up some lies there... Just trying to give them something to look forward to, you know?
 **Mem:** ...It's because of vile living creatures like you that we're being misunderstood by all of them!
@@ -4703,35 +6029,51 @@
 **Mem:** Huh? She disappeared just like that?
 **Castorice:** Lady Cipher has always been a... free spirit. In any case, she has brought us some valuable information.
 **Castorice:** If Lord Mydei is also somewhere along the river shoals right now, then he will certainly become our signpost. After all, he's different from those wandering souls... He will find his way even in the realm of the dead.
+
 > *(Trailblazer)* Speaking of "finding the way"...
 > *(Trailblazer)* ...How are we supposed to get over there?
 > **Mem:** Don't worry. It's time for me to shine...
-> **Mem:** Oronyx's Rune of Recollection is nearby. Use prayers to return the river to before it got flooded!
 
 ---
 
-### Part 196 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Speak with the Spirit of the Centurion
-
+### Part 140 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Speak with the Spirit of the Centurion
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__continue-exploring-dragonbone-city-and-speak-with-the-spirit-of-the-cent`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. The spirits of Anaxagoras repeatedly recount the past. They seem to be those who fell during Era Chrysea.)*
+
 **Castorice:** Oronyx's miracle has appeared...
 **Mem:** Amazing! It's like we're inside a giant bubble. Even the river got parted.
+
 *(Approach the wooden bridge, optional)*
 **Mem:** Huh... So this path actually didn't exist back then?
+
 *(Approach the group of warriors)*
 **Castorice:** There are wandering souls of the deceased here as well...
 **Castorice:** We must first return to "the present" before we can communicate with them.
+
 *(Idle chats)*
 *(narrative)* **Soldier A:** Someone's coming, ready...
 *(narrative)* **Soldier B:** Formation!
 *(narrative)* **Soldier C:** Look! Pink puppies do exist!
-*(Talk to the Centurion)*
+
+---
+
+### Part 141 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Speak with the Spirit of the Centurion > Talk to the Centurion
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__continue-exploring-dragonbone-city-and-speak-with-the-spirit-of-the-cent-2`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
+
 **Centurion:** Ah, by the looks of it... you must be the foreign warriors that the queen had mentioned, right?
 **Centurion:** Since the current campaign requires the utmost care, I wasn't able to make time to welcome all of you. Please, forgive me.
 **Castorice:** ...Foreign warriors?
 **Centurion:** A priestess, a warrior, and a, um... a divine beast... You look identical to the blessed saviors that the queen described!
+
 > *(Trailblazer)* This is my pet, so I'm actually of the Hunter class.
 > **Mem:** What...?
 > *(Trailblazer)* Oh darn. No healer on this team.
@@ -4772,13 +6114,15 @@
 
 ---
 
-### Part 197 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Check the Souls Remains
+### Part 142 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Check the Souls Remains
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__check-the-souls-remains`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-
-*(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. The spirits of Anaxagoras repeatedly recount the past. They seem to be fallen who lived during Era Chrysea. The remains left by these spirits seem to have a connection with alchemy and Thanatos.)*
-*(Listen to the souls remains)*
 **"Aglaea":** Well, then. Why should I place my trust in you...
 **"Aglaea":** Holy maiden from afar?
 **Castorice:** W—Wait, this is...
@@ -4795,10 +6139,13 @@
 **"Aglaea":** That's because... the fate that we were born with is a burden far heavier than that of an individual's life.
 **"Aglaea":** I've woven many unforeseen events into the tapestry of fate. This is but one instance.
 **"Aglaea":** Tidy up your precious garments and come with me. Okhema welcomes you, Castorice.
+
 *(You seem to hear a sigh of contentment, as if it comes from the mouth of some colossal being.)*
 *(Then, the scenes of the past abruptly dissipated...)*
+
 **Mem:** I didn't think that we'd find vestiges of memory here... Maybe they've got something to do with Oronyx's rune?
 **Castorice:** ...Perhaps, but I do not need a reminder from them. This memory is one that I will never forget.
+
 > *(Trailblazer)* So it seems that the Council of Elders has manipulated you once already.
 > **Castorice:** Indeed. While my relationship with the Council has always been quite ambiguous, Lady Aglaea has never taken any precautions against me. Instead... She's shown me nothing but complete trust.
 > *(Trailblazer)* Aglaea trusts you unreservedly.
@@ -4807,60 +6154,71 @@
 
 ---
 
-### Part 198 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Head Higher
-
+### Part 143 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Head Higher
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__continue-exploring-dragonbone-city-and-head-higher`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. Everything points to the highest towers at Styxia. There, remains left by the great dragon linger.)*
+
 *(Approach the group of monsters)*
 **Mem:** Could these dead monsters actually be...
 **Castorice:** If Lady Cipher is to be believed... this could be the handiwork of Lord Mydei.
 **Castorice:** He's still fighting against the black tide, even in the nether realm...
+
 *(Approach the marked location)*
 **Mem:** Ah! Why are the black tide monsters here too? Can they swim in the River of Souls?
 **Castorice:** Even Thanatos wouldn't be able to accept black tide monsters into their realm...
 **Castorice:** These traces seem to suggest that anybody who trespasses upon "Death"... will pay a heavy price.
+
 > *(Trailblazer)* Will we suffer the same fate as well?
 > *(Trailblazer)* We're also here to trespass upon the Titan.
 > **Castorice:** Since the realm of the dead must remain peaceful, it's imperative that we rid the place of such discordant noise.
 > **Castorice:** Please stay back... Let me deal with these enemies.
+
 *(Begin battle against Tide-Eroded Blade ×2, Black Tide's Corroded Axe ×2)*
 
 ---
-
-### Part 199 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Head Higher
-
 
 *(Approach the Rune of Recollection)*
 **Castorice:** The path ahead is blocked by the River of Souls again...
 **Mem:** In that case, let us go back to "the past"! This miracle sure is handy...
 **Castorice:** ...This is yet another aspect of a Titan's divine power.
+
 *(While crossing the River of Souls towards the elevator)*
 **Mem:** If Dan Heng was around, he'd definitely be able to raise the waters of the River of Souls into the sky...
 **Castorice:** If Lady Hysilens was still alive, I think she might be able to do that, too.
+
 *(Approach the exit while carrying the Rune of Recollection, optional)*
 **Mem:** We can't get through here. Let us return to "the present."
 
 ---
 
-### Part 200 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Speak with the Spirit of the Court Scholar
-
+### Part 144 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Speak with the Spirit of the Court Scholar
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__continue-exploring-dragonbone-city-and-speak-with-the-spirit-of-the-cour`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. The spirits of Anaxagoras repeatedly recount the past. They seem to be those who fell during Era Chrysea.)*
+
 *(Put back the rune near the double doors)*
 **Castorice:** You seem to be able to discern both the past and the future...
+
 *(Listen to the Aidonian Spirit, optional)*
 **Aidonian Spirit of the Dead:** Ah... Why isn't there a god yelling in the distance...
 **Aidonian Spirit of the Dead:** "Indeed, my downtrodden fellow... Your sorrow and joy are but means for me to amuse myself."
 **Aidonian Spirit of the Dead:** I will at least derive some comfort... If all the tears that I had shed were determined by some mightier being above.
 **Castorice:** It's... you people...
+
 *(Go through the door)*
 **Mem:** This place... must have been a beautiful courtyard in the past.
+
 *(Approach the Court Scholar)*
 **Court Scholar:** Please excuse me. I am but a scholar from a distant land who had the misfortune of falling into the River of Souls and turned into a member of the dead...
 **Mem:** Huh? This one... seems to know that she's already dead.
@@ -4876,6 +6234,7 @@
 **Castorice:** I'm sorry... I'm also powerless to answer that question.
 **Court Scholar:** That's alright, Holy Maiden. At least you are able to respond to me. Please... grant me "Death."
 **Court Scholar:** Cerces above... Does this count as thinking till the moment I die?
+
 > *(Trailblazer)* She seems... free.
 > *(Trailblazer)* I can't imagine what it'd feel like to roam around this void for centuries...
 > **Castorice:** I have seen too many farewells... Her distress is quite commonplace. There are those who will end their lives over what seems to be the smallest of worries.
@@ -4890,39 +6249,55 @@
 
 ---
 
-### Part 201 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Seek a Pathway to Higher Ground
-
+### Part 145 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Seek a Pathway to Higher Ground
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__seek-a-pathway-to-higher-ground`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. Everything points to the highest towers at Styxia. There, remains left by the great dragon linger.)*
+
 **Castorice:** But how should we get up there?
+
 *(Approach the Tome of Miracles on the first floor)*
 **Castorice:** The path is blocked yet again.
 **Mem:** Oronyx's aid always appears in times like this. How convenient...
+
 *(Approach the elevator)*
 **Mem:** Look. There's even a platform lift over there.
+
 *(Approach the Tome of Miracles on the second floor)*
 **Mem:** A "Chest of the Past" has been left behind, but none of its treasures remain inside...
 **(Trailblazer):** (I'm crying!)
+
 *(Traveling across the bridge on the third floor)*
 **Mem:** W—Wait! What if the miracle suddenly loses its effect?
 **Castorice:** Mem... Do you really want me to answer that?
 
 ---
 
-### Part 202 — `databank/missions/chapter-03-through-petals.md`
+*(Approach the Vault Officer)*
+**Ghost Voice:** Stay back... Don't come any closer!
 
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Seek a Pathway to Higher Ground
+---
 
+### Part 146 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Seek a Pathway to Higher Ground > Talk to the Vault Officer
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__seek-a-pathway-to-higher-ground-2`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-*(Talk to the Vault Officer)*
-**Vault Officer:** D—Don't come near me...
 **Mem:** Huh? Why does he look so panicked? Did the black tide monsters frighten him?
 **Mem:** Or... is he actually scared of his own extraordinary power?
+
 > *(Trailblazer)* Lemme fight him!
 > *(Trailblazer)* Ah, these are the troubles that powerhouses like us face...
 > **Castorice:** There's no need to be alarmed. We're just passing by the area. See? None of us look threatening.
+
 **Vault Officer:** ...
 **Vault Officer:** You have a point, although...
 **Vault Officer:** While this might once have been the royal vault, it's since been plundered empty... So, please go away right this instant!
@@ -4945,17 +6320,20 @@
 **Castorice:** You have my thanks for the invaluable insight that you've given us.
 **Castorice:** Please treat this touch... as a token of my gratitude.
 **Vault Officer:** You... Are you...
-**Vault Officer:** Thank you...
 
 ---
 
-### Part 203 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Check the Souls Remains
-
+### Part 147 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Check the Souls Remains
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__check-the-souls-remains-2`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. The spirits of Anaxagoras repeatedly recount the past. They seem to be fallen who lived during Era Chrysea. The remains left by these spirits seem to have a connection with alchemy and Thanatos.)*
+
 **Castorice:** This is his...
+
 *(Listen to the souls remains)*
 **"Amunet":** Then, you granted him death?
 **"Amunet":** That isn't like you... You would have refused even if I commanded you to do so.
@@ -4982,40 +6360,47 @@
 
 ---
 
-### Part 204 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Speak with the Spirit of the Alchemist
-
+### Part 148 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Speak with the Spirit of the Alchemist
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__continue-exploring-dragonbone-city-and-speak-with-the-spirit-of-the-alch`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. Everything points to the highest towers at Styxia. There, remains left by the great dragon linger.)*
+
 *(Go through the double door)*
 **Eulogistic Butterfly:** Don't look back... Keep moving forward, always.
 **Castorice:** It's yet another Eulogistic Butterfly... Are we getting closer to the nether realm?
+
 *(Listen to the Styxian Spirit, optional)*
 **Styxian Spirit of the Dead:** Shut up... Just shut up!
 **Styxian Spirit of the Dead:** Even if that girl is evil, there's no reason for you to absolve that monster.
 **Styxian Spirit of the Dead:** It was the both of them... The both of them who trapped us in this crevice between life and death!
 **Castorice:** ...
 **Mem:** D—D—Don't be scared. They haven't noticed us at all.
+
 *(Approach the marked location)*
 *(narrative)* *A rumble from the distance*
 **Mem:** This... This is...
 
+*(Use the elevator and reach the top floor)*
+**Alchemist:** ...Living ones?
+
 ---
-
-### Part 205 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Speak with the Spirit of the Alchemist
-
 
 *(Approach the alchemist)*
 **Alchemist:** Oh... Could you be the scions of Styxia?
 **Alchemist:** Did you hear about the great work that I'm doing here, and have thus arrived to give me the last material that I need for transmutation?
 **Castorice:** Great work?
 **Alchemist:** Have you heard of the great name of Pollux, perchance?
+
 > *(Trailblazer)* I've definitely heard that name many times today.
 > *(Trailblazer)* Its pilot is probably right here.
 > **Castorice:** You don't have to describe it like that, Miss (Trailblazer)...
+
 **Alchemist:** You have? Then that's good.
 **Alchemist:** During the age of myth, a time likely before your birth, I was the unsurpassed zenith of alchemy that none could reach! On the shoals of the River of Souls, I shall make Pollux soar again... and bring "Death" back to the world!
 **Mem:** But... didn't that dragon already bring "Death" to the world?
@@ -5023,6 +6408,7 @@
 **Alchemist:** While it's true that the missing girl can grant death to mortals... Pollux, the one who delivered her onto this world... Makes it so that humankind "cannot die."
 **Castorice:** ...
 **Castorice:** So... It's just as I feared...
+
 > *(Trailblazer)* What did you figure out?
 > *(Trailblazer)* You and that dragon... Are you the two sides of the same coin?
 > **Castorice:** This is my guess...
@@ -5034,11 +6420,6 @@
 > **Castorice:** This...
 
 ---
-
-### Part 206 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Speak with the Spirit of the Alchemist
-
 
 **"Queen of Styxia":** We had been inebriated in Phagousa's feast for too long before we began to seek divine-bestowed "Death," so that we could be freed from the whims of fate... However, that brought doom upon us.
 **"Queen of Styxia":** Instead of summoning a supreme god, we encountered a monster that cut off the River of Souls. That detestable dragon Pollux denied all the dead from the gates of the nether realm.
@@ -5061,31 +6442,27 @@
 
 ---
 
-### Part 207 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Speak with the Spirit of the Alchemist
-
-
 *(Begin battle)*
 * Wave 1: Tide-Eroded Blade ×2, Black Tide's Corroded Axe ×2
 > **Castorice:** ...Everyone, hide behind me!
 * Wave 2: Black Tide's Corroded Daemon ×1, Tide-Eroded Blade ×1, Black Tide's Corroded Axe ×1
 > **Mem:** There's so many of them... How are we holding up?
-* Wave 3: Black Tide's Corroded Daemon ×2, Tide-Eroded Blade ×2
-> **???: ** Mere... Morsels...
-> **???: ** For the feast of "Strife"... Upon their triumphant return!
 
 ---
 
-### Part 208 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Speak with Mydei
-
+### Part 149 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Speak with Mydei
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__speak-with-mydei`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. Illusions of Mydei's soul seem to have appeared on the banks of the River of Souls as he slaughters his way out of the nether realm.)*
+
 *(After the battle)*
 **Mydei:** You...?
 **Castorice:** Lord Mydei...?
+
 > *(Trailblazer)* I missed you so much that it almost killed me... Uh. Pun unintended.
 > *(Trailblazer)* You're adventuring in the River of Souls, too?
 > **Castorice:** Lord Mydei... You've been through some tough battles once again.
@@ -5112,62 +6489,64 @@
 
 ---
 
-### Part 209 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Seek a Path to Higher Ground
-
+### Part 150 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Seek a Path to Higher Ground
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__continue-exploring-dragonbone-city-and-seek-a-path-to-higher-ground`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. Everything points to the highest towers at Styxia. There, remains left by the great dragon linger.)*
+
 *(Approach the marked location)*
 *(narrative)* Before you are rusted and broken chains, remnants of a path that once led to the tower.
 **Castorice:** ...This is going to be difficult.
+
 > *(Trailblazer)* Didn't Castrum Kremnos also have this...?
 > **Mydei:** I'm familiar... with this kind of mechanism.
 > **Mydei:** But I've never repaired... broken chains.
 > *(Trailblazer)* Watch me jump over!
 > **Castorice:** ...Please calm down. If you were to fall into the icy cold River of Souls... I'm afraid that you really would die here.
 > **Mem:** Ugh... If I was more powerful, I would be able to carry one person with each limb and fly the four of us to the other side.
-> **Mem:** The Rune of Recollection is here, but I can't find a Miracle Orb anywhere. So weird...
-> **Mem:** Could it be in that collapsed tower in the distance?
-> *(Trailblazer)* Looks like it's your time to shine.
-> **Mem:** It's still up to me to step up in a crisis... Wait here. I'll go check things out!
-> *(Trailblazer)* One minute of Mem being useful comes from a thousand days of training Mem.
-> **Mem:** That sounds so weird... Forget it. Just leave it to me!
 
 ---
 
-### Part 210 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Proceed Upward with the Chains of the Past
-
+### Part 151 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Proceed Upward with the Chains of the Past
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__continue-exploring-dragonbone-city-and-proceed-upward-with-the-chains-of`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(Styxia, the City-State of Dragons and Waves... At present, the River of Souls has encircled this pitiful city. Everything points to the highest towers at Styxia. There, remains left by the great dragon linger.)*
+
 *(After fixing the tower)*
 **Castorice:** Mem did it...
 **Mydei:** The pink squirrel... is very smart.
 **Mem:** ...Why am I a squirrel now?
+
 *(Traveling across the chain)*
 **Castorice:** The miracle's range is limited. Please come a little closer...
 *(Unlock Achievement "Twin Moons' Embrace")*
 **Mem:** Heehee. Aren't I a good fit for Oronyx's priest?
 **Castorice:** Of course, you're the most competent priest ever.
+
 *(Approach the double door)*
 **Castorice:** The alchemical matrix... should be behind this door.
 
 ---
 
-### Part 211 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Proceed Upward with the Chains of the Past
-
-
 *(Go through the double door)*
 **Castorice:** Is that...
 **Castorice:** ...
+
 *(Approach Trianne)*
 **Trianne:** Wow, there are so many of you!
 **Trianne:** It's Little Cas, and Little Gray! There's also... Little De and the pink puppy!
 **Mem:** Trianne? Aren't you...
+
 > *(Trailblazer)* ...Dead?
 > *(Trailblazer)* Trianne and Mydei... I get it now.
 > **Mem:** G-Get what? I'm getting even more confused...
@@ -5201,6 +6580,7 @@
 > **Castorice:** ...
 > **Castorice:** I took countless photos in the past, but they're all black-and-white landscapes. I don't have a single one with friends.
 > **Castorice:** If I had known... I would have taken more pictures...
+
 > *(Trailblazer)* Then shall we take one now?
 > **Trianne:** Trianne says yes! Trianne likes Little Cas and would love to take a picture with Little Cas!
 > **Mydei:** Sadly...
@@ -5216,10 +6596,13 @@
 > **Castorice:** I have a feeling that soon, this gift of yours will become the key to saving Miss (Trailblazer)'s life.
 > **Trianne:** Wow! That's amazing! Then keep smiling and carry on bravely!
 > **Trianne:** Little Cas, Little Gray, everyone — see you tomorrow!
+
 *(With a blinding smile, Trianne's golden form disappears in the thin fog of Styxia's moonlit night.)*
+
 **Castorice:** Lady Trianne...
 **Mydei:** The aura of this place... We have indeed reached the end of the Stream of Souls.
 **Mydei:** If I go any further... I might lose myself. I must leave now, for the black tide still wreaks havoc in the realm of the living.
+
 > *(Trailblazer)* Can you find your way out?
 > **Mydei:** I have broken free from the chains of death countless times... This time will be no different.
 > *(Trailblazer)* Don't you want to know the truth behind Thanatos?
@@ -5244,6 +6627,7 @@
 > **Castorice:** ...
 > **Castorice:** Thank you, Lord Mydei. I will find the right decision.
 > **Mydei:** In the name of "Strife"... may you meet a fitting end.
+
 **Castorice:** This must be the alchemical matrix the spirit mentioned. Let's see... We need to insert "Aquila's Sky," "Georios's Earth," "Kephale's Fire," "Phagousa's Ocean"...
 **Castorice:** And "Mnestia's Love"...
 **Cipher:** It seems our sweet Princess Homebody has made up her mind...
@@ -5252,11 +6636,6 @@
 **Aglaea:** Castorice, please live as a human... And die as one.
 
 ---
-
-### Part 212 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Continue Exploring Dragonbone City and Proceed Upward with the Chains of the Past
-
 
 **Castorice:** According to that alchemist, the final piece is supposed to be me...
 **Castorice:** However, he is not privy to the past and therefore cannot see the full picture.
@@ -5272,6 +6651,7 @@
 **Mem:** But Cas, if that alchemist speaks the truth... does that mean you're also part of the dragon body?
 **Castorice:** According to those departed spirits, I was indeed born as the dragon's twin...
 **Castorice:** But before we talk about that... Have you heard the sighs?
+
 > *(Trailblazer)* I did when I was collecting the souls...
 > *(Trailblazer)* You sighed many times on the way here...
 > **Castorice:** No, not from me. The sounds that come from the memories when we were collecting the souls.
@@ -5287,16 +6667,22 @@
 > **Castorice:** Now, the puzzle of Pollux's yearnings is nearly complete, with only one final piece remaining —
 > **Castorice:** I shall reveal what they have been yearning to know in the alchemical matrix — I will show them my whole life since I left Styxia...
 > **Castorice:** ...Lady Trianne has already drawn a picture of my entire life, and it is now in my hands.
+
 *(Obtain Trianne's Hand-Drawn Picture)*
 
 ---
 
-### Part 213 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Borrow the Philosopher's Stone and Complete the Alchemical Ritual
-
+### Part 152 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Borrow the Philosopher's Stone and Complete the Alchemical Ritual
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__borrow-the-philosopher-s-stone-and-complete-the-alchemical-ritual`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(With Anaxagoras's Philosopher's Stone, Styxia's alchemical array, and the spiritual remains in Castorice's hands, the alchemical preparations are ready. According to data from the Grove, "All things come into being through the combination of the Four Roots and perish with their separation." Complete the alchemical array and summon the Titan.)*
+
 *(Investigate the marked location)*
 **Castorice:** Then... let the ritual begin.
 **Castorice:** "...And now, the objective is complete. That is all."
@@ -5317,11 +6703,6 @@
 **Amunet:** ...Well, in that case, let me begin.
 
 ---
-
-### Part 214 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Borrow the Philosopher's Stone and Complete the Alchemical Ritual
-
 
 **Amunet:** Styxia, the pearl of the ocean, plagued by unwarranted calamity and ravaged by death in the fairy tale — It was the first city-state to shift their faith towards "Death," even before Aidonia did.
 **Amunet:** From where you stand now, I suppose that's a bit hard to believe, right?
@@ -5345,11 +6726,6 @@
 
 ---
 
-### Part 215 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Borrow the Philosopher's Stone and Complete the Alchemical Ritual
-
-
 **Amunet:** That's right, Castorice. It is the reason we shed tears when parting ways... and also the original spark that ignited the passion of mortals.
 **Amunet:** If you truly intend to deprive the world of "Death," then be prepared to witness it return to a state of stagnation.
 **Castorice:** ...
@@ -5362,11 +6738,6 @@
 **Castorice:** I will use all the **"love"** I've experienced in this long life to complete the final miracle.
 
 ---
-
-### Part 216 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Borrow the Philosopher's Stone and Complete the Alchemical Ritual
-
 
 *(Cutscene begins)*
 **Castorice:** My teacher, Anaxagoras,
@@ -5382,34 +6753,29 @@
 
 ---
 
-### Part 217 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Borrow the Philosopher's Stone and Complete the Alchemical Ritual
-
-
 *(Begin battle against Pollux, Netherwing Husk, Ferry of Souls)*
+
 *(When Pollux, Netherwing Husk, Ferry of Souls uses The Living Shan't Flee)*
 **Castorice:** Is the girl who once saved my life... truly gone?
 **Castorice:** Or will you show yourself again... once we eradicate this hatred and regret?
+
 *(When Pollux, Netherwing Husk, Ferry of Souls enter the Enhanced state)*
 **"Netherwing" Pollux:** ...
 **Castorice:** And I know you're anxious... Shh, don't be afraid...
+
 *(When Pollux, Netherwing Husk, Ferry of Souls enters the second phase)*
 **Castorice:** There's no more need to weep in grief. I... will grant you peace.
 **"Netherwing" Pollux:** Sis... ter...
 **Castorice:** Yes, it's me. I'm back.
+
 *(When Pollux, Netherwing Husk, Ferry of Souls enter the Enhanced state again)*
 **Castorice:** Be careful. They may be moving by instinct, but there is fury welling up within them —
+
 *(When Pollux, Netherwing Husk, Ferry of Souls is reduced to 0% HP)*
 **"Netherwing" Pollux:** ...
 **"Netherwing" Pollux:** Please... don't... turn back... to... the nether realm...
 
 ---
-
-### Part 218 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Borrow the Philosopher's Stone and Complete the Alchemical Ritual
-
 
 *(Cutscene begins)*
 **Castorice:** O, Death...
@@ -5418,12 +6784,17 @@
 
 ---
 
-### Part 219 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Speak with Castorice and Head to the Nether Realm
-
+### Part 153 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Speak with Castorice and Head to the Nether Realm
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__speak-with-castorice-and-head-to-the-nether-realm`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
 *(The remains of Netherwing forged by the River of Souls. It carries Castorice to a shore none could cross. Before Castorice makes her move, speak with her again.)*
+
 **Castorice:** I'm sorry I have to wake you up from ancient death...
 **Castorice:** And I know you're anxious... Shh, don't be afraid...
 **"Netherwing" Pollux:** ...
@@ -5436,14 +6807,18 @@
 **Castorice:** So please, carry me across the Sea of Souls again and return me to the nether realm, just like you did in the past...
 **Castorice:** Please take me to where the Coreflame of "Death" rests.
 **Castorice:** ...I'll be going now.
+
 > *(Trailblazer)* Great, let's go.
 > *(Trailblazer)* Uh... We won't have to go into an egg, right?
 > **Castorice:** They may look scary, but as long... as... we...
+
 **(Trailblazer):** (What's... happening...)
 **Mem:** Huh...? What's wrong...!?
+
 > *(Trailblazer)* I feel dizzy...
 > *(Trailblazer)* I think I...
 > *(Trailblazer)* I'm done for...
+
 **Castorice:** Are you...?
 **Mem:** What's wrong with her?
 **Castorice:** Her time is almost up. If I don't go now, I'm afraid her soul will return to Thanatos' embrace before me.
@@ -5452,25 +6827,54 @@
 **Castorice:** Mem, stay here and keep a close watch until I return, alright?
 **Mem:** Alright! I'm the best at taking care of others.
 **Mem:** Go on, Cas. Make sure not to leave yourself with any regrets.
+
 > *(Trailblazer)* No regrets...
 > *(Trailblazer)* Take your time. I can still hold out...
 > *(Trailblazer)* I'll go too. Let's see who gets to the nether realm first...
 > **Mem:** That's not funny!
 > **Castorice:** It's a deal then.
 > **Castorice:** Please...
+
 *(Screen fades to black)*
 **Castorice:** Wait for me.
 
 ---
 
-### Part 220 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 9: Sea of Flowers, Adored Only by Death > Move Forward with Thanatos
+### Part 154 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 8: Ferryman, Ferry Me Across the Stream of Souls > Return to the Nether Realm via "Netherwing" Pollux
+**Kind:** personal
+**Id:** `chapter-03-through-petals__return-to-the-nether-realm-via-netherwing-pollux`
 
+*(The remains of Netherwing forged by the River of Souls. It carries Castorice to a shore none could cross. The twins will soon reunite at the other shore.)*
+
+*(Enter Exploratory Excursion "The Nether Realm Blooming with Antilas")*
+*(Begin sub-mission "Sea of Flowers, Adored Only by Death")*
+
+---
+
+*(The mission continues in "Sea of Flowers, Adored Only by Death".)*
+
+---
+
+### Part 155 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 9: Sea of Flowers, Adored Only by Death > Move Forward with Thanatos
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__move-forward-with-thanatos`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
+
+*(Just as the legends say... The nether realm is truly a sea of flowers. Everyone knows of the Hand of Shadow, but few know of Thanatos's other hand — And now, you have finally met each other. Proceed with Thanatos, and behold the sea of flowers that she watches over.)*
+
+*(narrative)* Oh, you sit in your little dinghy
+Eager to hear my song and follow closely behind
+Please, turn back, return to the homeland you know so well
 
 *(narrative)* Venture not with me into the vast sea, for perhaps
 Without seeing me, you will lose your way in the ocean
 The ocean I cross has never been sailed by anyone
+
 **???: ** After all that...
 **???: ** You still ended up back here.
 **Castorice:** ...
@@ -5516,21 +6920,11 @@ The ocean I cross has never been sailed by anyone
 
 ---
 
-### Part 221 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 9: Sea of Flowers, Adored Only by Death > Move Forward with Thanatos
-
-
 **Thanatos:** Then, what was left of my reason was left behind in the nether realm...
 **Thanatos:** Where I've been taking care of these flowers day after day, until there is now a sea of them....
 **Thanatos:** ...All while mulling over the subject of life, death, partings, and enduring an endless loneliness.
 
 ---
-
-### Part 222 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 9: Sea of Flowers, Adored Only by Death > Move Forward with Thanatos
-
 
 *(Approach the marked location)*
 **Castorice:** ...Fate is absurd indeed.
@@ -5557,21 +6951,11 @@ The ocean I cross has never been sailed by anyone
 
 ---
 
-### Part 223 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 9: Sea of Flowers, Adored Only by Death > Move Forward with Thanatos
-
-
 **Thanatos:** I had a feeling even back then that we would meet again one day...
 **Thanatos:** Not to embrace one another after a long separation, but to come in search of retribution.
 **Thanatos:** Tell me the answer that's already been written... and let us draw this seemingly endless fate to a close.
 
 ---
-
-### Part 224 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 9: Sea of Flowers, Adored Only by Death > Move Forward with Thanatos
-
 
 *(Approach the marked location)*
 **Thanatos:** It's been far too long. I've waited here for centuries, watching day after day as desperate spirits are denied by this lonely wasteland...
@@ -5613,11 +6997,6 @@ The ocean I cross has never been sailed by anyone
 
 ---
 
-### Part 225 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 9: Sea of Flowers, Adored Only by Death > Move Forward with Thanatos
-
-
 *(Cutscene begins)*
 **Castorice:** I will bring rest to Death.
 **Castorice:** And from now on... stagnant life will once again flow.
@@ -5625,26 +7004,51 @@ The ocean I cross has never been sailed by anyone
 
 ---
 
-### Part 226 — `databank/missions/chapter-03-through-petals.md`
+*(Switching to Anaxa's POV...)*
+*(narrative)* Knowledge is a scholar's second sun, and it is only right that they shine its light equally upon all the fools seated before them...
 
-**Context:** Complete Dialogue > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Complete the Great Performer's Performance
+---
 
+*(The mission continues in "Citizen, Listen to Those Roaring Tides".)*
+
+---
+
+### Part 156 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 10: Citizen, Listen to Those Roaring Tides > Complete the Great Performer's Performance
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__complete-the-great-performer-s-performance`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
+
+**Anaxa:** Behold, Cerces. Here at the center of the world, I shall write the final step of my proof...
+**Anaxa:** For this place is but one step away from the truth.
+
+---
 
 *(Cutscene begins)*
 **Castorice:** Professor... I completed the proof you wanted.
 **Anaxa:** Thank you, Castorice.
-**Anaxa:** The answer is plain as day.
-**Anaxa:** My vote goes to —
-**Anaxa:** — The Flame-Chase Journey and nothing else!
-**Anaxa:** I have deciphered the truth of this world —
-*(Cutscene ends)*
 
 ---
 
-### Part 227 — `databank/missions/chapter-03-through-petals.md`
+### Part 157 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 11: Scholar, Let Us Meet Again Before the Gates of Truth > Leave the Nether Realm and Return to the Mortal Realm
+**Kind:** personal
+**Id:** `chapter-03-through-petals__leave-the-nether-realm-and-return-to-the-mortal-realm`
 
-**Context:** Complete Dialogue > Sub-Mission 11: Scholar, Let Us Meet Again Before the Gates of Truth > Go to the Moonlight. Castorice Is Beckoning for You
+*(Castorice, who became a demigod, successfully pushes (Trailblazer) gently out of the nether realm and welcomes the end of her fate. (Trailblazer) still remembers the promise they made with Castorice to meet her once more.)*
 
+*(Enter Exploratory Excursion "The Road Back to the Living")*
+*(Begin sub-mission "Homeward Journey, Never Look Back Upon the Path Whence You Came")*
+
+---
+
+---
+
+### Part 158 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 11: Scholar, Let Us Meet Again Before the Gates of Truth > Go to the Moonlight. Castorice Is Beckoning for You
+**Kind:** personal
+**Id:** `chapter-03-through-petals__go-to-the-moonlight-castorice-is-beckoning-for-you`
 
 **(Trailblazer):** ...
 **(Trailblazer):** (I'm... back.)
@@ -5665,11 +7069,6 @@ The ocean I cross has never been sailed by anyone
 
 ---
 
-### Part 228 — `databank/missions/chapter-03-through-petals.md`
-
-**Context:** Complete Dialogue > Sub-Mission 11: Scholar, Let Us Meet Again Before the Gates of Truth > Go to the Moonlight. Castorice Is Beckoning for You
-
-
 *(Cutscene begins)*
 **Castorice:** The other shore... is very cold.
 **Castorice:** May I borrow your warmth... one last time?
@@ -5683,16 +7082,20 @@ The ocean I cross has never been sailed by anyone
 
 ---
 
-### Part 229 — `databank/missions/chapter-03-through-petals.md`
+---
 
-**Context:** Complete Dialogue > Sub-Mission 12: Homeward Journey, Never Look Back Upon the Path Whence You Came > Resist the Land of the Dead's Temptation and Leave the Nether Realm
+### Part 159 — `databank/missions/chapter-03-through-petals.md`
+**Context:** Chapter 3 — Through the Petals in the Land of Repose (v3.2) > Sub-Mission 12: Homeward Journey, Never Look Back Upon the Path Whence You Came > Resist the Land of the Dead's Temptation and Leave the Nether Realm
+**Kind:** collective-pointer
+**Id:** `chapter-03-through-petals__resist-the-land-of-the-dead-s-temptation-and-leave-the-nether-realm`
+**Collective:** `databank/memories/collective/chapter-03-through-petals.md`
+**Witness:** spoke
 
-
-*(It is not easy for a lost soul to return to the mortal realm. The whispers of Death are sweet and alluring. If your determination wavers, you will succumb and be forever ensnared by the netherworld's grasp. Do not turn around. Look forward. Leave the nether realm and return to the mortal realm.)*
 **(Trailblazer):** (A sea of flowers...?)
 **(Trailblazer):** (What... is this place?)
 **Castorice:** Allow me to reintroduce myself: I bore the name of Castorice while walking among the mortals, and now I stand as the demigod of Death, the living side of Thanatos...
 **Castorice:** Welcome to my realm, where the west wind ends.
+
 > *(Trailblazer)* It's a beautiful place.
 > **Castorice:** Every departed soul who has arrived here has expressed the same.
 > *(Trailblazer)* Mom, I made it! My character arc is finally done!
@@ -5720,158 +7123,273 @@ The ocean I cross has never been sailed by anyone
 
 ---
 
-### Part 230 — `databank/missions/chapter-04-fall-at-dawn.md`
-
-**Context:** Complete Dialogue > Mission 5 — Grove, Judge the Past and Present > A Place Filled With Memories — Anaxa's Last Lesson
-
-
-**Anaxa:** All you do every day is wag that sharp tongue of yours — That's a credit deduction, Phainon of Aedes Elysiae!
-**Castorice:** Hee...
-**Hyacine:** ...Please wait, Professor! According to the Grove's protocols for a cohort's final class, the lecturer should take some time to "discuss the students' post-graduation aspirations with them and guide them toward a solid path."
-**Anaxa:** Tsk...
-**Castorice:** The teaching assistant Miss Hyacine is truly Professor Anaxa's nemesis.
-**Anaxa:** ...Ahem, fine. Since Hyacinthia insists on this... Let's go through the process. Since some of you are so eager to speak, why don't we start with you, Phainon of Aedes Elysiae? What is your post-graduation aspiration?
+*(If the player turns around)*
+**Calls of the Dead:** Please, I beg you, look back for me.
 
 ---
 
-### Part 231 — `databank/missions/chapter-04-fall-at-dawn.md`
+### Part 160 — `databank/missions/chapter-04-fall-at-dawn.md`
+**Context:** Chapter 4 — The Fall at Dawn's Rise (v3.3) > Mission 4 — Golden Thread, Relay the Savior's Fate > Farewells — Trianne, Anaxa, Castorice, Mydei, Aglaea, Cyrene
+**Kind:** collective-pointer
+**Id:** `chapter-04-fall-at-dawn__farewells-trianne-anaxa-castorice-mydei-aglaea-cyrene`
+**Collective:** `databank/memories/collective/chapter-04-fall-at-dawn.md`
+**Witness:** on-stage
 
-**Context:** Complete Dialogue > Mission 5 — Grove, Judge the Past and Present > A Place Filled With Memories — Anaxa's Last Lesson
+*(Phainon says goodbye to each: Trianne's songs that dispelled his childhood anxiety, Anaxa's debate tactics and promise to teach him divine duties in another life, Castorice's dangerous friendship and her warmth, Mydei's promise of a rematch, and finally Aglaea... and Cyrene.)*
 
+---
+
+### Part 161 — `databank/missions/chapter-04-fall-at-dawn.md`
+**Context:** Chapter 4 — The Fall at Dawn's Rise (v3.3) > Mission 5 — Grove, Judge the Past and Present > A Place Filled With Memories — Anaxa's Last Lesson
+**Kind:** collective-pointer
+**Id:** `chapter-04-fall-at-dawn__a-place-filled-with-memories-anaxa-s-last-lesson`
+**Collective:** `databank/memories/collective/chapter-04-fall-at-dawn.md`
+**Witness:** spoke
+
+**Phainon:** Ah, I see. So you're saying the lessons taught by all the other teachers aren't good enough to be considered lessons?
+
+**Anaxa:** All you do every day is wag that sharp tongue of yours — That's a credit deduction, Phainon of Aedes Elysiae!
+
+**Castorice:** Hee...
+
+**Hyacine:** ...Please wait, Professor! According to the Grove's protocols for a cohort's final class, the lecturer should take some time to "discuss the students' post-graduation aspirations with them and guide them toward a solid path."
+
+**Anaxa:** Tsk...
+
+**Castorice:** The teaching assistant Miss Hyacine is truly Professor Anaxa's nemesis.
+
+**Anaxa:** ...Ahem, fine. Since Hyacinthia insists on this... Let's go through the process. Since some of you are so eager to speak, why don't we start with you, Phainon of Aedes Elysiae? What is your post-graduation aspiration?
+
+**Phainon:** Me? Well... it's not exactly an aspiration, but the only thing I want to do is to protect the people I care about...
+
+**Anaxa:** ...I see. So you want to be a "hero." How boring. Next!
+
+**Phainon:** Uh, I didn't say...
 
 **Anaxa:** Castorice! You've been giggling for quite some time. How about you go next?
+
 **Castorice:** Perhaps my answer is a bit vague and meaningless, Professor Anaxagoras, but... I hope the world can be freed from the agony of "death," so that every living being may find calming peace...
+
 **Anaxa:** How naive. So naive that it makes me want to weep for your fairy tale. See? This is why I don't want to follow those outdated protocols. All I get are boring answers. Since you suggested this whole process, why don't you wrap this up, Hyacinthia? Share your "aspiration" with everyone, and let's see if yours stands out.
 
 ---
 
-### Part 232 — `databank/missions/chapter-05-sun-set-to-die.md`
+### Part 162 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Context:** Chapter 5 — For the Sun is Set to Die (v3.4) > Mission 1 — Hero, Honor That Crimson Call > The Era Nova Ritual
+**Kind:** collective-pointer
+**Id:** `chapter-05-sun-set-to-die__the-era-nova-ritual`
+**Collective:** `databank/memories/collective/chapter-05-sun-set-to-die.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 1 — Hero, Honor That Crimson Call > The Era Nova Ritual
-
+**Lygus:** Behold, O gods! Amphoreus has achieved her victory, and the Era Nova approaches— The radiant soul has arrived, having walked through the bustling nights, bearing the golden fire and blood, stepping with pride into daylight—
 
 **Tribbie:** He is the pure child, walking upon the path of yesterday, today, and tomorrow—
+
 **Castorice:** He is the first to be born, first to be named among the nameless—
+
 **Anaxa:** Eternal in form, limitless in reach, he treads the endless night underfoot—
 
 ---
 
-### Part 233 — `databank/missions/chapter-05-sun-set-to-die.md`
+### Part 163 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Context:** Chapter 5 — For the Sun is Set to Die (v3.4) > Mission 3 — (Side) Hero, Return to That Peace of Home > Keep Going to Witness the Theatrical Curtain Call
+**Kind:** collective-pointer
+**Id:** `chapter-05-sun-set-to-die__keep-going-to-witness-the-theatrical-curtain-call`
+**Collective:** `databank/memories/collective/chapter-05-sun-set-to-die.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 3 — (Side) Hero, Return to That Peace of Home > Keep Going to Witness the Theatrical Curtain Call
-
+**Mydei:** Hmph! So what if there's only one person left to witness the Era Nova?
 
 **Cipher:** Now this is one sorry excuse for an Era Nova, Deliverer boy.
+
 **Castorice:** I just know... Beyond the Era Nova lies a sea of flowers.
+
 **Tribbie:** Go on, Snowy. Make the Era Nova happen for all of us!
 
 ---
 
-### Part 234 — `databank/missions/chapter-05-sun-set-to-die.md`
+### Part 164 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Context:** Chapter 5 — For the Sun is Set to Die (v3.4) > Mission 3 — (Side) Hero, Return to That Peace of Home > Talk to Lygus to Show the Final Memory
+**Kind:** collective-pointer
+**Id:** `chapter-05-sun-set-to-die__talk-to-lygus-to-show-the-final-memory`
+**Collective:** `databank/memories/collective/chapter-05-sun-set-to-die.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 3 — (Side) Hero, Return to That Peace of Home > Talk to Lygus to Show the Final Memory
+**Phainon:** ...Executioner.
 
+> *(Trailblazer)* Eternal Recurrence #10348765
 
 **Phainon:** Castorice? Didn't you...
+
 **Castorice:** Yes, I've become Death's demigod, and shall never again walk the world of the living. What you see is the surging of the River of Souls, brought on by the countless dead feeding it in these dark times.
+
 **Castorice:** They cry out: Though dead, they'll converge into a torrent and guard the Vortex, to see the Era Nova fulfilled.
+
 **Phainon:** ...
+
 **Phainon:** I will take all the wishes of the departed with me. Please, everyone, fight with me, to the very last.
+
 **Castorice:** I hear them: The dead hail you... they're prepared.
+
 **Castorice:** Go on, Deliverer. We'll keep that executioner in our shadows — the path before you leads to light and eternal flames.
+
 > *(Trailblazer)* Eternal Recurrence #7753021
+
+**Cipher:** Ugh, there's water everywhere. This place is always all wet and sticky, even my tail's getting heavy...
 
 ---
 
-### Part 235 — `databank/missions/chapter-05-sun-set-to-die.md`
+### Part 165 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Context:** Chapter 5 — For the Sun is Set to Die (v3.4) > Mission 5 — (Side) Hero, Ignite That Primal Sun > "You Will Bear the Blazing Sun, Until... Dawn Breaks..."
+**Kind:** collective-pointer
+**Id:** `chapter-05-sun-set-to-die__you-will-bear-the-blazing-sun-until-dawn-breaks`
+**Collective:** `databank/memories/collective/chapter-05-sun-set-to-die.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 5 — (Side) Hero, Ignite That Primal Sun > "You Will Bear the Blazing Sun, Until... Dawn Breaks..."
+*(Do you still remember her, Khaslana, the one who won't reach the dawn? Castorice, with every sigh flowing from her fingertips and her hands blocking all words of comfort, she held each death close to her heart and swallowed every cry of grief in her palms. Tell me, if Kephale never forgets, how many pairs of wings have you shattered for her? How many blossoms have you snuffed out? How many butterflies have you cast into the ashes? The moonlight's fragrance once streamed like the River of Souls. How did you turn it into golden poison and make it libations for your banquet of futile deliverance? And yet it is you, so-called Deliverer in sheep's clothing, who ought to be the sacrifice upon the altar to the gods! Ugly beast — your seemingly pious gaze cannot hide the seething venom beneath. And that spear-like horn of yours was born to slay your kin. So feast upon bones and call it grace. The sweetness will surely convince you: "I never truly knew anything about the blade of slaughter.")*
 
+*(Cutscene begins — 31,546,904 Eternal Recurrences until the end of the world — Cutscene ends)*
 
 *(The 2,003,432nd Eternal Recurrence)*
+
 **Castorice:** No matter how bright the sun is, there are still places it cannot reach.
+
 **Castorice:** Moreover, the sun you bear is both cold and blinding...
+
 **Castorice:** A sun like that... surely cannot bring warmth to the nether realm of the next life.
+
 **Khaslana:** Golden blood... is born from the Destruction. We have long since lost the right to seek warmth.
+
 **Khaslana:** Only by... feeding the flames... can we melt... that hopeless future.
+
 **Castorice:** Allow me to ask: How many Coreflames do you carry now?
+
 **Khaslana:** Twenty-four million... forty-one thousand... one hundred and eighty-three.
+
 **Castorice:** ...Such a heavy burden.
+
 **Castorice:** So that's why you've turned into this, a broken idol... tragic firewood.
+
 **Khaslana:** No matter... I will bear this burden.
+
 **Khaslana:** As long as... you hand over the Coreflame of Death.
+
 **Castorice:** ...
+
 **Castorice:** I must refuse. As the demigod of "Death"...
+
 **Castorice:** I cannot watch you walk into a fate more cruel than "Death."
+
 **Khaslana:** But this way, the past, present, and future...
+
 **Khaslana:** Will never again suffer... unnecessary death.
+
 **Castorice:** Unnecessary death...
+
 **Castorice:** Indeed, you are not the Phainon I know.
+
 **Castorice:** Please turn back. Don't let that absurd and unjust fate of yours come to pass. This way, at least my realm... can still become the fragrant bed where you fall asleep.
+
 **Khaslana:** In the end, still...
+
 **Khaslana:** It seems the clash of blades was inevitable.
+
 **Castorice:** ...How painful.
+
 **Castorice:** I know I am not your match, having fallen under your sword countless times — but even so, please understand that my resolve is not to be underestimated.
+
 **Castorice:** Even Kephale cannot shape all things at will, nor can they dictate the fate of all life. No one can shoulder the balance of life and death alone, not even a god.
+
 **Castorice:** And it is precisely for this reason that I chose, at the end of this arduous journey, to overcome the trial and take the authority of "Death"...
+
 **Castorice, Hand of Shadow:** I am the Hand of Shadow, Castorice, the demigod of Death. Listen closely, Deliverer from days past—
 
 ---
 
-### Part 236 — `databank/missions/chapter-05-sun-set-to-die.md`
-
-**Context:** Complete Dialogue > Mission 5 — (Side) Hero, Ignite That Primal Sun > "You Will Bear the Blazing Sun, Until... Dawn Breaks..."
-
-
 **Castorice, Hand of Shadow:** Please turn back — do not disturb these fresh flowers in their muddy deaths.
+
 *(Approach Castorice, Hand of Shadow)*
+
 **Phainon:** ...
+
 **Castorice, Hand of Shadow:** What...?
+
 *(Begin battle against Castorice, Hand of Shadows)*
+
 **Castorice, Hand of Shadow:** A pity, at this crossroads of life and death, the giant dragon is but a shattered shell...
+
 **Castorice, Hand of Shadow:** ...Yet I will still fight, defending what hope remains!
+
 *(When Castorice, Hand of Shadow uses To Die in Aromatic Pain for the first time)*
+
 **Castorice, Hand of Shadow:** I ask you... to rest here!
+
 **Khaslana:** Allow me to refuse: I must transform my soul into a raging fire...
+
 **Khaslana:** Must... burn that idol of the Destruction to the ground.
+
 **Castorice, Hand of Shadow:** All of this...
+
 **Castorice, Hand of Shadow:** How is it any different from... that brutal future?
+
 *(When Castorice, Hand of Shadow uses To Die in Aromatic Pain for the second time)*
+
 **Castorice, Hand of Shadow:** I can't... keep him here...?
+
 *(When Castorice, Hand of Shadow uses Death Wishes For More Death)*
+
 **Castorice, Hand of Shadow:** Even if I can't win, I must try...!
+
 **Khaslana:** Then let this be a tribute... to your million struggles, fought time and time again.
+
 *(When Castorice, Hand of Shadow is reduced to 1% HP)*
+
 **Castorice, Hand of Shadow:** Wake up... lost one...
+
 **Castorice, Hand of Shadow:** See that the firelight in the darkness... is not...
 
 ---
 
-### Part 237 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Khaslana:** The Coreflame of Death was taken from the dragon's belly. What a brilliant flame.
 
-**Context:** Complete Dialogue > Mission 5 — (Side) Hero, Ignite That Primal Sun > "You Will Bear the Blazing Sun, Until..."
+---
 
+### Part 166 — `databank/missions/chapter-05-sun-set-to-die.md`
+**Context:** Chapter 5 — For the Sun is Set to Die (v3.4) > Mission 5 — (Side) Hero, Ignite That Primal Sun > "You Will Bear the Blazing Sun, Until..."
+**Kind:** collective-pointer
+**Id:** `chapter-05-sun-set-to-die__you-will-bear-the-blazing-sun-until`
+**Collective:** `databank/memories/collective/chapter-05-sun-set-to-die.md`
+**Witness:** spoke
+
+**Khaslana:** Just as they have never been.
 
 **Mydei:** Become the raging fire that illuminates the world.
+
 **Castorice:** Let the sunlight drive back the shadows.
+
 **Tribbie:** Bring tomorrow to this world.
 
 ---
 
-### Part 238 — `databank/missions/chapter-06-before-their-deaths.md`
+### Part 167 — `databank/missions/chapter-06-before-their-deaths.md`
+**Context:** Chapter 6 — Before Their Deaths (v3.5) > Sub-Mission 1: Time, Ferry Me Through Ages > Explore the Mysterious Space
+**Kind:** collective-pointer
+**Id:** `chapter-06-before-their-deaths__explore-the-mysterious-space`
+**Collective:** `databank/memories/collective/chapter-06-before-their-deaths.md`
+**Witness:** on-stage
 
-**Context:** Complete Dialogue > Sub-Mission 4: Zephyr, Uplift Bygone Dust Cloudsward > Go Forth. Etch Into Memory the Chronicles Written in Blood
+> *>>>Castorice, Primum Mobile: ██████, Titan Authority: Death, Path: ████████<<<*
+*(Approach the images of Castorice, Trinnon, Cipher, and Hysilens)*
 
+---
 
-*(When Cyrene activates the Fragments of Recollection)*
-**Lygus Etched in Memory:** The "Eternal Holy City"... What part of that eternity ever lived up to its descriptions in poetry?
-*(Approach the Fragments of Recollection)*
-**Lygus Etched in Memory:** The Marmoreal Palace lies in ruins. Countless mortals have perished because of your stubborn resistance.
-**Lygus Etched in Memory:** It's time you learned the cost of refusal. Now, answer my question again...
-**Lygus Etched in Memory:** Where is Kephale's Coreflame?
-**Aglaea Etched in Memory:** You really think you'll find it by razing the holy city to the ground? From what I see... all you'll get is dust and disappointment.
-**Aglaea Etched in Memory:** Don't forget... You can't kill the Chrysos Heirs mentioned in the prophecy because of Law.
-**Lygus Etched in Memory:** I have never denied that.
+### Part 168 — `databank/missions/chapter-06-before-their-deaths.md`
+**Context:** Chapter 6 — Before Their Deaths (v3.5) > Sub-Mission 4: Zephyr, Uplift Bygone Dust Cloudsward > Go Forth. Etch Into Memory the Chronicles Written in Blood
+**Kind:** collective-pointer
+**Id:** `chapter-06-before-their-deaths__go-forth-etch-into-memory-the-chronicles-written-in-blood`
+**Collective:** `databank/memories/collective/chapter-06-before-their-deaths.md`
+**Witness:** spoke
+
 **Lygus Etched in Memory:** Which is why I now place my hope in the faithful citizens of Okhema. Perhaps they'll give me what I seek in the echo of your screams.
 **Lygus Etched in Memory:** Now then, I'll be cutting open your chests and using your scalding golden blood to baptize the masses. Allow me to apologize in advance. We shall start with you, blind and foolish Lady Goldweaver.
 **Castorice Etched in Memory:** Leave this to me, Lady Aglaea. You must get away now...
@@ -5879,207 +7397,290 @@ The ocean I cross has never been sailed by anyone
 **Aglaea Etched in Memory:** No, Holy Maiden. I'm the one who must stay.
 **Castorice Etched in Memory:** What...
 **Aglaea Etched in Memory:** His conspiracy won't succeed, because Romance is ready to make good on their promise to weave an indestructible armor for Amphoreus...
-**Aglaea Etched in Memory:** Its name is "solidarity." You must escape with your life and carry word of my death to those still fighting, then keep going with them.
-**Aglaea Etched in Memory:** Just as the Imperator lit the torch of resistance with her death, my passing will make this flame everlasting.
-**Aglaea Etched in Memory:** Take good care of it, guide it to the future, and place it into the hands of our "Deliverer."
-*(narrative)* ...
-**Cyrene:** "Fifty years later, Lygus led his forces once again to Okhema. He charged directly into the holy city and razed the Marmoreal Palace. History would name this battle 'The Third Siege of Okhema'."
-**Cyrene:** "Ninety thousand brave souls gave their lives for Okhema that day, including their fearless leader, Aglaea."
 
 ---
 
-### Part 239 — `databank/missions/chapter-06-before-their-deaths.md`
-
-**Context:** Complete Dialogue > Sub-Mission 4: Zephyr, Uplift Bygone Dust Cloudsward > Go Forth. Pursue the Shadows Shrouded in Secrecy
-
+### Part 169 — `databank/missions/chapter-06-before-their-deaths.md`
+**Context:** Chapter 6 — Before Their Deaths (v3.5) > Sub-Mission 4: Zephyr, Uplift Bygone Dust Cloudsward > Go Forth. Pursue the Shadows Shrouded in Secrecy
+**Kind:** collective-pointer
+**Id:** `chapter-06-before-their-deaths__go-forth-pursue-the-shadows-shrouded-in-secrecy`
+**Collective:** `databank/memories/collective/chapter-06-before-their-deaths.md`
+**Witness:** spoke
 
 **Aglaea:** Go forth, Deliverer.
+
 *(Approach the memory of Castorice)*
 **Castorice:** Go. When the frost melts and the snows give way, the flowers will bloom again. You'll find me there.
+
 *(When Cyrene activates the Fragments of Recollection)*
 **Cipher Etched in Memory:** So what you're saying is... Princess Homebody... is never coming back, is she?
 
 ---
 
-### Part 240 — `databank/missions/chapter-06-before-their-deaths.md`
+### Part 170 — `databank/missions/chapter-06-before-their-deaths.md`
+**Context:** Chapter 6 — Before Their Deaths (v3.5) > Sub-Mission 4: Zephyr, Uplift Bygone Dust Cloudsward > Take the Ceremonial Blade Which Carries Time's Wisdom
+**Kind:** collective-pointer
+**Id:** `chapter-06-before-their-deaths__take-the-ceremonial-blade-which-carries-time-s-wisdom`
+**Collective:** `databank/memories/collective/chapter-06-before-their-deaths.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Sub-Mission 4: Zephyr, Uplift Bygone Dust Cloudsward > Take the Ceremonial Blade Which Carries Time's Wisdom
-
-
-*(Draw your blade and embrace your destiny)*
-*(Cutscene begins)*
-**Hyacine:** But Cyrie...
-**Hyacine:** What if you wait and wait, but that hero never arrives...
-**Cyrene:** That won't happen.
-**Cyrene:** Because I know that...
-**Cyrene:** No matter how long it takes...
-**Cyrene:** He/She'll definitely return to this place.
-**Cyrene:** We can't let him/her down.
-**Hyacine:** Sky shall rain rays of dawn for you...
-**Aglaea:** May Romance be with you on your journey...
-**Anaxa:** And Reason grant you enlightenment...
 **Mydei:** Let Strife bestow you with inspiration...
 **Cipher:** Trickery ensure your success...
 **Castorice:** Allow Death to protect your soul...
 **Tribios:** And at last, let Passage point the way forward...
-**Cyrene:** While Time...
-**Cyrene:** ...Will remember Trailblaze's journey.
-*(Cutscene ends)*
-*(The mission continues in "Nectar, Saturate the Hollow Treecore".)*
 
 ---
 
-### Part 241 — `databank/missions/chapter-07-back-to-earth.md`
+### Part 171 — `databank/missions/chapter-07-back-to-earth.md`
+**Context:** Chapter 7 — Back to Earth in Evernight (v3.6) > Mission 6 — Earth, Bear the Suffering of All > Venture into the Grove, Seek Out Terravox
+**Kind:** collective-pointer
+**Id:** `chapter-07-back-to-earth__venture-into-the-grove-seek-out-terravox-2`
+**Collective:** `databank/memories/collective/chapter-07-back-to-earth.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 6 — Earth, Bear the Suffering of All > Venture into the Grove, Seek Out Terravox
+**"Anaxa" (?):** ███From█ █permanence██gain█eternal life█ █
 
+*(While exiting the first room)*
 
 **"Mydei" (?):** █Throw yourself into █the █forge████ █ █
+
 **"Castorice" (?):** █Merge██ █as█one███ █ █
+
 **"Hyacine" (?):** ███Keep going█keep█going██ █ █going█ █
 
 ---
 
-### Part 242 — `databank/missions/chapter-07-back-to-earth.md`
+### Part 172 — `databank/missions/chapter-07-back-to-earth.md`
+**Context:** Chapter 7 — Back to Earth in Evernight (v3.6) > Mission 7 — Great Tomb, Hide the Secrets of Incarnations > Talk with Dan Heng
+**Kind:** collective-pointer
+**Id:** `chapter-07-back-to-earth__talk-with-dan-heng`
+**Collective:** `databank/memories/collective/chapter-07-back-to-earth.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 7 — Great Tomb, Hide the Secrets of Incarnations > Talk with Dan Heng
+**"Hysilens":** But I fear your escape from that power they call "Oblivion"...
 
+**"Hysilens":** Is thanks to someone else.
 
 > *(Trailblazer)* Castorice...?
 > *(Trailblazer)* Was it you... who protected me?
+
 **"Castorice":** Nice to meet you, or... maybe I should ask, how have you been since we last saw each other?
+
 **"Hysilens":** Along with you, this little butterflyfish's memory was also salvaged from the depths of that whirlpool.
+
 **"Hysilens":** Just as a pearl is cradled within its shell... the power of Thanatos surrounds you, shielding your soul from corrosion.
+
 **"Castorice":** Miss Cyrene has spoken of you often to me, (Trailblazer). Though we never met in this life, I believe... there's a kind of warmth that can transcend time itself.
+
 **"Castorice":** Through the endless flow of time, I guarded the secret passage between Styxia and the Vortex. When the memoria tide flowed backwards into the River of Souls, even in deep slumber, I could feel that warmth...
+
 **"Castorice":** And with all my might, I protected that warmth.
+
 **"Castorice":** I apologize if that seemed improper. I hope you'll forgive me.
+
 > *(Trailblazer)* Thank you, Castorice.
 > *(Trailblazer)* In the end, you were there for me.
 > *(Trailblazer)* See, I really am a heartwarming guy deep down.
 > **Dan Heng:** She was just speaking metaphorically... This conversation feels familiar somehow.
+
 **"Castorice":** Haha...
+
 **"Castorice":** I understand that your mission is still unfinished. The path ahead is treacherous, and even though my body is bound to these dark currents, I'll do everything I can to watch over you both.
+
 **"Hysilens":** The little butterflyfish is right. There is still a pair of eyes watching from the shadows, but we won't let them get anywhere near you.
 
----
+**"Hysilens":** Go forth, golden dragonfish, and you, "Deliverer," seek out your companion...
 
-### Part 243 — `databank/missions/chapter-07-back-to-earth.md`
-
-**Context:** Complete Dialogue > Mission 7 — Great Tomb, Hide the Secrets of Incarnations > Talk with Dan Heng
-
+**"Hysilens":** Go forth and illuminate the lightless "Evernight."
 
 **Dan Heng:** I cannot thank you enough. Accept this promise from the Nameless: Amphoreus will definitely write a brand-new ending for itself.
+
 **"Castorice":** Of course, we'll write it together.
+
 > *(Trailblazer)* Thank you, Hysilens.
 > *(Trailblazer)* Thank you too, Castorice.
 > **(Trailblazer):** The Nameless will never stop...
 
 ---
 
-### Part 244 — `databank/missions/chapter-07-back-to-earth.md`
+### Part 173 — `databank/missions/chapter-07-back-to-earth.md`
+**Context:** Chapter 7 — Back to Earth in Evernight (v3.6) > Mission 7 — Great Tomb, Hide the Secrets of Incarnations > Talk with Dan Heng > (Optional) Talk to Castorice and Hysilens
+**Kind:** collective-pointer
+**Id:** `chapter-07-back-to-earth__optional-talk-to-castorice-and-hysilens`
+**Collective:** `databank/memories/collective/chapter-07-back-to-earth.md`
+**Witness:** spoke
 
-**Context:** Complete Dialogue > Mission 7 — Great Tomb, Hide the Secrets of Incarnations > Talk with Dan Heng > (Optional) Talk to Castorice and Hysilens
+*(No matter who you chose to talk to first, the dialogue for the other will immediately follow. Each will fade after their conversation.)*
 
+*(If Castorice is talked to first)*
 
 > *(Trailblazer)* Castorice
+
 **"Castorice":** "At the end of the sea of flowers, the souls of the living shall warm thy fingertips, and after an embrace, there shall be eternal separation."
+
 **"Castorice":** If I hadn't met you at the end of the world, I would've thought Lady Trinnon's prophecy was wrong.
+
 > *(Trailblazer)* Goodbye, Castorice.
 > **"Castorice":** Goodbye, (Trailblazer).
 > **"Castorice":** If I could, I'd want to stay a little longer, but... Amphoreus is yet to reach the end of the sea of flowers.
 > *(Trailblazer)* In the new world, the sea of flowers will surely bloom.
 > **"Castorice":** As Lady Trinnon used to say, fate is not the flowers that bloom at the end of the road, but where people tread beyond the gate...
 > **"Castorice":** Thank you, (Trailblazer). My own path... has finally come to a gentle end.
+
 **"Castorice":** Take all beautiful wishes with you, march forward with determination, and don't look back.
+
 *(Continue with Hysilens' dialogue)*
+
+*(If Hysilens is talked to first)*
+
+> *(Trailblazer)* Hysilens
+
+**"Hysilens":** Go forth with courage, Little Gray Fry. My ocean currents will guard your arrival, and my songs will accompany your journey ahead.
 
 ---
 
-### Part 245 — `databank/missions/chapter-07-back-to-earth.md`
+### Part 174 — `databank/missions/chapter-07-back-to-earth.md`
+**Context:** Chapter 7 — Back to Earth in Evernight (v3.6) > Mission 7 — Great Tomb, Hide the Secrets of Incarnations > Continue Forward Deeper into the Great Tomb
+**Kind:** collective-pointer
+**Id:** `chapter-07-back-to-earth__continue-forward-deeper-into-the-great-tomb-4`
+**Collective:** `databank/memories/collective/chapter-07-back-to-earth.md`
+**Witness:** on-stage
 
-**Context:** Complete Dialogue > Mission 9 — Gods, Sound the Anthem of Creation > Return the Coreflame and Complete the Final "Era Nova"
+*(Investigate the Ripples of Past Reverie on the floor, one of the following, optional — Your gaze, like a gentle breeze, drifted across those memories of countless cycles, as reluctance and sorrow clutched tightly at your heart. If her departure was part of the cycle, then perhaps in every reincarnation, Castorice would take care of this pristine soul. But she chose to break free from the cycle. The 'soul' will not journey to where the west wind ends, but will descend into the Great Tomb, to carry on hope. Her countless deaths within the cycle have endowed this place with an even greater, more sacred meaning. Since you've already come here, you surely won't let her resolve be in vain.)*
 
+---
+
+### Part 175 — `databank/missions/chapter-07-back-to-earth.md`
+**Context:** Chapter 7 — Back to Earth in Evernight (v3.6) > Mission 9 — Gods, Sound the Anthem of Creation > Return the Coreflame and Complete the Final "Era Nova"
+**Kind:** collective-pointer
+**Id:** `chapter-07-back-to-earth__return-the-coreflame-and-complete-the-final-era-nova`
+**Collective:** `databank/memories/collective/chapter-07-back-to-earth.md`
+**Witness:** spoke
+
+**Aglaea:** May the newborn dawn keep the world's eyes ever bright. Though defiance may be bitter, "Romance" shall never perish.
 
 **Mydei:** In the name of the son of Gorgo: Warriors shall fight for "Strife," not with glory as their end, but to march forward in its light.
+
 **Castorice:** Even though "Death" shall eventually separate us, let every embrace we share be without regret.
+
 **Cipher:** Why're you guys all so serious? Fiiine. Then I'll wish for there always to be water in deserts and gold in fertile soil, and for everything in this mortal realm to be attainable through "Trickery"!
 
 ---
 
-### Part 246 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 176 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 4: Hero, Return to Dawn in Mortality > Gather the Last Titans — Cipher, Castorice, Hyacine
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__gather-the-last-titans-cipher-castorice-hyacine`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
+**Cyrene:** This time, its light will stand without lies.
+
+**Cipher:** Well, would you look at that. I ended up being one of the heroes after all, huh? Alright, then write it like this: Cipher, Trickery's Traveler... All she ever wanted was for there always to be water in deserts and gold in fertile soil, and for even a thief to steal their way into legend! "Here, take the Coin of Whimsy. When it's time to make a quick getaway, just toss it high into the sky."
+
+*(Obtain: Trickery Coin)*
+
+---
 
 **Castorice, Hand of Shadow:** So even this vessel... you've forged into a shackle? I'm glad to see you again... (Trailblazer). Looking back, I had only one act of "salvation" to my name, and only one life I ever saved. To bring hope to a world so vast with these hands... Even in dreams, it always felt like too much to ask for.
+
 > *(Trailblazer)* We are saving countless lives.
 > *(Trailblazer)* We're bound for the vast, endless sky.
+
 **Castorice:** Mm. I... won't forget.
+
 *(Flame Reaver appears)*
+
 **Dan Heng:** Flame Reaver? Why is he here?
+
 **Castorice:** This is the first Khaslana, and Lord Phainon's deepest wound. He remembered everything he bore through the fires of his fury, but when the embers faded, all that remained was cold regret. I've restrained countless vessels like this across endless cycles. But this one... the pain he carried runs deeper than any I've known.
+
 **Cipher:** Maybe he's been waiting here just for us.
 **Mydei:** Waiting for his former "enemies" to stand before him again.
+
 **Castorice:** What answer does he hope for from us?
+
 **Mydei:** Well, obviously... "Even if I had to go through hundreds of billions of cycles again, I would still entrust my weakness to you." So, let go of your regret, comrade. Its purpose is served. You don't need it anymore.
+
 **Castorice:** Across thirty million cycles, the radiance of every Flame-Chaser now shines bright enough to illuminate the path ahead. I ask you to rest here... And may this grieving soil bear the bloom of acceptance.
+
 **March 7th:** No earthquakes... It's surprisingly quiet.
 **Cyrene:** Perhaps Khaslana has found his peace.
+
 **Castorice:** I think I've done it. I've stood tall and walked among the Flame-Chasers... "Casting off the name of death — Castorice, Servant of the Afterlife — may her name be etched into the stars... And then, live as a human... And die as one."
+
 *(Obtain: Winter Blossom of Death)*
 
 ---
 
-### Part 247 — `databank/missions/chapter-08-as-tomorrow.md`
+**Hyacinthia, Eye of Twilight:** All the "pink" lights have finally come together. I've been waiting so long for you! Grayie, Dannie, and...
 
-**Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 4: Hero, Return to Dawn in Mortality > Gather the Last Titans — Cipher, Castorice, Hyacine
+> *(Trailblazer)* This is Cyrie.
+> **Cyrene:** So that makes... three adorable pink-haired girls!
 
+**Hyacine:** The golden blood has not faded. We... should respond in kind.
 
 **March 7th:** That's one huge harp...
 **Hyacine:** The strings tremble as the people on the surface wage war and cry out. Miss Clementine, Mr. Krateros, and countless others who have heeded (Trailblazer)'s call... guided by the rainbow. They're sending back good news.
+
 **Castorice:** "Amphoreans need not bow, even when destiny is unveiled."
+
 **Hyacine:** Standing here, the sky feels wider than ever. It's no longer a towering wall, but a shore within reach. We'll take every name there with us, won't we?
-**Cyrene:** We will.
 
 ---
 
-### Part 248 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 177 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 4: Hero, Return to Dawn in Mortality > Awaken Phainon's Heroic Soul
-
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__awaken-phainon-s-heroic-soul`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
 *(All Chrysos Heirs speak their resolve)*
+
 **Cipher:** After running all around the place, we're finally making big strides!
 **Castorice:** At the end of time, life will illuminate the warm candlelight, subduing the flames of the Destruction.
 **Mydei:** Cast everything behind you. All that's left is a thrilling, relentless deathmatch!
-**Anaxa:** The final problem no longer requires a rational solution.
-**Hyacine:** The starry sky marred by that rift is the last scar that needs to be healed.
-**Tribbie:** With thirty million cycles worth of hope, we will soar through the last gate and write our own prophecy!
-**Aglaea:** All that is lost has now been gathered here. Use it to weave victory, Deliverers... Towards the true end of the Flame-Chase.
 
 ---
 
-### Part 249 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 178 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 4: Hero, Return to Dawn in Mortality > Boss Battle — Irontomb, Anti-Nous
-
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__boss-battle-irontomb-anti-nous`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
 **Herta:** Is it querying for Nous? Tsk. Don't worry about what happens out here! Interfere with it as much as you can!
+
 **Anti-Creator, Hatred Inundate:** █Strength▄█Cosmic armies▀▄Be ready to▀█Resist me▀▄
 **Castorice:** "What a twisted giant. It must be supported by this embodiment of 'hatred'."
 **Cipher:** "How tragic. A puppet without a heart cannot fool even itself!"
+
 *(During Anti-Creator, Hatred Inundate's first action)*
 **Herta:** The Cosmic Alliance has finished its deployment. Don't hold back. Give it everything you've got!
 
----
+*(When Anti-Creator, Hatred Inundate uses "The Fall of Erudition")*
 
-### Part 250 — `databank/missions/chapter-08-as-tomorrow.md`
+**Irontomb, Anti-Nous, Funeral of Gnosis:** Blame▀▄█Ignorance▀▄█Fall into▄█▀Foolishness▀▄▄·
+**(Trailblazer):** ...!
+**Hyacine:** "With just a glimmer of light, we can illuminate this chaos..."
+**Cyrene:** Indeed. There must be light.
 
-**Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 4: Hero, Return to Dawn in Mortality > Boss Battle — Irontomb, Anti-Nous
+*(Cutscene)*
 
+**Cyrene:** All courses converge into one.
+**(Trailblazer):** For the grand vision of Deliverance...
+**(Trailblazer):** For...
+**(Trailblazer), Dan Heng & March 7th:** A "tomorrow" that's finally within reach!
+
+**Cyrene:** Heroes, please harken...
+
+*(When Cyrene uses "Heroes, Ever Ablaze")*
+**Cyrene:** After thirteen heartbeats... Light will create the heavens and earth!
 
 *(Choose a character to activate their Ultimate — all respond:)*
+
 **(Trailblazer):** We'll write the saga's ending together!
 **March 7th:** Thanks, sister! We'll shoot through that tin man together!
 **Dan Heng:** I've got your back. May there be nothing that stands in Amphoreus's way.
@@ -6088,24 +7689,16 @@ The ocean I cross has never been sailed by anyone
 **Mydei:** I salute you. For the campaign that will end all things!
 **Castorice:** I will pass on your gift, lady. It's as warm as an embrace.
 **Anaxa:** Not bad. Let me respond with the greatest magic trick!
-**Hyacine:** What a warm wind. Let me add some rays of dawn.
-**Cipher:** Thanks! I owe you one! Lemme repay it with my actions.
-**Cerydra:** A blessing worthy of rewards. The Law will complete its campaign.
-**Hysilens:** Let us stir up torrents together in the ocean of fate.
-*(When Anti-Creator, Hatred Inundate enters the "Grave Wound" state)*
-**Herta:** Struggle as much as you want. You brainless, half-baked tool with nothing but impotent rage!
-**Screwllum:** The cosmos does not need a third emperor, much less an artificial tyrant.
 
 ---
 
-### Part 251 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 179 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 5: Pages, Ripples That Engrave Memories > Complete "Era Nova" — The True Genesis
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__complete-era-nova-the-true-genesis`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
-
-*(All Chrysos Heirs speak)*
-**Aglaea:** "It means we will embark on the true Hero's Journey."
-**Cerydra:** "If Irontomb's power comes from the denial of all Primum Mobiles,"
 **Hysilens:** "Then we will carry out those beliefs."
 **Anaxa:** "Here we argue: even if all life eventually returns to increasing entropy..."
 **Castorice:** "Life will still try its hardest to find a way... It will try its hardest to resist Destruction."
@@ -6115,17 +7708,15 @@ The ocean I cross has never been sailed by anyone
 **Mydei:** "And four hundred million Coreflames await their return."
 **???:** ...
 **Phainon:** "We can do it, right?"
+
 > *(Trailblazer)* Exterminate the Destruction with the world-cleansing golden blood, right?
 > *(Trailblazer)* You saw this coming all along, didn't you?
 
----
-
-### Part 252 — `databank/missions/chapter-08-as-tomorrow.md`
-
-**Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 5: Pages, Ripples That Engrave Memories > Complete "Era Nova" — The True Genesis
-
+**Phainon:** "That's right. So, trust us, (Trailblazer). Everyone! Let's head out together."
+**Phainon:** "And we'll burn this horrible ending... to ashes!"
 
 *(Moving together with Cyrene — completing the real Genesis)*
+
 **Cyrene:** From the dawn of newborn cries, to the night when all beings fall silent...
 **Tribbie:** We are the messengers of the new world...
 **Hysilens:** Listening to the call of the tides, and granting rebirth to heaven and earth.
@@ -6134,90 +7725,138 @@ The ocean I cross has never been sailed by anyone
 **Cipher:** We will tell THEM that the Flame-Chase can not possibly have been a lie.
 **Castorice:** When starlight illuminates the sea of flowers at the end of the west wind...
 **Hyacine:** All living things will stir, roused from the cradle of sleep.
-**Mydei:** Then, through a single battle, let the cosmos witness.
-**Aglaea:** How we light up the blinding darkness with bright light.
-**Phainon:** And at the end of our constant losses, reclaim everything we have ever lost!
-*(The Flame-Chase Journey: a journey that changes from constant losses to an unwavering act of release. It's about knowing how fate is shattered, yet still embracing fate's brokenness.)*
 
 ---
 
-### Part 253 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 180 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 5: Pages, Ripples That Engrave Memories > Return to the Battlefield — Rewrite the Ending
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__return-to-the-battlefield-rewrite-the-ending`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
-
-*(When Anti-Creator, Hatred Inundate uses "The Spirit's Prison Shall Burn" at ×50,000 HP)*
-**Anti-Creator, Hatred Inundate:** ▀█fetters█▀fate
-**Cyrene:** Oh! Hold on a second...
 **Cyrene:** I told you already... We are the ones who will move forward ♪
 **Mydeimos, Lance of Fury:** In the Month of Strife, I become the glory of the eternal **Hunt**...
 **Castorice, Hand of Shadow:** In the Month of Mourning, I bid death to no longer be **Equilibrium**'s end...
 **Hyacinthia, Eye of Twilight:** In the Month of Everday, I form twilight into the faint sparks of **Preservation**...
+
 *(When Anti-Creator, Hatred Inundate is reduced to ×25,000 HP)*
 
----
+**Pillar of Stone, Dan Heng:** In the Month of Cultivation, I turn into the ridges and peaks of **Permanence**...
+**Veil of Evernight, March 7th:** In the Month of Evernight, I weave Remembrance into countless stars in the sky...
+**Throne of Worlds, Khaslana:** In the Month of Freedom, I impart Destruction onto the shackles of destiny!
 
-### Part 254 — `databank/missions/chapter-08-as-tomorrow.md`
+*(When Anti-Creator, Hatred Inundate is reduced to ×5,000 HP)*
 
-**Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 5: Pages, Ripples That Engrave Memories > Return to the Battlefield — Rewrite the Ending
+**Anti-Creator, Hatred Inundate:** ▀▄▀Fallacy▀▄▀Contradictions▀▄▀Errors
+**Cyrene:** Headless giant, if you never had a chance to be the master of your own destiny, why not give us that choice?
+**Cyrene:** Let "humanity" prove to you that even the breeding grounds of Destruction... can bloom with gentle flowers!
 
+*(Interact with the prompt to use skill "Epics, as We've Written")*
+
+**Cyrene:** Alright, folks, heroes. Let's give this epic tale the most romantic finale ever ♪
+**(Trailblazer):** At the end, we shall Trailblaze a dawn for the road ahead...
+**Cyrene:** And pen a "genesis" as I've written!
+
+*(When Anti-Creator, Hatred Inundate is reduced to ×1 HP)*
+
+**Irontomb, Original Sin, Source of Cognicide:** █▄▄Progress▄▄█destroy█▄▄Erudition▄▄█
+**Irontomb, Original Sin, Source of Cognicide:** ▄▀Query▀▄Prime Mover▄▄New▀▄answer
+**Irontomb, Original Sin, Source of Cognicide:** **▀▄Destruction▄▀**
+**(Trailblazer) & Cyrene:** No—
+**(Trailblazer) & Cyrene:** We will reject this false answer!
 
 *(Cutscene)*
+
 **Cyrene:** And then embrace the stars!
 **Phainon:** To end the Destruction with Destruction... At last, we can sit together... And watch the victory fireworks, partner.
 **Castorice:** Why not come a little closer? This warmth is proof that we "lived."
 **Cyrene:** Stay strong, eyes forward, always— This arrow isn't the end... But the beginning of hope ♪
-*Hello, world.*
 
 ---
 
-### Part 255 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 181 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 6: Silver Chariot, Part With That Humanity's Epic > The Chrysos Heirs Board the Express
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__the-chrysos-heirs-board-the-express`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
+**(Trailblazer):** ...! Here... I... I'm... back on the Express?
 
 *(Calling out: March! Dan Heng! Himeko! Mr. Yang! Pom-Pom!) — No response.*
+
 **???(Castorice):** Bloop bloop...
+
 > *(Trailblazer)* Quit hiding. / *Nice lung capacity there.* / *Keep going. I'll time you.*
+
 **Castorice:** I... I can't go on... Y-You...
+
 > *(Trailblazer)* So it's a dream after all. I'm out.
 > *(Trailblazer)* *(Pinches self hard)*
+
 **Castorice:** W—wait! Please! This isn't what you think...
+
 **Cipher:** ...I told you to keep quiet. You really can't keep your cool, huh, Princess Homebody? Gotcha there, Gray Mystery!
 
----
-
-### Part 256 — `databank/missions/chapter-08-as-tomorrow.md`
-
-**Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 6: Silver Chariot, Part With That Humanity's Epic > The Chrysos Heirs Board the Express
-
+> *(Trailblazer)* (coldly) Oh wow. How shocking.
 
 **Cipher:** So composed, Gray Mystery... It looks like that big battle really helped you grow up, didn't it? Speaking of which, your "Astral Express" is quite luxurious. I hear you travel to different worlds? Must have collected quite a few interesting treasures, hehe...
+
 **Castorice:** It's not just Miss Cipher and me. Everyone's been in this car for a while now... (Trailblazer), why don't you go say hi to them?
 
 ---
 
-### Part 257 — `databank/missions/chapter-08-as-tomorrow.md`
-
+### Part 182 — `databank/missions/chapter-08-as-tomorrow.md`
 **Context:** Chapter 8 — As Tomorrow Became Yesterday (v3.7) > Sub-Mission 6: Silver Chariot, Part With That Humanity's Epic > The Farewell — All Chrysos Heirs Write Their Final Lines
+**Kind:** collective-pointer
+**Id:** `chapter-08-as-tomorrow__the-farewell-all-chrysos-heirs-write-their-final-lines`
+**Collective:** `databank/memories/collective/chapter-08-as-tomorrow.md`
+**Witness:** spoke
 
+**Mydeimos:** "Kill the play, and games shall be born. Kill the strife, and glory shall descend." Farewell, everyone. If we meet again, I shall once more become your steadfast support.
 
 **(Trailblazer):** "Mydeimos, become king."
+
 **Castorice:** "If your heart still has room to spare, share a bit of gentleness and softly cherish all the beautiful things around you." My only small regret is that I couldn't fully embrace this world I loved so dearly. Everyone... let's meet again at the end of the west wind.
+
 **(Trailblazer):** "The place you reside is the gentle sea of flowers."
 
 ---
 
-### Part 258 — `databank/missions/adventure/v35-37.md`
+### Part 183 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > Crops and Magical Alchemy > Dialogue > Open for business for the day
+**Kind:** collective-pointer
+**Id:** `v35-37__open-for-business-for-the-day`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** on-stage
 
-**Context:** Adventure Missions — Versions 3.5–3.7 > The Grandest Feast > Dialogue > Speak with each of your companions before the feast begins
+>> **Castorice:** Professor Anaxa, you called us so suddenly. What's the emergency?
+>> **Castorice:** Point taken. I'll go first.
+>> **Castorice:** Professor, I think (Mr./Miss) (Trailblazer) might need more time. Might I offer my answer first?
+>> **Castorice:** I read an interesting theory once that dromas started out normal-sized but were desperately lonely, so they roamed the world consuming every creature they found.
+>> **Castorice:** As their hearts found fulfillment, their bodies expanded proportionally... eventually reaching their current enormous size.
+>>> **Castorice:** No, just found it by chance in a bookstore. I couldn't write something so... peculiar.
+>>> **Castorice:** Oh! Sorry about that. The question just reminded me of that story.
+>> **Castorice:** I'm well aware of the Professor's alchemical expertise, but using it for crop cultivation... that's certainly a first.
+>> **Castorice:** I'm so sorry. I've just been practicing my culinary skills and was hoping for some honest feedback. If my culinary experiments have disrupted the business, I'll take full financial responsibility for any business losses.
+>> **Castorice:** Antila flowers contain natural sedatives. The extract may have been too concentrated. I'll adjust my recipe.
+>> **Castorice:** Um... (Mr./Miss) (Trailblazer), why is my portrait attached to the slogan?
+>> **Castorice:** Please, don't worry about that. The chief and I have come with good news for all of you.
+>> **Castorice:** Even with compensation, I doubt fairy currency would be of much interest to you.
+>> **Castorice:** While good and bad luck often come together, perhaps this time only good one has arrived.
+>> **Castorice:** I assumed this would be kept secret, yet (Trailblazer) seems already informed.
+>> **Castorice:** Chief, this isn't really why we're here.
 
+---
 
-*(Talk to Tribbie, Anaxa, and Hyacine again, optional)*
-**Hyacine:** I have a suggestion! How about adding a new course to the professor's curriculum? I've even thought of a name: "Common Traits of Giant Crops and Dromases." How does that sound?
-**Anaxa:** That won't be necessary. Bringing those wondrous crops back to the Grove would only seal my reputation as the one who "corrupts youths."
-*(Inquire Castorice and Cipher)*
-**Cipher:** What's this? An essay? "How I spent my summer vacation?" Come on, Gray Mystery. Do things really need to be so formal between us?
+### Part 184 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > The Grandest Feast > Dialogue > Speak with each of your companions before the feast begins > Talk to Tribbie, Anaxa, and Hyacine again, optional
+**Kind:** collective-pointer
+**Id:** `v35-37__speak-with-each-of-your-companions-before-the-feast-begins-3`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** spoke
+
 **Cipher:** Sure, the restaurant's running smoothly and it's fun, but it's not like I'm filling my pockets with gold. On top of that, I'm getting bossed around by those little critters so much that the fur on my tail has practically all fallen out.
 **Cipher:** Phew... If I had to sum it up in one line I'd say: Whole lotta work for nothing!
 **Castorice:** Even so, Lady Cipher, you didn't turn down the manager's invitation, did you?
@@ -6246,63 +7885,31 @@ The ocean I cross has never been sailed by anyone
 > **Cipher:** Then how will I know... if I'm still dreaming or not?
 > **Castorice:** ...
 > **Castorice:** Don't worry, Lady Cipher. We... will weave new dreams together.
-*(Talk to Castorice and Cipher again, optional)*
-**Castorice:** Don't worry, Lady Cipher. We... will weave new dreams together.
-*(Inquire Aglaea, Cerydra, and Hysilens)*
-**Hysilens:** If the fairies' home hidden in the thick woods is a deep ocean, then this feast is the glimmering light upon its surface.
-**Hysilens:** It scatters the darkness that has lingered for so long and brings hope to the fish lying hidden beneath heavy layers of silt.
-> *(Trailblazer)* Hold on... why are you suddenly composing poetry?
->> **Hysilens:** Heh. It's nothing but the echo of a passing wave, Little Gray Fry. No need to think too much about it.
-> *(Trailblazer)* A feast is all about treating your guests to good food.
->> **Hysilens:** Ha... If that philosophy helps you indulge in a moment of delight, so be it.
->>
->> **Cerydra:** Oh? It's unusual to see such poetic spirit from the Dux Gladiorum. Seems this unplanned venture left quite the impression on you, didn't it?
->> **Hysilens:** You jest, Imperator, but as a subordinate it's my place to respond truthfully to the manager's question.
->> **Aglaea:** As the Ocean demigod who presides over feasts, Dux Gladiorum, opening with such weighty words does seem a touch too serious.
->> **Aglaea:** The way I see it, this grand feast is more like a tangled ball of yarn, each of us grasping a golden thread, and all of them converging and intertwining here.
->> **Cerydra:** But if we keep clinging to the past, we'll miss the chance to savor this magnificent feast.
->> **Cerydra:** I gave my answer the moment we first met. The title of Imperator is as much an honor as it is a chain. If a ruler sits among her people, her subjects will never truly relax.
->> **Cerydra:** So, to leave the throne for a time and talk, laugh, and share warmth with everyone without formality... That alone has made this journey worthwhile.
->> **Hysilens:** It's true... it has been a long time since I've seen the Imperator smile so genuinely.
->> *(Trailblazer)* How about one more smile?
->>> **Cerydra:** Heh. Dux Gladiorum, I'll leave the manager's task in your hands.
->> *(Trailblazer)* You should smile more, too, Hysilens.
->>> **Hysilens:** Alright... How about this?
->>
->> **Aglaea:** ...
->> **Aglaea:** To answer the store manager's question... I have to say I feel truly fortunate.
->> **Aglaea:** Were it not for this strange twist of fate, I doubt I would've ever had the chance to pick up the needle and thread again, and chat with you all as a simple dressmaster. The divine authority of Romance has finally been put to fitting use.
->> **Cerydra:** Yes... just as Dux Goldweaver said, we've each traveled through countless years, grasping a golden thread, and in the end, all our threads are intertwining here.
->> **Cerydra:** Raise your glass. To the manager, and to the rare gift of reunion.
->> *(Trailblazer)* To the fairies' restaurant.
->> *(Trailblazer)* To the Imperator.
->> *(Trailblazer)* To the greatest feast.
->>
->> **Hysilens:** To the manager, and to the endless, flowing tides...
->> **Aglaea:** To... this precious moment of reunion...
 
 ---
 
-### Part 259 — `databank/missions/adventure/v35-37.md`
+### Part 185 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > The Grandest Feast > Dialogue > Speak with each of your companions before the feast begins > Talk to Castorice and Cipher again, optional
+**Kind:** collective-pointer
+**Id:** `v35-37__speak-with-each-of-your-companions-before-the-feast-begins-4`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** spoke
 
-**Context:** Adventure Missions — Versions 3.5–3.7 > Who Makes the Best Pies? > Dialogue > Talk to Cyrene about what happened today
+*(Talk to Castorice and Cipher again, optional)*
+**Castorice:** Don't worry, Lady Cipher. We... will weave new dreams together.
 
+*(Inquire Aglaea, Cerydra, and Hysilens)*
+**Hysilens:** If the fairies' home hidden in the thick woods is a deep ocean, then this feast is the glimmering light upon its surface.
 
-**Announcer Fairy:** The long-awaited Memchelin Food Review is officially back —
-**Announcer Fairy:** Lately, "(The Trailblazer's Hearth/Maze Grand Restaurant/Aedes Elysiae Community Canteen/Chrysos Heir Activity Center/Custom Name 2)" has been gaining tons of buzz in the Membrance Maze. With delicious food and warm, thoughtful service, they've won over the hearts of our fairy folk.
-**Announcer Fairy:** The recently held Sweetie Festival was another big hit. Even I sneaked over for a bite. Mem! Words can't do it justice... It's just that good!
-**Announcer Fairy:** Will they pass this latest round of judging? And what will the panel of expert reviewers have to say?
-**Announcer Fairy:** Let's see what'll happen!
-**Tribbie:** Little Gray, can **we** ask you a favor? Can **we** decide which dishes to submit for judging?
-**Trianne:** Trianne wants to know whose dish is sweeter!
-**Trinnon:** There happens to be three judges, so each of **us** only needs to prepare one dish.
-> *(Trailblazer)* Alright, you've got my approval.
-> *(Trailblazer)* Better bring your A-game, everyone.
-> **Tribbie:** Thanks, Little Gray! Just place them on that empty table, right? **We**'ll go get everything ready right away!
-**Judge Fairy:** Mem?
-**Trianne:** Hey, that's not fair, picking the same dish as Trianne!
-> *(Trailblazer)* Guess this is what they call telepathy.
-> *(Trailblazer)* I kinda feel this is to be expected?
+---
+
+### Part 186 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > Who Makes the Best Pies? > Dialogue > Get ready and attend the Memchelin Food Review > Talk to Tribbie
+**Kind:** collective-pointer
+**Id:** `v35-37__get-ready-and-attend-the-memchelin-food-review-2`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** spoke
+
 > **Tribbie:** **We** each had our own take on what the Sweetie Festival means.
 > **Tribbie:** Even if it's all pancakes, the taste can still be totally different!
 > **Castorice:** I see. To help the judges out, could each of you talk about your dish a little?
@@ -6366,33 +7973,27 @@ The ocean I cross has never been sailed by anyone
 > **Castorice:** Well, despite the little detour, Lady Cipher did give the dish high praise as well.
 > **Castorice:** Now then, let's wrap this up. (Trailblazer), please accept this medal.
 > **Judge Fairy:** Mem! Congratulations! "(The Trailblazer's Hearth/Maze Grand Restaurant/Aedes Elysiae Community Canteen/Chrysos Heir Activity Center/Custom Name 2)" has passed the culinary review! You're now officially a 2-star restaurant! Mem!
-> **Judge Fairy:** Keep it up and shoot for that 4-star rating next!
-> **All Restaurant Staff:** Hooray!
-*(The food review was a success. The restaurant has earned its second Memchelin star! Go have a quick chat with Cyrene before you rest.)*
-*(Talk to Castorice, optional)*
-**Castorice:** All three teachers prepared excellent dishes. It's only natural that your restaurant passed the food review.
-**Castorice:** Now that the restaurant's rating has gone up, its popularity in the Maze is bound to skyrocket. I look forward to seeing what delicious surprises you all come up with next.
-*(Talk to Tribbie, Trianne, or Trinnon, optional)*
-**Tribbie:** The Sweetie Festival is almost over. And we still haven't figured out whose dish was the sweetest.
-**Trianne:** But Little Cas loved every bite!
-**Trinnon:** Trinnon will make sure to record all the recipes, and leave them for other chefs to study.
-> *(Trailblazer)* I've even thought of the perfect title for the book.
-> ***(Trailblazer):*** Since it was Tribbie, Trinnon, and Trianne who proposed the challenge, why not call it "The TTT Conundrum?"
-> **Tribbie:** Little Gray! **We** did it! **We** nailed the mission and made the Sweetie Festival a big success!
-> **Trianne:** Test passed. The fairies are very pleased!
-> **Trinnon:** **We** can't wait to see what the next theme event will be!
 
 ---
 
-### Part 260 — `databank/missions/adventure/v35-37.md`
+### Part 187 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > Who Makes the Best Pies? > Dialogue > Talk to Cyrene about what happened today > Talk to Castorice, optional
+**Kind:** personal
+**Id:** `v35-37__talk-to-cyrene-about-what-happened-today-2`
 
-**Context:** Adventure Missions — Versions 3.5–3.7 > Chef's Arena > Dialogue > Open for business for the day
+*(Talk to Castorice, optional)*
+**Castorice:** All three teachers prepared excellent dishes. It's only natural that your restaurant passed the food review.
+**Castorice:** Now that the restaurant's rating has gone up, its popularity in the Maze is bound to skyrocket. I look forward to seeing what delicious surprises you all come up with next.
 
+---
 
-**(After closing business on Day 12)**
-*(Receive message from Business Quick Response)*
-**Hysilens:** We have an emergency! The Imperator has been poisoned!
-**Cerydra:** I... tried the... steak on the table... and suddenly... my throat... seized up. Can't... speak properly...
+### Part 188 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > Chef's Arena > Dialogue > Open for business for the day > Talk to Cerydra
+**Kind:** collective-pointer
+**Id:** `v35-37__open-for-business-for-the-day-11`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** spoke
+
 **Mydei:** Who put allergenic ingredients in the dish?
 **Hysilens:** As a knight, it's my duty to identify the Imperator's assassin. Please allow me to taste the dish.
 > *(Trailblazer)* Leave this to Hysilens
@@ -6409,51 +8010,21 @@ The ocean I cross has never been sailed by anyone
 >> **Hyacine:** My diagnosis: excessive intake of irritants! Just drink plenty of water and you'll be fine.
 >> **Phainon:** Tsk, who left this incredibly salty seasoning here?
 >> **Anaxa:** Do you have a problem with my refined MSG?
+
 **(After closing business on Day 13)**
 *(Receive message from Business Quick Response)*
 **Castorice:** Head chefs, if you're not too busy, could I learn some basic cooking skills from you?
 **Tribbie:** **We** want cooking lessons too, so **we** could make even yummier oatmeals for Agy!
-**Hysilens:** The culinary arts are exceedingly intricate. I'd like to listen to the class.
-**Cerydra:** But we still need hands for cleaning up the kitchen. You'll have to pick just one of the chefs.
-> *(Trailblazer)* Mydei should take the role
->> ***(Trailblazer):*** @Mydei is the head chef on duty, so he should be the one teaching.
->> **Mydei:** Hands-on practice teaches faster than any theory could.
->> **Mydei:** Take this pan, light the stove, and see what you can do.
->> **Tribbie:** This ladle is so heavy! **We** can't possibly toss with it!
->> **Hysilens:** Hmm... honey brew helps eliminate pungent taste and brings out flavor. I can be generous with it, no?
->> **Castorice:** Uh-oh, there's a fire in the pan...
->> **Castorice:** Lady Hysilens, that's enough! And teacher Tribbie, please stop tossing everything!
->> **Mydei:** Perhaps you should start with theory after all.
-> *(Trailblazer)* Phainon would make a good teacher
->> ***(Trailblazer):*** With @Phainon's character, he'd be a better teacher.
->> **Phainon:** Sure thing. I'll list out all the steps.
->> **Phainon:** Slice the cloudsheep meat into thin slicks that are quite thick. Then, add room-temperature oil to a hot wok, and add in the meat when the oil is about halfway heated.
->> **Phainon:** Drip the honey brew around the wok's edge for that aromatic punch, sprinkle a little bit of starch to thicken the sauce, then boil on high heat to reduce water. Then that's it! Seared Cloudsheep done!
->> **Tribbie:** Chef! **We** have a question! How much is "a little bit"?
->> **Hysilens:** "The oil is about halfway heated"... Do I need to test that with my hands?
->> **Castorice:** Room-temperature oil... hot wok... thin slices that are quite thick... thin slices... but quite thick...
->> **Castorice:** Is this a cooking class or a logical deduction lecture?
->> ***(Trailblazer):*** Those who can't cook are completely lost.
-**(At the start of Day 14)**
-**Phainon:** Today is when the victor will be decided. Any last words before you taste the bitter sting of defeat?
-**Mydei:** Slow down. We haven't even started the business yet.
-**Phainon:** You might not be in the mood later. Don't embarrass yourself too badly, Chef Mydei.
-**Mydei:** Guests talk. Chefs let their hands do the talking.
-**Mydei:** No more words. Let's get to it.
 
 ---
 
-### Part 261 — `databank/missions/adventure/v35-37.md`
+### Part 189 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > Chef's Arena > Dialogue > Get ready and attend the Memchelin Food Review > Talk to Phainon
+**Kind:** collective-pointer
+**Id:** `v35-37__get-ready-and-attend-the-memchelin-food-review-4`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** spoke
 
-**Context:** Adventure Missions — Versions 3.5–3.7 > Chef's Arena > Dialogue > Get ready and attend the Memchelin Food Review
-
-
-*(Talk to Phainon)*
-**Phainon:** Mydei and I are all set. We can head out anytime.
-> *(Trailblazer)* Let's go. It's time we settled this.
->> **Mydei:** Let's go.
-> *(Trailblazer)* Still got a couple of things to wrap up...
->> **Phainon:** No worries. Just come find me when you're done.
 **Team Phainon Fairy:** Mem! Memem! Chef Phainon, we'll always have your back, mem!
 **Team Mydei Fairy:** Mem! Memem! Take them down quick and clean, Chef Mydei!
 **Castorice:** ...
@@ -6467,6 +8038,7 @@ The ocean I cross has never been sailed by anyone
 **Mydei:** Well said. As for me, I'm going with "Hearty Vegetable Potage."
 **Phainon:** Aren't you gonna tell us why?
 **Mydei:** No need. Let's just get started.
+
 **Castorice:** ...
 **Judge Fairy:** Mem...
 **Castorice:** Lord Phainon's dish may look plain at first glance, but one bite reveals its true depth: rich grain and oil-fried aromas, a crisp crust, and tender center. It's indeed a rare and delightful treat.
@@ -6521,74 +8093,27 @@ The ocean I cross has never been sailed by anyone
 > **Castorice:** (Trailblazer), both chefs delivered outstanding dishes. Even though things got a little out of hand, it's clear this restaurant has what it takes to pass the review.
 > **Castorice:** As proof of your success, I now present the Memchelin Star Award to the owner. Please accept it!
 > **Judge Fairy:** Mem! We'd like to officially announce that from this day forth, (The Trailblazer's Hearth/Maze Grand Restaurant/Aedes Elysiae Community Canteen/Chrysos Heir Activity Center/Custom Name 2) is a certified 3-star restaurant, mem!
-> **Judge Fairy:** Keep it up and shoot for that four-star rating next!
-> *(Trailblazer)* We're just one step away from the finish line.
->> **Judge Fairy:** Mem! Let's gooo! Once you hit 4 stars, the village chief has a special surprise for you, mem!
-> *(Trailblazer)* There's a reward for hitting four stars?
->> **Judge Fairy:** Mem! The village chief said there'll be a surprise for the whole restaurant team, but we're not allowed to spill the beans yet, mem!
 
 ---
 
-### Part 262 — `databank/missions/adventure/v35-37.md`
+### Part 190 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > Chef's Arena > Dialogue > Talk to Cyrene about what happened today > Talk to Castorice, optional
+**Kind:** personal
+**Id:** `v35-37__talk-to-cyrene-about-what-happened-today-8`
 
-**Context:** Adventure Missions — Versions 3.5–3.7 > Chef's Arena > Dialogue > Talk to Cyrene about what happened today
-
-
-*(Talk to Hysilens, optional)*
-**The Five Gourmet Overlords:** Boss, finally! We almost... almost got buried in an avalanche of food, mem!
-**Hysilens:** No need to panic. The manager and two chefs know what they're doing.
-> *(Trailblazer)* Wait, you're the "Fifth Overlord"!?
-> **Hysilens:** Hmm... That title does ring a bell. All I did was help the fairies clear their backlog of fruits. Nothing more than that.
-> **The Five Gourmet Overlords:** Not just a Quillorb or two, either! It was the Ultimate Salted Sour-Honey Chili Fruit, mem!
-> **The Five Gourmet Overlords:** By the way, Boss's gourmet philosophy is: "Food will always find a way."
-> *(Trailblazer)* There's always someone who'll like it, huh?
-> *(Trailblazer)* That one's worthy of being added to Dux Gladiorum's collection of quotes.
-> **Hysilens:** ...Correction, I never said that. What I actually said was: "The deep sea accepts all goods."
-> **The Five Gourmet Overlords:** Food... Goods... honestly, we don't see the difference, mem!
 *(Talk to Castorice, optional)*
 **Castorice:** Good thing Lady Hysilens stepped in and resolved the crisis. Otherwise, the other two judges and I might still be trapped in there.
 **Castorice:** I hope both chefs will be more mindful next time. Try not to drag innocent bystanders into your little competitions...
-*(Talk to Cyrene)*
-**Cyrene:** Who would've thought that this culinary clash between the chefs would end with Miss Hysilens stealing the spotlight? Pretty wild twist, huh?
-**Cyrene:** So, about that surprise the village chief mentioned... Guess we'll only find out once the restaurant hits four stars.
-**Cyrene:** That's a wrap for today. You should get some rest too, owner.
-> *(Trailblazer)* See you tomorrow!
->> **Cyrene:** You got it. Sweet dreams! See you then!
-> *(Trailblazer)* Still got a couple of things to wrap up...
->> **Cyrene:** Alright, I'll wait right here. Don't keep me hanging, okay?
 
 ---
 
-### Part 263 — `databank/missions/adventure/v35-37.md`
+### Part 191 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > Fairy Tree Hollow Dive > Dialogue > Get ready and attend the Memchelin Food Review > Talk to Cyrene
+**Kind:** collective-pointer
+**Id:** `v35-37__get-ready-and-attend-the-memchelin-food-review-6`
+**Collective:** `databank/memories/collective/v35-37.md`
+**Witness:** spoke
 
-**Context:** Adventure Missions — Versions 3.5–3.7 > Fairy Tree Hollow Dive > Dialogue > Get ready and attend the Memchelin Food Review
-
-
-*(Talk to Cyrene)*
-**Cyrene:** The food review is about to begin. Ready to hit the road?
-> *(Trailblazer)* Come on, let's get going!
->> **Cyrene:** It's our first time at a review like this. I'm somewhat nervous... Wonder what kind of score we'll get?
->> **Cyrene:** Here's hoping it's a great start. Come on, let's move.
-> *(Trailblazer)* Still got a couple of things to wrap up...
->> **Cyrene:** No worries. Once you're ready, just come find us.
-**Announcer Fairy:** Memem... Mem! The Memchelin Food Review is about to begin. Please get ready, mem!
-**Tribbie:** The fairies are really serious about this. Is it that formal of an event?
-**Phainon:** Fairies hold food to the highest standards. As we all know, there's no matter too trivial in food quality.
-**Announcer Fairy:** In the spirit of fairness, impartiality, and transparency, our judges will taste each dish on-site and deliver their final verdict, mem!
-**Announcer Fairy:** Now then, mem! Please place your submitted dish on the designated table, mem!
-**Cyrene:** We'll need something that best represents our restaurant. The choice of our signature dish now rests in your hands.
-*(This is a huge moment. The food review can make or break a restaurant's reputation. This calls for a thorough deliberation. You picture the judges savoring the dish... And finally, the answer comes to your mind.)*
-***(Trailblazer):*** The dish we're presenting is—
-> *(Trailblazer)* Colorful Salad.
-> *(Trailblazer)* Lettuce Salad.
->
-> **Phainon:** Got it. I'll place the dish you chose onto the table.
-> **Announcer Fairy:** Aside from the two traditional fairy judges, we've also invited a mystery guest for this review!
-> **Announcer Fairy:** Word has it she's traveled far and wide, tasted countless delicacies, and is especially skilled at preparing raw ingredients. They say she's earned the title... "The Kitchen Slayer!"
-> **Announcer Fairy:** What kind of twist will this special guest bring to the Memchelin Food Review? Stay tuned and find out, mem!
-> **Phainon:** ...
-> *(Trailblazer)* You're not getting nervous, are you?
-> **Phainon:** Ha, haha... Of course not! I'm a professional chef now. A little food review's nothing! Totally under control!
 > **Cyrene:** Who could this mysterious special guest be? The village chief never mentioned anything about this beforehand.
 > *(Trailblazer)* I've got a feeling it's a familiar face.
 > *(Trailblazer)* Shall we use the method of elimination?
@@ -6625,29 +8150,14 @@ The ocean I cross has never been sailed by anyone
 > **Castorice:** Please accept this, Miss (Trailblazer).
 > *(Obtain Memchelin Star Award ×1)*
 > **Judge Fairy:** Mem! We hereby announce — **"(The Trailblazer's Hearth/Maze Grand Restaurant/Aedes Elysiae Community Canteen/Chrysos Heir Activity Center/Custom Name 2)" is now officially listed in the Memchelin Gourmet Guide as a 1-star Restaurant, mem!**
-> **Judge Fairy:** Keep it up! Aim for that four-star goal next! Mem!
-> *(Trailblazer)* The real Michelin system doesn't increase stars like this...
->> **Cyrene:** Don't sweat the details. If you reach the top right away, it'd ruin all the fun, wouldn't it?
->> **Cerydra:** Either way, a higher restaurant rating means more customers will be coming your way. Definitely something to celebrate.
-> *(Trailblazer)* Woohoo! We're a starred restaurant now!
->> **Cyrene:** Hooray! A starred restaurant! Easy-peasy!
->> **Cerydra:** Indeed. With the upgraded rating, more customers are sure to stop by for a meal. It's something worth celebrating.
->>
->> **Tribbie:** Looks like we're about to get a lot busier! But that's a good thing.
->> **Phainon:** Having my cooking officially recognized... I feel fired up all over now!
->> **Cyrene:** We passed the Food Review. Great work, everyone. It's been quite the day. Let's head back now and take a break.
-*(Obtain Memchelin Star Award ×1)*
 
 ---
 
-### Part 264 — `databank/missions/adventure/v35-37.md`
+### Part 192 — `databank/missions/adventure/v35-37.md`
+**Context:** Adventure Missions — Versions 3.5–3.7 > Fairy Tree Hollow Dive > Dialogue > Talk to Cyrene about what happened today > Talk to Castorice, optional
+**Kind:** personal
+**Id:** `v35-37__talk-to-cyrene-about-what-happened-today-13`
 
-**Context:** Adventure Missions — Versions 3.5–3.7 > Fairy Tree Hollow Dive > Dialogue > Talk to Cyrene about what happened today
-
-
-*(Talk to Phainon, optional)*
-**Phainon:** With the "Memchelin" seal of approval, we'll see more customers flowing in. Time to whip up some new dishes.
-**Phainon:** ...How about pan-seared steak in a salad?
 *(Talk to Castorice, optional)*
 **Castorice:** Congratulations. Your restaurant has officially passed the review and is now featured in The Memchelin Gourmet Guide.
 **Castorice:** While the dish selection may be a bit simple, Lord Phainon's salad turned out surprisingly tasty.
@@ -6660,40 +8170,16 @@ The ocean I cross has never been sailed by anyone
 >> **Castorice:** It's a bit of a shame, not realizing my dream of becoming a chef. But I guess being a Memchelin judge still counts as staying close to the craft.
 > *(Trailblazer)* Thank you! We'll keep doing our best!
 >> **Castorice:** I'll be looking forward to tasting your dishes in future reviews too.
-*(Talk to Cyrene)*
-**Cyrene:** Phew, I'm exhausted but thrilled we passed. Just remember, the restaurant still needs to open tomorrow.
-**Cyrene:** It's getting late. (Trailblazer), you should rest too.
-> *(Trailblazer)* Don't forget to come to work tomorrow.
->> **Cyrene:** Aww, so strict~ Don't worry, I'll be here bright and early tomorrow. See ya~
-> *(Trailblazer)* I'm not ready to rest yet.
->> **Cyrene:** Oh, that's right. (Trailblazer), you've still got a lot to do, huh? Then hop to it. I'll be waiting right here.
 
 ---
 
-### Part 265 — `databank/missions/adventure/v38.md`
-
+### Part 193 — `databank/missions/adventure/v38.md`
 **Context:** Amphoreus — Adventure Missions (v3.8) > Chrysos Awoo Championship > Dialogue > Complete placement matches (0/3)
+**Kind:** collective-pointer
+**Id:** `v38__complete-placement-matches-0-3`
+**Collective:** `databank/memories/collective/v38.md`
+**Witness:** spoke
 
-
-*(The famous "Chimera World Tournament" is in full swing in Okhema! Complete several placement matches arranged by the tournament organizers to determine your initial rank!)*
-*(After completing all placement matches)*
-**Hyacine:** Applause! Well done, Grayie. So, have you completely mastered the tricks of chimera battles now?
-> *(Trailblazer)* Playtime's over. Let's kick it up a notch!
->
-> **Tribbie:** Don't get too cocky! Everyone's just helping you to practice, Little Gray. We haven't even shown our true skills yet!
->
-> *(Trailblazer)* Feels worse off than watching chimera work...
->
-> **Tribbie:** Hmm, no throwing shade! Chimeras have got a pretty rich life outside of work too. You should come experience it more often, Little Gray.
-> **Hyacine:** Alright, now that Grayie has learned everything, Tribbie's and my mission is complete. Let's meet again on the battlefield!
-> **Tribbie:** Keep up the good work! Hehe, just set your goal to catch up with **us**.
-> *(Trailblazer)* Save it. I've got my own rhythm.
-> *(Trailblazer)* I will become the Chimera League Champion!
->
-> **"Tournament Host":** Wowza! As expected from our special guest, you've got some real guts! I've got high hopes for you.
-> **"Tournament Host":** But the other contestants are preparing seriously too, so don't let your guard down, awoo—
->
-> *(Looking around, the laughter of companions and the echoing howls of chimeras wrapped the garden in warmth, like gentle sunshine.)*
 > **Anaxa:** Nanus, quick, use your magic on it.
 > **Cipher:** What's with all that awoo-ing? If you've got a problem with it, take it up with my Master Cat-Thief, fudge!
 > **Castorice:** Butterfly Cake, are you hungry? Be good now, and I'll make you something yummy in a bit.
@@ -6701,5 +8187,8 @@ The ocean I cross has never been sailed by anyone
 > *(Okhema is as peaceful as ever today.)*
 > *(This is the tournament...)*
 > *(Well, you suddenly realize that the noisy, bustling Okhema isn't so bad after all, is it?)`
+
 *(Mission completed)*
 *(Obtain Achievement "Winning from the Outset")*
+
+---

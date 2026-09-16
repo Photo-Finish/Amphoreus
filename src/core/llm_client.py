@@ -71,17 +71,24 @@ class LLMClient:
         """Whether a chat backend is available (a key or a local endpoint)."""
         return bool(self.api_key) or bool(self.base_url)
 
-    def list_models(self) -> set:
+    def list_models(self, timeout: float = 8.0) -> set:
         """Return the set of model names the backend currently reports.
 
         Used as a fail-fast preflight: a bare `ollama serve` started without
         OLLAMA_MODELS serves an EMPTY models dir, so every chat call returns
         404 "model not found". Listing models up front surfaces that clearly
         instead of spamming 404s per call.
+
+        ``timeout`` is seconds — a wedged CUDA/Ollama must not block the
+        world machine forever.
         """
         try:
             from openai import OpenAI
-            client = OpenAI(api_key=self.api_key or "ollama", base_url=self.base_url)
+            client = OpenAI(
+                api_key=self.api_key or "ollama",
+                base_url=self.base_url,
+                timeout=timeout,
+            )
             return {m.id for m in client.models.list().data}
         except Exception:
             return set()
@@ -92,6 +99,7 @@ class LLMClient:
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
         think: bool = False,
+        timeout: Optional[float] = None,
     ) -> str:
         """Send messages; returns the assistant's text reply.
 
@@ -109,7 +117,10 @@ class LLMClient:
 
         from openai import OpenAI
 
-        client = OpenAI(api_key=self.api_key or "ollama", base_url=self.base_url)
+        _kw = {"api_key": self.api_key or "ollama", "base_url": self.base_url}
+        if timeout is not None:
+            _kw["timeout"] = timeout
+        client = OpenAI(**_kw)
         response = client.chat.completions.create(
             model=self.model,
             messages=messages,

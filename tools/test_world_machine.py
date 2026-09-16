@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import sys
+from pathlib import Path
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, ROOT)
@@ -82,6 +83,59 @@ def main():
           _sprite_motion_class("chimera", "wandering") == " mobile")
     check("resting dromas is still",
           _sprite_motion_class("dromas", "resting") == " still")
+
+    print("== world machine ticks on CPU without CUDA ==")
+    import tempfile
+    from unittest.mock import patch
+
+    prev_cpu = os.environ.get("AMP_WORLD_CPU")
+    prev_keeper = os.environ.get("AMP_KEEPER_LLM")
+    os.environ["AMP_WORLD_CPU"] = "1"
+    os.environ.pop("AMP_KEEPER_LLM", None)
+    tmp = Path(tempfile.mkdtemp(prefix="amp-wm-cpu-"))
+    llm_calls = []
+
+    def _gpu_boom(*_a, **_k):
+        llm_calls.append(True)
+        raise RuntimeError("CUDA unavailable")
+
+    try:
+        from src.core.llm_client import LLMClient
+        from src.world.world_engine import WorldEngine
+        import src.core.local_compute as lc
+        lc._NVIDIA_CACHE = None
+        with patch("src.core.local_compute.nvidia_present", return_value=False), \
+             patch.object(LLMClient, "list_models", side_effect=_gpu_boom), \
+             patch.object(LLMClient, "chat", side_effect=_gpu_boom):
+            engine = WorldEngine(
+                state_path=str(tmp / "world_state.json"),
+                chronicle_path=str(tmp / "chronicle"),
+                stop_path=str(tmp / "stop.flag"),
+                memory_root=str(tmp),
+            )
+            engine.director.cache_path = str(tmp / "ambient_cache.json")
+            engine.director._cache = {}
+            engine.world.time_scale = 2.0
+            lines = engine.run_day()
+            check("CPU tick wrote chronicle lines", bool(lines), repr(lines)[:180])
+            check("CPU tick did not call local GPU LLM",
+                  not llm_calls, f"calls={len(llm_calls)}")
+            weather = (engine.world.ambient or {}).get("weather") or {}
+            check("CPU Keeper fallback set weather",
+                  bool(weather), str(weather)[:160])
+            check("torch was not imported for the tick",
+                  "torch" not in sys.modules)
+            check("patched nvidia_present is False",
+                  lc.nvidia_present() is False)
+    finally:
+        if prev_cpu is None:
+            os.environ.pop("AMP_WORLD_CPU", None)
+        else:
+            os.environ["AMP_WORLD_CPU"] = prev_cpu
+        if prev_keeper is None:
+            os.environ.pop("AMP_KEEPER_LLM", None)
+        else:
+            os.environ["AMP_KEEPER_LLM"] = prev_keeper
 
     print()
     print(f"{len(PASSED)} passed, {len(FAILED)} failed")

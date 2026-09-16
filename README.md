@@ -1230,5 +1230,15 @@ tide / letter / weather / co-location / aftermath features):
   gestures that fit: click to stand near, double-click for one, drag to
   rearrange, right-click to pet (mood only — never authored speech). Name
   chips remain if a picture does not answer. No chase/feed/throw/weather.
+- **Eternal Page emotion VFX and gestures** — each companion carries CSS/SVG-free
+  marks (flush, vein, steam, sweat, tear, sparkle, heart, ?, !, dizzy, zzz,
+  shock, flower, ice, veil, note, shy hands, glow) from `data-amp-emotion`
+  and the last touch. Keyboard+mouse combos pick a gesture (Shift+click pat,
+  Ctrl+click poke, Alt+click tease, Shift+right-click hands, hover keys P/H/F/W/C/G/B/T/K,
+  and a larger right-click menu). Reactions are pose + VFX + living-world mood
+  with a factual reason — never canned Heir speech. Optional “Ask how that felt”
+  uses `manager.chat`. Suite: `tools/test_eternal_page.py`.
+- **Cyrene year cycle** (unwired) — three Light-Calendar blocks map pictures {childhood, demiurge, mem}; whisper always `"cyrene"`. Spec: `docs/CYRENE-CYCLE.md`.
+- **Visit painted sky and land** — the Dawn Device / sun is the painted emblem, not a CSS disk. Remaining geometric land glyphs (grass, wheat, wind, moon, companions, …) are painted PNGs in `assets/life_sprites/`. Suite: `tools/test_ecosystem.py`.
 
 

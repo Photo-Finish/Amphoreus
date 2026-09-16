@@ -49,6 +49,7 @@ from src.core.heir_folders import HEIR_FOLDERS  # noqa: E402
 from src.core.character_loader import CharacterLoader  # noqa: E402
 from src.core.llm_client import LLMClient  # noqa: E402
 from src.knowledge.kb_builder import CHARACTER_ALIASES  # noqa: E402
+from src.knowledge.mission_memories import is_heir_speaker_label  # noqa: E402
 from tools.test_dialogue_resemblance import (  # noqa: E402
     parse_parts, acquire_lock, release_lock, SPEAKER_RE, sample_canon_lines,
     strip_reasoning,
@@ -360,7 +361,7 @@ def build_cases(heir_id, limit, full=False):
             if not m:
                 continue
             speaker, text = m.group(1).strip(), m.group(2).strip()
-            if not text or not any(a.lower() in speaker.lower() for a in aliases):
+            if not text or not is_heir_speaker_label(heir_id, speaker):
                 continue
             prev = [l for l in lines[max(0, i - 40):i] if SPEAKER_RE.match(l)]
             if len(prev) < 2:
@@ -370,7 +371,7 @@ def build_cases(heir_id, limit, full=False):
                 mm.group(2).strip()
                 for ll in lines
                 for mm in [SPEAKER_RE.match(ll)]
-                if mm and any(a.lower() in mm.group(1).lower() for a in aliases)
+                if mm and is_heir_speaker_label(heir_id, mm.group(1).strip())
                 and mm.group(2).strip()
             ]
             # Anchors for the model EXCLUDE the target line (no echo of the answer);

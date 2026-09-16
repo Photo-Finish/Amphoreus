@@ -4,8 +4,9 @@ personal_memory.py — lets the model study a Heir's personal memories.
 Each Heir's folder contains `personal-memories.md` — their verbatim canon
 dialogue extracted by `tools/extract_personal_memories.py`. This module turns
 that file into a compact **voice digest**: a representative sample of the
-Heir's OWN spoken lines (matched by their aliases), spread across their whole
-story, injected into the system prompt so the model hears their real voice.
+Heir's OWN spoken lines (strict speaker-label match, not Titan/title aliases),
+spread across their whole story, injected into the system prompt so the model
+hears their real voice.
 
 Parsing is cached (per Heir + file mtime) so per-chat cost stays trivial.
 """
@@ -16,13 +17,18 @@ from functools import lru_cache
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from src.knowledge.kb_builder import CHARACTER_ALIASES
 from src.core.heir_folders import HEIR_FOLDERS
+from src.knowledge.mission_memories import speaker_heirs
 
 SPEAKER_RE = re.compile(r"^\s*>?\s*\*\*(.+?):\*\*\s*(.*)$")
 PART_HEADER_RE = re.compile(r"^###\s+Part\s+\d+")
 CONTEXT_RE = re.compile(r"^\*\*Context:\*\*")
+META_RE = re.compile(
+    r"^\*\*(Kind|Memory|Heirs|Collective|Witness|Source|Role|Lines|Id|Excerpt):\*\*",
+    re.I,
+)
 SEPARATOR_RE = re.compile(r"^\s*---+\s*$")
+HTML_COMMENT_RE = re.compile(r"^\s*<!--")
 
 
 def memory_file(character_id: str, root: Path) -> Optional[Path]:
@@ -44,7 +50,9 @@ def _parse_cached(path_str: str, mtime: float) -> List[List[str]]:
                 parts.append(current)
                 current = []
             continue
-        if PART_HEADER_RE.match(line) or CONTEXT_RE.match(line):
+        if PART_HEADER_RE.match(line) or CONTEXT_RE.match(line) or META_RE.match(line):
+            continue
+        if HTML_COMMENT_RE.match(line) or line.strip() == "-->":
             continue
         if line.strip() == "":
             continue
@@ -63,7 +71,6 @@ def read_parts(character_id: str, root: Path) -> List[List[str]]:
 
 def own_speaker_lines(character_id: str, root: Path) -> List[Tuple[str, str]]:
     """Return (line, part_context) for every line where the Heir speaks."""
-    aliases = CHARACTER_ALIASES.get(character_id, [character_id])
     out: List[Tuple[str, str]] = []
     for part in read_parts(character_id, root):
         for line in part:
@@ -71,7 +78,7 @@ def own_speaker_lines(character_id: str, root: Path) -> List[Tuple[str, str]]:
             if not m:
                 continue
             speaker = m.group(1).strip()
-            if any(a.lower() in speaker.lower() for a in aliases):
+            if character_id in speaker_heirs(speaker):
                 out.append((line, ""))
     return out
 

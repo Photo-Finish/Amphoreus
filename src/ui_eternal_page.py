@@ -4,8 +4,9 @@
 Stickers stand on the parchment. The stage iframe is pointer-events:none
 (Streamlit sandbox blocks iframe onclick / parent.location). Hits are tested
 on the parent page — click to stand near, double-click for one, drag to
-rearrange, right-click to pet. Whisper into the dock below the stage — not a
-Visit transcript. No weather, no ecosystem.
+rearrange, modifiers and keys for gestures, right-click for a fuller menu.
+Whisper into the dock below the stage — not a Visit transcript. No weather,
+no ecosystem. Gesture reactions are VFX + pose + mood, never authored speech.
 """
 from __future__ import annotations
 
@@ -19,6 +20,8 @@ _CLICK_Q = "ep_click"
 _SOLO_Q = "ep_solo"
 _PET_Q = "ep_pet"
 _DRAG_Q = "ep_drag"
+_ACT_Q = "ep_act"
+_ID_Q = "ep_id"
 
 _CSS_PAGE = """
 <style>
@@ -68,7 +71,9 @@ iframe[data-amp-eternal="1"],
 #amp-eternal-menu {
   position: fixed;
   z-index: 240;
-  min-width: 168px;
+  min-width: 188px;
+  max-height: 70vh;
+  overflow-y: auto;
   padding: 6px;
   border-radius: 10px;
   background: rgba(26, 20, 12, .94);
@@ -157,6 +162,10 @@ _WATCHER = """
       else if (kind === 'solo') u.searchParams.set('ep_solo', id);
       else if (kind === 'pet') u.searchParams.set('ep_pet', id);
       else if (kind === 'drag') u.searchParams.set('ep_drag', id + ',' + parts[2] + ',' + parts[3]);
+      else {
+        u.searchParams.set('ep_act', kind);
+        u.searchParams.set('ep_id', id);
+      }
       a.href = u.href;
       a.style.display = 'none';
       doc.body.appendChild(a);
@@ -195,9 +204,56 @@ _WATCHER = """
     addBtn('Stand near', 'click:' + cid);
     addBtn('Speak only with them', 'solo:' + cid);
     addBtn('Gentle touch', 'pet:' + cid);
+    addBtn('Pat the head', 'pat:' + cid);
+    addBtn('Poke', 'poke:' + cid);
+    addBtn('Tease', 'tease:' + cid);
+    addBtn('Hold hands', 'hands:' + cid);
+    addBtn('Hug', 'hug:' + cid);
+    addBtn('Wave', 'wave:' + cid);
+    addBtn('Comfort', 'comfort:' + cid);
+    addBtn('Forehead tap', 'forehead:' + cid);
+    addBtn('Cheek poke', 'cheek:' + cid);
+    addBtn('Gift-touch', 'gift:' + cid);
+    addBtn('Bow', 'bow:' + cid);
+    addBtn('Ask how that felt', 'ask:' + cid);
     m.style.left = Math.max(8, x) + 'px';
     m.style.top = Math.max(8, y) + 'px';
     m.style.display = 'block';
+  }
+  function typingFocus(){
+    var el = doc.activeElement;
+    if (!el) return false;
+    var tag = (el.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || tag === 'select') return true;
+    if (el.isContentEditable) return true;
+    try {
+      if (el.closest('[data-testid="stTextInput"], [data-testid="stTextArea"], [contenteditable="true"]')) return true;
+    } catch (e) {}
+    return false;
+  }
+  function clickGesture(ev){
+    var s = !!(ev.shiftKey);
+    var c = !!(ev.ctrlKey || ev.metaKey);
+    var a = !!(ev.altKey);
+    if (s && c) return 'gift';
+    if (s && a) return 'cheek';
+    if (c && a) return 'comfort';
+    if (s) return 'pat';
+    if (c) return 'poke';
+    if (a) return 'tease';
+    return null;
+  }
+  function dblGesture(ev){
+    if (ev.shiftKey) return 'forehead';
+    if (ev.ctrlKey || ev.metaKey) return 'hug';
+    if (ev.altKey) return 'bow';
+    return null;
+  }
+  function ctxGesture(ev){
+    if (ev.shiftKey) return 'hands';
+    if (ev.ctrlKey || ev.metaKey) return 'comfort';
+    if (ev.altKey) return 'wave';
+    return null;
   }
   function activeStage(){
     if (!doc.documentElement.classList.contains('amp-mode-eternal')) return null;
@@ -279,6 +335,8 @@ _WATCHER = """
   var clickTimer = null;
   var lastId = '';
   var skipClick = false;
+  var hoverId = '';
+  var keyMap = {p:'pat', h:'hug', f:'hands', w:'wave', c:'comfort', g:'gift', b:'bow', t:'forehead', k:'cheek'};
 
   doc.addEventListener('pointerdown', function(ev){
     if (ev.button !== 0) return;
@@ -298,6 +356,17 @@ _WATCHER = """
   }, true);
 
   doc.addEventListener('pointermove', function(ev){
+    var live = hitBuddy(ev);
+    if (live) {
+      hoverId = live.buddy.getAttribute('data-heir') || '';
+    } else {
+      var fr = activeStage();
+      if (!fr) hoverId = '';
+      else {
+        var rect = fr.getBoundingClientRect();
+        if (ev.clientX < rect.left || ev.clientY < rect.top || ev.clientX > rect.right || ev.clientY > rect.bottom) hoverId = '';
+      }
+    }
     if (!drag) return;
     var dx = ev.clientX - drag.x;
     var dy = ev.clientY - drag.y;
@@ -339,6 +408,11 @@ _WATCHER = """
     ev.stopPropagation();
     clearTimeout(clickTimer);
     lastId = id;
+    var gest = clickGesture(ev);
+    if (gest) {
+      sendCmd(gest + ':' + id);
+      return;
+    }
     clickTimer = setTimeout(function(){ sendCmd('click:' + id); }, 220);
   }, true);
 
@@ -350,7 +424,8 @@ _WATCHER = """
     ev.preventDefault();
     ev.stopPropagation();
     clearTimeout(clickTimer);
-    sendCmd('solo:' + id);
+    var gest = dblGesture(ev);
+    sendCmd((gest || 'solo') + ':' + id);
   }, true);
 
   doc.addEventListener('contextmenu', function(ev){
@@ -359,6 +434,11 @@ _WATCHER = """
     ev.preventDefault();
     ev.stopPropagation();
     var id = hit.buddy.getAttribute('data-heir') || '';
+    var gest = ctxGesture(ev);
+    if (gest) {
+      sendCmd(gest + ':' + id);
+      return;
+    }
     var label = '';
     try { label = (hit.buddy.querySelector('.name') || {}).textContent || id; } catch (e) { label = id; }
     showMenu(ev.clientX, ev.clientY, id, label);
@@ -370,6 +450,17 @@ _WATCHER = """
     if (ev.target && m.contains(ev.target)) return;
     hideMenu();
   }, false);
+
+  doc.addEventListener('keydown', function(ev){
+    if (typingFocus()) return;
+    if (!doc.documentElement.classList.contains('amp-mode-eternal')) return;
+    if (!hoverId) return;
+    var g = keyMap[(ev.key || '').toLowerCase()];
+    if (!g) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    sendCmd(g + ':' + hoverId);
+  }, true);
 })();
 </script>
 """
@@ -379,6 +470,186 @@ def _data_uri(path: Path) -> str:
     raw = path.read_bytes()
     mime = "image/jpeg" if path.suffix.lower() in {".jpg", ".jpeg"} else "image/png"
     return f"data:{mime};base64,{base64.b64encode(raw).decode('ascii')}"
+
+
+_VFX_MARK_NAMES = (
+    "flush", "vein", "steam", "sweat", "tear", "sparkle", "heart", "query",
+    "bang", "dizzy", "zzz", "shock", "flower", "ice", "veil", "note", "shy", "glow",
+)
+
+_STAGE_VFX_CSS = """
+.sprite { position: relative; display: block; }
+.vfx {
+  position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+  z-index: 4; pointer-events: none; overflow: visible;
+}
+.mk { position: absolute; display: none; pointer-events: none; line-height: 1; }
+.buddy[data-amp-emotion="warm"] .mk-flush,
+.buddy[data-amp-vfx~="flush"] .mk-flush { display: block; }
+.buddy[data-amp-emotion="anger"] .mk-vein,
+.buddy[data-amp-vfx~="vein"] .mk-vein { display: block; }
+.buddy[data-amp-emotion="anger"] .mk-steam,
+.buddy[data-amp-vfx~="steam"] .mk-steam { display: block; }
+.buddy[data-amp-emotion="fear"] .mk-sweat,
+.buddy[data-amp-vfx~="sweat"] .mk-sweat { display: block; }
+.buddy[data-amp-emotion="sad"] .mk-tear,
+.buddy[data-amp-vfx~="tear"] .mk-tear { display: block; }
+.buddy[data-amp-emotion="joy"] .mk-sparkle,
+.buddy[data-amp-emotion="tease"] .mk-sparkle,
+.buddy[data-amp-vfx~="sparkle"] .mk-sparkle { display: block; }
+.buddy[data-amp-emotion="joy"] .mk-heart,
+.buddy[data-amp-vfx~="heart"] .mk-heart { display: block; }
+.buddy[data-amp-vfx~="query"] .mk-query { display: block; }
+.buddy[data-amp-emotion="surprise"] .mk-bang,
+.buddy[data-amp-vfx~="bang"] .mk-bang { display: block; }
+.buddy[data-amp-vfx~="dizzy"] .mk-dizzy { display: block; }
+.buddy[data-amp-emotion="weary"] .mk-zzz,
+.buddy[data-amp-vfx~="zzz"] .mk-zzz { display: block; }
+.buddy[data-amp-emotion="surprise"] .mk-shock,
+.buddy[data-amp-vfx~="shock"] .mk-shock { display: block; }
+.buddy[data-amp-vfx~="flower"] .mk-flower { display: block; }
+.buddy[data-amp-vfx~="ice"] .mk-ice { display: block; }
+.buddy[data-amp-emotion="sad"] .mk-veil,
+.buddy[data-amp-vfx~="veil"] .mk-veil { display: block; }
+.buddy[data-amp-vfx~="note"] .mk-note { display: block; }
+.buddy[data-amp-vfx~="shy"] .mk-shy { display: block; }
+.buddy[data-amp-emotion="calm"] .mk-glow,
+.buddy[data-amp-vfx~="glow"] .mk-glow { display: block; }
+
+.mk-flush { inset: 40% 8% 18% 8%; }
+.mk-flush::before, .mk-flush::after {
+  content: ""; position: absolute; width: 36%; height: 58%; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,108,138,.78) 0%, rgba(255,108,138,0) 72%);
+  top: 8%;
+}
+.mk-flush::before { left: 0; }
+.mk-flush::after { right: 0; }
+
+.mk-vein { top: -2%; right: 2%; font-size: 15px; }
+.mk-vein::after { content: "💢"; filter: drop-shadow(0 0 2px #4a1010); }
+
+.mk-steam { top: -10%; left: 28%; width: 44%; height: 28%; }
+.mk-steam::before, .mk-steam::after {
+  content: ""; position: absolute; width: 28%; height: 100%;
+  border-radius: 40px; opacity: .75;
+  background: linear-gradient(180deg, rgba(255,255,255,.85), transparent);
+  animation: amp-steam 1.4s ease-in-out infinite;
+}
+.mk-steam::before { left: 12%; }
+.mk-steam::after { right: 8%; animation-delay: .35s; }
+
+.mk-sweat { top: 2%; left: 2%; font-size: 13px; }
+.mk-sweat::after { content: "💧"; }
+
+.mk-tear { top: 46%; left: 16%; font-size: 12px; }
+.mk-tear::after { content: "💧"; animation: amp-fall 1.5s ease-in infinite; }
+
+.mk-sparkle { top: 4%; left: 6%; font-size: 13px; color: #ffe9a0; }
+.mk-sparkle::after { content: "✦"; animation: amp-twinkle .9s ease-in-out infinite; }
+
+.mk-heart { top: -6%; right: 10%; font-size: 14px; color: #ff5a7a; }
+.mk-heart::after { content: "♥"; animation: amp-float 1.2s ease-in-out infinite; }
+
+.mk-query { top: -8%; left: 40%; font-size: 16px; color: #fff4d0;
+  font-weight: 800; text-shadow: 0 1px 2px #1a140c; }
+.mk-query::after { content: "?"; }
+
+.mk-bang { top: -8%; left: 42%; font-size: 16px; color: #fff4d0;
+  font-weight: 800; text-shadow: 0 1px 2px #1a140c; }
+.mk-bang::after { content: "!"; }
+
+.mk-dizzy { top: -6%; left: 34%; font-size: 14px; }
+.mk-dizzy::after { content: "🌀"; animation: amp-spin 1.2s linear infinite; }
+
+.mk-zzz { top: -4%; right: 6%; font-size: 11px; color: #dce6ff;
+  letter-spacing: .04em; text-shadow: 0 1px 2px #1a140c; }
+.mk-zzz::after { content: "zzz"; animation: amp-float 1.6s ease-in-out infinite; }
+
+.mk-shock { inset: -6% -4% 40% -4%; }
+.mk-shock::before, .mk-shock::after {
+  content: ""; position: absolute; inset: 8% 10%;
+  background:
+    linear-gradient(25deg, transparent 46%, #fff8dc 46%, #fff8dc 54%, transparent 54%),
+    linear-gradient(-25deg, transparent 46%, #fff8dc 46%, #fff8dc 54%, transparent 54%),
+    linear-gradient(90deg, transparent 46%, #fff8dc 46%, #fff8dc 54%, transparent 54%);
+  opacity: .85; animation: amp-twinkle .45s steps(2, end) infinite;
+}
+.mk-shock::after { transform: scaleX(-1); }
+
+.mk-flower { top: 0; left: 8%; font-size: 13px; color: #ffb6c8; }
+.mk-flower::after { content: "✿"; }
+
+.mk-ice { top: 2%; right: 14%; font-size: 13px; color: #c8eeff; }
+.mk-ice::after { content: "❄"; filter: drop-shadow(0 0 3px #8fd4ff); }
+
+.mk-veil {
+  inset: 4% 6% 10% 6%; border-radius: 46%;
+  background: radial-gradient(circle, rgba(40,24,72,.0) 30%, rgba(28,16,48,.45) 100%);
+  display: none;
+}
+.buddy[data-amp-emotion="sad"] .mk-veil,
+.buddy[data-amp-vfx~="veil"] .mk-veil { display: block; }
+
+.mk-note { top: -4%; left: 18%; font-size: 13px; color: #c9b6ff; }
+.mk-note::after { content: "♪"; animation: amp-float 1.4s ease-in-out infinite; }
+
+.mk-shy { left: 18%; right: 18%; bottom: 10%; height: 22%; }
+.mk-shy::before, .mk-shy::after {
+  content: ""; position: absolute; width: 38%; height: 90%;
+  border-radius: 40% 40% 30% 30%;
+  background: rgba(255, 228, 210, .92);
+  box-shadow: 0 1px 2px rgba(40,20,10,.35);
+  bottom: 0;
+}
+.mk-shy::before { left: 0; transform: rotate(-12deg); }
+.mk-shy::after { right: 0; transform: rotate(12deg); }
+
+.mk-glow {
+  inset: 8% 10% 12% 10%; border-radius: 50%;
+  background: radial-gradient(circle, rgba(180,210,255,.35), transparent 70%);
+}
+.buddy[data-amp-gesture] .mk { animation: amp-pop .45s ease-out; }
+@keyframes amp-pop {
+  0% { transform: scale(.45); opacity: 0; }
+  45% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes amp-twinkle {
+  0%, 100% { opacity: .35; transform: scale(.85); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+@keyframes amp-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+@keyframes amp-steam {
+  0%, 100% { transform: translateY(6px) scaleY(.7); opacity: .15; }
+  50% { transform: translateY(-4px) scaleY(1); opacity: .8; }
+}
+@keyframes amp-fall {
+  0% { transform: translateY(0); opacity: .9; }
+  100% { transform: translateY(6px); opacity: .2; }
+}
+@keyframes amp-spin { to { transform: rotate(360deg); } }
+.legend {
+  position: absolute;
+  left: 10px;
+  bottom: 8px;
+  z-index: 6;
+  max-width: 54%;
+  color: #f7edd2;
+  font-size: 10px;
+  line-height: 1.35;
+  text-shadow: 0 1px 3px #1a140c;
+  pointer-events: none;
+  opacity: .88;
+}
+"""
+
+
+def _vfx_marks_html() -> str:
+    inner = "".join(f'<i class="mk mk-{name}"></i>' for name in _VFX_MARK_NAMES)
+    return f'<span class="vfx" aria-hidden="true">{inner}</span>'
 
 
 def _mark_iframe_js() -> str:
@@ -409,13 +680,17 @@ def build_stage_html(
     names: Optional[dict] = None,
     emotions: Optional[dict] = None,
     layout: Optional[dict] = None,
+    gestures: Optional[dict] = None,
 ) -> str:
     from src.world import eternal_page as ep
+    from src.world.eternal_emotion import vfx_for
+    from src.world.eternal_gesture import legend_html, overlay_fresh
 
     selected_ids = ep.normalize_selected(selected)
     art = art or {}
     names = names or {}
     emotions = emotions or {}
+    gestures = gestures or {}
     bubble_by = {}
     for row in bubbles or []:
         cid = str(row.get("id") or "")
@@ -423,6 +698,7 @@ def build_stage_html(
         if cid and text:
             bubble_by[cid] = text
 
+    vfx_bits = _vfx_marks_html()
     buddies = []
     for cid in ep.all_ids():
         src = art.get(cid) or ""
@@ -432,6 +708,15 @@ def build_stage_html(
         on = " on" if cid in selected_ids else ""
         label = html.escape(names.get(cid) or ep.short_name(cid))
         feeling = html.escape(str(emotions.get(cid) or "calm"))
+        row = gestures.get(cid) if isinstance(gestures.get(cid), dict) else None
+        marks = list(vfx_for(emotions.get(cid) or "calm"))
+        gest_name = ""
+        if row and overlay_fresh(row):
+            gest_name = html.escape(str(row.get("gesture") or ""))
+            for m in row.get("vfx") or []:
+                if m not in marks:
+                    marks.append(str(m))
+        vfx_attr = html.escape(" ".join(str(m) for m in marks if m))
         spoken = bubble_by.get(cid, "")
         bubble = ""
         if spoken:
@@ -439,12 +724,17 @@ def build_stage_html(
                 f'<div class="bubble" data-amp-bubble="1">'
                 f"{html.escape(spoken)}</div>"
             )
+        gest_attr = f' data-amp-gesture="{gest_name}"' if gest_name else ""
         buddies.append(
             f'<button type="button" class="buddy{on}" data-heir="{html.escape(cid)}" '
-            f'data-amp-emotion="{feeling}" title="{label} — click, drag, or right-click" '
+            f'data-amp-emotion="{feeling}" data-amp-vfx="{vfx_attr}"{gest_attr} '
+            f'title="{label} — click, drag, right-click, or hover keys" '
             f'style="left:{left}%;bottom:{bottom}%;z-index:{3 if cid in selected_ids else 2}">'
-            f'{bubble}'
+            f"{bubble}"
+            f'<span class="sprite">'
             f'<img alt="{label}" src="{src}" draggable="false" />'
+            f"{vfx_bits}"
+            f"</span>"
             f'<span class="name">{label}</span>'
             f"</button>"
         )
@@ -493,14 +783,10 @@ html, body {{
   border: 0;
   padding: 0;
   cursor: grab;
-  animation: amp-bob 3.1s ease-in-out infinite;
   pointer-events: auto;
 }}
-.buddy:nth-child(odd) {{ animation-duration: 2.7s; animation-delay: -.4s; }}
-.buddy:nth-child(3n) {{ animation-duration: 3.4s; animation-delay: -.8s; }}
 .buddy.grabbing {{
   cursor: grabbing;
-  animation: none;
   z-index: 9 !important;
 }}
 .buddy img {{
@@ -551,10 +837,6 @@ html, body {{
   box-shadow: 0 4px 14px rgba(20,12,6,.28);
   pointer-events: none;
 }}
-@keyframes amp-bob {{
-  0%, 100% {{ transform: translateX(-50%) translateY(0); }}
-  50% {{ transform: translateX(-50%) translateY(-7px); }}
-}}
 .hint {{
   position: absolute;
   top: 10px;
@@ -565,12 +847,14 @@ html, body {{
   text-shadow: 0 1px 3px #1a140c;
   pointer-events: none;
 }}
+{_STAGE_VFX_CSS}
 </style>
 </head>
 <body>
 <div class="stage" data-amp-eternal-stage="1">
-  <div class="hint">Click to stand near · double-click for one · drag to move · right-click to pet</div>
+  <div class="hint">Click to stand near · double-click for one · drag to move · right-click for more · Shift+click to pat</div>
   {''.join(buddies)}
+  {legend_html()}
 </div>
 <script>
 {_mark_iframe_js()}
@@ -611,6 +895,10 @@ html, body {{
       else if (parts[0] === 'solo') u.searchParams.set('ep_solo', parts[1]);
       else if (parts[0] === 'pet') u.searchParams.set('ep_pet', parts[1]);
       else if (parts[0] === 'drag') u.searchParams.set('ep_drag', parts[1] + ',' + parts[2] + ',' + parts[3]);
+      else {{
+        u.searchParams.set('ep_act', parts[0]);
+        u.searchParams.set('ep_id', parts[1]);
+      }}
       a.href = u.href;
       a.style.display = 'none';
       window.parent.document.body.appendChild(a);
@@ -641,8 +929,49 @@ html, body {{
 """
 
 
-def _apply_command(st, raw: str) -> bool:
+def _do_gesture(st, cid: str, gesture: str, world=None) -> bool:
     from src.world import eternal_page as ep
+    from src.world.eternal_gesture import GESTURE_IDS, apply_gesture
+
+    if gesture not in GESTURE_IDS:
+        return False
+    overlay = dict(st.session_state.get(ep.STATE_GESTURES) or {})
+    near = ep.normalize_selected(st.session_state.get(ep.STATE_SELECTED))
+    result = apply_gesture(cid, gesture, world=world, overlay=overlay, near=near)
+    st.session_state[ep.STATE_GESTURES] = result.get("overlay") or overlay
+    if result.get("join_near") and cid not in near:
+        st.session_state[ep.STATE_SELECTED] = ep.normalize_selected(list(near) + [cid])
+    return bool(result.get("ok"))
+
+
+def _ask_felt(st, cid: str, manager) -> bool:
+    from src.world import eternal_page as ep
+    from src.world.eternal_gesture import ASK_USER_LINE
+
+    if manager is None:
+        return False
+    selected = ep.normalize_selected(st.session_state.get(ep.STATE_SELECTED))
+    if cid not in selected:
+        selected = ep.normalize_selected(list(selected) + [cid])
+        st.session_state[ep.STATE_SELECTED] = selected
+    names = _names(manager)
+    result = ep.eternal_talk(
+        manager,
+        [cid],
+        ASK_USER_LINE,
+        everyone=False,
+        rotate=int(st.session_state.get(ep.STATE_ROTATE) or 0),
+        name_of=lambda c: names.get(c, ep.short_name(c)),
+    )
+    if result.get("ok"):
+        st.session_state[ep.STATE_BUBBLES] = result.get("replies") or []
+        st.session_state[ep.STATE_ROTATE] = result.get("next_rotate") or 0
+    return True
+
+
+def _apply_command(st, raw: str, manager=None, world=None) -> bool:
+    from src.world import eternal_page as ep
+    from src.world.eternal_gesture import GESTURE_IDS
 
     parsed = ep.parse_command(raw)
     if not parsed:
@@ -656,70 +985,46 @@ def _apply_command(st, raw: str) -> bool:
     if kind == "solo":
         st.session_state[ep.STATE_SELECTED] = ep.solo_member(cid)
         return True
-    if kind == "pet":
-        ep.pet_companion(cid)
-        return True
     if kind == "drag":
         layout = dict(st.session_state.get(ep.STATE_LAYOUT) or {})
         st.session_state[ep.STATE_LAYOUT] = ep.move_companion(layout, cid, parsed[2], parsed[3])
         return True
+    if kind == "ask":
+        return _ask_felt(st, cid, manager)
+    if kind in GESTURE_IDS:
+        return _do_gesture(st, cid, kind, world=world)
     return False
 
 
-def _consume_clicks(st, bus_go: bool = False) -> bool:
-    from src.world import eternal_page as ep
+def _clear_query(st, *keys: str) -> None:
+    for key in keys:
+        try:
+            del st.query_params[key]
+        except Exception:
+            pass
 
-    selected = ep.normalize_selected(st.session_state.get(ep.STATE_SELECTED))
+
+def _consume_clicks(st, bus_go: bool = False, manager=None) -> bool:
+    from src.world import eternal_page as ep
+    from src.world.eternal_gesture import commands_from_query
+
     changed = False
+    params = {}
     try:
-        click = str(st.query_params.get(_CLICK_Q) or "").strip()
-        solo = str(st.query_params.get(_SOLO_Q) or "").strip()
-        pet = str(st.query_params.get(_PET_Q) or "").strip()
-        drag = str(st.query_params.get(_DRAG_Q) or "").strip()
+        qp = st.query_params
+        for key in (_CLICK_Q, _SOLO_Q, _PET_Q, _DRAG_Q, _ACT_Q, _ID_Q):
+            params[key] = qp.get(key)
     except Exception:
-        click, solo, pet, drag = "", "", "", ""
-    if click:
-        selected = ep.toggle_member(selected, click)
-        changed = True
-        try:
-            del st.query_params[_CLICK_Q]
-        except Exception:
-            pass
-    if solo:
-        selected = ep.solo_member(solo)
-        changed = True
-        try:
-            del st.query_params[_SOLO_Q]
-        except Exception:
-            pass
-    if pet:
-        ep.pet_companion(pet)
-        changed = True
-        try:
-            del st.query_params[_PET_Q]
-        except Exception:
-            pass
-    if drag:
-        parts = drag.split(",")
-        if len(parts) >= 3:
-            try:
-                layout = dict(st.session_state.get(ep.STATE_LAYOUT) or {})
-                st.session_state[ep.STATE_LAYOUT] = ep.move_companion(
-                    layout, parts[0].strip(), float(parts[1]), float(parts[2])
-                )
-                changed = True
-            except Exception:
-                pass
-        try:
-            del st.query_params[_DRAG_Q]
-        except Exception:
-            pass
-    if changed:
-        st.session_state[ep.STATE_SELECTED] = selected
+        params = {}
+    for cmd in commands_from_query(params):
+        if _apply_command(st, cmd, manager=manager):
+            changed = True
+    if any(params.get(k) for k in (_CLICK_Q, _SOLO_Q, _PET_Q, _DRAG_Q, _ACT_Q, _ID_Q)):
+        _clear_query(st, _CLICK_Q, _SOLO_Q, _PET_Q, _DRAG_Q, _ACT_Q, _ID_Q)
     payload = str(st.session_state.get(ep.STATE_CMD) or "").strip()
     if bus_go and payload:
         st.session_state[ep.STATE_CMD] = ""
-        if _apply_command(st, payload):
+        if _apply_command(st, payload, manager=manager):
             changed = True
     return changed
 
@@ -774,20 +1079,25 @@ def render_eternal_page(manager, *, key_prefix: str = "eternal") -> None:
                 st.session_state[ep.STATE_SELECTED] = ep.solo_member(cid)
                 hit_changed = True
             if st.button("pet", key=f"amp_eternal_pet_{cid}"):
-                ep.pet_companion(cid)
+                _do_gesture(st, cid, "pet")
                 hit_changed = True
 
-    if hit_changed or _consume_clicks(st, bus_go=bus_go):
+    if hit_changed or _consume_clicks(st, bus_go=bus_go, manager=manager):
         st.rerun()
     if ep.STATE_LAYOUT not in st.session_state:
         st.session_state[ep.STATE_LAYOUT] = {}
+    if ep.STATE_GESTURES not in st.session_state:
+        st.session_state[ep.STATE_GESTURES] = {}
     selected = ep.normalize_selected(st.session_state.get(ep.STATE_SELECTED))
     layout = dict(st.session_state.get(ep.STATE_LAYOUT) or {})
+    from src.world.eternal_gesture import legend_caption, prune_overlay
+    gestures = prune_overlay(st.session_state.get(ep.STATE_GESTURES))
+    st.session_state[ep.STATE_GESTURES] = gestures
     bubbles = list(st.session_state.get(ep.STATE_BUBBLES) or [])
     names = _names(manager)
     try:
         from src.world.eternal_emotion import circle_emotions
-        emotions = circle_emotions(manager, bubbles=bubbles)
+        emotions = circle_emotions(manager, bubbles=bubbles, gestures=gestures)
     except Exception:
         emotions = {cid: "calm" for cid in ep.all_ids()}
 
@@ -795,8 +1105,9 @@ def render_eternal_page(manager, *, key_prefix: str = "eternal") -> None:
     st.caption(
         "Beyond Time — the memory-space of As I've Written, not a city on the map. "
         "This is not Visit an Heir: companions stand on the star-swirl page. "
-        "Click, drag, or right-click them. The same memories are kept."
+        "Faces and marks follow feeling. The same memories are kept."
     )
+    st.caption(legend_caption())
 
     missing = ep.art_missing()
     if missing:
@@ -864,6 +1175,7 @@ def render_eternal_page(manager, *, key_prefix: str = "eternal") -> None:
         names=names,
         emotions=emotions,
         layout=layout,
+        gestures=gestures,
     )
     with st.container(key="amp_eternal_stage"):
         components.html(html_doc, height=STAGE_H, scrolling=False)

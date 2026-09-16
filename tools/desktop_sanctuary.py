@@ -129,22 +129,20 @@ def ensure_ollama(root: Path) -> None:
 
 def ensure_world_engine(root: Path, python: Path) -> None:
     global _started_engine
-    try:
-        out = subprocess.run(
-            [
-                "powershell", "-NoProfile", "-Command",
-                "Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | "
-                "Where-Object { $_.CommandLine -match 'world_engine' } | "
-                "Select-Object -First 1",
-            ],
-            capture_output=True, text=True, timeout=20,
-        )
-        if (out.stdout or "").strip():
-            return
-    except Exception:
-        pass
     runtime = root / "world_runtime"
     runtime.mkdir(parents=True, exist_ok=True)
+    pid_file = runtime / "engine.pid"
+    try:
+        pid = int(pid_file.read_text(encoding="ascii").strip())
+        if pid > 0:
+            os.kill(pid, 0)
+            return
+    except OSError:
+        pass
+    except Exception:
+        pass
+    env = os.environ.copy()
+    env["PYTHONUNBUFFERED"] = "1"
     try:
         subprocess.Popen(
             [
@@ -154,6 +152,7 @@ def ensure_world_engine(root: Path, python: Path) -> None:
             cwd=str(root),
             stdout=open(runtime / "engine.log", "a", encoding="utf-8"),
             stderr=open(runtime / "engine.log.err", "a", encoding="utf-8"),
+            env=env,
             creationflags=CREATION_FLAGS,
         )
         _started_engine = True

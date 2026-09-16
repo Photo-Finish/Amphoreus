@@ -1,9 +1,9 @@
 """Visit / Walk scene life — figures on the page art, not a second picture.
 
-Area art is the Streamlit page backdrop. Interactive outdoor figures use
-AI-painted PNGs; grass/wind/wheat/dawn are CSS or SVG. Clicks run inside
-``st.components.v1.html``. Clicks open a notice card on the parent page
-(``#amp-land-notice-host``) — no Streamlit refresh.
+Area art is the Streamlit page backdrop. Outdoor figures and sky bodies use
+painted PNGs when a file exists (Dawn Device, Thief Star, grass, wheat, …).
+Clicks run inside ``st.components.v1.html``. Clicks open a notice card on the
+parent page (``#amp-land-notice-host``) — no Streamlit refresh.
 """
 from __future__ import annotations
 
@@ -278,13 +278,16 @@ _DEFAULT_SPRITE = (
 
 _SPRITE_DIR = Path(__file__).resolve().parent.parent / "assets" / "life_sprites"
 
-# AI-painted sprites are only for outdoor beings you can walk up to and touch.
-# Ambient (grass, wind, wheat, dawn) is CSS/SVG. Indoor furniture is not staged.
+# Painted PNGs for anything with a file on disk — sky bodies included.
+# Indoor furniture is not staged as roamers.
 _PAINTED_INTERACTIVE = frozenset({
     "chimera", "dromas", "dromas_calf", "hearth_cat", "resident",
     "well", "fountain", "shrine", "market_stall", "forge", "gate",
     "courier", "boat", "kite", "olive", "cicada", "pearl", "pebble",
     "mill", "laundry", "banner", "incense", "pillar", "ribbon", "mosaic",
+    "dawn", "thief_star", "wheat", "grass", "wind", "grove_leaf",
+    "shore", "siren", "loom", "net", "tidepool", "maze",
+    "little_ica", "pollux", "bath", "hearth", "scroll", "lamp",
 })
 _AMBIENT_STAGE = frozenset({
     "grass", "wind", "wheat", "grove_leaf", "shore",
@@ -767,41 +770,22 @@ def _sprite_asset_key(being_or_kind, kind: str = "") -> str:
 
 
 def _sprite_markup(kind: str, *, mobile: bool = True, asset: str = "") -> str:
-    # Painted PNGs/films only for outdoor figures you can actually touch.
+    """Painted PNG/film when on disk; SVG only as a last-resort glyph."""
     key = asset or kind
-    painted = (
-        kind in _PAINTED_INTERACTIVE
-        or key.startswith("resident")
-        or key.startswith("stall_")
-        or key.startswith("well_")
-        or key.startswith("fountain_")
-        or key.startswith("shrine_")
-        or key.startswith("gate_")
-        or key.startswith("boat_")
-        or key.startswith("ribbon_")
-        or key.startswith("pillar_")
-        or key.startswith("mosaic_")
-        or key.startswith("laundry_")
-        or key.startswith("banner_")
-        or key.startswith("forge_")
-        or key.startswith("mill_")
-    )
-    if painted:
-        # Profile-walk kinds: side film while roaming, front still otherwise.
-        use_film = mobile if kind in _PROFILE_WALK_KINDS else True
-        if use_film:
-            film = sprite_film_uri(key)
-            if film:
-                dur = _FILM_DUR.get(kind, _FILM_DUR.get(key, "0.8s"))
-                stem = _html.escape(f"{key}_film", quote=True)
-                return (
-                    f'<span class="amp-sprite-film" data-film="{stem}" style="'
-                    f"background-image:url('{film}');"
-                    f"--amp-frames:4;--amp-film-dur:{dur};\"></span>"
-                )
-        uri = sprite_png_uri(key)
-        if uri:
-            return f'<img src="{uri}" alt="" draggable="false" />'
+    use_film = mobile if kind in _PROFILE_WALK_KINDS else True
+    if use_film:
+        film = sprite_film_uri(key)
+        if film:
+            dur = _FILM_DUR.get(kind, _FILM_DUR.get(key, "0.8s"))
+            stem = _html.escape(f"{key}_film", quote=True)
+            return (
+                f'<span class="amp-sprite-film" data-film="{stem}" style="'
+                f"background-image:url('{film}');"
+                f"--amp-frames:4;--amp-film-dur:{dur};\"></span>"
+            )
+    uri = sprite_png_uri(key)
+    if uri:
+        return f'<img src="{uri}" alt="" draggable="false" />'
     inner = _SPRITE_PATHS.get(key) or _SPRITE_PATHS.get(kind) or _DEFAULT_SPRITE
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" '
@@ -1003,6 +987,27 @@ def _css() -> str:
   transform-origin: bottom center;
   animation: amp-grass-sway 2.8s ease-in-out infinite;
 }
+.amp-grass-tuft, .amp-wheat-sheaf, .amp-leaf-img, .amp-wind-ribbon {
+  position:absolute; pointer-events:none; height:auto;
+  transform-origin: bottom center;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.4));
+}
+.amp-grass-tuft {
+  bottom:0; width:52px;
+  animation: amp-grass-sway 2.8s ease-in-out infinite;
+}
+.amp-wheat-sheaf {
+  bottom:4%; width:64px;
+  animation: amp-wheat-nod 3.2s ease-in-out infinite;
+}
+.amp-leaf-img {
+  top:8%; width:42px;
+  animation: amp-leaf-drift 7s ease-in infinite;
+}
+.amp-wind-ribbon {
+  top:12%; width:72px;
+  animation: amp-leaf-drift 9s ease-in-out infinite;
+}
 .amp-chimera-dot {
   position:absolute; bottom:18%; width:22px; height:16px;
   border-radius: 10px 10px 6px 6px;
@@ -1089,7 +1094,12 @@ def _css() -> str:
 }
 .amp-pict-page .amp-shore-band,
 .amp-pict-page .amp-wheat-row,
-.amp-pict-page .amp-fountain {
+.amp-pict-page .amp-fountain,
+.amp-pict-page .amp-grass-blade,
+.amp-pict-page .amp-leaf,
+.amp-pict-page .amp-laundry,
+.amp-pict-page .amp-courier,
+.amp-pict-page .amp-chimera-dot {
   display: none;
 }
 .amp-sprite.petting,
@@ -1597,49 +1607,75 @@ def _viewport_roam_js(
 
 
 def life_overlay_html(scene: List[dict], place: str = "", *, dense: bool = False) -> str:
-    """CSS/HTML layer for ambient motion — visual only (no clicks)."""
+    """CSS/HTML layer for ambient motion — painted tufts, not geometric bars."""
     kinds = {b.get("kind") for b in (scene or [])}
     parts = ['<div class="amp-life-layer">']
 
     grass_xs = (6, 14, 22, 31, 40, 52, 61, 70, 78, 88)
     if dense:
         grass_xs = grass_xs + (10, 18, 26, 35, 45, 56, 65, 74, 82, 92)
+    grass_uri = sprite_png_uri("grass")
+    wind_uri = sprite_png_uri("wind")
     if "grass" in kinds or "wind" in kinds:
-        for i, x in enumerate(grass_xs):
-            delay = (i * 0.17) % 2.5
-            parts.append(
-                f'<div class="amp-grass-blade" style="left:{x}%;'
-                f'animation-delay:{delay:.2f}s;height:{14 + (i % 5) * 3}px;"></div>'
-            )
+        if grass_uri:
+            span = grass_xs[:8 if not dense else 12]
+            for i, x in enumerate(span):
+                delay = (i * 0.17) % 2.5
+                parts.append(
+                    f'<img class="amp-grass-tuft" alt="" src="{grass_uri}" '
+                    f'style="left:{x}%;animation-delay:{delay:.2f}s;" />'
+                )
+        else:
+            for i, x in enumerate(grass_xs):
+                delay = (i * 0.17) % 2.5
+                parts.append(
+                    f'<div class="amp-grass-blade" style="left:{x}%;'
+                    f'animation-delay:{delay:.2f}s;height:{14 + (i % 5) * 3}px;"></div>'
+                )
+    if "wind" in kinds and wind_uri:
+        parts.append(
+            f'<img class="amp-wind-ribbon" alt="" src="{wind_uri}" '
+            'style="left:18%;animation-delay:0.4s;" />'
+            f'<img class="amp-wind-ribbon" alt="" src="{wind_uri}" '
+            'style="left:62%;top:18%;animation-delay:1.6s;" />'
+        )
 
+    leaf_uri = sprite_png_uri("grove_leaf")
     if "grove_leaf" in kinds:
         leaf_xs = (18, 42, 67, 81) if not dense else (12, 28, 44, 58, 72, 86)
-        for i, left in enumerate(leaf_xs):
-            parts.append(
-                f'<div class="amp-leaf" style="left:{left}%;'
-                f'animation-delay:{i * 1.4}s;"></div>'
-            )
+        if leaf_uri:
+            for i, left in enumerate(leaf_xs):
+                parts.append(
+                    f'<img class="amp-leaf-img" alt="" src="{leaf_uri}" '
+                    f'style="left:{left}%;animation-delay:{i * 1.4}s;" />'
+                )
+        else:
+            for i, left in enumerate(leaf_xs):
+                parts.append(
+                    f'<div class="amp-leaf" style="left:{left}%;'
+                    f'animation-delay:{i * 1.4}s;"></div>'
+                )
 
     if "shore" in kinds:
-        parts.append('<div class="amp-shore-band"></div>')
+        shore_uri = sprite_png_uri("shore")
+        if shore_uri:
+            parts.append(
+                f'<img class="amp-leaf-img" alt="" src="{shore_uri}" '
+                'style="left:8%;bottom:2%;top:auto;width:90px;" />'
+            )
+        else:
+            parts.append('<div class="amp-shore-band"></div>')
 
     if "wheat" in kinds:
-        parts.append('<div class="amp-wheat-row"></div>')
-
-    if "fountain" in kinds:
-        fb = next((b for b in (scene or []) if b.get("kind") == "fountain"), None)
-        hs = (fb or {}).get("hotspot") or {}
-        fx = str(hs.get("left") or "44%")
-        fy = str(hs.get("bottom") or "16%")
-        parts.append(
-            f'<div class="amp-fountain" style="left:{fx};bottom:{fy};"></div>'
-        )
-    if "laundry" in kinds:
-        parts.append(
-            '<div class="amp-laundry" style="left:78%;bottom:18%;"></div>'
-        )
-    if "courier" in kinds:
-        parts.append('<div class="amp-courier"></div>')
+        wheat_uri = sprite_png_uri("wheat")
+        if wheat_uri:
+            for i, x in enumerate((12, 28, 48, 68, 84)):
+                parts.append(
+                    f'<img class="amp-wheat-sheaf" alt="" src="{wheat_uri}" '
+                    f'style="left:{x}%;animation-delay:{i * 0.3}s;" />'
+                )
+        else:
+            parts.append('<div class="amp-wheat-row"></div>')
 
     parts.append("</div>")
     return _css() + "".join(parts)

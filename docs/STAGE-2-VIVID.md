@@ -171,3 +171,40 @@ Audit: `tools/_audit_life_scroll.py`.
 
 Suite: `tools/test_eternal_page.py`. Art: `python tools/fetch_eternal_page_art.py`.
 
+## Tenth delivery — Eternal Page emotion VFX & gestures (2026-09-16)
+
+| Feature | Note |
+|---|---|
+| Emotion marks | CSS overlay on each PPG bust: flush, vein, steam, sweat, tear, sparkle, heart, ?, !, dizzy, zzz, shock, flower, ice, veil, note, shy hands, glow. Driven by `data-amp-emotion` plus a short gesture overlay. |
+| Gesture set | Click near, double-click solo, drag rearrange (kept). Shift+click pat, Ctrl+click poke, Alt+click tease, Shift+right-click hold hands, more combos and hover keys (P/H/F/W/C/G/B/T/K). Right-click menu lists them. Legend on the stage. |
+| Heir reaction | Gesture → VFX + pose/emotion overlay + `living_world` mood nudge with a factual reason. Light temperament table (e.g. Mydei poke → anger vein). No authored Heir speech. Optional “Ask how that felt” is an explicit `manager.chat` turn. |
+| Bridge | Parent hit-test still; `ep_act`/`ep_id` query params plus the command bus. Wheel still scrolls the parent. |
+
+Suite: `tools/test_eternal_page.py`.
+
+## Eleventh delivery — mission dialogue → per-Heir / collective memories (2026-09-16)
+
+Canon mission dialogue is now split by **who was actually there**. Original
+`databank/missions/` chapter and adventure files (and wiki Tribbie/Dialogue) stay
+verbatim. New files live under `databank/memories/` plus rebuilt
+`<HeirFolder>/personal-memories.md` rollups for the voice digest.
+
+| Rule | What happens |
+|---|---|
+| One Heir on-stage | Full unit → that Heir's personal file |
+| Two or more Heirs | Full unit → `collective/`; each Heir gets a pointer + witness excerpt |
+| No Heir present | Skipped (NPC/visitor-only beats) |
+| Titans / memosprites | Not treated as that Heir speaking (Oronyx ≠ Evernight, Thanatos ≠ Castorice, Dolimem ≠ Cyrene) |
+
+Rebuild: `python tools/extract_mission_memories.py`  
+Gate: `python tools/test_mission_memories.py`  
+Layout notes: `databank/memories/README.md`. Not added to Chroma `GLOBAL_PATTERNS` (chapters remain the RAG dialogue source).
+
+## Accepted spec — Cyrene year cycle (2026-09-16)
+
+Three Light-Calendar blocks occupy the Cyrene seat's **picture** `{childhood, demiurge, mem}`. Whisper always uses card id `"cyrene"` (Mem has no talk card; Fairy still speaks to childhood Cyrene). Unwired — no Eternal Page / Visit change. Spec: [`docs/CYRENE-CYCLE.md`](CYRENE-CYCLE.md). Module: `src/world/cyrene_cycle.py`. Suite: `tools/test_cyrene_cycle.py`.
+
+## Twelfth delivery — Visit painted sky / land glyphs (2026-09-16)
+
+The Visit sun was two SVG circles because `dawn.png` (Dawn Device) was on disk but not used. Sprites now take a PNG whenever one exists. Clear weather overlays the Device picture instead of a radial-gradient disk; twilight uses a painted moon. Grass / wheat / wind / leaf ambient is painted tufts, not CSS bars. New emblems live in `assets/life_sprites/`. Suite: `tools/test_ecosystem.py`.
+
