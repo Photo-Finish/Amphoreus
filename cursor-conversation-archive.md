@@ -3,11 +3,11 @@
 Separate from Copilot’s Stage-1 `conversation-archive.md`. This file records the **Cursor** chat window dialogues only.
 
 - **Chat id:** `c2ce438f-61d9-4dd2-8dc3-66bcf3a7f70c` (Stage-2 resume; prior window `fefecb77-99f5-4c57-8a9c-95d79fefddb6` = rounds 1–361)
-- **Rounds (user turns):** 370 (1–365 through 22 Aug; 366–370 appended 16 Sep 2026)
+- **Rounds (user turns):** 371 (1–365 through 22 Aug; 366–371 appended 16 Sep 2026)
 - **Assistant replies:** 2356+ (later rounds condensed)
 - **Tool calls:** 4318+ (later rounds condensed)
-- **From:** Tuesday, Aug 18, 2026, 12:33 AM (UTC+8)  **to:** Wednesday, Sep 16, 2026, 1:07 AM (UTC+8)
-- **Exported:** Saturday Aug 22, 2026, 1:35 AM UTC+8; **updated** Wednesday Sep 16, 2026
+- **From:** Tuesday, Aug 18, 2026, 12:33 AM (UTC+8)  **to:** Wednesday, Sep 16, 2026, 8:25 PM (UTC+8)
+- **Exported:** Saturday Aug 22, 2026, 1:35 AM UTC+8; **updated** Wednesday Sep 16, 2026 (evening)
 - **Source:** agent transcript JSONL (prior window + resume chat)
 
 ---
@@ -18134,5 +18134,26 @@ HEAD `3810a06` on `main` = `origin/main`. Copilot Stage-1 archive untouched. Fea
 **Live UI (Playwright, `:8501`, Pictures + Life on):** Visit and Walk both show life iframe **z-index 35**, photo host **z0** under `stAppViewContainer`, **8** `.amp-sprite` each. DistilRoBERTa on disk; sample classify `joy` 0.98. Voice path **RAG**; skills aid **OFF**. World clock Year 4933 Month of Strife W1 D7 Entry Hour; 13 Heirs located; black tide off. Chroma `.chroma_db` ~171 MB. All 13 OPLoRA adapters present.
 
 **Not live this hour:** Ollama daemon up but **0 models loaded** (Heir chat cannot generate until a voice model is pulled/loaded); world engine process **idle** (launcher not used for this probe).
+
+---
+
+## Round 371 — Wednesday, Sep 16, 2026, evening (UTC+8)
+
+### You
+
+Recreate **An Eternal Page** (cute Heirs, desktop-buddy talk, shared Visit memory). PPG emotion poses. Study desktop-pet UX; clicks were blocked. Check whether the public website copies localhost. Star-swirl backdrop. Cute full-body Heirs online. Abandon MMD; add emotion marks + keyboard/mouse gestures. Q-version full-body from official special programs (then recrop Mem, Bilibili, cutouts). Split mission dialogues into per-Heir memories (complete + relevant; do not edit databank scripts). Cyrene cycle (then simplify: Mem cannot talk; save only, do not implement). World machine would not boot via `.lnk`/`.exe`; then CPU ticks if NVIDIA is offline; boot still failed — unwire temporary launch hooks. Geometric sun/glyphs on Visit → painted pictures. No ghostly float on Eternal Page and other stages. Changelog + conversation log, then commit/push.
+
+### Cursor
+
+Shipped on `main` as `11d1f7b` / `f939abe` / `a16c140` (photo-finish). Highlights:
+
+- Eternal Page: PPG stickers, Vortex of Genesis swirl, parent hit-test clicks, emotion poses + VFX, desktop-pet gestures (no canned Heir speech), idle bob removed.
+- Visit: Dawn Device picture instead of a CSS sun; painted land glyphs.
+- World machine: CPU-safe ticks (no hang on GPU Keeper); launcher no longer kills Streamlit when the cmd window closes.
+- Memories: `databank/memories/` per-Heir + collective; original mission files untouched.
+- Cyrene cycle saved unwired (`docs/CYRENE-CYCLE.md`); official form stills in `cyrene_forms/`.
+- Q-program catalog from official stills. Guest Bilibili 360p is not sticker-grade; HQ login was **abandoned** (captcha + automation fighting the pointer). No account secrets in this archive.
+
+Public site `photo-finish.github.io` is a GitHub Pages door; tunnels were dead — not a full Streamlit clone.
 
 ---

@@ -208,3 +208,23 @@ Three Light-Calendar blocks occupy the Cyrene seat's **picture** `{childhood, de
 
 The Visit sun was two SVG circles because `dawn.png` (Dawn Device) was on disk but not used. Sprites now take a PNG whenever one exists. Clear weather overlays the Device picture instead of a radial-gradient disk; twilight uses a painted moon. Grass / wheat / wind / leaf ambient is painted tufts, not CSS bars. New emblems live in `assets/life_sprites/`. Suite: `tools/test_ecosystem.py`.
 
+## Thirteenth delivery — CPU ticks and a boot that stays up (2026-09-16)
+
+| Feature | Note |
+|---|---|
+| CPU ticks | World machine no longer blocks on a GPU Keeper (no 32B default; HTTP timeouts). Heir talk still waits for a model. |
+| Boot | Desktop shortcut targets `launch_sanctuary.cmd` (no `cmd /c`). Closing the launcher window does not kill Streamlit. Temporary start-lock / forced `AMP_WORLD_CPU` launcher hooks removed. |
+
+Suite: `tools/test_world_machine.py`.
+
+## Fourteenth delivery — companions stand still (2026-09-16)
+
+Eternal Page `.buddy` idle bob and galgame `galfloat` are off. Visit/Walk horizontal roam, film walk cycles, weather particles, and Eternal emotion marks stay. Suite: `tools/test_eternal_page.py`.
+
+## Art catalogs (2026-09-16, unwired to the cycle)
+
+| Folder | What |
+|---|---|
+| `assets/eternal_page/q_program/` | Official version special-program stills and crops (Mem kept whole). Guest 360p Bilibili frames are research-only. |
+| `assets/eternal_page/cyrene_forms/` | Official Demiurge / childhood / Mem stills for a later Cyrene-slot hook. |
+

@@ -1238,7 +1238,13 @@ tide / letter / weather / co-location / aftermath features):
   and a larger right-click menu). Reactions are pose + VFX + living-world mood
   with a factual reason — never canned Heir speech. Optional “Ask how that felt”
   uses `manager.chat`. Suite: `tools/test_eternal_page.py`.
-- **Cyrene year cycle** (unwired) — three Light-Calendar blocks map pictures {childhood, demiurge, mem}; whisper always `"cyrene"`. Spec: `docs/CYRENE-CYCLE.md`.
+- **Cyrene year cycle** (unwired) — three Light-Calendar blocks map pictures {childhood, demiurge, mem}; whisper always `"cyrene"`. Spec: `docs/CYRENE-CYCLE.md`. Suite: `tools/test_cyrene_cycle.py`.
+- **Cyrene-form stills** — official PPG / NPC art for Demiurge, childhood, and Mem in `assets/eternal_page/cyrene_forms/` (cycle not hooked to the page).
+- **Star-swirl Eternal Page** — parchment uses Vortex of Genesis (`bg-vortex-of-genesis.jpg`), not the Exotale garden plaza.
+- **Q-program catalog** — official special-program announcement stills and crops in `assets/eternal_page/q_program/`. Guest Bilibili frames stay research-only (360p); idle companions use the posters.
+- **No idle bob** — Eternal Page companions and galgame portraits stand still. Visit/Walk roam, weather, and emotion marks stay.
 - **Visit painted sky and land** — the Dawn Device / sun is the painted emblem, not a CSS disk. Remaining geometric land glyphs (grass, wheat, wind, moon, companions, …) are painted PNGs in `assets/life_sprites/`. Suite: `tools/test_ecosystem.py`.
+- **World-machine CPU ticks and boot** — ticks no longer hang on a GPU Keeper load (timeouts + CPU fallback). Launchers no longer kill Streamlit when the cmd window closes; the desktop shortcut targets `launch_sanctuary.cmd`. Suite: `tools/test_world_machine.py`.
+- **Mission memories** — canon mission dialogue split into per-Heir and collective files under `databank/memories/` without editing original scripts. Gate: `tools/test_mission_memories.py`.
 
 
