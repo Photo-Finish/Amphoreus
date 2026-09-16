@@ -1224,5 +1224,11 @@ tide / letter / weather / co-location / aftermath features):
   the last bubble) and sanctuary ongoings (mood, black-tide weight, travel,
   gifts, open grievance). Missing poses fall back; Phainon’s single sticker
   still shows. Suite: `tools/test_eternal_page.py`.
+- **Eternal Page companions** — clicks were swallowed by Streamlit’s sandboxed
+  iframe (`parent.location` blocked; Visit pictorial CSS also turns off
+  pointer events). Hits are now tested on the parent page. Desktop-pet
+  gestures that fit: click to stand near, double-click for one, drag to
+  rearrange, right-click to pet (mood only — never authored speech). Name
+  chips remain if a picture does not answer. No chase/feed/throw/weather.
 
 

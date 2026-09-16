@@ -18,7 +18,9 @@ from src.core.heir_folders import HEIR_FOLDERS
 
 ROOT = Path(__file__).resolve().parents[2]
 ART_DIR = ROOT / "assets" / "eternal_page" / "cute"
-PARCHMENT = ROOT / "assets" / "galgame" / "ground" / "bg-beyond-time.jpg"
+# Official Area_Vortex_of_Genesis art: starfield + cosmic swirl.
+# bg-beyond-time.jpg is the Exotale garden plaza (Visit/Walk land), not this page.
+PARCHMENT = ROOT / "assets" / "galgame" / "ground" / "bg-vortex-of-genesis.jpg"
 
 # Cyrene keeps the page; the others stand in an arc around her.
 CIRCLE: tuple[str, ...] = (
@@ -75,6 +77,8 @@ STATE_SELECTED = "amp_eternal_selected"
 STATE_BUBBLES = "amp_eternal_bubbles"
 STATE_ROTATE = "amp_eternal_rotate"
 STATE_EVERYONE = "amp_eternal_everyone"
+STATE_LAYOUT = "amp_eternal_layout"
+STATE_CMD = "amp_eternal_cmd"
 
 SpeakFn = Callable[[str, str], str]
 NameFn = Callable[[str], str]
@@ -130,6 +134,95 @@ def solo_member(character_id: str) -> list[str]:
     if character_id in all_ids():
         return [character_id]
     return []
+
+
+def place_of(character_id: str, overlay: Optional[dict] = None) -> tuple[float, float]:
+    ov = overlay or {}
+    pair = ov.get(character_id) if isinstance(ov, dict) else None
+    if pair is not None:
+        try:
+            left, bottom = float(pair[0]), float(pair[1])
+            return clamp_place(left, bottom)
+        except Exception:
+            pass
+    return LAYOUT.get(character_id, (50.0, 50.0))
+
+
+def clamp_place(left: float, bottom: float) -> tuple[float, float]:
+    return max(4.0, min(96.0, float(left))), max(8.0, min(88.0, float(bottom)))
+
+
+def move_companion(overlay: Optional[dict], character_id: str, left: float, bottom: float) -> dict:
+    out = dict(overlay or {})
+    if character_id not in all_ids():
+        return out
+    out[character_id] = list(clamp_place(left, bottom))
+    return out
+
+
+def pet_companion(character_id: str, world=None) -> bool:
+    """A touch on the page — warms mood, never authors Heir speech."""
+    if character_id not in all_ids():
+        return False
+    if world is None:
+        try:
+            from src.world.world_state import WorldState
+            world = WorldState()
+        except Exception:
+            world = None
+    if world is None:
+        return True
+    try:
+        from src.world import living_world as lw
+        lw.set_mood(world, character_id, 1, "a gentle touch on the Eternal Page")
+    except Exception:
+        m = getattr(world, "mood", None)
+        if not isinstance(m, dict):
+            world.mood = {}
+            m = world.mood
+        cur = m.get(character_id) or {}
+        try:
+            valence = int(cur.get("valence", 0) or 0) + 1
+        except Exception:
+            valence = 1
+        valence = max(-3, min(3, valence))
+        ts = ""
+        try:
+            ts = world.clock.format_short()
+        except Exception:
+            ts = str(cur.get("ts") or "")
+        m[character_id] = {
+            "valence": valence,
+            "reason": "a gentle touch on the Eternal Page",
+            "ts": ts,
+        }
+    try:
+        world.save()
+    except Exception:
+        pass
+    return True
+
+
+def parse_command(raw: str) -> Optional[tuple]:
+    """Parse a parent-bridge command: click/solo/pet/drag."""
+    text = str(raw or "").strip()
+    if not text:
+        return None
+    parts = text.split(":")
+    kind = (parts[0] or "").strip().lower()
+    cid = (parts[1] if len(parts) > 1 else "").strip()
+    if kind not in {"click", "solo", "pet", "drag"}:
+        return None
+    if cid not in all_ids():
+        return None
+    if kind == "drag":
+        try:
+            left = float(parts[2])
+            bottom = float(parts[3])
+        except Exception:
+            return None
+        return ("drag", cid, left, bottom)
+    return (kind, cid)
 
 
 def _mentions(text: str, selected: list[str]) -> list[str]:

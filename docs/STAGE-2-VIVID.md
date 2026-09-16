@@ -163,10 +163,11 @@ Audit: `tools/_audit_life_scroll.py`.
 |---|---|
 | Distinct page | Tab **An Eternal Page** and sidebar page `3_An_Eternal_Page.py` — not Visit chatboxes. |
 | Cute companions | Official Pom-Pom Gallery stickers (`assets/eternal_page/cute/`). No geometric placeholders. |
-| Desktop-buddy talk | Click to stand near, double-click for one, All thirteen / Clear, whisper dock, speech bubbles. |
+| Desktop-buddy talk | Click to stand near, double-click for one, drag to rearrange, right-click to pet (mood only). All thirteen / Clear / name chips. Whisper dock, speech bubbles. Parent hit-test (iframe sandbox cannot navigate). |
 | Shared memory | Speakers call `manager.chat` (same history.jsonl / bonds as Visit). Listeners still hear the line. Journey and Aftermath use the same store. |
 | No land systems | No weather, ecosystem, chimera, or dromas on this page. Wheel over the stage is passed to the parent. |
 | Faces follow feeling | Official PPG poses swap from conversation history plus sanctuary ongoings (mood, tide, travel, gifts, grievance). `src/world/eternal_emotion.py`. |
+| Star-swirl stage | Official Vortex of Genesis area art (`assets/galgame/ground/bg-vortex-of-genesis.jpg`) — cosmic swirl, not the Exotale garden plaza used by Visit/Walk. |
 
 Suite: `tools/test_eternal_page.py`. Art: `python tools/fetch_eternal_page_art.py`.
 

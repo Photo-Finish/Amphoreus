@@ -180,6 +180,16 @@ def test_art() -> None:
     check("every Heir has a sticker PNG", missing == [], ",".join(missing))
     parchment = ep.parchment_path()
     check("parchment backdrop exists", parchment is not None)
+    check(
+        "star-swirl vortex backdrop",
+        parchment is not None and parchment.name == "bg-vortex-of-genesis.jpg",
+        str(parchment),
+    )
+    check(
+        "not the Exotale garden plaza",
+        parchment is not None and "beyond-time" not in parchment.name.lower(),
+        str(parchment),
+    )
     for cid in ep.all_ids():
         path = ep.cute_art(cid)
         if not path:
@@ -222,6 +232,14 @@ def test_html_stage() -> None:
     check("weary pose marked", 'data-amp-emotion="weary"' in doc)
     check("selected ring class", 'data-heir="cyrene"' in doc and "buddy on" in doc)
     check("click + double-click", "ep_click" in doc and "ep_solo" in doc)
+    check("pet and drag protocol", "ep_pet" in doc and "ep_drag" in doc)
+    placed = build_stage_html(
+        selected=["cyrene"],
+        art=art,
+        names={"cyrene": "Cyrene"},
+        layout={"cyrene": [12.0, 44.0]},
+    )
+    check("drag layout is used", "left:12.0%;bottom:44.0%" in placed)
     check("stage marker", 'data-amp-eternal-stage="1"' in doc)
     check("bubble above buddies", "z-index: 8" in doc)
     # Geometric drawing would use svg circles / rects as characters.
@@ -237,6 +255,42 @@ def test_html_stage() -> None:
     check("look watcher knows Eternal", "An Eternal Page" in look and "amp-mode-eternal" in look)
     from src.world import group_chat as gc
     check("leaving Visit for Eternal ends gathering", gc.should_end_for_tab("An Eternal Page"))
+    check("parent hit-test uses elementFromPoint", "elementFromPoint" in ui)
+    check("stage iframe is click-through", "pointer-events: none" in ui)
+    check("parent command bus", "st-key-amp_eternal_cmd" in ui and "createElement('a')" in ui)
+    check("name chips backup", "amp_eternal_names" in ui)
+    check("hidden Streamlit hit buttons", "amp_eternal_hit_" in ui)
+
+
+def test_desktop_pet() -> None:
+    print("== desktop pet ==")
+    check("place default", ep.place_of("cyrene") == ep.LAYOUT["cyrene"])
+    moved = ep.move_companion({}, "cyrene", 12.5, 40.0)
+    check("move writes overlay", moved.get("cyrene") == [12.5, 40.0], str(moved))
+    check("clamp high", ep.clamp_place(200, 200) == (96.0, 88.0))
+    check("clamp low", ep.clamp_place(-4, 0) == (4.0, 8.0))
+    check("unknown stay put", "nope" not in ep.move_companion({}, "nope", 1, 1))
+    world = SimpleNamespace(mood={})
+    ok = ep.pet_companion("phainon", world=world)
+    check("pet is allowed", ok is True)
+    check(
+        "pet warms mood without speech",
+        int((world.mood.get("phainon") or {}).get("valence") or 0) >= 1,
+        str(world.mood),
+    )
+    check("pet does not chat", ep.pet_companion.__doc__ and "never authors" in ep.pet_companion.__doc__)
+    check("junk pet refused", ep.pet_companion("nope", world=world) is False)
+    check("parse click", ep.parse_command("click:cyrene") == ("click", "cyrene"))
+    check("parse solo", ep.parse_command("solo:mydei") == ("solo", "mydei"))
+    check("parse pet", ep.parse_command("pet:hyacine") == ("pet", "hyacine"))
+    check(
+        "parse drag",
+        ep.parse_command("drag:aglaea:10:20") == ("drag", "aglaea", 10.0, 20.0),
+    )
+    check("parse junk", ep.parse_command("explode:cyrene") is None)
+    src = Path(ep.__file__).read_text(encoding="utf-8")
+    pet_fn = src.split("def pet_companion", 1)[-1].split("\ndef ", 1)[0]
+    check("pet never calls chat", "eternal_talk" not in pet_fn and ".chat(" not in pet_fn)
 
 
 def test_interaction_api() -> None:
@@ -337,6 +391,7 @@ def main() -> int:
     test_no_land_systems()
     test_art()
     test_html_stage()
+    test_desktop_pet()
     test_interaction_api()
     test_emotion_poses()
     print()
