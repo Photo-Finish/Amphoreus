@@ -166,6 +166,7 @@ Audit: `tools/_audit_life_scroll.py`.
 | Desktop-buddy talk | Click to stand near, double-click for one, All thirteen / Clear, whisper dock, speech bubbles. |
 | Shared memory | Speakers call `manager.chat` (same history.jsonl / bonds as Visit). Listeners still hear the line. Journey and Aftermath use the same store. |
 | No land systems | No weather, ecosystem, chimera, or dromas on this page. Wheel over the stage is passed to the parent. |
+| Faces follow feeling | Official PPG poses swap from conversation history plus sanctuary ongoings (mood, tide, travel, gifts, grievance). `src/world/eternal_emotion.py`. |
 
 Suite: `tools/test_eternal_page.py`. Art: `python tools/fetch_eternal_page_art.py`.
 

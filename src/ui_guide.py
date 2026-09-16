@@ -98,7 +98,9 @@ def render_guide(manager, characters):
         "This is **not** Visit an Heir. Companions are cute stickers on the page, "
         "like desktop buddies: click to stand near, double-click to keep only that "
         "one, or use **All thirteen**. Whisper in the dock under the picture — "
-        "answers rise as speech bubbles, not a chat list.\n\n"
+        "answers rise as speech bubbles, not a chat list. Their faces follow "
+        "how the talk and the sanctuary's hour actually feel — glad, weary, "
+        "sharp — using the matching Pom-Pom Gallery pose.\n\n"
         "There is no weather and no street life here. What you say is remembered "
         "in the same personal history as Visit, in Journey or Aftermath alike."
     ))

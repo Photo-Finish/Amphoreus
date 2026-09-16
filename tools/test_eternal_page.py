@@ -205,6 +205,7 @@ def test_html_stage() -> None:
         art=art,
         parchment_uri="data:image/jpeg;base64,QQ==",
         names={"cyrene": "Cyrene", "phainon": "Phainon"},
+        emotions={"cyrene": "joy", "phainon": "weary"},
     )
     check("contained height", STAGE_H == 560 and STAGE_H < 900)
     check("no full-viewport stage", "100vh" not in doc and "position:fixed" not in doc)
@@ -217,6 +218,8 @@ def test_html_stage() -> None:
     check("no canvas placeholders", "<canvas" not in doc.lower())
     check("sprites are images", doc.count("<img ") == 13)
     check("speech bubble present", "data-amp-bubble" in doc and "The page remembers you." in doc)
+    check("emotion attribute on buddy", 'data-amp-emotion="joy"' in doc)
+    check("weary pose marked", 'data-amp-emotion="weary"' in doc)
     check("selected ring class", 'data-heir="cyrene"' in doc and "buddy on" in doc)
     check("click + double-click", "ep_click" in doc and "ep_solo" in doc)
     check("stage marker", 'data-amp-eternal-stage="1"' in doc)
@@ -249,6 +252,83 @@ def test_interaction_api() -> None:
     check("intuitive one-to-one", manager.calls[-1][0] == "hyacine")
 
 
+def test_emotion_poses() -> None:
+    print("== emotion poses ==")
+    from src.world import eternal_emotion as ee
+    from src.world import living_world as lw
+
+    check("joy from glad talk", ee.classify_text("Ehe! I am so glad you came.") == "joy")
+    check("weary from tired talk", ee.classify_text("I am so tired I can barely stand.") == "weary")
+    check("fear from the tide", ee.classify_text("The black tide presses at the walls.") == "fear")
+    check("sad from apology", ee.classify_text("I am sorry. It still hurts.") == "sad")
+    check("empty is calm", ee.classify_text("   ") == "calm")
+
+    world = SimpleNamespace(
+        mood={"aglaea": {"valence": 3, "reason": "a warm visit", "ts": ""}},
+        surge={"active": True, "remaining": 2, "cities": ["Okhema"]},
+        black_tide_enabled=True,
+        _travel={},
+    )
+    world.location_name = lambda cid: "Okhema"
+    world.travel_info = lambda cid: None
+
+    check(
+        "radiant mood is joy",
+        ee.detect_emotion("aglaea", world=world) == "joy",
+        ee.detect_emotion("aglaea", world=world),
+    )
+    check(
+        "tide at the city wears them",
+        ee.detect_emotion("phainon", world=world) in {"weary", "fear"},
+        ee.detect_emotion("phainon", world=world),
+    )
+
+    tmp = Path(tempfile.mkdtemp(prefix="amp-eternal-emo-"))
+    memory = MemoryStore(tmp)
+    memory.add_history("cyrene", "user", "hello")
+    memory.add_history("cyrene", "assistant", "I am sorry. I have been lonely.")
+    felt = ee.detect_emotion(
+        "cyrene",
+        memory=memory,
+        world=SimpleNamespace(
+            mood={"cyrene": {"valence": 0, "reason": "", "ts": ""}},
+            surge={"active": False, "remaining": 0, "cities": []},
+            black_tide_enabled=False,
+            location_name=lambda cid: "Aedes Elysiae",
+            travel_info=lambda cid: None,
+        ),
+        last_reply="I am sorry. I have been lonely.",
+    )
+    check("conversation outweighs calm mood", felt == "sad", felt)
+
+    check("aglaea anger uses a different sticker", ee.variant_for("aglaea", "anger") == "02")
+    check("aglaea joy uses bath sticker", ee.variant_for("aglaea", "joy") == "01")
+    joy_art = ep.cute_art("aglaea", "joy")
+    anger_art = ep.cute_art("aglaea", "anger")
+    check(
+        "aglaea avatar changes with emotion",
+        joy_art is not None and anger_art is not None and joy_art != anger_art,
+        f"{joy_art} vs {anger_art}",
+    )
+    phainon_sad = ep.cute_art("phainon", "sad")
+    check("phainon still has a sticker when poses are few", phainon_sad is not None)
+    missing_pose = []
+    for cid in ep.all_ids():
+        if ep.cute_art(cid, "calm") is None:
+            missing_pose.append(cid)
+    check("every Heir has a calm pose", missing_pose == [], ",".join(missing_pose))
+    multi = [
+        cid for cid in ep.all_ids()
+        if (ep.ART_DIR / cid).is_dir()
+        and len(list((ep.ART_DIR / cid).glob("*.png"))) >= 2
+    ]
+    check("most Heirs have several PPG poses", len(multi) >= 11, str(len(multi)))
+    check("unknown emotion falls back", ee.variant_for("hyacine", "nope") == ee.variant_for("hyacine", "calm"))
+    check("normalize wounded", ee.normalize_emotion("wounded") == "sad")
+    lw.set_mood  # living_world is importable for ongoings
+    check("living world mood names exist", "calm" in lw.MOOD_NAMES.values())
+
+
 def main() -> int:
     test_roster()
     test_selection()
@@ -258,6 +338,7 @@ def main() -> int:
     test_art()
     test_html_stage()
     test_interaction_api()
+    test_emotion_poses()
     print()
     print(f"{len(PASSED)} passed, {len(FAILED)} failed")
     for name in FAILED:

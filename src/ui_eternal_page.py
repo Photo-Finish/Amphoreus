@@ -112,12 +112,14 @@ def build_stage_html(
     art: Optional[dict] = None,
     parchment_uri: str = "",
     names: Optional[dict] = None,
+    emotions: Optional[dict] = None,
 ) -> str:
     from src.world import eternal_page as ep
 
     selected_ids = ep.normalize_selected(selected)
     art = art or {}
     names = names or {}
+    emotions = emotions or {}
     bubble_by = {}
     for row in bubbles or []:
         cid = str(row.get("id") or "")
@@ -133,6 +135,7 @@ def build_stage_html(
         left, bottom = ep.LAYOUT.get(cid, (50.0, 50.0))
         on = " on" if cid in selected_ids else ""
         label = html.escape(names.get(cid) or ep.short_name(cid))
+        feeling = html.escape(str(emotions.get(cid) or "calm"))
         spoken = bubble_by.get(cid, "")
         bubble = ""
         if spoken:
@@ -142,6 +145,7 @@ def build_stage_html(
             )
         buddies.append(
             f'<button type="button" class="buddy{on}" data-heir="{html.escape(cid)}" '
+            f'data-amp-emotion="{feeling}" '
             f'style="left:{left}%;bottom:{bottom}%;z-index:{3 if cid in selected_ids else 2}">'
             f'{bubble}'
             f'<img alt="{label}" src="{src}" draggable="false" />'
@@ -370,6 +374,11 @@ def render_eternal_page(manager, *, key_prefix: str = "eternal") -> None:
     selected = ep.normalize_selected(st.session_state.get(ep.STATE_SELECTED))
     bubbles = list(st.session_state.get(ep.STATE_BUBBLES) or [])
     names = _names(manager)
+    try:
+        from src.world.eternal_emotion import circle_emotions
+        emotions = circle_emotions(manager, bubbles=bubbles)
+    except Exception:
+        emotions = {cid: "calm" for cid in ep.all_ids()}
 
     st.title("An Eternal Page")
     st.caption(
@@ -413,7 +422,7 @@ def render_eternal_page(manager, *, key_prefix: str = "eternal") -> None:
 
     art_uris = {}
     for cid in ep.all_ids():
-        path = ep.cute_art(cid)
+        path = ep.cute_art(cid, emotions.get(cid))
         if path:
             art_uris[cid] = _data_uri(path)
     parchment = ep.parchment_path()
@@ -425,6 +434,7 @@ def render_eternal_page(manager, *, key_prefix: str = "eternal") -> None:
         art=art_uris,
         parchment_uri=parchment_uri,
         names=names,
+        emotions=emotions,
     )
     components.html(html_doc, height=STAGE_H, scrolling=False)
 

@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Download official cute PPG stickers for An Eternal Page.
+"""Download official cute PPG stickers (all emotion poses) for An Eternal Page.
 
-Uses the Wikia CDN (hashed paths). Fandom HTML/API often times out;
-static.wikia.nocookie.net does not. WebP responses are converted to PNG.
+Uses the Wikia CDN (hashed paths). WebP responses are converted to PNG.
 
     python tools/fetch_eternal_page_art.py
 """
@@ -10,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import io
+import shutil
 import ssl
 import sys
 import urllib.parse
@@ -26,46 +26,34 @@ UA = (
 )
 WIKI = "houkai-star-rail"
 
-STICKERS: dict[str, list[str]] = {
-    "aglaea": ["Sticker_PPG_20_Aglaea_01.png"],
-    "anaxa": ["Sticker_PPG_22_Anaxa_01.png"],
-    "castorice": ["Sticker_PPG_22_Castorice_01.png", "Sticker_PPG_21_Castorice_01.png"],
-    "cerydra": [f"Sticker_PPG_{n}_Cerydra_01.png" for n in range(20, 27)],
-    "cipher": ["Sticker_PPG_22_Cipher_01.png"],
-    "cyrene": [f"Sticker_PPG_{n}_Cyrene_01.png" for n in range(20, 27)],
+# Known Pom-Pom Gallery packs per Heir. Variants are probed 01–08.
+PPG_PACKS: dict[str, list[str]] = {
+    "aglaea": ["Sticker_PPG_20_Aglaea_{nn}.png"],
+    "anaxa": ["Sticker_PPG_22_Anaxa_{nn}.png"],
+    "castorice": [
+        "Sticker_PPG_22_Castorice_{nn}.png",
+        "Sticker_PPG_21_Castorice_{nn}.png",
+    ],
+    "cerydra": ["Sticker_PPG_23_Cerydra_{nn}.png"],
+    "cipher": ["Sticker_PPG_22_Cipher_{nn}.png"],
+    "cyrene": ["Sticker_PPG_24_Cyrene_{nn}.png"],
     "dan-heng-permansor-terrae": [
-        "Sticker_PPG_24_Dan_Heng_•_Permansor_Terrae_01.png",
-        "Sticker_PPG_24_Dan_Heng_Permansor_Terrae_01.png",
-        "Sticker_PPG_25_Dan_Heng_•_Permansor_Terrae_01.png",
-        "Sticker_PPG_23_Dan_Heng_•_Permansor_Terrae_01.png",
-        "Sticker_PPG_18_Dan_Heng_01.png",
-        "Sticker_PPG_02_Dan_Heng_01.png",
+        "Sticker_PPG_24_Dan_Heng_•_Permansor_Terrae_{nn}.png",
+        "Sticker_PPG_24_Dan_Heng_Permansor_Terrae_{nn}.png",
     ],
-    "evernight": [
-        *[f"Sticker_PPG_{n}_Evernight_01.png" for n in range(20, 27)],
-        "Sticker_PPG_16_March_7th_01.png",
+    "evernight": ["Sticker_PPG_24_Evernight_{nn}.png"],
+    "hyacine": ["Sticker_PPG_22_Hyacine_{nn}.png"],
+    "hysilens": ["Sticker_PPG_23_Hysilens_{nn}.png"],
+    "mydei": ["Sticker_PPG_21_Mydei_{nn}.png"],
+    "phainon": [
+        "Sticker_PPG_21_Phainon_{nn}.png",
+        "Sticker_PPG_21_Phainon_{nn}.png",
     ],
-    "hyacine": ["Sticker_PPG_22_Hyacine_01.png"],
-    "hysilens": [f"Sticker_PPG_{n}_Hysilens_01.png" for n in range(20, 27)],
-    "mydei": ["Sticker_PPG_21_Mydei_01.png"],
-    "phainon": ["Sticker_PPG_21_Phainon_01.png"],
-    "tribbie": ["Sticker_PPG_21_Tribbie_01.png"],
-}
-
-SPLASH = {
-    "aglaea": "Character_Aglaea_Splash_Art.png",
-    "anaxa": "Character_Anaxa_Splash_Art.png",
-    "castorice": "Character_Castorice_Splash_Art.png",
-    "cerydra": "Character_Cerydra_Splash_Art.png",
-    "cipher": "Character_Cipher_Splash_Art.png",
-    "cyrene": "Character_Cyrene_Splash_Art.png",
-    "dan-heng-permansor-terrae": "Character_Dan_Heng_•_Permansor_Terrae_Splash_Art.png",
-    "evernight": "Character_Evernight_Splash_Art.png",
-    "hyacine": "Character_Hyacine_Splash_Art.png",
-    "hysilens": "Character_Hysilens_Splash_Art.png",
-    "mydei": "Character_Mydei_Splash_Art.png",
-    "phainon": "Character_Phainon_Splash_Art.png",
-    "tribbie": "Character_Tribbie_Splash_Art.png",
+    "tribbie": [
+        "Sticker_PPG_21_Tribbie_{nn}.png",
+        "Sticker_PPG_21_Trianne_{nn}.png",
+        "Sticker_PPG_21_Trinnon_{nn}.png",
+    ],
 }
 
 
@@ -100,15 +88,13 @@ def fetch(url: str, timeout: int = 12) -> bytes | None:
             data = resp.read()
             ctype = (resp.headers.get("Content-Type") or "").lower()
         if len(data) < 4000:
-            print(f"  skip small {len(data)} {url[-60:]}")
             return None
         if data[:8] == b"\x89PNG\r\n\x1a\n":
             return data
         if data[:4] == b"RIFF" or data[:4] == b"\xff\xd8\xff" or "image" in ctype:
             return data
-        print(f"  skip not image {ctype} {url[-60:]}")
-    except Exception as exc:
-        print(f"  miss {type(exc).__name__} {url[-70:]}")
+    except Exception:
+        return None
     return None
 
 
@@ -118,45 +104,79 @@ def to_png(data: bytes) -> bytes | None:
         im = im.convert("RGBA")
         if im.width < 64 or im.height < 64:
             return None
-        # Stickers are already chibi; splash art is tall — keep as-is.
         buf = io.BytesIO()
         im.save(buf, format="PNG", optimize=True)
         return buf.getvalue()
-    except Exception as exc:
-        print(f"  decode fail: {exc}")
+    except Exception:
         return None
 
 
-def save_cid(cid: str, names: list[str]) -> bool:
-    dest = OUT / f"{cid}.png"
-    if dest.is_file() and dest.stat().st_size > 8000:
-        try:
-            Image.open(dest).verify()
-            print(f"  have {dest.name} ({dest.stat().st_size})")
-            return True
-        except Exception:
-            pass
-    for name in names:
-        url = cdn_url(name)
-        raw = fetch(url)
+def _have(path: Path) -> bool:
+    if not path.is_file() or path.stat().st_size < 8000:
+        return False
+    try:
+        Image.open(path).verify()
+        return True
+    except Exception:
+        return False
+
+
+def save_variant(cid: str, nn: str, templates: list[str]) -> bool:
+    folder = OUT / cid
+    folder.mkdir(parents=True, exist_ok=True)
+    dest = folder / f"{nn}.png"
+    if _have(dest):
+        print(f"  have {cid}/{nn}.png")
+        return True
+    for tmpl in templates:
+        name = tmpl.format(nn=nn)
+        raw = fetch(cdn_url(name))
         if not raw:
             continue
         png = to_png(raw)
         if not png:
             continue
         dest.write_bytes(png)
-        print(f"  ok  {dest.name}  {len(png)}  <- {name}")
+        print(f"  ok  {cid}/{nn}.png  {len(png)}  <- {name}")
         return True
     return False
+
+
+def sync_default(cid: str) -> None:
+    """Keep `{cid}.png` as the calm/default pose (variant 01)."""
+    variant = OUT / cid / "01.png"
+    default = OUT / f"{cid}.png"
+    if _have(default) and not _have(variant):
+        variant.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(default, variant)
+        print(f"  copy {default.name} -> {cid}/01.png")
+    elif _have(variant) and not _have(default):
+        shutil.copy2(variant, default)
+        print(f"  copy {cid}/01.png -> {default.name}")
+    elif _have(variant) and _have(default):
+        if variant.stat().st_size != default.stat().st_size:
+            shutil.copy2(variant, default)
 
 
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     missing = []
-    for cid, names in STICKERS.items():
+    for cid, templates in PPG_PACKS.items():
         print(f"-- {cid} --")
-        extra = [SPLASH.get(cid)] if SPLASH.get(cid) else []
-        if not save_cid(cid, names + extra):
+        sync_default(cid)
+        got_any = False
+        consecutive_miss = 0
+        for i in range(1, 9):
+            nn = f"{i:02d}"
+            if save_variant(cid, nn, templates):
+                got_any = True
+                consecutive_miss = 0
+            else:
+                consecutive_miss += 1
+                if i >= 2 and consecutive_miss >= 2:
+                    break
+        sync_default(cid)
+        if not got_any and not _have(OUT / f"{cid}.png"):
             missing.append(cid)
     print("missing:", ", ".join(missing) or "(none)")
     return 1 if missing else 0

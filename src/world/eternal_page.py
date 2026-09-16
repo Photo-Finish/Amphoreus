@@ -88,7 +88,14 @@ def short_name(character_id: str) -> str:
     return SHORT_NAME.get(character_id, character_id.replace("-", " ").title())
 
 
-def cute_art(character_id: str) -> Optional[Path]:
+def cute_art(character_id: str, emotion: Optional[str] = None) -> Optional[Path]:
+    try:
+        from src.world.eternal_emotion import pose_path
+        posed = pose_path(character_id, emotion)
+        if posed is not None:
+            return posed
+    except Exception:
+        pass
     path = ART_DIR / f"{character_id}.png"
     if path.is_file() and path.stat().st_size > 4000:
         return path

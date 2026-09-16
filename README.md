@@ -1219,5 +1219,10 @@ tide / letter / weather / co-location / aftermath features):
   bubbles (not Visit chatboxes). Speakers use the same `manager.chat` history
   as Visit in Journey or Aftermath. No weather, no street life. Suite:
   `tools/test_eternal_page.py`.
+- **Eternal Page faces** — companions switch among official PPG poses by
+  feeling. Detection reads recent conversation (Visit/Eternal history plus
+  the last bubble) and sanctuary ongoings (mood, black-tide weight, travel,
+  gifts, open grievance). Missing poses fall back; Phainon’s single sticker
+  still shows. Suite: `tools/test_eternal_page.py`.
 
 
