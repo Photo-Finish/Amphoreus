@@ -64,13 +64,14 @@ Special: **The Nether** under Styxia (Thanatos-blessed). Cross-era rules in `tim
 | Pollux | Only where **Castorice** stands (dragon companion; not Workshop dromas Pollux) |
 | Maze fairy | Aedes Elysiae family in **Month of Membrance** only |
 | Mountain Dweller | **Okhema** family (+ thin Kremnos forge echo) — **not Aidonia** |
-| Shore / siren / net / tidepool | Working seashore (`WORKING_SHORE`) |
-| Boat | Shore or River of Souls places |
+| Shore / siren / net / tidepool | Fishing quay (`FISHING_QUAY`): Warbling Shores, Aedes wharf. Sirens only at Warbling Shores (`SIREN_PLACES`). Present Dragonbone is a death-river city, not a fishing square |
+| Boat | Fishing quay or River of Souls places (`le.RIVER`) — stripped from present Janusopolis (Abyss of Fate) |
 | Forge / banner | Kremnos family |
-| Market stall | Market cities (not Grove) |
+| Market stall | Living market cities: Okhema family, Sanctum of Prophecy, Warbling Shores, Aedes. **Not** present Abyss / Strife Ruins / Dragonbone, not Grove |
 | Mill | Field places (e.g. Aedes) |
-| Fountain | Civic plazas only (`FOUNTAIN_PLACES`): Okhema family, Janus/Sanctum, Styxia/Warbling, Grove/Scarwood, Demigod Council — never with a well |
+| Fountain | Civic plazas only (`FOUNTAIN_PLACES`): Okhema family, Sanctum of Prophecy, Warbling Shores, Demigod Council — never with a well. **Not** Grove/Scarwood, Abyss, Dragonbone, Strife Ruins |
 | Well | Practical cisterns only (`WELL_CITIES`): Aedes, Aidonia, Castrum Kremnos — never with a fountain |
+| Grass lawn | Civic / field / living-grove texture — **not** Aidonia snow, **not** Abyss of Fate |
 
 Forbidden statuses: dead / starving / plague. Grove: no chimera or shore life. Vortex: no fishing-shore clutter. Never author Heir speech from the ecosystem layer.
 

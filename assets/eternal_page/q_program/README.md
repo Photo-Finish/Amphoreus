@@ -97,16 +97,19 @@ Deleted `cyrene_v34_bust.png` (Mem was split). Replaced by `cyrene_v34_mem.png` 
 | `hyacine_v33_sit.png` | Full sit + Ica in lap |
 | `castorice_v33_sit.png` | Full sit + hair/butterflies |
 | `cipher_v33_sit.png` | Full sit + ears/tail |
-| `hysilens_v35_sit.png` | Full hat + body (Screwllum still overlaps left) |
-| `cerydra_v35_sit.png` | Full sit + crown |
-| `sunday_v36_sit.png` | Full sit + halo rings |
-| `dan_heng_pt_v36_sit.png` | Full sit + chimera in lap |
+| `hysilens_v35_sit.png` | Tight sit; Screwllum/Cerydra cropped out |
+| `cerydra_v35_sit.png` | Tight sit + crown; Hysilens cropped out |
+| `sunday_v36_sit.png` | Guest only — not a circle body |
+| `dan_heng_pt_v36_sit.png` | Tight sit + chimera; Sunday/Himeko cropped out |
 | `cyrene_v37_tv.png` | Tightened to pixel Cyrene on the TV |
-| `cyrene_v38_sit.png` | New: 3.8 sofa Cyrene (full Q-body) |
+| `cyrene_v38_sit.png` | 3.8 sofa Cyrene (Evernight/Aglaea cropped out) |
+| `evernight_v38_sit.png` | 3.8 sofa Evernight (white hat; Cyrene cropped out) |
 | `mini_companion_v31.png` | Little creature complete |
 | `*_bili_t*.png` | Emotion/stage variants from official 360p frames |
 
-Neighbor overlap on group stills is unavoidable without clipping hair/props. Padding was preferred.
+Neighbor faces are cropped out of circle sits (tight boxes). Sit furniture that shares the outline (branch, sofa, ice ledge, stage) may remain so feet still read as planted. Guests (Himeko, Sunday, Owlbert, Screwllum, Mem) never become circle bodies.
+
+Circle sits: `python tools/cut_q_program.py --sits` (samples backdrop *around* the box, then Lab+Canny+GrabCut).
 
 ## Cutout algorithm (`tools/cut_q_program.py` → `cutouts/`)
 
@@ -128,17 +131,18 @@ Magenta QA composites (RGB on #FF00FF, not for shipping) live in `_preview/`. Th
 - `cutouts/cyrene_v34_mem.png` — Mem + frame isolated; leftover sunburst title art
 - `cutouts/cyrene_v37_tv.png` — pixel Cyrene off the TV; small dark-screen bite on the left
 - `cutouts/phainon_v34_bust.png` — bust + frame; a few poster tiles remain
-- `cutouts/cyrene_v38_sit.png` — Cyrene body kept; sofa mostly gone; neighbor hats/hair remain
+- `cutouts/cyrene_v38_sit.png` — Cyrene body kept; sofa/poster fragments
+- `cutouts/evernight_v38_sit.png` — Evernight + hat; sofa kept
+- `cutouts/tribbie_v31_swing.png` — swing kept; Mydei cropped out
 - `cutouts/mini_companion_v31.png` — creature kept; some foliage
 - Bilibili 2D Hyacine/Castorice/Cipher emotion busts — usable at 360p (Hyacine often keeps her ornate frame)
 
-**Partial (character complete, stage/neighbors still glued)**
+**Partial (character complete, sit furniture still glued)**
 
-- Tribbie (swing kept, Mydei/wisteria leak)
-- Mydei / Aglaea (branch + neighbor)
-- 3.3 sitters (stage floor + neighbor hats)
-- Hysilens / Cerydra (ice pane + neighbor)
-- Sunday / Dan Heng PT / Himeko (purple sofa + chimera/owl kept with the sitters)
+- Mydei / Aglaea (branch + window fragments)
+- 3.3 sitters (stage floor / bench)
+- Hysilens / Cerydra (ice pane / ledge)
+- Dan Heng PT (purple sofa + table; chimera kept)
 
 ### Still cannot isolate cleanly
 

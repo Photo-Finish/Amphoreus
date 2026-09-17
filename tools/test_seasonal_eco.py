@@ -107,14 +107,14 @@ check(
 )
 
 print("== Month of Joy (5): fuller shore/nets ==")
-ws_joy = mk(2, "Styxia", month=5)
-ws_joy_off = mk(2, "Styxia", month=9)
-nets_joy = count_kind(ws_joy, "Styxia", "net")
-nets_off = count_kind(ws_joy_off, "Styxia", "net")
+ws_joy = mk(2, "Warbling Shores", month=5)
+ws_joy_off = mk(2, "Warbling Shores", month=9)
+nets_joy = count_kind(ws_joy, "Warbling Shores", "net")
+nets_off = count_kind(ws_joy_off, "Warbling Shores", "net")
 check("Joy month has nets", nets_joy >= 1)
 check("Joy nets denser than Weaving", nets_joy >= nets_off, f"{nets_joy} vs {nets_off}")
 siren = next(
-    (b for b in eco.derive_scene(ws_joy, place="Styxia") if b["kind"] == "siren"),
+    (b for b in eco.derive_scene(ws_joy, place="Warbling Shores") if b["kind"] == "siren"),
     None,
 )
 check(
@@ -196,9 +196,9 @@ check(
     not eco.tide_edge_active(ws_ok_surge, "Okhema"),
 )
 
-# Market thin: Styxia market stalls under tide vs calm
-ws_mkt_tide = mk(2, "Styxia", month=9)
-ws_mkt_tide.surge = {"active": True, "remaining": 2, "cities": ["Styxia"]}
+# Market thin: Warbling Shores (living Styxia) under tide vs calm
+ws_mkt_tide = mk(2, "Warbling Shores", month=9)
+ws_mkt_tide.surge = {"active": True, "remaining": 2, "cities": ["Warbling Shores"]}
 # Ensure market_open via lived flags if apply_tick set them
 flags = (ws_mkt_tide.vivid.get("lived") or {}).get("flags") or {}
 if not flags.get("market_open"):
@@ -207,7 +207,7 @@ if not flags.get("market_open"):
     f["market_open"] = True
     lived["flags"] = f
     ws_mkt_tide.vivid["lived"] = lived
-ws_mkt_calm = mk(2, "Styxia", month=9)
+ws_mkt_calm = mk(2, "Warbling Shores", month=9)
 flags_c = (ws_mkt_calm.vivid.get("lived") or {}).get("flags") or {}
 if not flags_c.get("market_open"):
     lived = dict(ws_mkt_calm.vivid.get("lived") or {})
@@ -215,11 +215,11 @@ if not flags_c.get("market_open"):
     f["market_open"] = True
     lived["flags"] = f
     ws_mkt_calm.vivid["lived"] = lived
-stalls_tide = count_kind(ws_mkt_tide, "Styxia", "market_stall")
-stalls_calm = count_kind(ws_mkt_calm, "Styxia", "market_stall")
+stalls_tide = count_kind(ws_mkt_tide, "Warbling Shores", "market_stall")
+stalls_calm = count_kind(ws_mkt_calm, "Warbling Shores", "market_stall")
 check(
-    "tide edge thins market stalls at Styxia",
-    stalls_tide <= stalls_calm,
+    "tide edge thins market stalls at Warbling Shores",
+    stalls_tide <= stalls_calm and stalls_calm >= 1,
     f"tide={stalls_tide} calm={stalls_calm}",
 )
 
@@ -266,7 +266,7 @@ seasonal_doings = []
 for ws, place in (
     (ws_cult, "Okhema"),
     (ws_reap, "Aedes Elysiae"),
-    (ws_joy, "Styxia"),
+    (ws_joy, "Warbling Shores"),
     (ws_weav, "Okhema"),
     (ws_strife, "Castrum Kremnos"),
     (ws_mem, "Aedes Elysiae"),

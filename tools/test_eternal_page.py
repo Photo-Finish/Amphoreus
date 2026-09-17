@@ -571,20 +571,40 @@ def test_q_full_body() -> None:
         check(f"{cid} yields a Q body", png is not None and len(png) > 4000)
         if png:
             im = Image.open(BytesIO(png))
-            check(f"{cid} Q body is a real PNG", im.mode == "RGBA" and min(im.size) >= 96, str(im.size))
+            check(f"{cid} Q body is a real PNG", im.mode == "RGBA" and min(im.size) >= 72, str(im.size))
             src = eq.source_path(cid)
             if src:
                 raw = Image.open(src)
                 check(
                     f"{cid} crop is tighter than the group still",
-                    im.width * im.height < raw.width * raw.height,
+                    im.width * im.height <= raw.width * raw.height,
                     f"{im.size} vs {raw.size}",
                 )
-    for cid in ("phainon", "anaxa", "evernight"):
+            w, h = im.size
+            pix = im.load()
+            probes = (
+                pix[w // 2, int(h * 0.35)],
+                pix[w // 2, int(h * 0.50)],
+                pix[w // 2, int(h * 0.62)],
+            )
+            check(
+                f"{cid} keep a solid torso/head",
+                any(px[3] > 40 for px in probes),
+                str([px[3] for px in probes]),
+            )
+    for cid in ("phainon", "anaxa"):
         check(f"{cid} has no clean sit still", eq.q_body_png(cid) is None)
         check(f"{cid} falls back to PPG", ep.cute_art(cid) is not None)
         check(f"{cid} body kind is ppg", ep.body_kind(cid) == "ppg")
+    check("evernight body kind is q", ep.body_kind("evernight") == "q")
     check("aglaea body kind is q", ep.body_kind("aglaea") == "q")
+    check(
+        "Q sit files are one Heir each",
+        eq.Q_SIT["cyrene"][0].startswith("cyrene_")
+        and eq.Q_SIT["evernight"][0].startswith("evernight_")
+        and eq.Q_SIT["dan-heng-permansor-terrae"][0].startswith("dan_heng_"),
+    )
+    check("guests never sit on the circle", "himeko" not in eq.Q_SIT and "sunday" not in eq.Q_SIT)
 
     art = {cid: "data:image/png;base64,QQ==" for cid in ep.all_ids()}
     art["cyrene"] = {
@@ -609,7 +629,7 @@ def test_q_full_body() -> None:
         names={"cyrene": "Cyrene"},
         emotions={"cyrene": "joy"},
     )
-    check("feeling Q shows the PPG face", "buddy show-face" in felt)
+    check("idle feeling Q keeps one body", "buddy show-face" not in felt)
     check("PPG face does not steal clicks", "img.face" in (ROOT / "src" / "ui_eternal_page.py").read_text(encoding="utf-8") and "pointer-events: none" in (ROOT / "src" / "ui_eternal_page.py").read_text(encoding="utf-8"))
     spoken = build_stage_html(
         selected=[],

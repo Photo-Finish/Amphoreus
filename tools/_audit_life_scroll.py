@@ -38,7 +38,7 @@ checks = {
     ),
     "iframe pointer-events:none in pin_js": "pointer-events:none;" in html.split("f.style.cssText")[1][:180],
     "no wheel hijack": "passScroll" not in html and "addEventListener('wheel'" not in html,
-    "parent sprite hit-test": "hitSprite" in html and "__ampLandLifeBound" in html,
+    "parent sprite hit-test": "hitSprite" in html and "__ampLandLifeClick" in html,
     "notice host hoist": "amp-land-notice-host" in html and "syncNoticeHost" in html,
     "sprite pointer-events:auto": ".amp-sprite {" in html and "pointer-events: auto;" in html,
     "photo host mounts in app shell": "landMount" in html and "stAppViewContainer" in html,

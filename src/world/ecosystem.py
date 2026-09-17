@@ -38,30 +38,44 @@ CHIMERA_VARIANT_META = {
     "chimera_orange": {"color": "orange", "horn": "ram", "phrase": "orange ram-horn chimera"},
     "chimera_purple": {"color": "purple", "horn": "curved", "phrase": "purple chimera"},
 }
-# Road beasts on inhabited roads — not sky forts, tombs, or sacred nexuses.
+# Road beasts on inhabited roads — not woods, temple-abyss, sky forts, tombs.
+# Dromas Workshop is in Okhema (`databank/world/fauna.md`); Grove scholarship
+# jokes about dromases are speech, not a herd in Murmuring Woods.
 DROMAS_ROADS = {
-    "Okhema", "Eternal Holy City", "Dawncloud", "Janusopolis",
+    "Okhema", "Eternal Holy City", "Dawncloud",
     "Castrum Kremnos", "Bloodbathed Battlefront", "Styxia", "Warbling Shores",
     "Aidonia", "Aedes Elysiae", "Aedes Elysiae, of old", "Sanctum of Prophecy",
-    "Grove of Epiphany", "Radiant Scarwood",
 }
 DROMAS_STRONG = set(DROMAS_ROADS)
 SHORE = set(le.SEA)
-# Working seashore life (nets, sirens, tidepools) — Vortex is a Coreflame nexus, not a fishing quay.
-WORKING_SHORE = {
-    "Styxia", "Warbling Shores", "Aedes Elysiae", "Aedes Elysiae, of old",
+# Fishing quay (nets, tidepools, shore-band) — Aedes Voyager's Wharf and
+# Dawn Styxia's Warbling Shores. Present Dragonbone is a death-river city,
+# not a fishing square (`city-states.md`). Vortex is a Coreflame nexus.
+FISHING_QUAY = {
+    "Warbling Shores", "Aedes Elysiae", "Aedes Elysiae, of old",
 }
+# Sea sirens are Phagousa's Titankin, affiliated with Styxia's living shore
+# (`databank/world/fauna.md`). Dawn form only — not Aedes seals, not Vortex.
+SIREN_PLACES = {"Warbling Shores"}
+# Pearly / luminous-remain keepsakes — Styxia family (Pearly Shores / Dragonbone).
+PEARL_PLACES = {
+    "Styxia", "Warbling Shores",
+}
+# Back-compat alias used by older tests / callers.
+WORKING_SHORE = FISHING_QUAY | SIREN_PLACES
 GROVE = set(le.GROVE)
 # Living timber vs underground matrix / tomb of the Nameless Titan.
 LIVING_GROVE = {"Grove of Epiphany", "Radiant Scarwood"}
 TOMB_PLACES = {"Great Tomb", "Universal Matrix"}
 FIELDS = set(le.FIELDS)
-# Ordinary civic markets — not council chambers, warfronts, sky forts, tombs, or death-snow.
-# Dawn past-forms that were peak cities keep markets; long-ruined present twins do not share that list.
+# Ordinary civic markets — Marmoreal streets, Dawn prophetic city, Dawn Styxia,
+# Aedes village square. Present ruins are not markets:
+# Janusopolis = Abyss of Fate ("only a few temples still stand"),
+# Castrum Kremnos = Strife Ruins, Styxia = Dragonbone City.
 MARKET_CITIES = {
-    "Okhema", "Eternal Holy City", "Dawncloud", "Janusopolis",
-    "Sanctum of Prophecy",  # Dawn prophetic city (present Abyss is the long ruin)
-    "Castrum Kremnos", "Styxia", "Warbling Shores",
+    "Okhema", "Eternal Holy City", "Dawncloud",
+    "Sanctum of Prophecy",
+    "Warbling Shores",
     "Aedes Elysiae", "Aedes Elysiae, of old",
 }
 # Practical wells / cisterns — village, snow, martial camp. Never co-located
@@ -71,15 +85,17 @@ WELL_CITIES = {
     "Aidonia",
     "Castrum Kremnos",
 }
-# Ornamental / civic fountains — plazas, prophecy, remembrance, grove court.
-# Disjoint from WELL_CITIES: one water feature per place family.
+# Ornamental / civic fountains — Marmoreal plazas, Dawn prophetic city,
+# Dawn Styxia's pearly court, Demigod Council. Not woods, not Abyss temples,
+# not Dragonbone / Strife Ruins. Disjoint from WELL_CITIES.
 FOUNTAIN_PLACES = {
     "Okhema", "Eternal Holy City", "Dawncloud",
-    "Janusopolis", "Sanctum of Prophecy",
-    "Styxia", "Warbling Shores",
-    "Grove of Epiphany", "Radiant Scarwood",
+    "Sanctum of Prophecy",
+    "Warbling Shores",
     "Demigod Council",
 }
+# Aidonia: northern snow wasteland — no civic grass lawns (`geography.md`).
+SNOW_PLACES = {"Aidonia"}
 # Truly sparse: long-abandoned / death / sacred nexus — NOT thriving Dawn peaks.
 # Fortress of Dome (intact sky castrum) and Bloodbathed Battlefront (active war) are inhabited.
 SPARSE_CITIES = {
@@ -1487,13 +1503,15 @@ def derive_scene(world, place: Optional[str] = None,
                 "mountain_dweller", place, 1, world, flags, character_id,
             ))
 
-    if place in WORKING_SHORE:
+    if place in FISHING_QUAY:
         out.append(_mk_being("shore", place, 1, world, flags, character_id))
-        out.append(_mk_being("siren", place, 1, world, flags, character_id))
+        if place in SIREN_PLACES:
+            out.append(_mk_being("siren", place, 1, world, flags, character_id))
+            # Month of Joy (5): fuller shore presence at the living sea city.
+            if month == 5 and not (flags.get("resting") or period in (0, 4)):
+                out.append(_mk_being("siren", place, 2, world, flags, character_id))
+    if place in PEARL_PLACES:
         out.append(_mk_being("pearl", place, 1, world, flags, character_id))
-        # Month of Joy (5): fuller shore presence.
-        if month == 5 and not (flags.get("resting") or period in (0, 4)):
-            out.append(_mk_being("siren", place, 2, world, flags, character_id))
 
     if place in LIVING_GROVE:
         out.append(_mk_being("grove_leaf", place, 1, world, flags, character_id))
@@ -1507,26 +1525,23 @@ def derive_scene(world, place: Optional[str] = None,
         and place not in SPARSE_CITIES
         and place in le.CITYISH
     ):
-        out.append(_mk_being("grass", place, 1, world, flags, character_id))
+        if place not in SNOW_PLACES:
+            out.append(_mk_being("grass", place, 1, world, flags, character_id))
         out.append(_mk_being("wind", place, 1, world, flags, character_id))
         if place in WELL_CITIES:
             out.append(_mk_being("well", place, 1, world, flags, character_id))
         if flags.get("market_open") and place in MARKET_CITIES:
             # Okhema densest; Dawn Eternal Holy City stays near-peak civic.
-            # Dawn Sanctum / Warbling (peak cities) keep a pair; present twins match.
-            # Aedes / Kremnos stay spare (village / martial ration).
+            # Dawn Sanctum / Warbling keep a pair; Aedes stays a village stall.
             if place == "Okhema":
                 n_stalls = 4
             elif place == "Eternal Holy City":
                 n_stalls = 3
             elif place == "Dawncloud":
                 n_stalls = 2
-            elif place in {
-                "Janusopolis", "Sanctum of Prophecy",
-                "Styxia", "Warbling Shores",
-            }:
+            elif place in {"Sanctum of Prophecy", "Warbling Shores"}:
                 n_stalls = 2
-            elif place in ART_FAMILY_AEDES | ART_FAMILY_KREMNOS:
+            elif place in ART_FAMILY_AEDES:
                 n_stalls = 1
             else:
                 n_stalls = 1
@@ -1556,6 +1571,9 @@ def derive_scene(world, place: Optional[str] = None,
         # Demigod Council keeps incense without a street shrine booth.
         out.append(_mk_being("shrine", place, 1, world, flags, character_id))
         out.append(_mk_being("incense", place, 1, world, flags, character_id))
+    elif place == "Sanctum of Prophecy":
+        # Dawn Janusopolis — Temple of the Three Fates still stands.
+        out.append(_mk_being("shrine", place, 1, world, flags, character_id))
     elif place == "Demigod Council":
         out.append(_mk_being("incense", place, 1, world, flags, character_id))
         out.append(_mk_being("pillar", place, 1, world, flags, character_id))
@@ -1590,6 +1608,7 @@ def derive_scene(world, place: Optional[str] = None,
     if place in ART_FAMILY_JANUS:
         out.append(_mk_being("incense", place, 1, world, flags, character_id))
         out.append(_mk_being("ribbon", place, 1, world, flags, character_id))
+        out.append(_mk_being("pillar", place, 1, world, flags, character_id))
         if not (flags.get("resting") or period in (0, 4)):
             out.append(_mk_being("courier", place, 1, world, flags, character_id))
     if place == "Castrum Kremnos":
@@ -1605,6 +1624,9 @@ def derive_scene(world, place: Optional[str] = None,
             out.append(_mk_being("courier", place, 1, world, flags, character_id))
     if place in ART_FAMILY_STYXIA:
         out.append(_mk_being("incense", place, 1, world, flags, character_id))
+        if place == "Styxia":
+            # Dragonbone architecture — stone, not a fishing quay.
+            out.append(_mk_being("pillar", place, 1, world, flags, character_id))
         if not (flags.get("resting") or period in (0, 4)):
             out.append(_mk_being("courier", place, 1, world, flags, character_id))
     if place in ART_FAMILY_AIDONIA:
@@ -1617,7 +1639,7 @@ def derive_scene(world, place: Optional[str] = None,
         out.append(_mk_being("wind", place, 1, world, flags, character_id))
         out.append(_mk_being("grass", place, 1, world, flags, character_id))
         out.append(_mk_being("pebble", place, 1, world, flags, character_id))
-    if place in WORKING_SHORE:
+    if place in FISHING_QUAY:
         out.append(_mk_being("boat", place, 1, world, flags, character_id))
         out.append(_mk_being("net", place, 1, world, flags, character_id))
         out.append(_mk_being("tidepool", place, 1, world, flags, character_id))
@@ -1688,7 +1710,7 @@ def derive_scene(world, place: Optional[str] = None,
         out = [b for b in out if b["kind"] not in {
             "chimera", "shore", "hearth_cat", "siren", "bath", "market_stall",
             "pearl", "forge", "laundry", "mosaic", "boat", "net", "tidepool",
-            "banner", "well",
+            "banner", "well", "dromas", "dromas_calf", "fountain",
         }]
     if place in TOMB_PLACES:
         out = [b for b in out if b["kind"] not in {
@@ -1717,7 +1739,25 @@ def derive_scene(world, place: Optional[str] = None,
     if place == "Aidonia":
         out = [b for b in out if b["kind"] not in {
             "market_stall", "laundry", "chimera", "shore", "siren", "net",
-            "tidepool", "mill", "kite", "maze", "wheat",
+            "tidepool", "mill", "kite", "maze", "wheat", "grass", "fountain",
+        }]
+    if place == "Janusopolis":
+        # Present Abyss of Fate — a few temples, not a market city or lawn.
+        out = [b for b in out if b["kind"] not in {
+            "market_stall", "fountain", "dromas", "dromas_calf", "laundry",
+            "courier", "chimera", "shore", "siren", "net", "tidepool",
+            "mosaic", "mill", "kite", "boat", "grass",
+        }]
+    if place == "Styxia":
+        # Present Dragonbone City — River of Souls, not a fishing quay.
+        out = [b for b in out if b["kind"] not in {
+            "market_stall", "fountain", "laundry", "mosaic", "shore",
+            "siren", "net", "tidepool", "chimera",
+        }]
+    if place == "Castrum Kremnos":
+        # Present Strife Ruins — forge and cistern, not a fruit market.
+        out = [b for b in out if b["kind"] not in {
+            "market_stall", "laundry", "chimera", "shore", "siren", "fountain",
         }]
     if place in {"Bloodbathed Battlefront", "Demigod Council"}:
         # Warfront / council chamber — no fruit stalls or holy-city laundry.
@@ -1829,12 +1869,17 @@ def logic_faults(scene: List[dict], place: str,
     faults = []
     kinds = {b.get("kind") for b in scene}
     if place in GROVE and ("chimera" in kinds or "shore" in kinds or "siren" in kinds
-                           or "boat" in kinds or "net" in kinds or "tidepool" in kinds):
-        faults.append("Grove scene must not hold chimera or shore life")
-    if place not in WORKING_SHORE and ("shore" in kinds or "siren" in kinds or "pearl" in kinds
-                               or "tidepool" in kinds or "net" in kinds):
-        faults.append("Shore life outside a working seashore")
-    if "boat" in kinds and place not in WORKING_SHORE and place not in le.RIVER:
+                           or "boat" in kinds or "net" in kinds or "tidepool" in kinds
+                           or "dromas" in kinds or "fountain" in kinds):
+        faults.append("Grove scene must not hold chimera, dromas, fountain, or shore life")
+    if place not in FISHING_QUAY and ("shore" in kinds or "tidepool" in kinds
+                               or "net" in kinds):
+        faults.append("Shore/net life outside a fishing quay")
+    if "siren" in kinds and place not in SIREN_PLACES:
+        faults.append("Siren outside Warbling Shores")
+    if "pearl" in kinds and place not in PEARL_PLACES:
+        faults.append("Pearl outside Styxia family")
+    if "boat" in kinds and place not in FISHING_QUAY and place not in le.RIVER:
         faults.append("Boat outside river or sea")
     if place not in CHIMERA_CITIES and "chimera" in kinds:
         faults.append("Chimera outside holy-city family")
@@ -1854,6 +1899,15 @@ def logic_faults(scene: List[dict], place: str,
         faults.append("Well and fountain must not share a place")
     if "dromas" in kinds and place not in DROMAS_ROADS:
         faults.append("Dromas outside road places")
+    if "grass" in kinds and place in SNOW_PLACES:
+        faults.append("Grass lawn on Aidonia snow")
+    if place == "Janusopolis" and (
+        "market_stall" in kinds or "fountain" in kinds or "grass" in kinds
+        or "dromas" in kinds or "boat" in kinds
+    ):
+        faults.append("Abyss of Fate must not hold a civic market, fountain, lawn, or road herd")
+    if place == "Styxia" and ("siren" in kinds or "net" in kinds or "shore" in kinds):
+        faults.append("Dragonbone City must not hold a fishing quay")
     if place == "Vortex of Genesis" and (
         "siren" in kinds or "net" in kinds or "tidepool" in kinds
     ):

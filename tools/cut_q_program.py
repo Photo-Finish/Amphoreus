@@ -29,15 +29,15 @@ PREVIEWS = QP / "_preview"
 CROP_BOXES: dict[str, tuple[str, tuple[int, int, int, int]]] = {
     "tribbie_v31_swing.png": (
         "Version_3.1_Special_Program_Announcement.png",
-        (0, 470, 440, 1080),
+        (5, 510, 318, 1080),
     ),
     "mydei_v31_sit.png": (
         "Version_3.1_Special_Program_Announcement.png",
-        (260, 560, 760, 1080),
+        (365, 595, 600, 1080),
     ),
     "aglaea_v31_sit.png": (
         "Version_3.1_Special_Program_Announcement.png",
-        (600, 540, 1100, 1080),
+        (640, 652, 910, 1080),
     ),
     "mini_companion_v31.png": (
         "Version_3.1_Special_Program_Announcement.png",
@@ -45,15 +45,15 @@ CROP_BOXES: dict[str, tuple[str, tuple[int, int, int, int]]] = {
     ),
     "castorice_v33_sit.png": (
         "Version_3.3_Special_Program_Announcement.png",
-        (300, 540, 760, 1080),
+        (365, 555, 638, 1045),
     ),
     "hyacine_v33_sit.png": (
         "Version_3.3_Special_Program_Announcement.png",
-        (600, 470, 1060, 1080),
+        (670, 572, 918, 1045),
     ),
     "cipher_v33_sit.png": (
         "Version_3.3_Special_Program_Announcement.png",
-        (900, 480, 1360, 1080),
+        (1008, 575, 1290, 1045),
     ),
     "cyrene_v34_mem.png": (
         "Version_3.4_Special_Program_Announcement.png",
@@ -69,19 +69,19 @@ CROP_BOXES: dict[str, tuple[str, tuple[int, int, int, int]]] = {
     ),
     "hysilens_v35_sit.png": (
         "Version_3.5_Special_Program_Announcement.png",
-        (250, 300, 560, 675),
+        (315, 348, 458, 658),
     ),
     "cerydra_v35_sit.png": (
         "Version_3.5_Special_Program_Announcement.png",
-        (450, 310, 800, 675),
+        (502, 328, 715, 658),
     ),
     "sunday_v36_sit.png": (
         "Version_3.6_Special_Program_Announcement.png",
-        (260, 450, 740, 1000),
+        (260, 450, 680, 1000),
     ),
     "dan_heng_pt_v36_sit.png": (
         "Version_3.6_Special_Program_Announcement.png",
-        (540, 460, 1020, 1000),
+        (668, 575, 832, 992),
     ),
     "himeko_v36_sit.png": (
         "Version_3.6_Special_Program_Announcement.png",
@@ -93,7 +93,11 @@ CROP_BOXES: dict[str, tuple[str, tuple[int, int, int, int]]] = {
     ),
     "cyrene_v38_sit.png": (
         "Version_3.8_Special_Program_Announcement.png",
-        (500, 480, 840, 1000),
+        (575, 528, 726, 978),
+    ),
+    "evernight_v38_sit.png": (
+        "Version_3.8_Special_Program_Announcement.png",
+        (228, 498, 498, 982),
     ),
 }
 
@@ -303,7 +307,7 @@ def _grabcut_from_mask(rgb: np.ndarray, fg: np.ndarray) -> np.ndarray:
     h, w = rgb.shape[:2]
     bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
     gc = np.full((h, w), cv2.GC_PR_BGD, np.uint8)
-    border = max(4, min(h, w) // 30)
+    border = max(2, min(h, w) // 40)
     gc[:border, :] = cv2.GC_BGD
     gc[-border:, :] = cv2.GC_BGD
     gc[:, :border] = cv2.GC_BGD
@@ -371,6 +375,50 @@ def isolate_rgb(rgb: np.ndarray) -> np.ndarray:
     return (alpha * 255).astype(np.uint8)
 
 
+def cutout_from_announcement(
+    full: Image.Image,
+    box: tuple[int, int, int, int],
+    dest: Path,
+    preview_dir: Path | None = None,
+) -> dict:
+    """Isolate one Heir using backdrop sampled *around* the tight box."""
+    rgb_full = np.array(full.convert("RGB"))
+    H, W = rgb_full.shape[:2]
+    l, t, r, b = _clamp_box(box, W, H)
+    tw, th = r - l, b - t
+    ring = max(28, min(tw, th) // 5)
+    el, et = max(0, l - ring), max(0, t - ring)
+    er, eb = min(W, r + ring), min(H, b + ring)
+    context = rgb_full[et:eb, el:er]
+    tl, tt = l - el, t - et
+    margin = np.ones(context.shape[:2], dtype=bool)
+    margin[tt : tt + th, tl : tl + tw] = False
+    if int(margin.sum()) >= 80:
+        bg = np.median(context[margin], axis=0)
+    else:
+        bg = np.median(context.reshape(-1, 3), axis=0)
+    canvas = context.copy()
+    canvas[margin] = bg.astype(np.uint8)
+    halo = 18
+    ch, cw = canvas.shape[:2]
+    padded = np.empty((ch + 2 * halo, cw + 2 * halo, 3), np.uint8)
+    padded[:, :] = bg.astype(np.uint8)
+    padded[halo : halo + ch, halo : halo + cw] = canvas
+    alpha_pad = isolate_rgb(padded)
+    alpha_ctx = alpha_pad[halo : halo + ch, halo : halo + cw]
+    alpha = alpha_ctx[tt : tt + th, tl : tl + tw]
+    rgb = rgb_full[t:b, l:r]
+    rgba = np.dstack([rgb, alpha])
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    Image.fromarray(rgba, "RGBA").save(dest, "PNG")
+    if preview_dir is not None:
+        preview_dir.mkdir(parents=True, exist_ok=True)
+        prev = _magenta_preview(rgba)
+        Image.fromarray(prev, "RGB").save(preview_dir / dest.name, "PNG")
+    cov = float(alpha.mean()) / 255.0
+    return {"file": dest.name, "coverage": round(cov, 3), "size": f"{tw}x{th}"}
+
+
 def _magenta_preview(rgba: np.ndarray) -> np.ndarray:
     h, w = rgba.shape[:2]
     mag = np.empty((h, w, 3), np.uint8)
@@ -410,13 +458,52 @@ def cut_all(extra_globs: list[str] | None = None) -> list[dict]:
     return reports
 
 
+SIT_CUTOUTS = (
+    "tribbie_v31_swing.png",
+    "mydei_v31_sit.png",
+    "aglaea_v31_sit.png",
+    "castorice_v33_sit.png",
+    "hyacine_v33_sit.png",
+    "cipher_v33_sit.png",
+    "hysilens_v35_sit.png",
+    "cerydra_v35_sit.png",
+    "dan_heng_pt_v36_sit.png",
+    "cyrene_v38_sit.png",
+    "evernight_v38_sit.png",
+)
+
+
+def cut_sits() -> list[dict]:
+    CUTOUTS.mkdir(parents=True, exist_ok=True)
+    reports = []
+    cache: dict[str, Image.Image] = {}
+    for name in SIT_CUTOUTS:
+        spec = CROP_BOXES.get(name)
+        if not spec:
+            print(f"missing sit box {name}")
+            continue
+        src_name, box = spec
+        if src_name not in cache:
+            cache[src_name] = Image.open(ANN / src_name).convert("RGB")
+        info = cutout_from_announcement(
+            cache[src_name], box, CUTOUTS / name, PREVIEWS
+        )
+        reports.append(info)
+        print(f"cutout {info['file']} coverage={info['coverage']} {info['size']}")
+    return reports
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--skip-recrop", action="store_true")
     ap.add_argument("--frames", action="store_true", help="also recrop Bilibili emotion frames")
+    ap.add_argument("--sits", action="store_true", help="only recrop announcements and isolate circle sits")
     args = ap.parse_args()
     if not args.skip_recrop:
         recrop_announcement()
+    if args.sits:
+        cut_sits()
+        return 0
     recrop_frames()
     extra = []
     if args.frames:

@@ -16,6 +16,7 @@ from src.core.sanctuary_boot import (  # noqa: E402
     UI_PORT,
     _no_proxy_opener,
     _ui_env,
+    start_status_guard,
     streamlit_cmd,
     tcp_open,
     ui_healthy,
@@ -85,6 +86,23 @@ def main():
     check("cmd does not Get-NetTCPConnection", "Get-NetTCPConnection" not in cmd_text)
     check("cmd does not wait-loop label", ":wait_ui" not in cmd_text)
     check("cmd still sets SENSES_MODE", "SENSES_MODE=unified" in cmd_text)
+
+    print("== public front door hook ==")
+    boot_py = (root / "tools" / "boot_sanctuary.py").read_text(encoding="utf-8")
+    desk_py = (root / "tools" / "desktop_sanctuary.py").read_text(encoding="utf-8")
+    check("boot starts status guard", "start_status_guard" in boot_py)
+    check("boot has --no-guard", "--no-guard" in boot_py)
+    check("desktop starts status guard", "start_status_guard" in desk_py)
+    check(
+        "start_status_guard is callable",
+        callable(start_status_guard),
+    )
+    guard_src = (root / "src" / "core" / "sanctuary_boot.py").read_text(encoding="utf-8")
+    check(
+        "guard pid file is recorded",
+        "status_guard.pid" in guard_src and "tools" in guard_src
+        and "status_guard.py" in guard_src,
+    )
 
     print("== streamlit config ==")
     cfg = (root / ".streamlit" / "config.toml").read_text(encoding="utf-8")

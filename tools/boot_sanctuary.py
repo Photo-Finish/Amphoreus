@@ -23,6 +23,7 @@ def main(argv: list[str] | None = None) -> int:
         open_browser,
         project_root,
         start_ollama_background,
+        start_status_guard,
         start_world_engine,
         ui_healthy,
     )
@@ -30,6 +31,7 @@ def main(argv: list[str] | None = None) -> int:
     argv = list(argv if argv is not None else sys.argv[1:])
     skip_engine = "--no-engine" in argv
     skip_ollama = "--no-ollama" in argv
+    skip_guard = "--no-guard" in argv
     no_browser = "--no-browser" in argv
 
     root = project_root()
@@ -43,7 +45,7 @@ def main(argv: list[str] | None = None) -> int:
 
     os.environ.setdefault("SENSES_MODE", "unified")
 
-    print("[1/3] Starting the interface...")
+    print("[1/4] Starting the interface...")
 
     def _tick(elapsed: float) -> None:
         print(f"      still starting... {int(elapsed)}s", flush=True)
@@ -59,20 +61,30 @@ def main(argv: list[str] | None = None) -> int:
     print(f"      Ready at {UI_URL}")
 
     if not skip_engine:
-        print("[2/3] World engine (background)...")
+        print("[2/4] World engine (background)...")
         try:
             start_world_engine(root, python)
             print("      Engine start requested.")
         except Exception as e:
             print(f"      Engine skipped ({e}). The page still opens.")
     else:
-        print("[2/3] World engine skipped.")
+        print("[2/4] World engine skipped.")
 
     if not skip_ollama:
-        print("[3/3] Ollama (background, does not block the page)...")
+        print("[3/4] Ollama (background, does not block the page)...")
         start_ollama_background(root)
     else:
-        print("[3/3] Ollama skipped.")
+        print("[3/4] Ollama skipped.")
+
+    if not skip_guard:
+        print("[4/4] Public front door (github.io / tunnels, background)...")
+        try:
+            start_status_guard(root, python)
+            print("      Status guard start requested.")
+        except Exception as e:
+            print(f"      Status guard skipped ({e}). Local UI still opens.")
+    else:
+        print("[4/4] Public front door skipped.")
 
     if not no_browser:
         open_browser()

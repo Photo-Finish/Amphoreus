@@ -45,6 +45,29 @@ FRONTDOOR_TPL = ROOT / "tools" / "frontdoor_template.html"
 CREATION_FLAGS = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 
 
+def _git_env():
+    """Git to github.com must not use the stale local IE proxy (127.0.0.1)."""
+    env = os.environ.copy()
+    for key in list(env):
+        if key.upper() in {
+            "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "FTP_PROXY",
+        }:
+            env.pop(key, None)
+    env["NO_PROXY"] = "*"
+    env["no_proxy"] = "*"
+    return env
+
+
+def _git(args, **kwargs):
+    kwargs.setdefault("env", _git_env())
+    kwargs.setdefault("capture_output", True)
+    kwargs.setdefault("text", True)
+    extra = ["-c", "http.proxy=", "-c", "https.proxy=",
+             "-c", "http.https://github.com.proxy="]
+    cmd = ["git"] + extra + list(args)
+    return subprocess.run(cmd, **kwargs)
+
+
 def now():
     return datetime.now().isoformat(timespec="seconds")
 
@@ -270,6 +293,16 @@ def make_cloudflare(cf, port, name):
                   re.compile(r"https://([a-z0-9-]+\.trycloudflare\.com)"))
 
 
+def should_publish_front_door(status_url, ui_url, lan_status, lan_ui) -> bool:
+    """Publish as soon as the status tunnel exists.
+
+    Requiring the UI tunnel too left github.io stuck on a dead pair whenever
+    Streamlit lagged — the status page then always said Zagreus stole the host.
+    """
+    del ui_url, lan_ui
+    return bool(status_url and lan_status)
+
+
 class FrontDoor:
     """Keeps the eternal github.io page pointing at the live tunnel.
 
@@ -296,22 +329,29 @@ class FrontDoor:
             return True
         try:
             GHIO_DIR.parent.mkdir(parents=True, exist_ok=True)
-            subprocess.run(["git", "clone", self.repo, str(GHIO_DIR)],
-                           capture_output=True, text=True, timeout=180,
-                           cwd=str(ROOT))
+            if GHIO_DIR.exists() and not (GHIO_DIR / ".git").exists():
+                try:
+                    leftover = any(GHIO_DIR.iterdir())
+                except OSError:
+                    leftover = True
+                if leftover:
+                    print(f"[guard] {now()} ghio dir is not an empty clone; skip")
+                    return False
+                GHIO_DIR.rmdir()
+            _git(["clone", self.repo, str(GHIO_DIR)],
+                 timeout=180, cwd=str(ROOT), check=True)
             return (GHIO_DIR / ".git").exists()
         except Exception as e:
             print(f"[guard] {now()} ghio clone failed: {e}")
             return False
 
     def update(self, status_url, ui_url, lan_status, lan_ui):
-        # Only push once every address is real — the first loop of a fresh
-        # guard run may still have empty tunnel URLs; pushing then would
-        # publish an empty "from the Internet" section.
-        if not self.enabled or not (status_url and ui_url
-                                    and lan_status and lan_ui):
+        # Status tunnel is enough to rewrite github.io. An empty UI URL still
+        # publishes — the Sanctuary page shows Zagreus until Streamlit tunnels.
+        if not self.enabled or not should_publish_front_door(
+                status_url, ui_url, lan_status, lan_ui):
             return
-        key = (status_url, ui_url, lan_status, lan_ui)
+        key = (status_url, ui_url or "", lan_status, lan_ui or "")
         if key == self.last:
             return
         self.last = key
@@ -324,6 +364,7 @@ class FrontDoor:
         return text.replace("__V__", str(int(time.time())))
 
     def _push(self, status_url, ui_url, lan_status, lan_ui):
+        ok = False
         try:
             if not self.ensure_clone():
                 return
@@ -348,21 +389,22 @@ class FrontDoor:
                     _out.write_text(
                         self._render(_tpl.read_text(encoding="utf-8")),
                         encoding="utf-8")
-            subprocess.run(["git", "add", "-A"], cwd=str(GHIO_DIR),
-                           capture_output=True, text=True, timeout=60)
-            subprocess.run(["git", "-c", "user.email=guard@amphoreus.local",
-                            "-c", "user.name=Amphoreus Guard",
-                            "commit", "-m", f"front door -> {status_url}"],
-                           cwd=str(GHIO_DIR), capture_output=True, text=True,
-                           timeout=60)
-            ok = False
+            _git(["add", "-A"], cwd=str(GHIO_DIR), timeout=60)
+            _git(["-c", "user.email=guard@amphoreus.local",
+                  "-c", "user.name=Amphoreus Guard",
+                  "commit", "-m", f"front door -> {status_url}"],
+                 cwd=str(GHIO_DIR), timeout=60)
+            _git(["pull", "--rebase", "--autostash", "origin", "main"],
+                 cwd=str(GHIO_DIR), timeout=120)
             for _ in range(6):
-                r = subprocess.run(["git", "push", "origin", "main"],
-                                   cwd=str(GHIO_DIR), capture_output=True,
-                                   text=True, timeout=180)
+                r = _git(["push", "origin", "main"],
+                         cwd=str(GHIO_DIR), timeout=180)
                 if r.returncode == 0:
                     ok = True
                     break
+                err = (r.stderr or r.stdout or "").strip()
+                if err:
+                    print(f"[guard] {now()} front door push retry: {err[:240]}")
                 time.sleep(8)
             if ok:
                 print(f"[guard] {now()} front door updated ({status_url})")

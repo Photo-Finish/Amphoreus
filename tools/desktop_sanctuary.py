@@ -129,6 +129,13 @@ def ensure_world_engine(root: Path, python: Path) -> None:
         pass
 
 
+def ensure_status_guard(root: Path, python: Path) -> None:
+    try:
+        _boot(root).start_status_guard(root, python)
+    except Exception:
+        pass
+
+
 def ensure_streamlit(root: Path, python: Path) -> None:
     global _started_ui
     boot = _boot(root)
@@ -195,6 +202,7 @@ def main(argv: list[str] | None = None) -> int:
     argv = list(argv if argv is not None else sys.argv[1:])
     skip_engine = "--no-engine" in argv
     skip_ollama = "--no-ollama" in argv
+    skip_guard = "--no-guard" in argv
     browser_also = "--also-browser" in argv
 
     root = find_root()
@@ -212,6 +220,8 @@ def main(argv: list[str] | None = None) -> int:
         ensure_world_engine(root, python)
     if not skip_ollama:
         ensure_ollama(root)
+    if not skip_guard:
+        ensure_status_guard(root, python)
 
     if browser_also:
         try:

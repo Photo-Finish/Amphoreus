@@ -741,15 +741,12 @@ def build_stage_html(
                 f"{html.escape(spoken)}</div>"
             )
         gest_attr = f' data-amp-gesture="{gest_name}"' if gest_name else ""
+        # PPG face only when standing near or speaking — idle Q stays one body.
+        # Ambient mood still shows as VFX marks, not a second mismatched head.
         show_face = (
             kind == "q"
             and bool(face_src)
-            and (
-                cid in selected_ids
-                or raw_feel not in {"calm", ""}
-                or bool(gest_name)
-                or bool(spoken)
-            )
+            and (cid in selected_ids or bool(gest_name) or bool(spoken))
         )
         face_cls = " show-face" if show_face else ""
         face_img = ""

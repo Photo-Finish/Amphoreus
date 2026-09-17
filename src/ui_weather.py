@@ -117,6 +117,10 @@ def effect_for(location, world=None) -> tuple:
                 return "blacktide", tip
     except Exception:
         pass
+    loc = (location or "").strip()
+    if (not effect or effect == "none") and loc == "Aidonia":
+        # Snow city when the Keeper has not named another sky (`geography.md`).
+        return "snow", sky or ""
     return effect, sky
 
 

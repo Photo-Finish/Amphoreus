@@ -27,27 +27,28 @@ GUEST_STEMS: tuple[str, ...] = (
 BILI_JUNK_MARK = "_bili_"
 
 # Circle Heir → (cutout filename, crop box as fractions L,T,R,B).
-# Boxes drop date banners and neighbor/guest bodies. Leftover sofa / branch /
-# ice that shares the sit is kept so feet still read as planted.
-# anaxa / phainon / evernight have no acceptable sit cutout (bust-only or none).
+# Cutouts are already one-Heir extracts from the announcement stills. A slight
+# inset drops leftover date-banner / neighbor slivers; alpha trim plants feet.
+# Phainon / Anaxa stay PPG — 3.4 only published busts, not a sit.
 Q_SIT: dict[str, tuple[str, tuple[float, float, float, float]]] = {
-    "tribbie": ("tribbie_v31_swing.png", (0.00, 0.00, 0.70, 0.90)),
-    "aglaea": ("aglaea_v31_sit.png", (0.02, 0.20, 0.78, 1.00)),
-    "hyacine": ("hyacine_v33_sit.png", (0.18, 0.22, 0.76, 0.90)),
-    "castorice": ("castorice_v33_sit.png", (0.10, 0.08, 0.70, 1.00)),
-    "cipher": ("cipher_v33_sit.png", (0.10, 0.18, 0.80, 0.86)),
-    # 3.8 sofa Cyrene — not cyrene_forms / not Mem. Neighbor hair cropped off.
-    "cyrene": ("cyrene_v38_sit.png", (0.18, 0.10, 0.78, 0.94)),
-    "mydei": ("mydei_v31_sit.png", (0.18, 0.18, 0.66, 1.00)),
-    "cerydra": ("cerydra_v35_sit.png", (0.14, 0.18, 0.68, 1.00)),
-    "hysilens": ("hysilens_v35_sit.png", (0.18, 0.18, 0.70, 1.00)),
+    "tribbie": ("tribbie_v31_swing.png", (0.00, 0.00, 0.98, 1.00)),
+    "aglaea": ("aglaea_v31_sit.png", (0.00, 0.00, 1.00, 1.00)),
+    "hyacine": ("hyacine_v33_sit.png", (0.00, 0.00, 1.00, 1.00)),
+    "castorice": ("castorice_v33_sit.png", (0.00, 0.00, 1.00, 1.00)),
+    "cipher": ("cipher_v33_sit.png", (0.00, 0.00, 1.00, 1.00)),
+    # 3.8 sofa — Cyrene center, Evernight left (white hat). Not Mem.
+    "cyrene": ("cyrene_v38_sit.png", (0.00, 0.00, 0.98, 1.00)),
+    "evernight": ("evernight_v38_sit.png", (0.00, 0.00, 0.98, 1.00)),
+    "mydei": ("mydei_v31_sit.png", (0.00, 0.00, 1.00, 1.00)),
+    "cerydra": ("cerydra_v35_sit.png", (0.00, 0.00, 1.00, 1.00)),
+    "hysilens": ("hysilens_v35_sit.png", (0.00, 0.00, 0.98, 1.00)),
     # Chimera in his lap is kept (companion prop). Sunday / Himeko cropped out.
-    "dan-heng-permansor-terrae": ("dan_heng_pt_v36_sit.png", (0.32, 0.26, 0.66, 0.92)),
+    "dan-heng-permansor-terrae": ("dan_heng_pt_v36_sit.png", (0.00, 0.00, 0.96, 1.00)),
 }
 
-MIN_SHORT_PX = 120
-MIN_LONG_PX = 200
-MIN_BYTES = 8000
+MIN_SHORT_PX = 80
+MIN_LONG_PX = 160
+MIN_BYTES = 4000
 
 
 def guest_cutout_names() -> list[str]:

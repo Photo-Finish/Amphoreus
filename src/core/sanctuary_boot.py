@@ -210,23 +210,29 @@ def wait_ui(
     return False
 
 
-def start_world_engine(root: Path, python: Path) -> None:
-    runtime = root / "world_runtime"
-    runtime.mkdir(parents=True, exist_ok=True)
-    pid_file = runtime / "engine.pid"
+def _pid_alive(pid_file: Path) -> bool:
     try:
         pid = int(pid_file.read_text(encoding="ascii").strip())
         if pid > 0:
             os.kill(pid, 0)
-            return
+            return True
     except OSError:
         pass
     except Exception:
         pass
+    return False
+
+
+def start_world_engine(root: Path, python: Path) -> None:
+    runtime = root / "world_runtime"
+    runtime.mkdir(parents=True, exist_ok=True)
+    pid_file = runtime / "engine.pid"
+    if _pid_alive(pid_file):
+        return
     env = os.environ.copy()
     env["PYTHONUNBUFFERED"] = "1"
     creation = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-    subprocess.Popen(
+    proc = subprocess.Popen(
         [str(python), "-m", "src.world.world_engine", "--interval", "900"],
         cwd=str(root),
         stdout=open(runtime / "engine.log", "a", encoding="utf-8"),
@@ -234,6 +240,42 @@ def start_world_engine(root: Path, python: Path) -> None:
         env=env,
         creationflags=creation,
     )
+    try:
+        pid_file.write_text(str(proc.pid), encoding="ascii")
+    except Exception:
+        pass
+
+
+def start_status_guard(root: Path, python: Path) -> None:
+    """Keep github.io pointed at live tunnels. Background; never blocks boot."""
+    script = root / "tools" / "status_guard.py"
+    if not script.is_file():
+        return
+    runtime = root / "world_runtime"
+    runtime.mkdir(parents=True, exist_ok=True)
+    pid_file = runtime / "status_guard.pid"
+    if _pid_alive(pid_file):
+        return
+    env = os.environ.copy()
+    env["PYTHONUNBUFFERED"] = "1"
+    for key in list(env):
+        if key.upper() in {"HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY"}:
+            env.pop(key, None)
+    env["NO_PROXY"] = "*"
+    env["no_proxy"] = "*"
+    creation = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+    proc = subprocess.Popen(
+        [str(python), str(script)],
+        cwd=str(root),
+        stdout=open(runtime / "status_guard.log", "a", encoding="utf-8"),
+        stderr=open(runtime / "status_guard.log.err", "a", encoding="utf-8"),
+        env=env,
+        creationflags=creation,
+    )
+    try:
+        pid_file.write_text(str(proc.pid), encoding="ascii")
+    except Exception:
+        pass
 
 
 def start_ollama_background(root: Path) -> None:

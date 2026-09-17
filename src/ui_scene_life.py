@@ -2,8 +2,9 @@
 
 Area art is the Streamlit page backdrop. Outdoor figures and sky bodies use
 painted PNGs when a file exists (Dawn Device, Thief Star, grass, wheat, …).
-Clicks run inside ``st.components.v1.html``. Clicks open a notice card on the
-parent page (``#amp-land-notice-host``) — no Streamlit refresh.
+Clicks are hit-tested on the parent page (the life iframe is
+``pointer-events: none`` so wheel scroll is never stolen). The notice card
+opens on the parent page (``#amp-land-notice-host``) — no Streamlit refresh.
 """
 from __future__ import annotations
 
@@ -1725,6 +1726,193 @@ def pictorial_stage_html(
     return docs[-1] if docs else ""
 
 
+def _parent_life_hit_js() -> str:
+    """Parent-page sprite hits. The life iframe is pointer-events:none.
+
+    Streamlit's components.html slot is 1px; CSS then stretches the iframe to
+    the viewport. Hit-tests must (1) force the content viewport to the painted
+    box, (2) map parent client coords into that box, (3) walk elementsFromPoint
+    so weather layers do not swallow the figure. True chrome (tabs, look
+    picker, sidebar, notice) keeps its own clicks. Chat/copy under a painted
+    figure yields to the figure.
+    """
+    return r"""
+      f.setAttribute('data-amp-land-life', '1');
+      try {
+        var pdoc = f.ownerDocument;
+        var pwin = pdoc.defaultView;
+        var trueChrome =
+          '#amp-land-notice-host, section[data-testid="stSidebar"], '
+          + '.st-key-amp_look_chrome, [data-testid="stHeader"], '
+          + '[role="tablist"], [data-testid="stSidebarCollapsedControl"]';
+        var isTrueChrome = function(el) {
+          return !!(el && el.closest && el.closest(trueChrome));
+        };
+        var syncLifeViewport = function(fr) {
+          if (!fr || !fr.isConnected) return;
+          var rect = fr.getBoundingClientRect();
+          var w = Math.max(8, Math.round(rect.width));
+          var h = Math.max(8, Math.round(rect.height));
+          if (w < 40 || h < 40) return;
+          if (fr.getAttribute('width') !== String(w)) fr.setAttribute('width', String(w));
+          if (fr.getAttribute('height') !== String(h)) fr.setAttribute('height', String(h));
+          try {
+            var idoc = fr.contentDocument;
+            if (!idoc) return;
+            var pxW = w + 'px';
+            var pxH = h + 'px';
+            if (idoc.documentElement) {
+              idoc.documentElement.style.width = pxW;
+              idoc.documentElement.style.height = pxH;
+              idoc.documentElement.style.minHeight = pxH;
+            }
+            if (idoc.body) {
+              idoc.body.style.width = pxW;
+              idoc.body.style.height = pxH;
+              idoc.body.style.minHeight = pxH;
+            }
+            var stage = idoc.getElementById('amp-pict-stage');
+            if (stage && stage.classList && stage.classList.contains('amp-pict-page')) {
+              stage.style.width = pxW;
+              stage.style.height = pxH;
+            }
+          } catch (eSync) {}
+        };
+        pdoc.__ampSyncLifeViewport = syncLifeViewport;
+        var activeLifeFrame = function() {
+          var frames = pdoc.querySelectorAll('iframe[data-amp-land-life="1"]');
+          for (var i = 0; i < frames.length; i++) {
+            var fr = frames[i];
+            if (!fr.isConnected) continue;
+            var wrap = fr.parentElement;
+            if (wrap && wrap.style && wrap.style.display === 'none') continue;
+            var panel = fr.closest('[data-testid="stTabPanel"]');
+            if (panel && (panel.hidden || panel.getAttribute('aria-hidden') === 'true')) continue;
+            var rect = fr.getBoundingClientRect();
+            if (rect.width < 40 || rect.height < 40) continue;
+            return fr;
+          }
+          return null;
+        };
+        var iframePoint = function(fr, ev) {
+          var idoc = fr.contentDocument;
+          if (!idoc) return null;
+          var rect = fr.getBoundingClientRect();
+          var w = rect.width || 1;
+          var h = rect.height || 1;
+          var iw = (idoc.documentElement && idoc.documentElement.clientWidth) || w;
+          var ih = (idoc.documentElement && idoc.documentElement.clientHeight) || h;
+          if (iw < 8) iw = w;
+          if (ih < 8) ih = h;
+          var x = (ev.clientX - rect.left) * (iw / w);
+          var y = (ev.clientY - rect.top) * (ih / h);
+          if (x < 0 || y < 0 || x > iw || y > ih) return null;
+          return { x: x, y: y, idoc: idoc };
+        };
+        var spriteAt = function(idoc, x, y) {
+          var stack = [];
+          try {
+            if (idoc.elementsFromPoint) stack = idoc.elementsFromPoint(x, y) || [];
+          } catch (e) { stack = []; }
+          for (var i = 0; i < stack.length; i++) {
+            var el = stack[i];
+            if (el && el.closest) {
+              var hit = el.closest('.amp-sprite');
+              if (hit) return hit;
+            }
+          }
+          try {
+            var inner = idoc.elementFromPoint(x, y);
+            if (inner && inner.closest) return inner.closest('.amp-sprite');
+          } catch (e2) {}
+          return null;
+        };
+        var hitSprite = function(ev) {
+          if (isTrueChrome(ev.target)) return null;
+          var fr = activeLifeFrame();
+          if (!fr) return null;
+          syncLifeViewport(fr);
+          var pt = iframePoint(fr, ev);
+          if (!pt) return null;
+          try {
+            var sprite = spriteAt(pt.idoc, pt.x, pt.y);
+            if (!sprite) return null;
+            return { sprite: sprite, x: pt.x, y: pt.y };
+          } catch (e) { return null; }
+        };
+        var forward = function(ev, type) {
+          var hit = hitSprite(ev);
+          if (!hit) return false;
+          if (type === 'click') {
+            ev.preventDefault();
+            ev.stopPropagation();
+          }
+          var sprite = hit.sprite;
+          var win = sprite.ownerDocument.defaultView;
+          var Init = (type.indexOf('pointer') === 0 && win.PointerEvent)
+            ? win.PointerEvent : win.MouseEvent;
+          sprite.dispatchEvent(new Init(type, {
+            bubbles:true, cancelable:true, view:win,
+            clientX:hit.x, clientY:hit.y, button:ev.button||0,
+            pointerId: ev.pointerId || 1, pointerType: ev.pointerType || 'mouse'
+          }));
+          return true;
+        };
+        if (pdoc.__ampLandLifeClick) {
+          pdoc.removeEventListener('click', pdoc.__ampLandLifeClick, true);
+          pdoc.removeEventListener('pointerdown', pdoc.__ampLandLifeDown, true);
+          pdoc.removeEventListener('pointermove', pdoc.__ampLandLifeMove, true);
+          pdoc.removeEventListener('pointerup', pdoc.__ampLandLifeUp, true);
+          pdoc.removeEventListener('pointercancel', pdoc.__ampLandLifeCancel, true);
+        }
+        pdoc.__ampLandLifeClick = function(ev) {
+          if (ev.target && ev.target.closest && ev.target.closest('#amp-land-notice-host')) return;
+          if (forward(ev, 'click')) return;
+          try {
+            var fr = activeLifeFrame();
+            if (fr && fr.contentWindow) fr.contentWindow.postMessage({amp:'hideNotice'}, '*');
+          } catch (e) {}
+        };
+        pdoc.__ampLandLifeDown = function(ev) {
+          if (forward(ev, 'pointerdown')) pdoc.__ampPetDown = true;
+        };
+        pdoc.__ampLandLifeMove = function(ev) {
+          if (!pdoc.__ampPetDown) return;
+          forward(ev, 'pointermove');
+        };
+        pdoc.__ampLandLifeUp = function(ev) {
+          if (!pdoc.__ampPetDown) return;
+          pdoc.__ampPetDown = false;
+          forward(ev, 'pointerup');
+        };
+        pdoc.__ampLandLifeCancel = function(ev) {
+          pdoc.__ampPetDown = false;
+          forward(ev, 'pointercancel');
+        };
+        pdoc.addEventListener('click', pdoc.__ampLandLifeClick, true);
+        pdoc.addEventListener('pointerdown', pdoc.__ampLandLifeDown, true);
+        pdoc.addEventListener('pointermove', pdoc.__ampLandLifeMove, true);
+        pdoc.addEventListener('pointerup', pdoc.__ampLandLifeUp, true);
+        pdoc.addEventListener('pointercancel', pdoc.__ampLandLifeCancel, true);
+        syncLifeViewport(f);
+        if (pdoc.__ampLandLifeMut) {
+          try { pdoc.__ampLandLifeMut.disconnect(); } catch (eMut) {}
+        }
+        try {
+          pdoc.__ampLandLifeMut = new MutationObserver(function(){ syncLifeViewport(f); });
+          pdoc.__ampLandLifeMut.observe(f, {attributes:true, attributeFilter:['width','height','style']});
+        } catch (eObs) {}
+        if (pwin) {
+          if (pwin.__ampLandLifeResize) {
+            pwin.removeEventListener('resize', pwin.__ampLandLifeResize);
+          }
+          pwin.__ampLandLifeResize = function(){ syncLifeViewport(f); };
+          pwin.addEventListener('resize', pwin.__ampLandLifeResize);
+        }
+      } catch (e) {}
+"""
+
+
 def pictorial_stage_documents(
     image_path,
     place: str,
@@ -1877,7 +2065,6 @@ def pictorial_stage_documents(
             "  if (f) {\n"
             "    f.setAttribute('data-amp-land', '1');\n"
             "    f.setAttribute('data-amp-land-life', '1');\n"
-            "    f.removeAttribute('width'); f.removeAttribute('height');\n"
             f"    f.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;"
             f"border:0;z-index:{_PAGE_LIFE_Z};background:transparent;pointer-events:none;"
             "max-width:none;max-height:none;';\n"
@@ -1890,90 +2077,10 @@ def pictorial_stage_documents(
             "background:transparent;pointer-events:none;';\n"
             "    }\n"
             # Life iframe is pointer-events:none so native wheel/touch
-            # scroll is never stolen. Sprite hits are picked from the
-            # parent page via elementFromPoint into the iframe document.
-            "    try {\n"
-            "      var pdoc = f.ownerDocument;\n"
-            "      var chromeShield =\n"
-            "        '#amp-land-notice-host, section[data-testid=\"stSidebar\"], '\n"
-            "        + '.st-key-amp_look_chrome, [data-testid=\"stHeader\"], '\n"
-            "        + '[role=\"tablist\"], [data-testid=\"stBottomBlockContainer\"]';\n"
-            "      var activeLifeFrame = function() {\n"
-            "        var frames = pdoc.querySelectorAll('iframe[data-amp-land-life=\"1\"]');\n"
-            "        for (var i = 0; i < frames.length; i++) {\n"
-            "          var fr = frames[i];\n"
-            "          if (!fr.isConnected) continue;\n"
-            "          var wrap = fr.parentElement;\n"
-            "          if (wrap && wrap.style && wrap.style.display === 'none') continue;\n"
-            "          var panel = fr.closest('[data-testid=\"stTabPanel\"]');\n"
-            "          if (panel && (panel.hidden || panel.getAttribute('aria-hidden') === 'true')) continue;\n"
-            "          return fr;\n"
-            "        }\n"
-            "        return null;\n"
-            "      };\n"
-            "      var hitSprite = function(ev) {\n"
-            "        var fr = activeLifeFrame();\n"
-            "        if (!fr) return null;\n"
-            "        var x = ev.clientX, y = ev.clientY;\n"
-            "        if (!Number.isFinite(x) || !Number.isFinite(y)) return null;\n"
-            "        var top = pdoc.elementFromPoint(x, y);\n"
-            "        if (top && top.closest && top.closest(chromeShield)) return null;\n"
-            "        try {\n"
-            "          var idoc = fr.contentDocument;\n"
-            "          if (!idoc) return null;\n"
-            "          var inner = idoc.elementFromPoint(x, y);\n"
-            "          if (!inner || !inner.closest) return null;\n"
-            "          return inner.closest('.amp-sprite');\n"
-            "        } catch (e) { return null; }\n"
-            "      };\n"
-            "      var forward = function(ev, type) {\n"
-            "        var sprite = hitSprite(ev);\n"
-            "        if (!sprite) return false;\n"
-            "        if (type === 'click') {\n"
-            "          ev.preventDefault();\n"
-            "          ev.stopPropagation();\n"
-            "        }\n"
-            "        var src = (ev.changedTouches && ev.changedTouches[0])\n"
-            "          || (ev.touches && ev.touches[0]) || ev;\n"
-            "        var win = sprite.ownerDocument.defaultView;\n"
-            "        var Init = (type.indexOf('pointer') === 0 && win.PointerEvent)\n"
-            "          ? win.PointerEvent : win.MouseEvent;\n"
-            "        sprite.dispatchEvent(new Init(type, {\n"
-            "          bubbles:true, cancelable:true, view:win,\n"
-            "          clientX:src.clientX, clientY:src.clientY, button:ev.button||0,\n"
-            "          pointerId: ev.pointerId || 1, pointerType: ev.pointerType || 'mouse'\n"
-            "        }));\n"
-            "        return true;\n"
-            "      };\n"
-            "      if (!pdoc.__ampLandLifeBound) {\n"
-            "        pdoc.__ampLandLifeBound = true;\n"
-            "        pdoc.addEventListener('click', function(ev) {\n"
-            "          if (ev.target && ev.target.closest && ev.target.closest('#amp-land-notice-host')) return;\n"
-            "          if (forward(ev, 'click')) return;\n"
-            "          try {\n"
-            "            var fr = activeLifeFrame();\n"
-            "            if (fr && fr.contentWindow) fr.contentWindow.postMessage({amp:'hideNotice'}, '*');\n"
-            "          } catch (e) {}\n"
-            "        }, true);\n"
-            "        pdoc.addEventListener('pointerdown', function(ev) {\n"
-            "          if (forward(ev, 'pointerdown')) pdoc.__ampPetDown = true;\n"
-            "        }, true);\n"
-            "        pdoc.addEventListener('pointermove', function(ev) {\n"
-            "          if (!pdoc.__ampPetDown) return;\n"
-            "          forward(ev, 'pointermove');\n"
-            "        }, true);\n"
-            "        pdoc.addEventListener('pointerup', function(ev) {\n"
-            "          if (!pdoc.__ampPetDown) return;\n"
-            "          pdoc.__ampPetDown = false;\n"
-            "          forward(ev, 'pointerup');\n"
-            "        }, true);\n"
-            "        pdoc.addEventListener('pointercancel', function(ev) {\n"
-            "          pdoc.__ampPetDown = false;\n"
-            "          forward(ev, 'pointercancel');\n"
-            "        }, true);\n"
-            "      }\n"
-            "    } catch (e) {}\n"
-            "    try {\n"
+            # scroll is never stolen. Sprite hits are mapped from the
+            # parent page into the iframe (box vs document size).
+            + _parent_life_hit_js()
+            + "    try {\n"
             "      var pdoc = f.ownerDocument;\n"
             "      var panel = f.closest('[data-testid=\"stTabPanel\"]');\n"
             "      function panelVisible(){\n"
@@ -2022,6 +2129,7 @@ def pictorial_stage_documents(
             "          return;\n"
             "        }\n"
             "        wrap.style.display = '';\n"
+            "        try { if (pdoc.__ampSyncLifeViewport) pdoc.__ampSyncLifeViewport(f); } catch (eSync) {}\n"
             "        var mount = landMount();\n"
             "        if (!mount) return;\n"
             "        var photoHost = pdoc.getElementById('amp-land-photo-host');\n"
@@ -2057,7 +2165,6 @@ def pictorial_stage_documents(
             "  var f = window.frameElement;\n"
             "  function fit(){\n"
             "    if (!f) return;\n"
-            "    f.removeAttribute('width'); f.removeAttribute('height');\n"
             "    var doc = window.parent.document;\n"
             "    var sb = doc.querySelector('[data-testid=\"stSidebar\"]');\n"
             "    var sbr = sb ? sb.getBoundingClientRect() : null;\n"
@@ -2066,8 +2173,10 @@ def pictorial_stage_documents(
             "    var avail = Math.max(240, Math.round(window.parent.innerWidth - left));\n"
             "    var w = (maxW > 0) ? Math.min(maxW, avail) : avail;\n"
             "    var h = fixedH;\n"
+            "    f.setAttribute('width', String(w));\n"
+            "    f.setAttribute('height', String(h));\n"
             "    f.style.cssText = 'width:'+w+'px;height:'+h+'px;border:0;"
-            "display:block;margin:0;overflow:hidden;max-width:none;';\n"
+            "display:block;margin:0;overflow:hidden;max-width:none;pointer-events:none;';\n"
             "    var p = f.parentElement;\n"
             "    if (p) {\n"
             "      p.style.marginLeft = '0px';\n"
@@ -2087,6 +2196,9 @@ def pictorial_stage_documents(
             "  try { new ResizeObserver(fit).observe(f.parentElement || f); }\n"
             "  catch (e) {}\n"
             "  window.addEventListener('resize', fit);\n"
+            "  if (f) {\n"
+            + _parent_life_hit_js()
+            + "  }\n"
         )
 
     roamer_json = ""

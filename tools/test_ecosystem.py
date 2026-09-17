@@ -88,6 +88,8 @@ check("grove has olive or cicada", "olive" in kg or "cicada" in kg)
 check("grove no chimera", "chimera" not in kg)
 check("grove no shore", "shore" not in kg)
 check("grove no boat", "boat" not in kg)
+check("grove no dromas", "dromas" not in kg)
+check("grove no civic fountain", "fountain" not in kg)
 check("grove no scroll", "scroll" not in kg)
 check("grove outdoor — no indoor furniture",
       not (kg & {"bath", "hearth", "loom", "scroll", "lamp"}),
@@ -116,15 +118,22 @@ check("wheat present at Aedes", wheat is not None)
 check("wheat sowing in Cultivation",
       wheat is not None and wheat.get("status") == "sowing")
 
-print("== Styxia shore ==")
+print("== Styxia river / Warbling shore ==")
 ws_s = mk(2, "Styxia")
 eco.apply_tick(ws_s)
 sc_s = eco.derive_scene(ws_s, place="Styxia")
-check("shore in Styxia", any(b["kind"] == "shore" for b in sc_s))
-check("siren in Styxia", any(b["kind"] == "siren" for b in sc_s))
-check("pearl in Styxia", any(b["kind"] == "pearl" for b in sc_s))
-check("boat in Styxia", any(b["kind"] == "boat" for b in sc_s))
+check("boat on Styxia river", any(b["kind"] == "boat" for b in sc_s))
+check("pearl at Dragonbone", any(b["kind"] == "pearl" for b in sc_s))
+check("pillar at Dragonbone", any(b["kind"] == "pillar" for b in sc_s))
+check("no fishing quay in Dragonbone",
+      not any(b["kind"] in {"shore", "siren", "net", "tidepool"} for b in sc_s))
 check("no chimera in Styxia", not any(b["kind"] == "chimera" for b in sc_s))
+check("no market in Dragonbone", not any(b["kind"] == "market_stall" for b in sc_s))
+
+ws_wb = mk(2, "Warbling Shores")
+sc_wb = eco.derive_scene(ws_wb, place="Warbling Shores")
+check("siren at Warbling Shores", any(b["kind"] == "siren" for b in sc_wb))
+check("shore at Warbling Shores", any(b["kind"] == "shore" for b in sc_wb))
 
 print("== Visitor touch (pearl / shrine) ==")
 pearl = next(b for b in sc_s if b["kind"] == "pearl")
@@ -354,6 +363,8 @@ ws_aid = mk(2, "Aidonia")
 kaid = {b["kind"] for b in eco.derive_scene(ws_aid, place="Aidonia")}
 check("Aidonia no market", "market_stall" not in kaid, str(kaid))
 check("Aidonia no laundry", "laundry" not in kaid, str(kaid))
+check("Aidonia no grass lawn", "grass" not in kaid, str(kaid))
+check("Aidonia has well", "well" in kaid, str(kaid))
 
 ws_bb = mk(2, "Bloodbathed Battlefront")
 kbb = {b["kind"] for b in eco.derive_scene(ws_bb, place="Bloodbathed Battlefront")}
@@ -395,6 +406,8 @@ ws_rs = mk(2, "Radiant Scarwood")
 krs = {b["kind"] for b in eco.derive_scene(ws_rs, place="Radiant Scarwood")}
 check("Radiant living grove", bool(krs & {"olive", "cicada", "grove_leaf"}), str(krs))
 check("Radiant no market", "market_stall" not in krs, str(krs))
+check("Radiant no dromas herd", "dromas" not in krs, str(krs))
+check("Radiant no civic fountain", "fountain" not in krs, str(krs))
 
 ws_dc = mk(2, "Demigod Council")
 kdc = {b["kind"] for b in eco.derive_scene(ws_dc, place="Demigod Council")}
@@ -406,16 +419,37 @@ keh = {b["kind"] for b in eco.derive_scene(ws_eh, place="Eternal Holy City")}
 check("Eternal Holy chimera civic", "chimera" in keh, str(keh))
 check("Eternal Holy laundry or mosaic", bool(keh & {"laundry", "mosaic"}), str(keh))
 
+ws_jn = mk(2, "Janusopolis")
+kjn = {b["kind"] for b in eco.derive_scene(ws_jn, place="Janusopolis")}
+check("Abyss has temple gate", "gate" in kjn, str(kjn))
+check("Abyss has shrine or incense", bool(kjn & {"shrine", "incense"}), str(kjn))
+check("Abyss has pillar", "pillar" in kjn, str(kjn))
+check("Abyss no civic lawn", "grass" not in kjn, str(kjn))
+check("Abyss no dromas herd", "dromas" not in kjn, str(kjn))
+check("Abyss no boat", "boat" not in kjn, str(kjn))
+check("Abyss faults clean", not eco.logic_faults(
+    eco.derive_scene(ws_jn, place="Janusopolis"), "Janusopolis"))
+
+ws_san = mk(2, "Sanctum of Prophecy")
+ksan = {b["kind"] for b in eco.derive_scene(ws_san, place="Sanctum of Prophecy")}
+check("Sanctum has shrine", "shrine" in ksan, str(ksan))
+check("Sanctum has fountain", "fountain" in ksan, str(ksan))
+check("Sanctum faults clean", not eco.logic_faults(
+    eco.derive_scene(ws_san, place="Sanctum of Prophecy"), "Sanctum of Prophecy"))
+
 print("== Fountain vs well place fitness ==")
 check("fountain/well sets disjoint",
       not (eco.FOUNTAIN_PLACES & eco.WELL_CITIES),
       str(eco.FOUNTAIN_PLACES & eco.WELL_CITIES))
 for place, want_f, want_w in (
     ("Okhema", True, False),
-    ("Janusopolis", True, False),
+    ("Sanctum of Prophecy", True, False),
     ("Warbling Shores", True, False),
-    ("Radiant Scarwood", True, False),
     ("Demigod Council", True, False),
+    ("Janusopolis", False, False),
+    ("Grove of Epiphany", False, False),
+    ("Radiant Scarwood", False, False),
+    ("Styxia", False, False),
     ("Aedes Elysiae", False, True),
     ("Aidonia", False, True),
     ("Castrum Kremnos", False, True),
@@ -507,17 +541,9 @@ if n_ae:
     check("Aedes stall visual rustic", ae_vis == "stall_aedes", ae_vis)
 else:
     check("Aedes stall count 1", False, "market closed")
-if n_jn:
-    check("Janusopolis stall count 2", n_jn == 2, str(n_jn))
-if n_kr:
-    check("Kremnos stall count 1", n_kr == 1, str(n_kr))
-    kr_vis = next(
-        b["visual"] for b in eco.derive_scene(mk(2, "Castrum Kremnos"), place="Castrum Kremnos")
-        if b["kind"] == "market_stall"
-    )
-    check("Kremnos stall visual martial", kr_vis == "stall_kremnos", kr_vis)
-if n_st:
-    check("Styxia stall count 2", n_st == 2, str(n_st))
+check("Abyss of Fate has no market stalls", n_jn == 0, str(n_jn))
+check("Strife Ruins has no market stalls", n_kr == 0, str(n_kr))
+check("Dragonbone City has no market stalls", n_st == 0, str(n_st))
 if n_eh:
     check("Eternal Holy City stall count 3", n_eh == 3, str(n_eh))
 
@@ -632,6 +658,10 @@ check(
     "clear sky uses Dawn Device picture",
     '_sky_body_uri("dawn")' in _wx_src,
 )
+check(
+    "Aidonia silent sky defaults to snow",
+    'loc == "Aidonia"' in _wx_src and 'return "snow"' in _wx_src,
+)
 from src.ui_weather import page_photo_object_position, ground_css_position
 check(
     "page photo avoids pavement zoom",
@@ -663,6 +693,18 @@ check(
     "height:100vh" in _pict_html and "bottom:0;" in _pict_html.split("amp-pict-page")[1][:120],
     "",
 )
+_hit_js = usl._parent_life_hit_js()
+check("Visit hit maps iframePoint", "iframePoint" in _hit_js)
+check("Visit hit walks elementsFromPoint", "elementsFromPoint" in _hit_js)
+check("Visit hit syncs content viewport", "__ampSyncLifeViewport" in _hit_js)
+check("Visit hit rebinds named click", "__ampLandLifeClick" in _hit_js)
+check(
+    "Visit hit does not treat chat as chrome",
+    "stBottomBlockContainer" not in _hit_js,
+)
+check("Visit page pin uses iframePoint", "iframePoint" in _pict_html)
+check("Visit page pin rebinds click", "__ampLandLifeClick" in _pict_html)
+check("Visit page pin does not abort on chat", "stBottomBlockContainer" not in _pict_html)
 # Foot lift from margin must not scale with taller cells (resident vs chimera).
 _res_cell = usl._sprite_cell_px("resident", page_layer=True)
 _chim_cell = usl._sprite_cell_px("chimera", page_layer=True)
@@ -769,7 +811,7 @@ for place, kind, needle in (
     ("Janusopolis", "gate", "door"),
     ("Castrum Kremnos", "forge", "Iron"),
     ("Grove of Epiphany", "cicada", "brass"),
-    ("Styxia", "shore", "Pearl"),
+    ("Styxia", "pearl", "river"),
     ("Aidonia", "pillar", "Patience"),
     ("Aedes Elysiae", "wheat", "childhood"),
     ("Vortex of Genesis", "pillar", "Genesis"),
@@ -781,11 +823,11 @@ for place, kind, needle in (
 
 # Density: living cities should feel as staged as Okhema (kind variety).
 for place, min_kinds in (
-    ("Janusopolis", 10),
+    ("Janusopolis", 6),
     ("Castrum Kremnos", 9),
     ("Grove of Epiphany", 8),
-    ("Styxia", 12),
-    ("Aidonia", 9),
+    ("Styxia", 8),
+    ("Aidonia", 8),
     ("Aedes Elysiae", 12),
     ("Dawncloud", 10),
 ):
