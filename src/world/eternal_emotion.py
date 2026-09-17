@@ -39,7 +39,8 @@ POSES: dict[str, dict[str, str]] = {
         "tease": "01",
     },
     "castorice": {
-        "joy": "01", "warm": "01", "calm": "01", "weary": "03",
+        # 05 is official PPG 21 Castorice (same character, shy ellipsis).
+        "joy": "01", "warm": "01", "calm": "05", "weary": "03",
         "sad": "02", "anger": "03", "fear": "03", "surprise": "04",
         "tease": "04",
     },
@@ -54,9 +55,11 @@ POSES: dict[str, dict[str, str]] = {
         "tease": "03",
     },
     "cyrene": {
+        # 05 is childhood Cyrene (navy-dress wink, PPG 24_05). Used as tease
+        # because the wink fits; not a cyrene_forms / year-cycle swap.
         "joy": "01", "warm": "04", "calm": "02", "weary": "02",
         "sad": "04", "anger": "03", "fear": "04", "surprise": "01",
-        "tease": "03",
+        "tease": "05",
     },
     "dan-heng-permansor-terrae": {
         "joy": "04", "warm": "04", "calm": "02", "weary": "01",
@@ -83,11 +86,15 @@ POSES: dict[str, dict[str, str]] = {
         "sad": "04", "anger": "01", "fear": "02", "surprise": "02",
         "tease": "03",
     },
+    # 01 = official PPG 21 (weary/sleepy). 02–05 = official PPG 23
+    # (curious / wave / shock / tears). No invented files.
     "phainon": {
-        "joy": "01", "warm": "01", "calm": "01", "weary": "01",
-        "sad": "01", "anger": "01", "fear": "01", "surprise": "01",
-        "tease": "01",
+        "joy": "03", "warm": "03", "calm": "02", "weary": "01",
+        "sad": "05", "anger": "04", "fear": "04", "surprise": "04",
+        "tease": "03",
     },
+    # 01/02 are Tribbie. cute/tribbie/03 and /04 are Trianne and Trinnon
+    # extras from PPG 21 — not this buddy's face.
     "tribbie": {
         "joy": "02", "warm": "02", "calm": "02", "weary": "01",
         "sad": "01", "anger": "01", "fear": "01", "surprise": "01",

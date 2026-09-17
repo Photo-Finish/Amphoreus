@@ -90,6 +90,14 @@ def find_python(root: Path) -> Path:
     )
 
 
+def _boot(root: Path):
+    r = str(root)
+    if r not in sys.path:
+        sys.path.insert(0, r)
+    from src.core import sanctuary_boot as boot
+    return boot
+
+
 def port_open(port: int, host: str = "127.0.0.1", timeout: float = 0.4) -> bool:
     try:
         with socket.create_connection((host, port), timeout=timeout):
@@ -108,53 +116,14 @@ def wait_port(port: int, seconds: float = 90.0) -> bool:
 
 
 def ensure_ollama(root: Path) -> None:
-    if port_open(OLLAMA_PORT):
-        return
-    ps1 = root / "tools" / "start_ollama.ps1"
-    if not ps1.is_file():
-        return
-    try:
-        subprocess.Popen(
-            [
-                "powershell", "-NoProfile", "-ExecutionPolicy", "Bypass",
-                "-File", str(ps1),
-            ],
-            cwd=str(root),
-            creationflags=CREATION_FLAGS,
-        )
-        wait_port(OLLAMA_PORT, 45)
-    except Exception:
-        pass
+    """Start Ollama in the background. Never block the window on it."""
+    _boot(root).start_ollama_background(root)
 
 
 def ensure_world_engine(root: Path, python: Path) -> None:
     global _started_engine
-    runtime = root / "world_runtime"
-    runtime.mkdir(parents=True, exist_ok=True)
-    pid_file = runtime / "engine.pid"
     try:
-        pid = int(pid_file.read_text(encoding="ascii").strip())
-        if pid > 0:
-            os.kill(pid, 0)
-            return
-    except OSError:
-        pass
-    except Exception:
-        pass
-    env = os.environ.copy()
-    env["PYTHONUNBUFFERED"] = "1"
-    try:
-        subprocess.Popen(
-            [
-                str(python), "-m", "src.world.world_engine",
-                "--interval", "900",
-            ],
-            cwd=str(root),
-            stdout=open(runtime / "engine.log", "a", encoding="utf-8"),
-            stderr=open(runtime / "engine.log.err", "a", encoding="utf-8"),
-            env=env,
-            creationflags=CREATION_FLAGS,
-        )
+        _boot(root).start_world_engine(root, python)
         _started_engine = True
     except Exception:
         pass
@@ -162,70 +131,39 @@ def ensure_world_engine(root: Path, python: Path) -> None:
 
 def ensure_streamlit(root: Path, python: Path) -> None:
     global _started_ui
-    if port_open(UI_PORT):
+    boot = _boot(root)
+    if boot.ui_healthy():
         return
-    runtime = root / "world_runtime"
-    runtime.mkdir(parents=True, exist_ok=True)
-    env = os.environ.copy()
-    env.setdefault("SENSES_MODE", "unified")
-    ui_app = root / "src" / "ui_app.py"
-    _started_ui = subprocess.Popen(
-        [
-            str(python), "-m", "streamlit", "run", str(ui_app),
-            "--server.headless", "true",
-            "--server.port", str(UI_PORT),
-            "--browser.gatherUsageStats", "false",
-            "--server.address", "127.0.0.1",
-        ],
-        cwd=str(root),
-        env=env,
-        stdout=open(runtime / "ui_desktop.log", "a", encoding="utf-8"),
-        stderr=open(runtime / "ui_desktop.log.err", "a", encoding="utf-8"),
-        creationflags=CREATION_FLAGS,
-    )
-    (runtime / "ui_desktop.pid").write_text(
-        str(_started_ui.pid), encoding="ascii")
-    if not wait_port(UI_PORT, 90):
+    boot.clear_unhealthy_ui()
+    if boot.ui_healthy():
+        return
+    _started_ui = boot.start_streamlit(root, python)
+    if not boot.wait_ui(90.0, proc=_started_ui):
+        runtime = root / "world_runtime"
         raise SystemExit(
             f"Streamlit did not open on port {UI_PORT}.\n"
-            f"See {runtime / 'ui_desktop.log.err'}"
+            f"See {runtime / 'ui.log.err'}"
         )
 
 
 def cleanup() -> None:
     global _started_ui
-    if _started_ui is not None:
+    if _started_ui is None:
+        return
+    try:
+        _started_ui.terminate()
         try:
-            _started_ui.terminate()
-            try:
-                _started_ui.wait(timeout=8)
-            except Exception:
-                _started_ui.kill()
+            _started_ui.wait(timeout=8)
         except Exception:
-            pass
-        _started_ui = None
-        # Also clear anything still bound to the UI port if we started it.
-        try:
-            out = subprocess.run(
-                [
-                    "powershell", "-NoProfile", "-Command",
-                    f"(Get-NetTCPConnection -LocalPort {UI_PORT} -State Listen "
-                    "-ErrorAction SilentlyContinue).OwningProcess",
-                ],
-                capture_output=True, text=True, timeout=15,
-            )
-            for tok in (out.stdout or "").split():
-                try:
-                    pid = int(tok.strip())
-                    if pid > 0:
-                        subprocess.run(
-                            ["taskkill", "/PID", str(pid), "/F", "/T"],
-                            capture_output=True, timeout=10,
-                        )
-                except Exception:
-                    pass
-        except Exception:
-            pass
+            _started_ui.kill()
+    except Exception:
+        pass
+    try:
+        from src.core.sanctuary_boot import kill_pids, pids_listening
+        kill_pids(pids_listening(UI_PORT))
+    except Exception:
+        pass
+    _started_ui = None
 
 
 def open_window(title: str = "Amphoreus Sanctuary") -> None:
@@ -266,12 +204,14 @@ def main(argv: list[str] | None = None) -> int:
     os.environ.setdefault("AMPHOREUS_ROOT", str(root))
 
     atexit.register(cleanup)
+    os.environ.setdefault("SENSES_MODE", "unified")
 
-    if not skip_ollama:
-        ensure_ollama(root)
+    # Interface first — Ollama must never block the window.
+    ensure_streamlit(root, python)
     if not skip_engine:
         ensure_world_engine(root, python)
-    ensure_streamlit(root, python)
+    if not skip_ollama:
+        ensure_ollama(root)
 
     if browser_also:
         try:

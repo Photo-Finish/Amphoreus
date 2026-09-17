@@ -227,6 +227,7 @@ def test_html_stage() -> None:
     check("passive wheel passthrough", "parent.scrollBy" in doc and "{passive: true}" in doc)
     check("no canvas placeholders", "<canvas" not in doc.lower())
     check("sprites are images", doc.count("<img ") == 13)
+    check("body class on sprites", 'class="body"' in doc)
     check("speech bubble present", "data-amp-bubble" in doc and "The page remembers you." in doc)
     check("emotion attribute on buddy", 'data-amp-emotion="joy"' in doc)
     check("weary pose marked", 'data-amp-emotion="weary"' in doc)
@@ -265,7 +266,10 @@ def test_html_stage() -> None:
     check("hover keys documented", "P pat" in doc and "H hug" in doc)
     check("parent keydown ignores typing", "typingFocus" in ui and "contenteditable" in ui)
     check("ep_act query bridge", "ep_act" in ui and "ep_id" in ui)
-    check("companions stay sticker images", doc.count("<img ") == 13 and "<svg" not in doc.lower())
+    check("object-position plants feet", "object-position: bottom center" in doc)
+    check("unified sprite slot", ".buddy .sprite" in doc and "height: 228px" in doc)
+    check("selected sits above idle", "z-index:7" in doc)
+    check("no guest ids on the stage", "himeko" not in doc and "sunday" not in doc and "witch" not in doc)
     check("companions do not hover-bob", "amp-bob" not in doc and "amp-bob" not in ui)
     check("emotion marks still float", "@keyframes amp-float" in doc and "mk-heart::after" in doc)
     gal = (ROOT / "src" / "ui_galgame.py").read_text(encoding="utf-8")
@@ -379,8 +383,22 @@ def test_emotion_poses() -> None:
         joy_art is not None and anger_art is not None and joy_art != anger_art,
         f"{joy_art} vs {anger_art}",
     )
+    check("phainon joy uses the wave sticker", ee.variant_for("phainon", "joy") == "03")
+    check("phainon sad uses the tears sticker", ee.variant_for("phainon", "sad") == "05")
+    phainon_joy = ep.cute_art("phainon", "joy")
     phainon_sad = ep.cute_art("phainon", "sad")
     check("phainon still has a sticker when poses are few", phainon_sad is not None)
+    check(
+        "phainon avatar changes with emotion",
+        phainon_joy is not None and phainon_sad is not None and phainon_joy != phainon_sad,
+        f"{phainon_joy} vs {phainon_sad}",
+    )
+    check("castorice calm uses the ellipsis pose", ee.variant_for("castorice", "calm") == "05")
+    check("castorice surprise stays the glasses pose", ee.variant_for("castorice", "surprise") == "04")
+    check("cyrene tease uses the wink", ee.variant_for("cyrene", "tease") == "05")
+    for emo in ee.EMOTIONS:
+        nn = ee.variant_for("tribbie", emo)
+        check(f"tribbie {emo} is Tribbie not the extras", nn in {"01", "02"}, nn)
     missing_pose = []
     for cid in ep.all_ids():
         if ep.cute_art(cid, "calm") is None:
@@ -535,6 +553,83 @@ def test_gestures_and_vfx() -> None:
     check("ask is not a gesture id", "ask" not in eg.GESTURE_IDS)
 
 
+def test_q_full_body() -> None:
+    print("== Q full-body ==")
+    from io import BytesIO
+
+    from PIL import Image
+
+    from src.world import eternal_emotion as ee
+    from src.world import eternal_q as eq
+
+    guests = eq.GUESTS
+    check("guests are not sitters", not (guests & set(eq.SITTERS)))
+    check("mem is not a sitter", "mem" not in eq.SITTERS and "cyrene" in eq.SITTERS)
+    for cid in eq.sitter_ids():
+        check(f"{cid} is a circle Heir", cid in ep.CIRCLE, cid)
+        png = eq.q_body_png(cid)
+        check(f"{cid} yields a Q body", png is not None and len(png) > 4000)
+        if png:
+            im = Image.open(BytesIO(png))
+            check(f"{cid} Q body is a real PNG", im.mode == "RGBA" and min(im.size) >= 96, str(im.size))
+            src = eq.source_path(cid)
+            if src:
+                raw = Image.open(src)
+                check(
+                    f"{cid} crop is tighter than the group still",
+                    im.width * im.height < raw.width * raw.height,
+                    f"{im.size} vs {raw.size}",
+                )
+    for cid in ("phainon", "anaxa", "evernight"):
+        check(f"{cid} has no clean sit still", eq.q_body_png(cid) is None)
+        check(f"{cid} falls back to PPG", ep.cute_art(cid) is not None)
+        check(f"{cid} body kind is ppg", ep.body_kind(cid) == "ppg")
+    check("aglaea body kind is q", ep.body_kind("aglaea") == "q")
+
+    art = {cid: "data:image/png;base64,QQ==" for cid in ep.all_ids()}
+    art["cyrene"] = {
+        "body": "data:image/png;base64,Qk9EWS==",
+        "face": "data:image/png;base64,RkFDRQ==",
+        "kind": "q",
+    }
+    idle = build_stage_html(selected=[], art=art, names={"cyrene": "Cyrene"})
+    check("idle Q has a body image", 'data-amp-body="q"' in idle and 'class="body"' in idle)
+    check("idle calm Q hides the PPG face", "buddy show-face" not in idle and "buddy on show-face" not in idle)
+    check("idle still keeps the face asset", 'class="face"' in idle)
+    near = build_stage_html(
+        selected=["cyrene"],
+        art=art,
+        names={"cyrene": "Cyrene"},
+        emotions={"cyrene": "calm"},
+    )
+    check("selected Q shows the PPG face", "buddy on show-face" in near)
+    felt = build_stage_html(
+        selected=[],
+        art=art,
+        names={"cyrene": "Cyrene"},
+        emotions={"cyrene": "joy"},
+    )
+    check("feeling Q shows the PPG face", "buddy show-face" in felt)
+    check("PPG face does not steal clicks", "img.face" in (ROOT / "src" / "ui_eternal_page.py").read_text(encoding="utf-8") and "pointer-events: none" in (ROOT / "src" / "ui_eternal_page.py").read_text(encoding="utf-8"))
+    spoken = build_stage_html(
+        selected=[],
+        art=art,
+        names={"cyrene": "Cyrene"},
+        bubbles=[{"id": "cyrene", "text": "The page remembers you."}],
+    )
+    check("talking Q shows the PPG face", "buddy show-face" in spoken)
+    check("cyrene cycle is not imported by the page", "cyrene_cycle" not in Path(ep.__file__).read_text(encoding="utf-8"))
+    ui = (ROOT / "src" / "ui_eternal_page.py").read_text(encoding="utf-8")
+    check("ui does not wire the Cyrene year cycle", "cyrene_cycle" not in ui)
+    check("no cute webp rewrite", "webp" not in Path(eq.__file__).read_text(encoding="utf-8").lower())
+    # PPG 23 Phainon files actually on disk
+    for nn in ("02", "03", "04", "05"):
+        p = ep.ART_DIR / "phainon" / f"{nn}.png"
+        check(f"phainon/{nn}.png exists", p.is_file() and p.stat().st_size > 8000)
+    check("phainon has five official poses", len(list((ep.ART_DIR / "phainon").glob("*.png"))) >= 5)
+    check("castorice 05 is mapped", ee.POSES["castorice"]["calm"] == "05")
+
+
 def main() -> int:
     test_roster()
     test_selection()
@@ -547,6 +642,7 @@ def main() -> int:
     test_interaction_api()
     test_emotion_poses()
     test_gestures_and_vfx()
+    test_q_full_body()
     print()
     print(f"{len(PASSED)} passed, {len(FAILED)} failed")
     for name in FAILED:

@@ -6,7 +6,7 @@ As I've Written / Beyond Time: An Eternal Page. This module is the
 sanctuary's circle logic: who stands near, who answers, and how that
 talk writes the same per-Heir history Visit uses.
 
-No weather, no ecosystem, no roads. Cute Heir companions only.
+No weather, no ecosystem, no roads. Q sit bodies on the sill; PPG faces.
 """
 from __future__ import annotations
 
@@ -18,9 +18,21 @@ from src.core.heir_folders import HEIR_FOLDERS
 
 ROOT = Path(__file__).resolve().parents[2]
 ART_DIR = ROOT / "assets" / "eternal_page" / "cute"
+Q_DIR = ROOT / "assets" / "eternal_page" / "q_program" / "cutouts"
 # Official Area_Vortex_of_Genesis art: starfield + cosmic swirl.
 # bg-beyond-time.jpg is the Exotale garden plaza (Visit/Walk land), not this page.
 PARCHMENT = ROOT / "assets" / "galgame" / "ground" / "bg-vortex-of-genesis.jpg"
+
+def body_kind(character_id: str) -> str:
+    """``q`` if a Special Program sit cutout is used, else ``ppg``."""
+    try:
+        from src.world.eternal_q import has_q_body
+        if has_q_body(character_id):
+            return "q"
+    except Exception:
+        pass
+    return "ppg"
+
 
 # Cyrene keeps the page; the others stand in an arc around her.
 CIRCLE: tuple[str, ...] = (
@@ -94,6 +106,7 @@ def short_name(character_id: str) -> str:
 
 
 def cute_art(character_id: str, emotion: Optional[str] = None) -> Optional[Path]:
+    """PPG sticker path (emotion variant). Used as face overlay or PPG fallback body."""
     try:
         from src.world.eternal_emotion import pose_path
         posed = pose_path(character_id, emotion)
@@ -107,6 +120,40 @@ def cute_art(character_id: str, emotion: Optional[str] = None) -> Optional[Path]
     return None
 
 
+def q_body_png(character_id: str) -> Optional[bytes]:
+    """Cropped official Q sit PNG, or None when the Heir falls back to PPG."""
+    try:
+        from src.world.eternal_q import body_png
+        return body_png(character_id)
+    except Exception:
+        return None
+
+
+def stage_sprite(character_id: str, emotion: Optional[str] = None) -> Optional[dict]:
+    """Hybrid art for the sill: Q body + PPG face, or PPG body alone. Never blank if either exists.
+
+    kind 'q': full-body sit is the standing figure; PPG is the emotion/talk overlay.
+    kind 'ppg': no acceptable Q sit — PPG bust is the body (still painted, never geometry).
+    """
+    face = cute_art(character_id, emotion)
+    q_png = q_body_png(character_id)
+    if q_png:
+        return {
+            "kind": "q",
+            "body_png": q_png,
+            "body_path": None,
+            "face_path": face,
+        }
+    if face is not None:
+        return {
+            "kind": "ppg",
+            "body_png": None,
+            "body_path": face,
+            "face_path": None,
+        }
+    return None
+
+
 def parchment_path() -> Optional[Path]:
     if PARCHMENT.is_file() and PARCHMENT.stat().st_size > 8000:
         return PARCHMENT
@@ -114,7 +161,7 @@ def parchment_path() -> Optional[Path]:
 
 
 def art_missing() -> list[str]:
-    return [cid for cid in all_ids() if cute_art(cid) is None]
+    return [cid for cid in all_ids() if stage_sprite(cid) is None]
 
 
 def normalize_selected(selected: Optional[Iterable[str]]) -> list[str]:

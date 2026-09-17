@@ -1,6 +1,9 @@
-# Special Program Q-version Heirs (research, not wired)
+# Special Program Q-version Heirs
 
-Local catalog of **official** Honkai: Star Rail Version Special Program Q (chibi) stills. Not committed. Not swapped into Eternal Page.
+Local catalog of **official** Honkai: Star Rail Version Special Program Q (chibi) stills.
+
+Eternal Page **wires sit/swing cutouts** as circle bodies (`src/world/eternal_q.py`).
+Guests, Mem, poster busts, and tiny Bilibili 3D frames stay research-only.
 
 Do **not** overwrite `assets/eternal_page/cute/` Pom-Pom Gallery busts.
 

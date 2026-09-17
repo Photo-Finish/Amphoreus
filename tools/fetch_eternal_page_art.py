@@ -60,6 +60,14 @@ PPG_EXTRAS: dict[str, dict[str, str]] = {
     "castorice": {
         "05": "Sticker_PPG_21_Castorice_01.png",
     },
+    # Pack 23 is a second Phainon set; do not number it 01–04 or it
+    # overwrites PPG 21's weary/sleepy 01.
+    "phainon": {
+        "02": "Sticker_PPG_23_Phainon_01.png",
+        "03": "Sticker_PPG_23_Phainon_02.png",
+        "04": "Sticker_PPG_23_Phainon_03.png",
+        "05": "Sticker_PPG_23_Phainon_04.png",
+    },
 }
 
 

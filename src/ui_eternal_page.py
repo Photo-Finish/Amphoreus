@@ -472,6 +472,20 @@ def _data_uri(path: Path) -> str:
     return f"data:{mime};base64,{base64.b64encode(raw).decode('ascii')}"
 
 
+def _bytes_uri(raw: bytes, mime: str = "image/png") -> str:
+    return f"data:{mime};base64,{base64.b64encode(raw).decode('ascii')}"
+
+
+def _art_parts(entry) -> tuple[str, str, str]:
+    """Return (body_uri, face_uri, kind) from a string or dict art entry."""
+    if isinstance(entry, dict):
+        body = str(entry.get("body") or entry.get("src") or "")
+        face = str(entry.get("face") or "")
+        kind = str(entry.get("kind") or "ppg")
+        return body, face, kind if kind in {"q", "ppg"} else "ppg"
+    return str(entry or ""), "", "ppg"
+
+
 _VFX_MARK_NAMES = (
     "flush", "vein", "steam", "sweat", "tear", "sparkle", "heart", "query",
     "bang", "dizzy", "zzz", "shock", "flower", "ice", "veil", "note", "shy", "glow",
@@ -702,12 +716,14 @@ def build_stage_html(
     buddies = []
     for cid in ep.all_ids():
         src = art.get(cid) or ""
-        if not src:
+        body_src, face_src, kind = _art_parts(src)
+        if not body_src:
             continue
         left, bottom = ep.place_of(cid, layout)
         on = " on" if cid in selected_ids else ""
         label = html.escape(names.get(cid) or ep.short_name(cid))
-        feeling = html.escape(str(emotions.get(cid) or "calm"))
+        raw_feel = str(emotions.get(cid) or "calm")
+        feeling = html.escape(raw_feel)
         row = gestures.get(cid) if isinstance(gestures.get(cid), dict) else None
         marks = list(vfx_for(emotions.get(cid) or "calm"))
         gest_name = ""
@@ -725,14 +741,32 @@ def build_stage_html(
                 f"{html.escape(spoken)}</div>"
             )
         gest_attr = f' data-amp-gesture="{gest_name}"' if gest_name else ""
+        show_face = (
+            kind == "q"
+            and bool(face_src)
+            and (
+                cid in selected_ids
+                or raw_feel not in {"calm", ""}
+                or bool(gest_name)
+                or bool(spoken)
+            )
+        )
+        face_cls = " show-face" if show_face else ""
+        face_img = ""
+        if face_src and kind == "q":
+            face_img = (
+                f'<img class="face" alt="" src="{face_src}" draggable="false" />'
+            )
         buddies.append(
-            f'<button type="button" class="buddy{on}" data-heir="{html.escape(cid)}" '
-            f'data-amp-emotion="{feeling}" data-amp-vfx="{vfx_attr}"{gest_attr} '
+            f'<button type="button" class="buddy{on}{face_cls}" data-heir="{html.escape(cid)}" '
+            f'data-amp-emotion="{feeling}" data-amp-vfx="{vfx_attr}" '
+            f'data-amp-body="{html.escape(kind)}"{gest_attr} '
             f'title="{label} — click, drag, right-click, or hover keys" '
-            f'style="left:{left}%;bottom:{bottom}%;z-index:{3 if cid in selected_ids else 2}">'
+            f'style="left:{left}%;bottom:{bottom}%;z-index:{7 if cid in selected_ids else 2}">'
             f"{bubble}"
             f'<span class="sprite">'
-            f'<img alt="{label}" src="{src}" draggable="false" />'
+            f'<img class="body" alt="{label}" src="{body_src}" draggable="false" />'
+            f"{face_img}"
             f"{vfx_bits}"
             f"</span>"
             f'<span class="name">{label}</span>'
@@ -776,7 +810,7 @@ html, body {{
 }}
 .buddy {{
   position: absolute;
-  width: 12.5%;
+  width: 13.2%;
   min-width: 72px;
   transform: translateX(-50%);
   background: none;
@@ -785,19 +819,45 @@ html, body {{
   cursor: grab;
   pointer-events: auto;
 }}
+.buddy[data-amp-body="q"] {{
+  width: 15.2%;
+}}
 .buddy.grabbing {{
   cursor: grabbing;
   z-index: 9 !important;
 }}
-.buddy img {{
+.buddy .sprite {{
+  height: 228px;
+  overflow: visible;
+}}
+.buddy img.body {{
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  max-height: 228px;
+  object-fit: contain;
+  object-position: bottom center;
   user-select: none;
   -webkit-user-drag: none;
   filter: drop-shadow(0 8px 10px rgba(20,12,6,.45));
 }}
-.buddy.on img {{
+.buddy img.face {{
+  display: none;
+  position: absolute;
+  width: 46%;
+  right: -8%;
+  top: 0;
+  height: auto;
+  z-index: 3;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 4px 8px rgba(20,12,6,.55));
+}}
+.buddy.show-face img.face {{
+  display: block;
+}}
+.buddy.on img.body {{
   filter: drop-shadow(0 0 10px rgba(240,215,140,.95)) drop-shadow(0 8px 10px rgba(20,12,6,.45));
 }}
 .buddy .name {{
@@ -1104,8 +1164,9 @@ def render_eternal_page(manager, *, key_prefix: str = "eternal") -> None:
     st.title("An Eternal Page")
     st.caption(
         "Beyond Time — the memory-space of As I've Written, not a city on the map. "
-        "This is not Visit an Heir: companions stand on the star-swirl page. "
-        "Faces and marks follow feeling. The same memories are kept."
+        "This is not Visit an Heir: special-program Q sitters stand on the star-swirl "
+        "page, with Pom-Pom Gallery faces when someone is near or feeling. "
+        "The same memories are kept."
     )
     st.caption(legend_caption())
 
@@ -1161,9 +1222,22 @@ def render_eternal_page(manager, *, key_prefix: str = "eternal") -> None:
 
     art_uris = {}
     for cid in ep.all_ids():
-        path = ep.cute_art(cid, emotions.get(cid))
-        if path:
-            art_uris[cid] = _data_uri(path)
+        spr = ep.stage_sprite(cid, emotions.get(cid))
+        if not spr:
+            continue
+        if spr.get("kind") == "q" and spr.get("body_png"):
+            face_path = spr.get("face_path")
+            art_uris[cid] = {
+                "body": _bytes_uri(spr["body_png"]),
+                "face": _data_uri(face_path) if face_path else "",
+                "kind": "q",
+            }
+        elif spr.get("body_path"):
+            art_uris[cid] = {
+                "body": _data_uri(spr["body_path"]),
+                "face": "",
+                "kind": "ppg",
+            }
     parchment = ep.parchment_path()
     parchment_uri = _data_uri(parchment) if parchment else ""
 

@@ -221,7 +221,16 @@ Suite: `tools/test_world_machine.py`.
 
 Eternal Page `.buddy` idle bob and galgame `galfloat` are off. Visit/Walk horizontal roam, film walk cycles, weather particles, and Eternal emotion marks stay. Suite: `tools/test_eternal_page.py`.
 
-## Art catalogs (2026-09-16, unwired to the cycle)
+## Fifteenth delivery — Eternal Page Q sitters + PPG faces (2026-09-17)
+
+Special-program **full-body Q sitters** stand on the parchment sill (focus-cropped
+so sofa-mates and guests are not the sprite). Pom-Pom Gallery emotion busts
+appear when someone is near, talking, or feeling. Phainon / Anaxa / Evernight keep PPG
+when no clean sit still exists. Phainon now uses official PPG 23 poses beside PPG 21;
+Tribbie 03/04 stay unused (Trianne/Trinnon). Tiny Bilibili 3D frames and guests stay off
+the circle. Cyrene year-cycle remains unwired. Suite: `tools/test_eternal_page.py`.
+
+## Art catalogs (2026-09-16, Q sitters now wired; cycle still unwired)
 
 | Folder | What |
 |---|---|
