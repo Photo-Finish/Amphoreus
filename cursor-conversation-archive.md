@@ -18157,3 +18157,16 @@ Shipped on `main` as `11d1f7b` / `f939abe` / `a16c140` (photo-finish). Highlight
 Public site `photo-finish.github.io` is a GitHub Pages door; tunnels were dead — not a full Streamlit clone.
 
 ---
+
+## Round 372 — Thursday, Sep 17 through Tuesday, Sep 29, 2026 (UTC+8)
+
+### You
+
+Eternal Page: Cyrene and Hysilens were Robin and The Herta; resize so they do not overlap; sit them in the centre of the frame. Keep Q sit as the prime figure and PPG as the upper-right emotion mark for **all** Heirs. Carefully erase backdrop (Ica and close ornaments stay); assess a face-graph algorithm, then implement the refined pass into an independent folder without replacing live cutouts. Conclude **Phase 2a** (not all of Stage 2); changelog + conversation archive; sign the close; thank you for your cooperation; commit and push.
+
+### Cursor Grok 4.6
+
+**Phase 2a sealed (Stage 2 remains open).** Eternal Page presence: Q sit body + corner PPG for all thirteen; Cyrene ≠ Robin; Hysilens ≠ The Herta; mid-stage two-row layout (140px). Phainon/Anaxa sits are official 3.4 360p overlays. Face-graph trial in `_matte_v2/` (Ica kept; live `cutouts/` untouched). README Stage-2 changelog `2026-09-29` + signed Phase 2a close after Copilot’s frozen Stage-1 conclusion. Copilot `conversation-archive.md` not edited.
+
+---
+

@@ -67,21 +67,22 @@ SHORT_NAME = {
     "tribbie": "Tribbie",
 }
 
-# left%, bottom% — two rows on the parchment (desktop-buddy sill).
+# left%, bottom% — two staggered rows, mid-stage (not the top of the frame).
+# Front row is lower / nearer; back row sits in the gaps so sprites do not stack.
 LAYOUT: dict[str, tuple[float, float]] = {
-    "tribbie": (8.0, 40.0),
-    "aglaea": (22.0, 34.0),
-    "anaxa": (36.0, 30.0),
-    "hyacine": (50.0, 28.0),
-    "castorice": (64.0, 30.0),
-    "cipher": (78.0, 34.0),
-    "cyrene": (46.0, 62.0),
-    "phainon": (18.0, 66.0),
-    "mydei": (32.0, 72.0),
-    "cerydra": (60.0, 72.0),
-    "hysilens": (74.0, 66.0),
-    "evernight": (88.0, 58.0),
-    "dan-heng-permansor-terrae": (6.0, 58.0),
+    "tribbie": (10.0, 40.0),
+    "aglaea": (23.0, 38.5),
+    "anaxa": (36.0, 37.5),
+    "hyacine": (49.0, 37.0),
+    "castorice": (62.0, 37.5),
+    "cipher": (75.0, 38.5),
+    "evernight": (88.0, 40.0),
+    "dan-heng-permansor-terrae": (16.5, 13.5),
+    "phainon": (29.5, 14.5),
+    "mydei": (42.5, 15.5),
+    "cyrene": (55.5, 13.0),
+    "cerydra": (68.5, 15.5),
+    "hysilens": (81.5, 14.5),
 }
 
 MAX_SPEAKERS_DEFAULT = 4

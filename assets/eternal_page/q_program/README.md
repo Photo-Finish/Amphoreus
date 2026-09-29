@@ -3,7 +3,11 @@
 Local catalog of **official** Honkai: Star Rail Version Special Program Q (chibi) stills.
 
 Eternal Page **wires sit/swing cutouts** as circle bodies (`src/world/eternal_q.py`).
-Guests, Mem, poster busts, and tiny Bilibili 3D frames stay research-only.
+The idle figure is the Q sit; a Pom-Pom Gallery sticker is a small upper-right
+emotion mark (not a replacement body). Guests, Mem, and poster busts stay
+research-only. 360p Bilibili frames stay research-only except two last-resort
+circle sits that have no 2D announcement body: **Phainon** and **Anaxa**
+(3.4 3D stage overlay), plus **Hysilens** (3.5 2D Q overlay).
 
 Do **not** overwrite `assets/eternal_page/cute/` Pom-Pom Gallery busts.
 
@@ -73,14 +77,14 @@ YouTube (Honkai: Star Rail) remains blocked in this environment.
 | `bilibili_3.4_BV1APNWziErE_t22.jpg` | 22s | Cinematic (not Q) |
 | `bilibili_3.4_BV1APNWziErE_t30.jpg` | 30s | Cinematic (not Q) |
 | `bilibili_3.4_BV1APNWziErE_t40.jpg` | 40s | Cinematic (not Q) |
-| `bilibili_3.4_BV1APNWziErE_t480.jpg` | 480s | **3D stage**: witch-hat guest, Anaxa, Phainon, Owlbert |
+| `bilibili_3.4_BV1APNWziErE_t480.jpg` | 480s | **3D stage**: witch-hat guest, Anaxa, Phainon, Owlbert. Tight one-Heir crops from this frame are the last-resort circle sits for Anaxa and Phainon (3.4 announcement only published busts). |
 
 ### 3.5 BV1gHhAz9EpC
 
 | File | t | What |
 | --- | --- | --- |
 | `bilibili_3.5_BV1gHhAz9EpC_t46.jpg` | 46s | Cinematic combat (not Q) |
-| `bilibili_3.5_BV1gHhAz9EpC_t480.jpg` | 480s | **3D stage**: Screwllum, Hysilens, Cerydra, Owlbert |
+| `bilibili_3.5_BV1gHhAz9EpC_t480.jpg` | 480s | **2D Q overlay**: Screwllum, **Hysilens**, Cerydra, Owlbert. The 3.5 announcement still swaps Hysilens for The Herta. |
 
 ## Crops (`crops/`) — recrop audit
 
@@ -90,6 +94,8 @@ Deleted `cyrene_v34_bust.png` (Mem was split). Replaced by `cyrene_v34_mem.png` 
 | --- | --- |
 | `cyrene_v34_mem.png` | Full Mem + frame (was divided) |
 | `anaxa_v34_bust.png` | Full bust + blue square (was chin-clipped) |
+| `anaxa_v34_sit.png` | 3.4 3D stage overlay (t480) — Anaxa only; not the witch guest, not Phainon |
+| `phainon_v34_sit.png` | 3.4 3D stage overlay (t480) — Phainon only; not Anaxa, not Owlbert |
 | `himeko_v36_sit.png` | Full hair (was left-clipped) |
 | `tribbie_v31_swing.png` | Full body + swing ropes/seat |
 | `mydei_v31_sit.png` | Full body + pomegranate + wine |
@@ -97,12 +103,12 @@ Deleted `cyrene_v34_bust.png` (Mem was split). Replaced by `cyrene_v34_mem.png` 
 | `hyacine_v33_sit.png` | Full sit + Ica in lap |
 | `castorice_v33_sit.png` | Full sit + hair/butterflies |
 | `cipher_v33_sit.png` | Full sit + ears/tail |
-| `hysilens_v35_sit.png` | Tight sit; Screwllum/Cerydra cropped out |
+| `hysilens_v35_sit.png` | 3.5 2D Q overlay (t480) — Hysilens only; not The Herta |
 | `cerydra_v35_sit.png` | Tight sit + crown; Hysilens cropped out |
 | `sunday_v36_sit.png` | Guest only — not a circle body |
 | `dan_heng_pt_v36_sit.png` | Tight sit + chimera; Sunday/Himeko cropped out |
 | `cyrene_v37_tv.png` | Tightened to pixel Cyrene on the TV |
-| `cyrene_v38_sit.png` | 3.8 sofa Cyrene (Evernight/Aglaea cropped out) |
+| `cyrene_v38_sit.png` | 3.8 sofa **third** sitter (cream hair). Robin is a guest crop. |
 | `evernight_v38_sit.png` | 3.8 sofa Evernight (white hat; Cyrene cropped out) |
 | `mini_companion_v31.png` | Little creature complete |
 | `*_bili_t*.png` | Emotion/stage variants from official 360p frames |
@@ -121,17 +127,19 @@ Not generative. Pixels come only from the source crop.
 4. **GrabCut refine** from that mask (corners forced background).
 5. Fill holes that do not touch the border; anti-alias alpha via distance transform.
 
-Magenta QA composites (RGB on #FF00FF, not for shipping) live in `_preview/`. The Read tool ignores PNG alpha, so those previews are the real quality check.
+Magenta QA composites (RGB on #FF00FF, not for shipping) live in `_preview/`. The Read tool ignores PNG alpha, so those previews are the real quality check. `circle_q_face.png` is a layout composite of sit body + corner PPG face for all thirteen.
 
 ### Quality
 
 **Clean enough to use**
 
 - `cutouts/anaxa_v34_bust.png` — best; square + bust, dark poster BG gone
+- `cutouts/anaxa_v34_sit.png` — 3.4 360p 3D stage sit (last-resort circle body); peach stage kept, identity-correct
+- `cutouts/phainon_v34_sit.png` — 3.4 360p 3D stage sit (last-resort circle body); peach stage kept, identity-correct
 - `cutouts/cyrene_v34_mem.png` — Mem + frame isolated; leftover sunburst title art
 - `cutouts/cyrene_v37_tv.png` — pixel Cyrene off the TV; small dark-screen bite on the left
 - `cutouts/phainon_v34_bust.png` — bust + frame; a few poster tiles remain
-- `cutouts/cyrene_v38_sit.png` — Cyrene body kept; sofa/poster fragments
+- `cutouts/cyrene_v38_sit.png` — 3.8 third sofa sitter (cream hair); sofa fragments, not Robin
 - `cutouts/evernight_v38_sit.png` — Evernight + hat; sofa kept
 - `cutouts/tribbie_v31_swing.png` — swing kept; Mydei cropped out
 - `cutouts/mini_companion_v31.png` — creature kept; some foliage
@@ -141,14 +149,15 @@ Magenta QA composites (RGB on #FF00FF, not for shipping) live in `_preview/`. Th
 
 - Mydei / Aglaea (branch + window fragments)
 - 3.3 sitters (stage floor / bench)
-- Hysilens / Cerydra (ice pane / ledge)
+- Cerydra (ice pane / ledge); Hysilens (360p 2D Q overlay — identity-correct, muddy matte)
+- Anaxa / Phainon (360p 3D stage overlay — identity-correct, peach sky glued; 3.4 announcement is busts only)
 - Dan Heng PT (purple sofa + table; chimera kept)
 
 ### Still cannot isolate cleanly
 
 - Group sofas and tree branches that share cel-shading with the Heirs (3.1 branch, 3.6 couch, 3.3 stage).
 - Wisteria / painterly ice / TV bezel when they touch the outline.
-- 3D talk-show frames at 360p — too small for a clean matte; keep as emotion reference, not sprites.
+- 3D talk-show frames at 360p — too small for a clean matte. Keep as emotion reference except the two 3.4 sitters (Anaxa, Phainon) wired as last-resort circle bodies, documented like Hysilens.
 - 3.0 / 3.2 announcement stills have no Heir Q bodies (dolls / Owlbert only).
 - No official transparent sprite sheet exists; 3D emotes (wave / angry / walk) exist only in the videos.
 

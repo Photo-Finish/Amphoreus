@@ -67,7 +67,24 @@ CROP_BOXES: dict[str, tuple[str, tuple[int, int, int, int]]] = {
         "Version_3.4_Special_Program_Announcement.png",
         (1440, 0, 1920, 520),
     ),
+    # 3.4 announcement only publishes busts. Full-body Q sits are the official
+    # 360p 3D stage overlay (same last-resort class as Hysilens' 3.5 2D overlay).
+    # Split between the two sitters; witch guest stays out of both boxes.
+    "anaxa_v34_sit.png": (
+        "bilibili_3.4_BV1APNWziErE_t480.jpg",
+        (110, 246, 181, 337),
+    ),
+    "phainon_v34_sit.png": (
+        "bilibili_3.4_BV1APNWziErE_t480.jpg",
+        (186, 240, 273, 337),
+    ),
+    # 3.5 announcement still is Screwllum / The Herta / Cerydra / Owlbert.
+    # Hysilens' painted Q sit is the official program overlay, not The Herta.
     "hysilens_v35_sit.png": (
+        "bilibili_3.5_BV1gHhAz9EpC_t480.jpg",
+        (124, 208, 208, 356),
+    ),
+    "the_herta_v35_sit.png": (
         "Version_3.5_Special_Program_Announcement.png",
         (315, 348, 458, 658),
     ),
@@ -91,9 +108,14 @@ CROP_BOXES: dict[str, tuple[str, tuple[int, int, int, int]]] = {
         "Version_3.7_Special_Program_Announcement.png",
         (1240, 330, 1540, 650),
     ),
-    "cyrene_v38_sit.png": (
+    # 3.8 sofa L→R: Evernight | Robin (blue halo, guest) | Cyrene (cream hair).
+    "robin_v38_sit.png": (
         "Version_3.8_Special_Program_Announcement.png",
         (575, 528, 726, 978),
+    ),
+    "cyrene_v38_sit.png": (
+        "Version_3.8_Special_Program_Announcement.png",
+        (754, 518, 934, 986),
     ),
     "evernight_v38_sit.png": (
         "Version_3.8_Special_Program_Announcement.png",
@@ -157,15 +179,15 @@ FRAME_CROPS: dict[str, tuple[str, tuple[int, int, int, int]]] = {
     ),
     "anaxa_v34_bili_t480.png": (
         "bilibili_3.4_BV1APNWziErE_t480.jpg",
-        (125, 235, 255, 355),
+        (110, 246, 181, 337),
     ),
     "phainon_v34_bili_t480.png": (
         "bilibili_3.4_BV1APNWziErE_t480.jpg",
-        (245, 225, 400, 355),
+        (186, 240, 273, 337),
     ),
     "hysilens_v35_bili_t480.png": (
         "bilibili_3.5_BV1gHhAz9EpC_t480.jpg",
-        (135, 220, 275, 355),
+        (124, 208, 208, 356),
     ),
     "cerydra_v35_bili_t480.png": (
         "bilibili_3.5_BV1gHhAz9EpC_t480.jpg",
@@ -179,6 +201,18 @@ def _clamp_box(box: tuple[int, int, int, int], w: int, h: int) -> tuple[int, int
     return max(0, l), max(0, t), min(w, r), min(h, b)
 
 
+def _source_path(src_name: str) -> Path:
+    for folder in (ANN, FRAMES):
+        path = folder / src_name
+        if path.is_file():
+            return path
+    raise FileNotFoundError(src_name)
+
+
+def _open_rgb(src_name: str) -> Image.Image:
+    return Image.open(_source_path(src_name)).convert("RGB")
+
+
 def recrop_announcement() -> list[Path]:
     CROPS.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
@@ -186,8 +220,7 @@ def recrop_announcement() -> list[Path]:
     if stale.exists():
         stale.unlink()
     for name, (src_name, box) in CROP_BOXES.items():
-        src = ANN / src_name
-        im = Image.open(src).convert("RGB")
+        im = _open_rgb(src_name)
         box = _clamp_box(box, im.width, im.height)
         crop = im.crop(box)
         dest = CROPS / name
@@ -466,11 +499,31 @@ SIT_CUTOUTS = (
     "hyacine_v33_sit.png",
     "cipher_v33_sit.png",
     "hysilens_v35_sit.png",
+    "anaxa_v34_sit.png",
+    "phainon_v34_sit.png",
     "cerydra_v35_sit.png",
     "dan_heng_pt_v36_sit.png",
     "cyrene_v38_sit.png",
     "evernight_v38_sit.png",
 )
+
+
+def _upsample_cutout(dest: Path, preview: Path | None, min_long: int = 220) -> None:
+    """Keep official pixels; enlarge tiny 360p sits so the sill can plant them."""
+    im = Image.open(dest).convert("RGBA")
+    w, h = im.size
+    long = max(w, h)
+    if long >= min_long:
+        return
+    scale = min_long / float(long)
+    im = im.resize(
+        (max(1, int(round(w * scale))), max(1, int(round(h * scale)))),
+        Image.Resampling.LANCZOS,
+    )
+    im.save(dest, "PNG")
+    if preview is not None:
+        prev = _magenta_preview(np.array(im))
+        Image.fromarray(prev, "RGB").save(preview, "PNG")
 
 
 def cut_sits() -> list[dict]:
@@ -484,10 +537,13 @@ def cut_sits() -> list[dict]:
             continue
         src_name, box = spec
         if src_name not in cache:
-            cache[src_name] = Image.open(ANN / src_name).convert("RGB")
+            cache[src_name] = _open_rgb(src_name)
         info = cutout_from_announcement(
             cache[src_name], box, CUTOUTS / name, PREVIEWS
         )
+        src_path = _source_path(src_name)
+        if src_path.parent == FRAMES:
+            _upsample_cutout(CUTOUTS / name, PREVIEWS / name)
         reports.append(info)
         print(f"cutout {info['file']} coverage={info['coverage']} {info['size']}")
     return reports

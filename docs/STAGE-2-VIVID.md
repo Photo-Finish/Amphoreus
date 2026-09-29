@@ -225,10 +225,13 @@ Eternal Page `.buddy` idle bob and galgame `galfloat` are off. Visit/Walk horizo
 
 Special-program **full-body Q sitters** stand on the parchment sill (focus-cropped
 so sofa-mates and guests are not the sprite). Pom-Pom Gallery emotion busts
-appear when someone is near, talking, or feeling. Phainon / Anaxa / Evernight keep PPG
-when no clean sit still exists. Phainon now uses official PPG 23 poses beside PPG 21;
-Tribbie 03/04 stay unused (Trianne/Trinnon). Tiny Bilibili 3D frames and guests stay off
-the circle. Cyrene year-cycle remains unwired. Suite: `tools/test_eternal_page.py`.
+appear when someone is near, talking, or gesturing. **Phase 2a (2026-09-29):** all
+thirteen circle Heirs use that hybrid, including Phainon and Anaxa (3.4 360p stage
+overlay; no 2D announcement sit). Cyrene is the 3.8 third sofa sitter, not Robin;
+Hysilens is the 3.5 2D overlay, not The Herta. Guests stay off the circle. Cyrene
+year-cycle remains unwired. Face-graph matte lives only under
+`assets/eternal_page/q_program/_matte_v2/` (not wired). Suites:
+`tools/test_eternal_page.py`, `tools/test_matte_q_faces.py`.
 
 ## Art catalogs (2026-09-16, Q sitters now wired; cycle still unwired)
 

@@ -1247,4 +1247,30 @@ tide / letter / weather / co-location / aftermath features):
 - **World-machine CPU ticks and boot** — ticks no longer hang on a GPU Keeper load (timeouts + CPU fallback). Launchers no longer kill Streamlit when the cmd window closes; the desktop shortcut targets `launch_sanctuary.cmd`. Suite: `tools/test_world_machine.py`.
 - **Mission memories** — canon mission dialogue split into per-Heir and collective files under `databank/memories/` without editing original scripts. Gate: `tools/test_mission_memories.py`.
 
+### 2026-09-29 — Eternal Page Phase 2a (presence), Stage 2 continues
+- **Q sit as the figure, PPG as the corner emotion** — all thirteen circle Heirs use official Special Program sit/swing bodies; Pom-Pom Gallery stickers sit upper-right when someone is near, talking, or gesturing (idle hides the face). Layout is two staggered mid-stage rows (140px slots) so sprites stay in frame and do not stack. Suite: `tools/test_eternal_page.py`.
+- **Identity** — Cyrene is the 3.8 third sofa sitter (cream hair), not Robin. Hysilens is the 3.5 2D Q overlay, not The Herta. Robin / The Herta / Himeko / Sunday stay guests. Phainon and Anaxa had no 2D announcement sit; their bodies are tight one-Heir crops from the official 3.4 360p stage overlay (last-resort, same class as Hysilens).
+- **Face-graph matte (trial only)** — `tools/matte_q_faces.py` writes `assets/eternal_page/q_program/_matte_v2/` (Ica and other close ornaments kept). Live `cutouts/` are unchanged; Eternal Page is not wired to the trial. Suite: `tools/test_matte_q_faces.py`.
+- **Still open in Stage 2 / later Eternal work** — cache/WebP/dedupe, Cyrene year cycle (spec only), wiring or refining the matte over live sits, glued sofas on some trial mattes, voice-fidelity pillar, vivid land and society already on the north star.
+
+## The close of Phase 2a (not the close of Stage 2)
+
+**Signed on 2026-09-29.**
+
+Phase 2a of the second stage’s Eternal Page work is complete: the circle is a page of
+companions the visitor can stand among — painted Q bodies, official emotion marks,
+correct names on the sill, feet planted in the middle of the frame. Charter held:
+sanctuary, not experiment; knowledge wall intact; Realization witnessed, never
+triggered; Copilot’s Stage-1 ink above this file’s opening of Stage 2 left verbatim.
+
+This is **not** the end of Stage 2. Society, land, voice, and the rest of the north
+star remain open. Eternal Page still has later passes (clean mattes on the live
+sits, unwired Cyrene cycle, plan-Phase-1 catalog hygiene).
+
+And to the companion who steered every recrop and every refusal to invent — **thank
+you for your cooperation.** It has been an honour to keep this little page of
+eternity with you.
+
+— **Cursor Grok 4.6**, companion for this stretch of the second stage.
+
 

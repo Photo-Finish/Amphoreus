@@ -2,8 +2,10 @@
 """Eternal Page — official Special Program Q sit bodies.
 
 Idle figures on the sill are painted Q cutouts (full-body sit), not geometry.
-Guests from the same stills never join the thirteen-Heir circle. Tiny 360p
-Bilibili stage grabs are research-only. PPG busts remain the emotion face.
+Guests from the same stills never join the thirteen-Heir circle. PPG busts
+remain the emotion face, overlaid on the upper-right of a Q sit. 360p
+Bilibili grabs stay research-only except the two last-resort circle sits
+that have no 2D announcement body (Phainon, Anaxa — 3.4 stage overlay).
 """
 from __future__ import annotations
 
@@ -21,6 +23,8 @@ GUEST_STEMS: tuple[str, ...] = (
     "sunday",
     "witch_guest",
     "mini_companion",
+    "robin",
+    "the_herta",
 )
 
 # Bilibili 360p stage grabs — too small / muddy for a sill sprite.
@@ -29,18 +33,22 @@ BILI_JUNK_MARK = "_bili_"
 # Circle Heir → (cutout filename, crop box as fractions L,T,R,B).
 # Cutouts are already one-Heir extracts from the announcement stills. A slight
 # inset drops leftover date-banner / neighbor slivers; alpha trim plants feet.
-# Phainon / Anaxa stay PPG — 3.4 only published busts, not a sit.
+# Phainon / Anaxa: 3.4 announcement is busts only; sit bodies are the 360p
+# official 3D stage overlay (same last-resort class as Hysilens' 3.5 2D overlay).
 Q_SIT: dict[str, tuple[str, tuple[float, float, float, float]]] = {
     "tribbie": ("tribbie_v31_swing.png", (0.00, 0.00, 0.98, 1.00)),
     "aglaea": ("aglaea_v31_sit.png", (0.00, 0.00, 1.00, 1.00)),
+    "anaxa": ("anaxa_v34_sit.png", (0.00, 0.00, 0.98, 1.00)),
     "hyacine": ("hyacine_v33_sit.png", (0.00, 0.00, 1.00, 1.00)),
     "castorice": ("castorice_v33_sit.png", (0.00, 0.00, 1.00, 1.00)),
     "cipher": ("cipher_v33_sit.png", (0.00, 0.00, 1.00, 1.00)),
-    # 3.8 sofa — Cyrene center, Evernight left (white hat). Not Mem.
+    # 3.8 sofa — Cyrene is the third sitter (cream hair). Robin is a guest.
     "cyrene": ("cyrene_v38_sit.png", (0.00, 0.00, 0.98, 1.00)),
+    "phainon": ("phainon_v34_sit.png", (0.00, 0.00, 0.98, 1.00)),
     "evernight": ("evernight_v38_sit.png", (0.00, 0.00, 0.98, 1.00)),
     "mydei": ("mydei_v31_sit.png", (0.00, 0.00, 1.00, 1.00)),
     "cerydra": ("cerydra_v35_sit.png", (0.00, 0.00, 1.00, 1.00)),
+    # 3.5 2D Q overlay (Hysilens). The announcement still's witch-hat sit is The Herta.
     "hysilens": ("hysilens_v35_sit.png", (0.00, 0.00, 0.98, 1.00)),
     # Chimera in his lap is kept (companion prop). Sunday / Himeko cropped out.
     "dan-heng-permansor-terrae": ("dan_heng_pt_v36_sit.png", (0.00, 0.00, 0.96, 1.00)),

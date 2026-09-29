@@ -267,8 +267,29 @@ def test_html_stage() -> None:
     check("parent keydown ignores typing", "typingFocus" in ui and "contenteditable" in ui)
     check("ep_act query bridge", "ep_act" in ui and "ep_id" in ui)
     check("object-position plants feet", "object-position: bottom center" in doc)
-    check("unified sprite slot", ".buddy .sprite" in doc and "height: 228px" in doc)
+    check("unified sprite slot", ".buddy .sprite" in doc and "height: 140px" in doc)
     check("selected sits above idle", "z-index:7" in doc)
+    check("narrow buddy so thirteen fit", "width: 7.2%" in doc and "width: 7.8%" in doc)
+    bottoms = [ep.LAYOUT[cid][1] for cid in ep.all_ids()]
+    check("circle sits in the mid stage", min(bottoms) >= 12.0 and max(bottoms) <= 42.0, str(bottoms))
+    sprite_h_pct = 140.0 / STAGE_H * 100.0 + 4.0
+    check(
+        "default sits stay inside the frame",
+        all(b + sprite_h_pct <= 92.0 for b in bottoms),
+        str(max(bottoms) + sprite_h_pct),
+    )
+    buddy_w = 7.8
+    ids = ep.all_ids()
+    overlap = []
+    for i, a in enumerate(ids):
+        la, ba = ep.LAYOUT[a]
+        for b in ids[i + 1 :]:
+            lb, bb = ep.LAYOUT[b]
+            dx = abs(la - lb)
+            dy = abs(ba - bb)
+            if dx < buddy_w * 0.92 and dy < 12.0:
+                overlap.append((a, b, round(dx, 1), round(dy, 1)))
+    check("default places do not stack", overlap == [], str(overlap))
     check("no guest ids on the stage", "himeko" not in doc and "sunday" not in doc and "witch" not in doc)
     check("companions do not hover-bob", "amp-bob" not in doc and "amp-bob" not in ui)
     check("emotion marks still float", "@keyframes amp-float" in doc and "mk-heart::after" in doc)
@@ -592,52 +613,101 @@ def test_q_full_body() -> None:
                 any(px[3] > 40 for px in probes),
                 str([px[3] for px in probes]),
             )
-    for cid in ("phainon", "anaxa"):
-        check(f"{cid} has no clean sit still", eq.q_body_png(cid) is None)
-        check(f"{cid} falls back to PPG", ep.cute_art(cid) is not None)
-        check(f"{cid} body kind is ppg", ep.body_kind(cid) == "ppg")
-    check("evernight body kind is q", ep.body_kind("evernight") == "q")
-    check("aglaea body kind is q", ep.body_kind("aglaea") == "q")
+    check("circle sit map covers every Heir", set(eq.Q_SIT) == set(ep.CIRCLE), str(sorted(eq.Q_SIT)))
+    check("no PPG-only circle body", eq.ppg_fallback_ids(list(ep.CIRCLE)) == [])
+    for cid in ep.all_ids():
+        check(f"{cid} body kind is q", ep.body_kind(cid) == "q")
+        spr = ep.stage_sprite(cid, "calm")
+        check(
+            f"{cid} hybrid is sit plus face",
+            spr is not None
+            and spr.get("kind") == "q"
+            and spr.get("body_png")
+            and spr.get("face_path") is not None,
+            str(None if spr is None else (spr.get("kind"), spr.get("face_path"))),
+        )
     check(
         "Q sit files are one Heir each",
         eq.Q_SIT["cyrene"][0].startswith("cyrene_")
         and eq.Q_SIT["evernight"][0].startswith("evernight_")
-        and eq.Q_SIT["dan-heng-permansor-terrae"][0].startswith("dan_heng_"),
+        and eq.Q_SIT["dan-heng-permansor-terrae"][0].startswith("dan_heng_")
+        and eq.Q_SIT["phainon"][0].startswith("phainon_")
+        and eq.Q_SIT["anaxa"][0].startswith("anaxa_"),
     )
     check("guests never sit on the circle", "himeko" not in eq.Q_SIT and "sunday" not in eq.Q_SIT)
+    check("Robin is not Cyrene", "robin" not in eq.Q_SIT and "robin" not in eq.Q_SIT["cyrene"][0])
+    check("The Herta is not Hysilens", "herta" not in eq.Q_SIT and "herta" not in eq.Q_SIT["hysilens"][0])
+    check("Mem is not Cyrene", "mem" not in eq.Q_SIT["cyrene"][0])
+    check("Phainon sit is not a bust", "bust" not in eq.Q_SIT["phainon"][0])
+    check("Anaxa sit is not a bust", "bust" not in eq.Q_SIT["anaxa"][0])
+    from tools.cut_q_program import CROP_BOXES
+    cyrene_box = CROP_BOXES["cyrene_v38_sit.png"][1]
+    robin_box = CROP_BOXES["robin_v38_sit.png"][1]
+    check("Cyrene crop is the third sofa sitter", cyrene_box[0] >= 740, str(cyrene_box))
+    check("Robin crop stays a guest", robin_box[0] < 700, str(robin_box))
+    hy_src, hy_box = CROP_BOXES["hysilens_v35_sit.png"]
+    check("Hysilens sit is the 3.5 Q overlay", "bilibili_3.5" in hy_src and hy_box[2] <= 220, f"{hy_src} {hy_box}")
+    herta_src, _herta_box = CROP_BOXES["the_herta_v35_sit.png"]
+    check("The Herta stays on the announcement still", "Announcement" in herta_src, herta_src)
+    ax_src, ax_box = CROP_BOXES["anaxa_v34_sit.png"]
+    ph_src, ph_box = CROP_BOXES["phainon_v34_sit.png"]
+    check("Anaxa sit is the 3.4 stage overlay", "bilibili_3.4" in ax_src, ax_src)
+    check("Phainon sit is the 3.4 stage overlay", "bilibili_3.4" in ph_src, ph_src)
+    check("Anaxa box is one sitter", ax_box[0] >= 100 and ax_box[2] <= 185, str(ax_box))
+    check("Phainon box is one sitter", ph_box[0] >= 180 and ph_box[2] <= 280, str(ph_box))
+    check("Anaxa/Phainon split before Owlbert", ph_box[2] < 400 and ax_box[2] <= ph_box[0] + 2, f"{ax_box} {ph_box}")
 
-    art = {cid: "data:image/png;base64,QQ==" for cid in ep.all_ids()}
-    art["cyrene"] = {
-        "body": "data:image/png;base64,Qk9EWS==",
-        "face": "data:image/png;base64,RkFDRQ==",
-        "kind": "q",
+    hybrid = {
+        cid: {
+            "body": "data:image/png;base64,Qk9EWS==",
+            "face": "data:image/png;base64,RkFDRQ==",
+            "kind": "q",
+        }
+        for cid in ep.all_ids()
     }
-    idle = build_stage_html(selected=[], art=art, names={"cyrene": "Cyrene"})
+    idle = build_stage_html(selected=[], art=hybrid, names={"cyrene": "Cyrene"})
+    check("all thirteen idle as Q", idle.count('data-heir=') == 13 and 'data-amp-body="ppg"' not in idle)
+    check("all thirteen keep a face asset", idle.count('class="face"') == 13)
     check("idle Q has a body image", 'data-amp-body="q"' in idle and 'class="body"' in idle)
     check("idle calm Q hides the PPG face", "buddy show-face" not in idle and "buddy on show-face" not in idle)
     check("idle still keeps the face asset", 'class="face"' in idle)
     near = build_stage_html(
-        selected=["cyrene"],
-        art=art,
-        names={"cyrene": "Cyrene"},
-        emotions={"cyrene": "calm"},
+        selected=["cyrene", "phainon", "anaxa"],
+        art=hybrid,
+        names={"cyrene": "Cyrene", "phainon": "Phainon", "anaxa": "Anaxa"},
+        emotions={"cyrene": "calm", "phainon": "calm", "anaxa": "calm"},
     )
     check("selected Q shows the PPG face", "buddy on show-face" in near)
+    check("selected Phainon shows a face", near.count("buddy on show-face") >= 3)
     felt = build_stage_html(
         selected=[],
-        art=art,
+        art=hybrid,
         names={"cyrene": "Cyrene"},
-        emotions={"cyrene": "joy"},
+        emotions={"cyrene": "joy", "phainon": "joy", "anaxa": "joy"},
     )
     check("idle feeling Q keeps one body", "buddy show-face" not in felt)
     check("PPG face does not steal clicks", "img.face" in (ROOT / "src" / "ui_eternal_page.py").read_text(encoding="utf-8") and "pointer-events: none" in (ROOT / "src" / "ui_eternal_page.py").read_text(encoding="utf-8"))
     spoken = build_stage_html(
         selected=[],
-        art=art,
-        names={"cyrene": "Cyrene"},
-        bubbles=[{"id": "cyrene", "text": "The page remembers you."}],
+        art=hybrid,
+        names={"cyrene": "Cyrene", "phainon": "Phainon"},
+        bubbles=[
+            {"id": "cyrene", "text": "The page remembers you."},
+            {"id": "phainon", "text": "I am here."},
+        ],
     )
     check("talking Q shows the PPG face", "buddy show-face" in spoken)
+    import time as _time
+    waved = build_stage_html(
+        selected=[],
+        art=hybrid,
+        names={"anaxa": "Anaxa"},
+        gestures={"anaxa": {"gesture": "wave", "ts": _time.time()}},
+    )
+    check("gesture Q shows the PPG face", "buddy show-face" in waved)
+    ui_src = (ROOT / "src" / "ui_eternal_page.py").read_text(encoding="utf-8")
+    check("PPG face is a corner sticker", "width: 36%" in ui_src and "right: -6%" in ui_src)
+    check("face stays smaller than the sit body", "width: 46%" not in ui_src.split(".buddy img.face", 1)[-1][:400])
     check("cyrene cycle is not imported by the page", "cyrene_cycle" not in Path(ep.__file__).read_text(encoding="utf-8"))
     ui = (ROOT / "src" / "ui_eternal_page.py").read_text(encoding="utf-8")
     check("ui does not wire the Cyrene year cycle", "cyrene_cycle" not in ui)

@@ -754,12 +754,13 @@ def build_stage_html(
             face_img = (
                 f'<img class="face" alt="" src="{face_src}" draggable="false" />'
             )
+        z = 7 if cid in selected_ids else (4 if bottom < 24 else 2)
         buddies.append(
             f'<button type="button" class="buddy{on}{face_cls}" data-heir="{html.escape(cid)}" '
             f'data-amp-emotion="{feeling}" data-amp-vfx="{vfx_attr}" '
             f'data-amp-body="{html.escape(kind)}"{gest_attr} '
             f'title="{label} — click, drag, right-click, or hover keys" '
-            f'style="left:{left}%;bottom:{bottom}%;z-index:{7 if cid in selected_ids else 2}">'
+            f'style="left:{left}%;bottom:{bottom}%;z-index:{z}">'
             f"{bubble}"
             f'<span class="sprite">'
             f'<img class="body" alt="{label}" src="{body_src}" draggable="false" />'
@@ -807,8 +808,8 @@ html, body {{
 }}
 .buddy {{
   position: absolute;
-  width: 13.2%;
-  min-width: 72px;
+  width: 7.2%;
+  min-width: 44px;
   transform: translateX(-50%);
   background: none;
   border: 0;
@@ -817,21 +818,21 @@ html, body {{
   pointer-events: auto;
 }}
 .buddy[data-amp-body="q"] {{
-  width: 15.2%;
+  width: 7.8%;
 }}
 .buddy.grabbing {{
   cursor: grabbing;
   z-index: 9 !important;
 }}
 .buddy .sprite {{
-  height: 228px;
+  height: 140px;
   overflow: visible;
 }}
 .buddy img.body {{
   display: block;
   width: 100%;
   height: 100%;
-  max-height: 228px;
+  max-height: 140px;
   object-fit: contain;
   object-position: bottom center;
   user-select: none;
@@ -841,15 +842,16 @@ html, body {{
 .buddy img.face {{
   display: none;
   position: absolute;
-  width: 46%;
-  right: -8%;
-  top: 0;
+  width: 36%;
+  right: -6%;
+  top: 2%;
   height: auto;
+  object-fit: contain;
   z-index: 3;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
-  filter: drop-shadow(0 4px 8px rgba(20,12,6,.55));
+  filter: drop-shadow(0 3px 6px rgba(20,12,6,.55));
 }}
 .buddy.show-face img.face {{
   display: block;
