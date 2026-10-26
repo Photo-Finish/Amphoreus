@@ -1,0 +1,5 @@
+# Phone shell — build output, keys and the downloaded SDK
+dist/
+build/
+.sdk/
+.keys/

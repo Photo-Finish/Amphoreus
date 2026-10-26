@@ -49,6 +49,8 @@ def main(argv: list[str]) -> int:
         url = argv[argv.index("--url") + 1]
     shot = Path(argv[argv.index("--shot") + 1]) if "--shot" in argv else (
         ROOT / "world_runtime" / "art_review" / "live_page.png")
+    if not shot.is_absolute():
+        shot = ROOT / shot
 
     from playwright.sync_api import sync_playwright
 
@@ -102,8 +104,25 @@ def main(argv: list[str]) -> int:
             webp = sum(1 for b in bodies if b.startswith("data:image/webp"))
             check("bodies ship as WebP", webp >= 11, f"{webp}/13")
 
+        # The phone app is a window onto the whole UI, so the administrator
+        # surfaces have to be reachable through the same session.
+        try:
+            page.get_by_role("tab", name="Admin Console").click(timeout=15000)
+            page.wait_for_timeout(2500)
+            check("administrator console opens",
+                  page.get_by_text("Admin Console — the machine under the world").count() > 0)
+        except Exception as exc:
+            check("administrator console opens", False, exc.__class__.__name__)
+        try:
+            page.get_by_role("tab", name="Control Panel").click(timeout=15000)
+            page.wait_for_timeout(2500)
+            check("administrator control panel opens",
+                  page.get_by_text("Control Panel", exact=True).count() > 0)
+        except Exception as exc:
+            check("administrator control panel opens", False, exc.__class__.__name__)
+
         page.get_by_role("tab", name="An Eternal Page").click()
-        page.wait_for_timeout(1200)
+        page.wait_for_timeout(2000)
         shot.parent.mkdir(parents=True, exist_ok=True)
         page.screenshot(path=str(shot), full_page=False)
         print(f"  shot {shot.relative_to(ROOT)}")
