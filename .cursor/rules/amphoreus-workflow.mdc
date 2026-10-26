@@ -12,7 +12,21 @@ Match the Stage-1 workflow with GitHub Copilot:
 3. **Charter before code** — philosophical forks are discussed and confirmed before file changes; honor “evaluate first / no changes this round.”
 4. **Tight correction loops** — specific pushback means course-correct, do not quietly reinterpret intent.
 5. **Long stretches + reports** — keep progress visible; give clear progress reports when asked.
-6. **Feature → verify → document → GitHub** — test live/suites; update docs when asked; commit/push only when explicitly requested.
+6. **Feature → verify → document → GitHub** — test live/suites; update docs. **Superseded 2026-10-27:** commit and push after *every* change (see below), not only when asked.
 7. **User remains project lead** — proposals need green lights; stage openings/closings are declared as the user directs.
+
+## Standing instruction — commit and push after every change (2026-10-27)
+
+The operator replaced rule 6's old "commit/push only when explicitly requested"
+with a standing order:
+
+- **Each coherent change gets its own commit, and a push, immediately** — do not
+  accumulate work waiting for permission.
+- One change per commit; the subject says what changed and why, in the user's
+  voice (`photo-finish`), never with a Cursor co-author trailer.
+- **If the push fails** (`github.com:443` is intermittently unreachable from this
+  machine while `api.github.com` and `gh-proxy.com` still answer), keep the
+  commit and retry until it lands — a retry loop is fine, a silent backlog is not.
+  Report the pending state plainly rather than pretending it shipped.
 
 Working language: **English** (unless the user says otherwise). No French replies.
