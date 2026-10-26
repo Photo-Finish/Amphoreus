@@ -145,9 +145,13 @@ Notes:
 - The **Vortex of Genesis** is reached one-way by sea (Okhema's Connections list
   says "(one-way)"); the undirected edge is kept for Dijkstra travel and the map
   notes the sea route.
-- **Aidonia** lies in the **northern snow wasteland**; the map now places it in
-  the north, with the **River of Souls** drawn running from Styxia up into the
-  northern snows.
+- **Aidonia** lies in the **northern snow wasteland**; the official **"Ancient Hymn"
+  trailer map** (太古颂歌PV「论泰坦与地上万邦」) sets her in the **north-east snow
+  mountains**, with the **River of Souls** drawn running from Styxia up into them.
+  That map is now the authority for the *relative positions of the six poleis* in
+  `src/world/map_data.py` (read north-up): **Okhema** north-centre, **Janusopolis**
+  west of her, **Castrum Kremnos** south-west, the **Grove** south-centre, **Styxia**
+  east on the bay, **Aidonia** far north-east.
 
 ---
 

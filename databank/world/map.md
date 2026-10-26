@@ -35,13 +35,18 @@ Each number is the travel time in **periods** between two directly connected
 places (undirected). 0 means *same city*; 5 periods = a full day.
 
 > **The lay of the land** (see the 🗺️ Map tab and `world/geography.md` §3.1 for the
-> concrete adjacency matrix): **Okhema** is the hub, its twin **Janusopolis** a short
-> road east and the **Grove** a half-day west. **Aidonia** lies in the **northern
-> snow wasteland**; the **River of Souls** runs from **Styxia** up into the northern
-> snows. The **Eye of Twilight** is a **fallen sky castrum above Okhema** — its sky
-> bridge to **Dawncloud** (the council seat in the clouds) is lost, so it has no
-> road. The **Vortex of Genesis** is reached one-way by sea; **Aedes Elysiae** lies
-> beyond the Veil of Evernight, served by Voyager's Wharf.
+> concrete adjacency matrix). Relative positions follow the **official map of the
+> "Ancient Hymn" trailer** (太古颂歌PV「论泰坦与地上万邦」), where the six poleis
+> stand labelled on the parchment — read north-up: **Okhema** north-centre on its
+> lake plateau; **Janusopolis** west of it (the wiki calls her Amphoreus's
+> geographic centre); **Castrum Kremnos** south-west, below Janusopolis; the
+> **Grove of Epiphany** south-centre, below Okhema; **Styxia** east on the turquoise
+> bay; **Aidonia** far north-east in the snow mountains — and the **River of Souls**
+> runs from Styxia up into those snows. The **Eye of Twilight** is a **fallen sky
+> castrum above Okhema** — its sky bridge to **Dawncloud** (the council seat in the
+> clouds) is lost, so it has no road. The **Vortex of Genesis** lies hidden in the
+> waves of the eastern bay, reached one-way by sea; **Aedes Elysiae** lies beyond
+> the Veil of Evernight, on the far south-east coast, served by Voyager's Wharf.
 
 ### Direct roads (periods)
 

@@ -132,7 +132,7 @@ above.*
    │                        │                                                 │
    │  Okhema ── Dawncloud (0) · Janusopolis (1) · Grove (2) · Great Tomb (10) │
    │      │        Aedes Elysiae (12) · Eye of Twilight (sky, lost)           │
-   │      │        Aidonia (north) · Vortex of Genesis (sea)                  │
+   │      │        Aidonia (north-east) · Vortex of Genesis (sea)             │
    │      └──── The Nether († 2 p, Thanatos-blessed: Castorice / the         │
    │               Trailblazer)                                               │
    └──────────────────── THE EVENINGT ERA (the present) ──────────────────────┘

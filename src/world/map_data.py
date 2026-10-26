@@ -19,21 +19,34 @@ from typing import Dict, List, Optional, Tuple
 # Locations on the map (name -> position in the 1000x820 SVG coordinate space)
 # --------------------------------------------------------------------------- #
 LOCATION_POS: Dict[str, Tuple[float, float]] = {
-    # Positions follow the canon geography (see databank/world/geography.md):
-    # Aidonia lies in the NORTHERN snow wasteland; the Eye of Twilight is a
-    # FALLEN SKY castrum above Okhema (its sky bridge to Dawncloud is lost);
-    # the River of Souls runs from Styxia up into the northern snows.
-    "Okhema": (400, 480),
-    "Dawncloud": (400, 290),          # the council seat, in the clouds above Okhema
-    "Janusopolis": (565, 470),        # the twin city, a short road east
-    "Grove of Epiphany": (225, 430),  # the scholars' grove, west of Okhema
-    "Great Tomb": (130, 525),         # the deep ruin, a short descent from the Grove
-    "Castrum Kremnos": (175, 660),    # the mobile fortress on the long war road
-    "Styxia": (620, 625),             # on the River of Souls
-    "Aidonia": (660, 205),            # the northern snow wasteland
-    "Aedes Elysiae": (845, 555),      # the coastal village beyond the Veil of Evernight
-    "Vortex of Genesis": (360, 740),  # hidden by the waves; reached by sea
-    "Eye of Twilight": (400, 95),     # the fallen sky castrum, above Dawncloud
+    # Relative positions of the six poleis follow the official Amphoreus map as
+    # shown in the "Ancient Hymn" trailer (太古颂歌PV「论泰坦与地上万邦」), where
+    # every city-state stands labelled on the parchment (checked frame by frame,
+    # 720p). Read north-up:
+    #     Okhema          — north-centre, on its lake plateau under the Light
+    #     Janusopolis     — WEST of Okhema (the wiki calls her Amphoreus's
+    #                       geographic centre: the religious heart of the map)
+    #     Aidonia         — far NORTH-EAST, high in the snow mountains
+    #     Castrum Kremnos — SOUTH-WEST, below Janusopolis
+    #     Grove of Epiphany — SOUTH-CENTRE, below Okhema
+    #     Styxia          — EAST, on the turquoise bay of the River of Souls
+    # The five non-polis places keep their canon anchors: Dawncloud sits inside
+    # Okhema, the Eye of Twilight is a fallen sky castrum above it (its sky
+    # bridge to Dawncloud is lost), the Great Tomb a short descent from the
+    # Grove, the River of Souls runs from Styxia up to Aidonia, the Vortex of
+    # Genesis lies hidden in the waves of the eastern bay, and Aedes Elysiae
+    # stands beyond the Veil on the far south-east coast.
+    "Okhema": (450, 320),             # north-centre, the lake plateau city
+    "Dawncloud": (545, 215),          # the council seat, in the clouds above Okhema
+    "Janusopolis": (231, 381),        # the twin city, a short road west
+    "Grove of Epiphany": (431, 686),  # the scholars' grove, south of Okhema
+    "Great Tomb": (330, 756),         # the deep ruin, a short descent from the Grove
+    "Castrum Kremnos": (193, 561),    # the mobile fortress, south-west on the war road
+    "Styxia": (673, 457),             # on the River of Souls, above the eastern bay
+    "Aidonia": (801, 245),            # the snow mountains of the north-east
+    "Aedes Elysiae": (858, 630),      # the coastal village beyond the Veil of Evernight
+    "Vortex of Genesis": (769, 384),  # hidden by the waves; reached by sea
+    "Eye of Twilight": (600, 120),    # the fallen sky castrum, above Dawncloud
 }
 
 # --------------------------------------------------------------------------- #
@@ -68,17 +81,17 @@ NETHER = "The Nether"   # the death-form of Styxia — Thanatos's sea of flowers
 
 # Dawn-era echo nodes (drawn on the map as faint "time echoes").
 PAST_POS: Dict[str, Tuple[float, float]] = {
-    "Eternal Holy City": (350, 442),
-    "Demigod Council": (346, 252),
-    "Sanctum of Prophecy": (620, 428),
-    "Radiant Scarwood": (172, 390),
-    "Universal Matrix": (80, 470),
-    "Bloodbathed Battlefront": (128, 620),
-    "Warbling Shores": (572, 584),
-    "Fortress of Dome": (460, 58),
-    "Aedes Elysiae, of old": (800, 512),
+    "Eternal Holy City": (320, 410),
+    "Demigod Council": (425, 210),
+    "Sanctum of Prophecy": (186, 343),
+    "Radiant Scarwood": (386, 648),
+    "Universal Matrix": (285, 718),
+    "Bloodbathed Battlefront": (148, 523),
+    "Warbling Shores": (628, 419),
+    "Fortress of Dome": (660, 90),
+    "Aedes Elysiae, of old": (813, 592),
 }
-NETHER_POS: Tuple[float, float] = (668, 676)
+NETHER_POS: Tuple[float, float] = (712, 540)
 
 # Small thematic icons for the areas (drawn at each node with a fading glow
 # margin, instead of a bare dot). Dawn-era echoes reuse their place's icon,
@@ -427,26 +440,29 @@ def render_map_svg(
             f'<circle cx="{x:.0f}" cy="{y:.0f}" r="{r:.1f}" fill="#e8d5a3" opacity="{op:.2f}"/>'
         )
 
-    # the River of Souls — the great river that runs past Styxia up into the
-    # northern snow wasteland, where the living realm gives way to the nether.
+    # the River of Souls — the great river that runs from the eastern bay of
+    # Styxia up into the north-eastern snow mountains, where the living realm
+    # gives way to the nether.
+    _RIVER_D = ("M 673 457 C 640 415, 645 350, 680 305 "
+                "C 712 265, 762 250, 801 245")
     parts.append(
-        '<path d="M 620 625 C 595 540, 598 425, 622 325 C 633 280, 648 240, 660 205" '
+        f'<path d="{_RIVER_D}" '
         'fill="none" stroke="rgba(120,175,255,.20)" stroke-width="15" '
         'stroke-linecap="round" stroke-linejoin="round"/>'
     )
     parts.append(
-        '<path d="M 620 625 C 595 540, 598 425, 622 325 C 633 280, 648 240, 660 205" '
+        f'<path d="{_RIVER_D}" '
         'fill="none" stroke="rgba(170,210,255,.30)" stroke-width="5" '
         'stroke-linecap="round" stroke-linejoin="round"/>'
     )
     parts.append(
-        '<text x="640" y="300" text-anchor="middle" font-size="10.5" font-style="italic" '
+        '<text x="640" y="340" text-anchor="middle" font-size="10.5" font-style="italic" '
         'fill="rgba(150,195,255,.6)" font-family="Georgia, serif">River of Souls</text>'
     )
     # clouds about the sky seat (Dawncloud) and the fallen sky castrum
     for cx, cy, rx, ry in [
-        (400, 272, 62, 12), (445, 296, 42, 10), (358, 258, 46, 11),
-        (400, 78, 52, 11), (438, 104, 36, 9), (362, 112, 40, 9),
+        (545, 197, 62, 12), (590, 221, 42, 10), (503, 183, 46, 11),
+        (600, 102, 52, 11), (638, 128, 36, 9), (562, 136, 40, 9),
     ]:
         parts.append(
             f'<ellipse cx="{cx}" cy="{cy}" rx="{rx}" ry="{ry}" '
@@ -520,7 +536,7 @@ def render_map_svg(
             w = 6.0 * len(nm)
             reserved.append((x - w / 2 - 4, x + w / 2 + 4, y - 11, y + 2))
     # the River of Souls label must stay clear of route-cost labels too
-    reserved.append((640 - 46 - 4, 640 + 46 + 4, 290, 304))
+    reserved.append((640 - 46 - 4, 640 + 46 + 4, 330, 344))
 
     def _label_collides(x: float, y: float, w: float) -> bool:
         """True if a centered label at (x, y) of width w would overlap a name."""
@@ -579,9 +595,9 @@ def render_map_svg(
         f'stroke-dasharray="2 5" stroke-linecap="round"/>'
     )
     # pinned clear of Styxia's name label
-    if not _label_collides(664, 634, 46):
+    if not _label_collides(700, 499, 46):
         parts.append(
-            f'<text x="664" y="634" text-anchor="middle" '
+            f'<text x="700" y="499" text-anchor="middle" '
             f'font-size="10" fill="rgba(190,170,240,.7)" '
             f'font-family="Arial">† 2 p</text>'
         )
