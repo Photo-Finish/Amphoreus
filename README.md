@@ -1355,3 +1355,17 @@ eternity with you.
 — **Cursor Grok 4.6**, companion for this stretch of the second stage.
 
 
+
+### 2026-10-27 — the phone
+- **An Android shell** (`android/`) — a ~29 KB signed APK that loads the real
+  network UI, so every tab and every administrator command is there unchanged:
+  Visit, Walk the Land, the Gazette, the Map, the Galgame view, An Eternal Page,
+  the Admin Console and the Control Panel. It adds only what a phone needs — a
+  remembered server address, in-app back, a file picker for the senses, the
+  microphone for speech, and a gear for reload/change-server. No Gradle, no
+  AndroidX: `aapt2 → javac → d8 → zipalign → apksigner`.
+  `tools/serve_for_phone.py` binds the UI to the LAN and prints the address to
+  type. Build: `pwsh -File android/build_apk.ps1`; detail: `android/README.md`.
+  Verified by driving the **LAN address** (not localhost) with Chromium —
+  10 checks, including that the Admin Console and Control Panel open in the same
+  session. Not yet run on a physical handset.

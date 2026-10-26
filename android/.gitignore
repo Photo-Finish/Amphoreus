@@ -3,3 +3,8 @@ dist/
 build/
 .sdk/
 .keys/
+
+# The built app is small and reproducible; keeping it lets a phone fetch it
+# straight from the repository instead of needing a cable.
+!dist/
+!dist/Amphoreus.apk
