@@ -1253,6 +1253,57 @@ tide / letter / weather / co-location / aftermath features):
 - **Face-graph matte (trial only)** — `tools/matte_q_faces.py` writes `assets/eternal_page/q_program/_matte_v2/` (Ica and other close ornaments kept). Live `cutouts/` are unchanged; Eternal Page is not wired to the trial. Suite: `tools/test_matte_q_faces.py`.
 - **Still open in Stage 2 / later Eternal work** — cache/WebP/dedupe, Cyrene year cycle (spec only), wiring or refining the matte over live sits, glued sofas on some trial mattes, voice-fidelity pillar, vivid land and society already on the north star.
 
+### 2026-10-26
+- **The map recut to the trailer's six poleis** (`c3d6f3e`) — `LOCATION_POS` and
+  everything that hangs off it (the nine Dawn-era echoes, the Nether beneath
+  Styxia, the River of Souls path, the cloud banks, the veil labels) now follow
+  the Ancient Hymn trailer's labelled layout read off the frame at 720p: Okhema
+  north-centre on her lake plateau, Janusopolis west of her, Castrum Kremnos
+  south-west, the Grove of Epiphany south-centre, Styxia east on the turquoise
+  bay, Aidonia far north-east in the snow. `databank/world/map.md`,
+  `geography.md` and `time-forms.md` carry the corrected bearings. Travel
+  periods and the route graph are untouched — positions are display geometry,
+  not costs. Suites: `tools/smoke_test_world.py`,
+  `tools/test_walk_map_handoff.py`.
+- **The Eternal Page's pixels travel lighter** — the stage inlined 4.4 MB of PNG
+  as 6.2 MB of markup on *every* rerun, so a click or a whisper re-encoded the
+  whole circle. `src/world/art_cache.py` encodes each sprite once to WebP, capped
+  at twice its CSS box (280 px body, 160 px face), keeps it in memory, and reuses
+  it from the gitignored `world_runtime/_art_cache/` after a restart. Stage HTML
+  **6 213 → 735 KB**; warm art build 0.037 → 0.009 s. PNG masters are untouched;
+  `AMP_ART_CACHE=off` restores plain PNG and `AMP_ART_QUALITY=lossless` is
+  bit-exact. Suites: `tools/test_art_cache.py` (51 checks),
+  `tools/test_eternal_page.py` (391); measure any time with
+  `tools/audit_eternal_payload.py`.
+- **Art duplicate audit** — `tools/audit_asset_duplicates.py` hashes the 714
+  images under `assets/`: **54 duplicate groups, 18.4 MB (10.6%) reclaimable** —
+  mostly special-program announcement stills stored twice and the dromas walk
+  films. Read-only by design; nothing was deleted, because that tree is the
+  master copy.
+- **Still open** — the Cyrene year cycle (its whisper half needs a register hint
+  carried through `manager.chat`, its picture half has no full-body childhood
+  art), the face-graph matte over the live sits, Eternal Page catalog hygiene,
+  and the voice-fidelity pillar.
+- **The sill is matted** — the thirteen Q sitters no longer stand inside
+  rectangular slabs of their source photographs. A second pass
+  (`tools/matte_sill.py`, CPU u2net) writes cleaned bodies to
+  `assets/eternal_page/q_program/cutouts_matte/`: six separate cleanly by
+  saliency, seven keep the first pass's silhouette with a feathered, darkened
+  edge, and **every** body has see-through borders so no straight crop edge can
+  reach the page. `src/world/eternal_sill.py` prefers them; the first-pass
+  `cutouts/` are untouched and still the fallback, with their hashes recorded in
+  `cutouts_matte/sources.json`. The page also gains a contact shadow (the bodies
+  no longer bring their bench), and the sixteen-line control legend — which sat
+  over the artwork — collapses into a `Controls` toggle. Honest limit: the seven
+  feather-edged bodies keep a soft aura, because Anaxa, Phainon and Hysilens only
+  exist as 360p stage grabs. Suites: `tools/test_eternal_sill.py` (18),
+  `tools/test_eternal_page.py` (391). Detail: `docs/ETERNAL-SILL.md`.
+- **The art pipeline is recorded, not rewritten** — `docs/ART-PROVENANCE.md`
+  lists every script and catalog this project inherited, with hashes, plus the
+  commands that prove nothing in `assets/` moved. The short version after
+  2026-10-26's work: `git status -- assets` reports only the one new
+  `cutouts_matte/` folder, and no existing art file is modified or deleted.
+
 ## The close of Phase 2a (not the close of Stage 2)
 
 **Signed on 2026-09-29.**

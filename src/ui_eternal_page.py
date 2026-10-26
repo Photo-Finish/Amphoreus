@@ -10,10 +10,11 @@ no ecosystem. Gesture reactions are VFX + pose + mood, never authored speech.
 """
 from __future__ import annotations
 
-import base64
 import html
 from pathlib import Path
 from typing import Iterable, Optional
+
+from src.world import art_cache
 
 STAGE_H = 560
 _CLICK_Q = "ep_click"
@@ -466,14 +467,14 @@ _WATCHER = """
 """
 
 
-def _data_uri(path: Path) -> str:
-    raw = path.read_bytes()
-    mime = "image/jpeg" if path.suffix.lower() in {".jpg", ".jpeg"} else "image/png"
-    return f"data:{mime};base64,{base64.b64encode(raw).decode('ascii')}"
+def _data_uri(path: Path, max_px: int = art_cache.FACE_MAX_PX) -> str:
+    """Encoded data URI for an image file (JPEG passes through untouched)."""
+    return art_cache.data_uri_path(path, max_px=max_px)
 
 
-def _bytes_uri(raw: bytes, mime: str = "image/png") -> str:
-    return f"data:{mime};base64,{base64.b64encode(raw).decode('ascii')}"
+def _bytes_uri(raw: bytes, max_px: int = art_cache.BODY_MAX_PX) -> str:
+    """Encoded data URI for PNG bytes already in memory."""
+    return art_cache.data_uri(raw, max_px=max_px)
 
 
 def _art_parts(entry) -> tuple[str, str, str]:
@@ -645,18 +646,57 @@ _STAGE_VFX_CSS = """
   100% { transform: translateY(6px); opacity: .2; }
 }
 @keyframes amp-spin { to { transform: rotate(360deg); } }
-.legend {
+.legend-box {
   position: absolute;
-  left: 10px;
+  right: 10px;
   bottom: 8px;
   z-index: 6;
-  max-width: 54%;
+  max-width: 46%;
   color: #f7edd2;
   font-size: 10px;
   line-height: 1.35;
   text-shadow: 0 1px 3px #1a140c;
+}
+.legend-box > summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 10px;
+  background: rgba(10,16,30,.58);
+  border: 1px solid rgba(240,215,140,.32);
+  font-size: 11px;
+  color: #f7edd2;
+}
+.legend-box > summary::-webkit-details-marker { display: none; }
+.legend-box[open] {
+  padding: 7px 10px 8px;
+  border-radius: 10px;
+  background: rgba(10,16,30,.74);
+  border: 1px solid rgba(240,215,140,.22);
+}
+.legend {
+  position: static;
+  max-width: none;
+  margin-top: 4px;
+  opacity: .92;
   pointer-events: none;
-  opacity: .88;
+}
+/* A quiet contact shadow: the cleaned bodies have no seat under them, so the
+   page supplies one rather than gluing the source photo's bench back on. */
+.buddy[data-amp-body="q"] .sprite::after {
+  content: "";
+  position: absolute;
+  left: 17%;
+  right: 17%;
+  bottom: -5px;
+  height: 12px;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center,
+    rgba(3,7,16,.60), rgba(3,7,16,.26) 58%, transparent 74%);
+  filter: blur(2px);
 }
 """
 
@@ -913,7 +953,7 @@ html, body {{
 <div class="stage" data-amp-eternal-stage="1">
   <div class="hint">Click to stand near · double-click for one · drag to move · right-click for more · Shift+click to pat</div>
   {''.join(buddies)}
-  {legend_html()}
+  <details class="legend-box"><summary>Controls</summary>{legend_html()}</details>
 </div>
 <script>
 {_mark_iframe_js()}
@@ -1108,6 +1148,40 @@ def _names(manager) -> dict:
     return out
 
 
+def stage_art_uris(emotions: Optional[dict] = None) -> dict:
+    """Body + face data URIs for everyone on the sill.
+
+    The body is the second-pass matte when one exists (`src/world/eternal_sill.py`),
+    otherwise the first-pass cut — `cutouts/` stays both the record and the
+    fallback. Kept as one function so the page and the payload audit cannot drift.
+    """
+    from src.world import eternal_page as ep
+    from src.world import eternal_sill
+
+    emotions = emotions or {}
+    art_uris = {}
+    for cid in ep.all_ids():
+        spr = ep.stage_sprite(cid, emotions.get(cid))
+        if not spr:
+            continue
+        if spr.get("kind") == "q" and spr.get("body_png"):
+            face_path = spr.get("face_path")
+            cleaner = eternal_sill.body_png(cid)
+            body_png = cleaner if cleaner is not None else spr["body_png"]
+            art_uris[cid] = {
+                "body": _bytes_uri(body_png),
+                "face": _data_uri(face_path) if face_path else "",
+                "kind": "q",
+            }
+        elif spr.get("body_path"):
+            art_uris[cid] = {
+                "body": _data_uri(spr["body_path"], max_px=art_cache.BODY_MAX_PX),
+                "face": "",
+                "kind": "ppg",
+            }
+    return art_uris
+
+
 def render_eternal_page(manager, *, key_prefix: str = "eternal") -> None:
     import streamlit as st
     import streamlit.components.v1 as components
@@ -1219,26 +1293,11 @@ def render_eternal_page(manager, *, key_prefix: str = "eternal") -> None:
                         st.session_state[ep.STATE_SELECTED] = ep.toggle_member(selected, cid)
                         st.rerun()
 
-    art_uris = {}
-    for cid in ep.all_ids():
-        spr = ep.stage_sprite(cid, emotions.get(cid))
-        if not spr:
-            continue
-        if spr.get("kind") == "q" and spr.get("body_png"):
-            face_path = spr.get("face_path")
-            art_uris[cid] = {
-                "body": _bytes_uri(spr["body_png"]),
-                "face": _data_uri(face_path) if face_path else "",
-                "kind": "q",
-            }
-        elif spr.get("body_path"):
-            art_uris[cid] = {
-                "body": _data_uri(spr["body_path"]),
-                "face": "",
-                "kind": "ppg",
-            }
+    art_uris = stage_art_uris(emotions)
     parchment = ep.parchment_path()
-    parchment_uri = _data_uri(parchment) if parchment else ""
+    parchment_uri = (
+        _data_uri(parchment, max_px=art_cache.PARCHMENT_MAX_PX) if parchment else ""
+    )
 
     html_doc = build_stage_html(
         selected=selected,

@@ -1306,6 +1306,71 @@ back to RAG restores the process-local Ollama endpoint. Official OpenAI
 hosts do not receive Ollama `think` extra_body. Suite:
 `tools/test_online_llm.py`.
 
+### 3.23 Stage 2 — the Eternal Page art payload (2026-10-26)
+(`src/world/art_cache.py`, `src/ui_eternal_page.py`, `tools/audit_eternal_payload.py`)
+
+Every rerun of the page rebuilt its whole art dict: 4.4 MB of PNG read, base64
+encoded, and inlined into one iframe document (6 213 KB of HTML the browser
+re-parsed on each click, drag, pet, or whisper). `art_cache` derives one WebP per
+sprite, keyed by content hash plus cap and quality, holds the URI in memory, and
+mirrors it to the gitignored `world_runtime/_art_cache/` so a restart is warm
+too. Nothing else about the page changed: `render_eternal_page` still builds the
+same `{body, face, kind}` dict, the same `<img>` elements, and the same layout;
+only the encoder behind `_bytes_uri` / `_data_uri` is different.
+
+**Caps follow the CSS, not taste.** `.buddy .sprite` is a fixed 140 px box; the
+face sticker is 36% of a 7.8% buddy. No rule scales a body up, so bodies are
+capped at 2× the box (280 px) and faces at 160 px — sharp on HiDPI, and no bytes
+spent on pixels the page never shows. Pillow's WebP `method` is effort, not
+quality: 5 rather than 6 for 40× the speed at under 1% more bytes, which keeps a
+cold first build at 0.6 s instead of 9 s.
+
+**Fidelity is measured, not assumed.** At the size the visitor sees, the worst
+visible-channel drift against the master is mean 4.0/255 (body) and 4.3/255
+(face); a 4× / 6× zoom comparison shows no discernible difference. Lossless mode
+(`AMP_ART_QUALITY=lossless`) is bit-identical at the capped size — it needs
+`exact=True`, or Pillow rewrites the RGB of fully transparent pixels and the
+round-trip is no longer exact.
+
+**The masters are untouched.** The cache is derived and deletable; `AMP_ART_CACHE=off`
+serves the plain PNG data URIs. Already-compressed pixels (the parchment JPEG)
+pass through rather than taking a second lossy generation. The galgame, weather,
+and scene-life sites still inline their own PNGs — they can adopt the helper
+later. Suites: `tools/test_art_cache.py` (51 checks), `tools/test_eternal_page.py`
+(391). Measured by `tools/audit_eternal_payload.py`.
+
+### 3.24 Stage 2 — the sill's second matte (2026-10-26)
+(`tools/matte_sill.py`, `src/world/eternal_sill.py`, `assets/…/cutouts_matte/`)
+
+`cut_q_program.py`'s matte kept each sit's furniture so feet would read as
+planted. At the sill's fixed 140 px that furniture is a rectangular slab of the
+source photograph, and every crop ended in a straight edge — the page's
+pasted-on look. The second pass keeps the character and dissolves the set.
+
+**Two policies, chosen by looking.** The official u2net salient-object model
+(ONNX, CPU) separates the six crisp 2D announcement stills cleanly; on the two
+360p 3D stage grabs, the 3.5 2D overlay, and the four who sit deep in a painted
+set it reads the photograph, not the figure. Those seven keep the first pass's
+silhouette and take an elliptical falloff instead. Rejected along the way, and
+recorded in `docs/ETERNAL-SILL.md`: a seed-colour flood (leaked through flat
+costume areas and punched holes), border-colour stripping (ate into hair), and a
+plain radial hush (left a glowing blob).
+
+**Invariants.** Every body is trimmed, padded by 6 %, and faded, so no border
+pixel is opaque — a straight crop edge cannot reach the page, and
+`tools/test_eternal_sill.py` fails if one does. `cut` bodies darken the falling
+band by distance: a photograph at 40 % alpha still carries its own bright
+background, which glows on a night stage. The first-pass `cutouts/` are never
+written; `cutouts_matte/sources.json` records their hashes and the suite
+re-checks them, so "the first pass is untouched" is a fact rather than a promise.
+
+**Nothing new in the payload.** 4.30 MB of source art still ships as 724 KB of
+markup. The page also gains a contact shadow (the bodies no longer bring their
+bench) and the sixteen-line legend moves into a `Controls` toggle instead of
+sitting across the artwork. Suites: `tools/test_eternal_sill.py` (18),
+`tools/test_eternal_page.py` (391). Provenance inventory:
+`docs/ART-PROVENANCE.md`.
+
 ---
 
 *"Only through a worthy sacrifice can we gain a befitting victory."* — Cerydra.

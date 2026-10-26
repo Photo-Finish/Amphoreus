@@ -240,3 +240,77 @@ year-cycle remains unwired. Face-graph matte lives only under
 | `assets/eternal_page/q_program/` | Official version special-program stills and crops (Mem kept whole). Guest 360p Bilibili frames are research-only. |
 | `assets/eternal_page/cyrene_forms/` | Official Demiurge / childhood / Mem stills for a later Cyrene-slot hook. |
 
+## Sixteenth delivery — the page's pixels travel lighter (2026-10-26)
+
+The stage inlines all thirteen companions and the parchment as data URIs inside
+one iframe document. Nothing cached them, so **every** rerun — a click, a drag, a
+pet, a whisper — re-read 4.4 MB of PNG, base64-encoded it, and handed the browser
+6.2 MB of markup to re-parse.
+
+`src/world/art_cache.py` encodes each sprite once to WebP, keeps the bytes in
+memory, and reuses them from the gitignored `world_runtime/_art_cache/` after a
+restart. The PNG masters under `assets/` are never modified; the derived cache
+can be deleted at any time and is rebuilt on demand.
+
+| What | Before | After |
+|---|---|---|
+| Stage HTML for one rerun | 6 213 KB | 735 KB (88% lighter) |
+| Warm rebuild of the art dict | 0.037 s | 0.009 s |
+| Cold first build (encode + disk write) | — | 0.6 s, once |
+
+Encoding aims at what the visitor can see. `.buddy .sprite` is a fixed 140 px
+box and the PPG face sticker is ~34 px, and no CSS rule scales a body up, so a
+body is capped at twice its box (280 px) and a face at 160 px — a HiDPI screen
+stays sharp and no bytes go to pixels that never reach the page. Measured at
+display size against the master, the worst visible drift is **mean 4.0/255** for
+a body and **4.3/255** for a face, and a 4× / 6× zoom comparison of PNG against
+WebP shows no discernible difference. Two escape hatches: `AMP_ART_CACHE=off`
+serves the plain PNG data URIs, and `AMP_ART_QUALITY=lossless` gives a
+bit-identical pass at the capped size (verify with the suite).
+
+The parchment is already-compressed JPEG and passes through untouched —
+re-encoding it would only add a second generation of loss. The other data-URI
+sites (galgame, weather, scene life) still inline their own PNGs; they can adopt
+the same helper, and are deliberately untouched here.
+
+Suite: `tools/test_art_cache.py` (51 checks — masters unchanged, payload ratio,
+display fidelity, cache hits, both escape hatches). Audit:
+`tools/audit_eternal_payload.py` prints the current numbers on demand.
+
+## Seventeenth delivery — the sill is matted (2026-10-26)
+
+The thirteen Q sitters stood inside rectangular slabs of their source
+photographs: the first matte pass deliberately kept each sit's bench, sofa or ice
+ledge so feet would read as planted, and at the sill's fixed 140 px that read as
+bad Photoshop. The sixteen-line control legend also sat across the artwork.
+
+A second pass (`tools/matte_sill.py`, official u2net salient-object model on CPU)
+writes cleaned bodies to `cutouts_matte/` — a **new** folder, so the first-pass
+`cutouts/` stay the record and the fallback, and one folder's removal restores
+the old page exactly. Six Heirs separate cleanly by saliency; seven keep the
+first pass's silhouette with an elliptical falloff that dissolves the crop edge,
+and darken that band toward the page so a half-faded photograph stops glowing on
+a night stage. Every body is trimmed, padded 6 %, and faded so **no border pixel
+is opaque** — the invariant the suite enforces.
+
+| What | Before | After |
+|---|---|---|
+| Straight crop edges on the sill | 13 of 13 | 0 |
+| Clean silhouettes | 0 | 6 |
+| Bodies with a soft aura left | — | 7 |
+| Contact shadow | none | one per body |
+| Legend over the art | 16 lines | `Controls` toggle |
+
+Honest limit: the seven feather-edged bodies keep a soft aura. Anaxa, Phainon and
+Hysilens exist only as 360p stage grabs (the 3.4 and 3.5 announcements published
+busts, not sit bodies), and Tribbie, Evernight, Cyrene and Dan Heng sit in painted
+sets that share their cel shading — the same wall the first pass documented.
+Fixing those needs new art, not another filter.
+
+In stage payload terms nothing regressed: 4.30 MB of source art still ships as
+724 KB of markup. Suites: `tools/test_eternal_sill.py` (18 — provenance, no
+opaque border, page really draws the matte, clean fallback),
+`tools/test_eternal_page.py` (391). Detail and the rejected attempts:
+`docs/ETERNAL-SILL.md`; what was inherited and how to verify it is untouched:
+`docs/ART-PROVENANCE.md`.
+

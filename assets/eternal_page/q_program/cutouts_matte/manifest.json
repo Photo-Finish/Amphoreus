@@ -1,0 +1,149 @@
+{
+  "aglaea": {
+    "covered": 0.561,
+    "edge_alpha_max": 0,
+    "out": "aglaea_v31_sit.png",
+    "policy": "saliency",
+    "size": [
+      263,
+      465
+    ],
+    "source": "assets/eternal_page/q_program/cutouts/aglaea_v31_sit.png"
+  },
+  "anaxa": {
+    "covered": 0.407,
+    "edge_alpha_max": 0,
+    "note": "3.4 announcement top-right bust; replaces a misidentified Trailblazer crop",
+    "out": "anaxa_v34_announcement_bust.png",
+    "policy": "saliency",
+    "size": [
+      266,
+      261
+    ],
+    "source": "assets/eternal_page/q_program/announcement/Version_3.4_Special_Program_Announcement.png"
+  },
+  "castorice": {
+    "covered": 0.701,
+    "edge_alpha_max": 0,
+    "out": "castorice_v33_sit.png",
+    "policy": "saliency",
+    "size": [
+      284,
+      434
+    ],
+    "source": "assets/eternal_page/q_program/cutouts/castorice_v33_sit.png"
+  },
+  "cerydra": {
+    "covered": 0.57,
+    "edge_alpha_max": 0,
+    "out": "cerydra_v35_sit.png",
+    "policy": "saliency",
+    "size": [
+      138,
+      238
+    ],
+    "source": "assets/eternal_page/q_program/cutouts/cerydra_v35_sit.png"
+  },
+  "cipher": {
+    "covered": 0.277,
+    "edge_alpha_max": 0,
+    "out": "cipher_v33_sit.png",
+    "policy": "saliency",
+    "size": [
+      175,
+      368
+    ],
+    "source": "assets/eternal_page/q_program/cutouts/cipher_v33_sit.png"
+  },
+  "cyrene": {
+    "covered": 0.69,
+    "edge_alpha_max": 0,
+    "out": "cyrene_v38_sit.png",
+    "policy": "cut",
+    "size": [
+      202,
+      387
+    ],
+    "source": "assets/eternal_page/q_program/cutouts/cyrene_v38_sit.png"
+  },
+  "dan-heng-permansor-terrae": {
+    "covered": 0.698,
+    "edge_alpha_max": 0,
+    "out": "dan_heng_pt_v36_sit.png",
+    "policy": "cut",
+    "size": [
+      184,
+      370
+    ],
+    "source": "assets/eternal_page/q_program/cutouts/dan_heng_pt_v36_sit.png"
+  },
+  "evernight": {
+    "covered": 0.739,
+    "edge_alpha_max": 0,
+    "out": "evernight_v38_sit.png",
+    "policy": "cut",
+    "size": [
+      302,
+      542
+    ],
+    "source": "assets/eternal_page/q_program/cutouts/evernight_v38_sit.png"
+  },
+  "hyacine": {
+    "covered": 0.673,
+    "edge_alpha_max": 0,
+    "out": "hyacine_v33_sit.png",
+    "policy": "saliency",
+    "size": [
+      278,
+      388
+    ],
+    "source": "assets/eternal_page/q_program/cutouts/hyacine_v33_sit.png"
+  },
+  "hysilens": {
+    "covered": 0.695,
+    "edge_alpha_max": 0,
+    "out": "hysilens_v35_sit.png",
+    "policy": "cut",
+    "size": [
+      141,
+      246
+    ],
+    "source": "assets/eternal_page/q_program/cutouts/hysilens_v35_sit.png"
+  },
+  "model": "u2net",
+  "mydei": {
+    "covered": 0.672,
+    "edge_alpha_max": 0,
+    "out": "mydei_v31_sit.png",
+    "policy": "saliency",
+    "size": [
+      263,
+      477
+    ],
+    "source": "assets/eternal_page/q_program/cutouts/mydei_v31_sit.png"
+  },
+  "note": "second-pass sill bodies; cutouts/ untouched",
+  "phainon": {
+    "covered": 0.534,
+    "edge_alpha_max": 0,
+    "note": "3.4 announcement bottom-left bust; sharper than the 360p stage grab",
+    "out": "phainon_v34_announcement_bust.png",
+    "policy": "saliency",
+    "size": [
+      239,
+      280
+    ],
+    "source": "assets/eternal_page/q_program/announcement/Version_3.4_Special_Program_Announcement.png"
+  },
+  "tribbie": {
+    "covered": 0.678,
+    "edge_alpha_max": 0,
+    "out": "tribbie_v31_swing.png",
+    "policy": "cut",
+    "size": [
+      351,
+      638
+    ],
+    "source": "assets/eternal_page/q_program/cutouts/tribbie_v31_swing.png"
+  }
+}

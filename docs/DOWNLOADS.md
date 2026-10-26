@@ -77,3 +77,31 @@ Register a downloaded GGUF directly (skips the `ollama create` quantize pass):
 models were registered that way (hard links, zero disk duplication) from local
 LM Studio files in `D:\AI Large Language Model Files\` — that path is
 **machine-specific**; public users should `ollama pull` instead.
+
+---
+
+## Segmentation model — the sill matte (2026-10-26)
+
+`tools/matte_sill.py` cleans the Eternal Page sill with **u2net**, an official
+salient-object segmentation model, run on CPU through `onnxruntime` (already a
+dependency).
+
+| Model | Size | Where |
+|---|---|---|
+| `u2net.onnx` | 168 MB | `models/u2net/u2net.onnx` (gitignored) |
+
+GitHub release downloads are throttled on this machine, so fetch through the
+mirror that already worked for the Ollama installer:
+
+```powershell
+curl -L -o models/u2net/u2net.onnx `
+  https://gh-proxy.com/https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net.onnx
+```
+
+Its smaller sibling `u2netp.onnx` (4.4 MB) downloads from the same tag and is
+enough to try the pipeline, but it under-reads chibi figures — the shipped matte
+uses the full model. SHA-256 is not published upstream for this asset; record it
+after the first download if you want the pin (`Get-FileHash`).
+
+Nothing here is uploaded and no hosted service is called: the model runs in this
+process, on this machine.

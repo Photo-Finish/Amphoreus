@@ -1,0 +1,62 @@
+{
+  "note": "files read by tools/matte_sill.py",
+  "sources": {
+    "aglaea_v31_sit.png": {
+      "bytes": 209624,
+      "sha256": "72e65d21a7aef1f85675862c8702f82411880839f39130b918461136c2e1ae65"
+    },
+    "anaxa_v34_sit.png": {
+      "bytes": 62608,
+      "sha256": "ecc04262191ae854a3f46b407b8ed62675f4ab4f8efe40cba81fcc3f29e83674"
+    },
+    "announcement/Version_3.4_Special_Program_Announcement.png": {
+      "bytes": 2414293,
+      "note": "3.4 announcement bottom-left bust; sharper than the 360p stage grab",
+      "sha256": "d3c6849612b95f9bbc35f8925882ed36f1233e580cd7a97c8f4183768b158d07"
+    },
+    "castorice_v33_sit.png": {
+      "bytes": 239376,
+      "sha256": "eb20d507e0d4aee369266bc2c1f82564a7c28d5f7d801bf8f44bb6c79d0907ea"
+    },
+    "cerydra_v35_sit.png": {
+      "bytes": 144968,
+      "sha256": "b49a5d51cb4cb057e18908f6913d0eb17b6cc94f15697209fd100bf871fcc18f"
+    },
+    "cipher_v33_sit.png": {
+      "bytes": 216890,
+      "sha256": "f575eb0f8710f6e7515bc6c11710bec28e9a910d79b0c903951aa53525a583b4"
+    },
+    "cyrene_v38_sit.png": {
+      "bytes": 158959,
+      "sha256": "dd3f08761da452199f14b8d0960ce608960463fc0b5288af9066051abb346b82"
+    },
+    "dan_heng_pt_v36_sit.png": {
+      "bytes": 131030,
+      "sha256": "25221d7d770dc907b96958ebb5c1dc5059663d89309cf8158783eb0eb7bd28b6"
+    },
+    "evernight_v38_sit.png": {
+      "bytes": 259707,
+      "sha256": "cc893e942f05fa668c3fb9ae44abcd08a53760e25f8b7826990ebfde6b26cbd2"
+    },
+    "hyacine_v33_sit.png": {
+      "bytes": 230163,
+      "sha256": "0042f6ddf10ee35f08e827054a64198b7d2a310ab4373a8db07af4b5ace1ea90"
+    },
+    "hysilens_v35_sit.png": {
+      "bytes": 58150,
+      "sha256": "e564c66d5b0c9b13c1a98b599b0e13ea9f151ff8cee2dd25644c86363481c834"
+    },
+    "mydei_v31_sit.png": {
+      "bytes": 206572,
+      "sha256": "cdcf9d26cba669eb4cd7296dd23375a04f11931fdd7e308b7119482ecd13bdc2"
+    },
+    "phainon_v34_sit.png": {
+      "bytes": 62758,
+      "sha256": "49b556229587768d50232b8dea4541f1ffe5740f6ee4ca9f6e03f4494b92adc2"
+    },
+    "tribbie_v31_swing.png": {
+      "bytes": 287992,
+      "sha256": "2cb78a7e01a284689b65738e3ab9276523099b5c9aeed166b8ae50b1a9e111f9"
+    }
+  }
+}
