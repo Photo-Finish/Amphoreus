@@ -1371,8 +1371,43 @@ sitting across the artwork. Suites: `tools/test_eternal_sill.py` (18),
 `tools/test_eternal_page.py` (391). Provenance inventory:
 `docs/ART-PROVENANCE.md`.
 
+### 3.25 Stage 2 — Cyrene's year cycle and the Anaxa correction (2026-10-27)
+(`src/world/cyrene_face.py`, `src/ui_eternal_page.py`, `tools/matte_sill.py`)
+
+**The cycle.** `cyrene_cycle.py` (2026-09) resolved which of three faces holds
+Cyrene's seat for a Light month and which persona the whisper should follow, but
+was deliberately unwired: the spec said the art keys were TBD. `cyrene_face.py`
+supplies them — her own `cute/cyrene/05.png` and `02.png` for childhood and the
+Demiurge, Mem's official still for the fairy — and turns `talk_persona` into one
+register paragraph. The register travels through a new `extra_system` kwarg on
+`AgentManager.chat`, appended after every other injector so it steers voice
+without touching identity, memory, or the wall. `eternal_talk` was left alone:
+the page passes its own `speak` callback, which is the extension point the page
+already had.
+
+Rules held: talk target is always the `cyrene` card; Mem is never a speaker and
+gets no card; the hint names a register and forbids announcing it, so there is no
+staged "you are Mem this month" beat. A missing still falls back to the ordinary
+pose, and the seat is recomputed each rerun from `WorldState().clock`, so 1× and
+the 2×–60× sim clock agree.
+
+**The correction.** `cutouts/anaxa_v34_sit.png` is not Anaxa — it is Caelus, the
+Trailblazer, from the 3.4 stage frame; the first pass cropped the wrong figure
+from a group still. Canon (`databank/chrysos-heirs/anaxa.md`) says mint-green
+hair, aqua eyes with magenta pupils, black gold-patterned eyepatch — which the
+project's own PPG stickers show. The file is left untouched (it is the record),
+and `matte_sill.py` gained an `OVERRIDES` table that takes Anaxa's body from the
+3.4 announcement's own bust instead; Phainon uses the same source for sharpness.
+The suite asserts Anaxa's hair hue, so the misread cannot return unnoticed.
+
+Suites: `tools/test_cyrene_face.py` (24), `tools/test_eternal_sill.py` (23),
+`tools/test_eternal_page.py` (395), `tools/validate_live_page.py` (8, against the
+running app). Detail: `docs/ETERNAL-SILL.md`, `docs/CYRENE-CYCLE.md`,
+`docs/ART-PROVENANCE.md`.
+
 ---
 
 *"Only through a worthy sacrifice can we gain a befitting victory."* — Cerydra.
 The worthy sacrifice here is ours: to build carefully, remember faithfully, and
 never mistake the page for the person.
+

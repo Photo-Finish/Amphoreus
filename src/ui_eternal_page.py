@@ -1043,8 +1043,25 @@ def _do_gesture(st, cid: str, gesture: str, world=None) -> bool:
     return bool(result.get("ok"))
 
 
+def _speak_with_register(manager, slot):
+    """The whisper callback: the same `manager.chat`, plus Cyrene's register.
+
+    Only Cyrene carries a hint (see `src/world/cyrene_face.py`); every other
+    Heir gets the plain call, so nothing about their voice changes.
+    """
+    from src.world import cyrene_face
+
+    def _speak(character_id: str, message: str) -> str:
+        hint = cyrene_face.speak_hint(character_id, slot)
+        if hint:
+            return manager.chat(character_id, message, extra_system=hint)
+        return manager.chat(character_id, message)
+
+    return _speak
+
+
 def _ask_felt(st, cid: str, manager) -> bool:
-    from src.world import eternal_page as ep
+    from src.world import cyrene_face, eternal_page as ep
     from src.world.eternal_gesture import ASK_USER_LINE
 
     if manager is None:
@@ -1061,6 +1078,7 @@ def _ask_felt(st, cid: str, manager) -> bool:
         everyone=False,
         rotate=int(st.session_state.get(ep.STATE_ROTATE) or 0),
         name_of=lambda c: names.get(c, ep.short_name(c)),
+        speak=_speak_with_register(manager, cyrene_face.current_slot()),
     )
     if result.get("ok"):
         st.session_state[ep.STATE_BUBBLES] = result.get("replies") or []
@@ -1148,13 +1166,15 @@ def _names(manager) -> dict:
     return out
 
 
-def stage_art_uris(emotions: Optional[dict] = None) -> dict:
+def stage_art_uris(emotions: Optional[dict] = None, *, cyrene_form: Optional[str] = None) -> dict:
     """Body + face data URIs for everyone on the sill.
 
     The body is the second-pass matte when one exists (`src/world/eternal_sill.py`),
     otherwise the first-pass cut — `cutouts/` stays both the record and the
-    fallback. Kept as one function so the page and the payload audit cannot drift.
+    fallback. Cyrene's face follows her year cycle when `cyrene_form` is given.
+    Kept as one function so the page and the payload audit cannot drift.
     """
+    from src.world import cyrene_face
     from src.world import eternal_page as ep
     from src.world import eternal_sill
 
@@ -1166,6 +1186,8 @@ def stage_art_uris(emotions: Optional[dict] = None) -> dict:
             continue
         if spr.get("kind") == "q" and spr.get("body_png"):
             face_path = spr.get("face_path")
+            if cid == "cyrene" and cyrene_form:
+                face_path = cyrene_face.face_path(cyrene_form) or face_path
             cleaner = eternal_sill.body_png(cid)
             body_png = cleaner if cleaner is not None else spr["body_png"]
             art_uris[cid] = {
@@ -1293,7 +1315,12 @@ def render_eternal_page(manager, *, key_prefix: str = "eternal") -> None:
                         st.session_state[ep.STATE_SELECTED] = ep.toggle_member(selected, cid)
                         st.rerun()
 
-    art_uris = stage_art_uris(emotions)
+    # Cyrene's seat for today: which face she holds and which register she speaks
+    # in. Resolved once per rerun from the sanctuary clock (1× and sim alike).
+    from src.world import cyrene_face
+
+    cyrene_slot = cyrene_face.current_slot()
+    art_uris = stage_art_uris(emotions, cyrene_form=cyrene_slot.visual_face)
     parchment = ep.parchment_path()
     parchment_uri = (
         _data_uri(parchment, max_px=art_cache.PARCHMENT_MAX_PX) if parchment else ""
@@ -1343,6 +1370,7 @@ def render_eternal_page(manager, *, key_prefix: str = "eternal") -> None:
                             everyone=bool(st.session_state.get(ep.STATE_EVERYONE)),
                             rotate=int(st.session_state.get(ep.STATE_ROTATE) or 0),
                             name_of=lambda c: names.get(c, ep.short_name(c)),
+                            speak=_speak_with_register(manager, cyrene_slot),
                         )
                     if result.get("ok"):
                         st.session_state[ep.STATE_BUBBLES] = result.get("replies") or []

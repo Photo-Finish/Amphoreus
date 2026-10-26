@@ -1304,6 +1304,36 @@ tide / letter / weather / co-location / aftermath features):
   2026-10-26's work: `git status -- assets` reports only the one new
   `cutouts_matte/` folder, and no existing art file is modified or deleted.
 
+### 2026-10-27
+- **Anaxa was not Anaxa** — the sill's `anaxa_v34_sit.png` is a grey-haired,
+  gold-eyed figure: the **Trailblazer**, standing in the 3.4 stage frame, not
+  Anaxa, who is canonically mint green with a black gold-patterned eyepatch
+  (`databank/chrysos-heirs/anaxa.md`, and the project's own `cute/anaxa/`
+  stickers agree). The mislabelled cutout is kept untouched as the record; the
+  page now draws the 3.4 announcement's own bust, matted and named honestly
+  (`anaxa_v34_announcement_bust.png`). Phainon takes the same sharper treatment.
+  `tools/test_eternal_sill.py` will not let the Trailblazer come back: it asserts
+  Anaxa's body is that bust and that his hair reads mint green.
+- **Cyrene's year cycle is wired** — `src/world/cyrene_face.py` binds her three
+  Light-Calendar faces to official stills and turns `talk_persona` into one
+  register paragraph, carried by the new `manager.chat(extra_system=...)`. Her
+  **picture** follows the calendar; her **speaker** does not — the whisper still
+  addresses the `cyrene` card, Mem is never given a card or a speaker id, and the
+  hint says only which of her own voices to use. Suites:
+  `tools/test_cyrene_face.py` (24), `tools/test_eternal_page.py` (395).
+- **The page is checked in a real browser** — `tools/shoot_eternal_stage.py`
+  renders the stage markup to PNG (the Read tool ignores alpha, so a composite is
+  the only honest look at the art), and `tools/validate_live_page.py` drives the
+  *running* app: signs in, opens the tab, finds the component iframe, and counts
+  what the browser actually received. Verified live — 13 companions, 13 names,
+  inlined WebP bodies, no console errors, with the voice ready and 11 332 canon
+  documents indexed on the RAG path.
+- **Housekeeping** — the four dead Copilot-era `tools/_*_8501.py` probes moved to
+  the gitignored `.cache/legacy_scratch/`; the `_matte_v2` face-graph trial is
+  recorded as **superseded, not deleted** (its files and 129-check suite stay;
+  nothing on the page reads it). `docs/ART-PROVENANCE.md` carries both the
+  correction and the trial's status.
+
 ## The close of Phase 2a (not the close of Stage 2)
 
 **Signed on 2026-09-29.**

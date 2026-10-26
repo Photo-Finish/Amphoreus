@@ -191,6 +191,7 @@ class AgentManager:
         image_caption: str = "",
         video: bytes | None = None,
         video_name: str = "",
+        extra_system: str = "",
     ) -> str | Generator:
         """
         Send a message to a character and get their response.
@@ -204,6 +205,9 @@ class AgentManager:
             image_caption: optional caption of what the image is
             video: raw video bytes the visitor shows the Heir (they watch it)
             video_name: optional name of the video file
+            extra_system: optional register hint appended last to the system
+                prompt (Cyrene's year cycle uses it); never changes identity,
+                memory, or the knowledge wall
 
         Returns:
             The character's response as a string, or a generator if streaming.
@@ -318,6 +322,12 @@ class AgentManager:
         # The length of a reply is the Heir's own choice — short line or a
         # fuller telling, whichever the moment asks (sanctuary-only).
         system_prompt = self._inject_length_freedom(character_id, system_prompt)
+
+        # A caller-supplied register hint (the Eternal Page's Cyrene cycle asks
+        # for the girl who writes or the Demiurge). Appended last so it steers
+        # the voice without touching identity, memory, or the wall.
+        if extra_system:
+            system_prompt = f"{system_prompt}\n\n{extra_system}"
 
         # Eyesight: the visitor shows the Heir an image or a video.
         has_image = bool(image)

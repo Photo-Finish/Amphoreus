@@ -708,9 +708,26 @@ def test_q_full_body() -> None:
     ui_src = (ROOT / "src" / "ui_eternal_page.py").read_text(encoding="utf-8")
     check("PPG face is a corner sticker", "width: 36%" in ui_src and "right: -6%" in ui_src)
     check("face stays smaller than the sit body", "width: 46%" not in ui_src.split(".buddy img.face", 1)[-1][:400])
-    check("cyrene cycle is not imported by the page", "cyrene_cycle" not in Path(ep.__file__).read_text(encoding="utf-8"))
+    # The Cyrene year cycle is now wired (was: two "not imported" guards). The
+    # provider stays UI-free; the page reaches it through cyrene_face.
+    from src.world import cyrene_cycle as _cyc
+    from src.world import cyrene_face as _cface
+    cyc_src = (ROOT / "src" / "world" / "cyrene_cycle.py").read_text(encoding="utf-8")
+    check("cycle provider stays UI-free",
+          "eternal_page" not in cyc_src and "ui_eternal" not in cyc_src
+          and "streamlit" not in cyc_src)
     ui = (ROOT / "src" / "ui_eternal_page.py").read_text(encoding="utf-8")
-    check("ui does not wire the Cyrene year cycle", "cyrene_cycle" not in ui)
+    check("the page resolves Cyrene through the cycle", "cyrene_face" in ui)
+    faces = {_cface.face_path(_cyc.slot_for_month(m).visual_face) for m in range(0, 14)}
+    check("three distinct Cyrene faces exist",
+          len(faces) == 3 and all(f is not None for f in faces), str(sorted(map(str, faces))))
+    check("whisper target stays cyrene in Fairy",
+          _cyc.slot_for_month(0).talk_target == "cyrene"
+          and _cyc.slot_for_month(0).whisper is True)
+    check("Mem never becomes a speaker",
+          "mem" not in _cyc.slot_for_month(0).talk_target)
+    check("the register hint is Cyrene's alone",
+          bool(_cface.register_for("demiurge")) and _cface.speak_hint("mydei", _cyc.slot_for_month(0)) == "")
     check("no cute webp rewrite", "webp" not in Path(eq.__file__).read_text(encoding="utf-8").lower())
     # PPG 23 Phainon files actually on disk
     for nn in ("02", "03", "04", "05"):

@@ -39,7 +39,15 @@ Two policies, chosen per sprite by looking at the result:
 | Policy | Heirs | What it does |
 |---|---|---|
 | `saliency` | aglaea, hyacine, castorice, cipher, mydei, cerydra | u2net mask ∩ the first pass, largest blob, feathered |
-| `cut` | anaxa, phainon, hysilens, evernight, cyrene, tribbie, dan-heng | first-pass silhouette, elliptical falloff, edges darkened toward the page |
+| `cut` | hysilens, evernight, cyrene, tribbie, dan-heng | first-pass silhouette, elliptical falloff, edges darkened toward the page |
+| `override` | anaxa, phainon | the 3.4 announcement's own bust, cropped at full resolution and matted |
+
+The two `override` bodies exist because the first pass had the wrong or the
+weaker source (`OVERRIDES` in `tools/matte_sill.py`, `ALIAS` in
+`src/world/eternal_sill.py`): **Anaxa's sit crop is the Trailblazer**, not Anaxa,
+and Phainon's is a 360p stage grab of a character who has a crisp official bust.
+Neither catalog file was touched — the corrected bodies sit beside them under
+their own honest names.
 
 Every body is then trimmed, padded by 6 %, and given one elliptical falloff so
 **no border pixel is opaque** — the invariant the suite enforces. A `cut` body
@@ -47,26 +55,27 @@ also has its outer band darkened by distance: a photograph that fades to 40 %
 alpha still carries its own bright background, which reads as a glow on a night
 stage, so the leftover set merges into the backdrop instead.
 
-Tuning lives in `POLICY` / `FEATHER` at the top of `tools/matte_sill.py`; the
-manifest records each sprite's policy and the percentage of first-pass opacity
-kept, so a future pass can see what was decided and why.
+Tuning lives in `POLICY` / `FEATHER` / `OVERRIDES` at the top of
+`tools/matte_sill.py`; the manifest records each sprite's policy, its source, and
+the percentage of first-pass opacity kept, so a future pass can see what was
+decided and why.
 
 ## Where it still falls short
 
-The seven `cut` bodies keep a soft aura of their source set. They read as
-figures-in-shadow beside the six clean ones, not as equals. Fixing them properly
+The five `cut` bodies keep a soft aura of their source set. They read as
+figures-in-shadow beside the clean ones, not as equals. Fixing them properly
 needs art that does not exist in the catalogs:
 
-- **Anaxa, Phainon** — the 3.4 announcement published **busts** only; the sit
-  bodies are 360p 3D stage grabs. A crisp full-body Q would have to be redrawn.
-- **Hysilens** — the 3.5 2D overlay, likewise 360p.
+- **Hysilens** — the 3.5 2D overlay only, at 360p.
 - **Tribbie, Evernight, Cyrene, Dan Heng** — crisp stills, but the figure sits in
   a painted set that shares its cel shading.
 
-The honest options, none of them free: hand-trace those seven, accept bust crops
-from the crisp `_bust` cutouts instead of full bodies, or commission/redraw the
-missing Q bodies. This pass takes none of them — it removes the rectangles and
-keeps the record.
+The honest options, none of them free: hand-trace those five, or commission/redraw
+missing Q bodies. This pass takes neither — it removes the rectangles and keeps
+the record.
+
+*(Anaxa and Phainon left this list on 2026-10-27: their announcement busts are
+official, crisp, and in Anaxa's case the only art of the right person.)*
 
 ## Regenerating
 

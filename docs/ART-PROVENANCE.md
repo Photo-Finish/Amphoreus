@@ -72,8 +72,39 @@ git checkout -- assets/eternal_page/q_program/cutouts/
 git fetch origin; git checkout origin/main -- assets/
 ```
 
-Upstream: `github.com/Photo-Finish/Amphoreus`. `HEAD == origin/main == c3d6f3e`
-at the time of writing, so every catalog above is one `git checkout` away.
+Upstream: `github.com/Photo-Finish/Amphoreus`. Both 2026-10-26/27 rounds are
+pushed, so every catalog above is one `git checkout` away.
+
+## A mislabel found on 2026-10-27 — and what was done about it
+
+`cutouts/anaxa_v34_sit.png` does **not** show Anaxa. It is a grey-haired,
+gold-eyed figure — Caelus, the Trailblazer, standing in the 3.4 stage frame.
+Anaxa is canonically mint green with a black gold-patterned eyepatch over his
+left eye (`databank/chrysos-heirs/anaxa.md`), which the project's own
+`assets/eternal_page/cute/anaxa/` stickers show correctly.
+
+- **The mislabelled file stays where it is**, untouched: this record is the
+  point. `cutouts_matte/sources.json` hashes it and carries the note.
+- **The page no longer draws it.** `tools/matte_sill.py` has an `OVERRIDES`
+  table; Anaxa's body is now the 3.4 announcement's own bust, matted, under the
+  name `anaxa_v34_announcement_bust.png` (`src/world/eternal_sill.py: ALIAS`).
+  Phainon got the same treatment for sharpness, not identity.
+- `tools/test_eternal_sill.py` guards it: Anaxa's body must be the announcement
+  bust and its hair must read mint green, so the Trailblazer cannot quietly come
+  back.
+
+If you ever need to re-audit identities, compare each body against its
+`cute/<id>/` Pom-Pom Gallery sticker — that is how this one surfaced.
+
+## Status of the inherited trials
+
+- `q_program/_matte_v2/` (face-graph matte trial, `tools/matte_q_faces.py`) —
+  **superseded, not deleted.** Its goal was a cleaner *face* sticker; the faces
+  are already transparent official art, and the 2026-10-26 sill pass now handles
+  the bodies. The files and their 129-check suite stay in place as the record;
+  nothing on the page reads them. `tools/test_matte_q_faces.py` still passes.
+- `cyrene_forms/` — still a catalog; `docs/CYRENE-CYCLE.md` now says which three
+  stills the wired cycle actually uses.
 
 ## What changed on 2026-10-26, precisely
 

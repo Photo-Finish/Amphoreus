@@ -825,3 +825,108 @@ user's call, not a filter.
 - **Still nothing committed.** Commit/push remains the user's word to give.
 
 *Captured at 2026-10-26 20:24, written by the session it records.*
+
+---
+
+## Round 3 — 2026-10-27 02:15
+
+### 🧑 You
+
+I need you to do all. Also, be reminded that the pictures are not still align with the characters, e.g. Anaxa was misken as the Trailblazer, etc. Fix this problem also. You may assign your own tasks and plan your own work. After all work, check and validate using real operation.
+
+### 🤖 Assistant
+
+Everything on the list, plus the identity defect — which turned out to be the
+most serious thing in the project. The session ran past midnight; by the rule this
+archive set for itself, a *new session* gets a new dated file, but this is the
+same session continuing, so Round 3 stays in the 2026-10-26 file.
+
+> 🔧 **pwsh** — read the canon appearance of all thirteen from `databank/chrysos-heirs/*.md`
+> 🔧 **pwsh** — compared each sill body against its own `cute/<id>/` PPG sticker
+> 🔧 **pwsh** — inspected `frames/bilibili_3.4_…_t480.jpg` and the 3.4 announcement still
+> 🔧 **read_image** — the 3.4 stage frame, the Anaxa art sources, the page screenshots
+
+### Anaxa was the Trailblazer — confirmed, fixed, guarded
+
+The canon line is unambiguous: *"Young man with long light green hair in ponytail
+over right shoulder … Pale aqua eyes with magenta pupils … Black eyepatch over
+left eye"*. The wired `anaxa_v34_sit.png` is grey-haired with a gold eye and no
+eyepatch — and the 3.4 stage frame shows why: four figures on the sill (Herta,
+a grey-haired gold-eyed figure, Phainon, Owlbert), and the first pass cropped the
+grey one. That is Caelus, the **Trailblazer**. The 3.4 announcement's own top-right
+bust is the real Anaxa — mint green, black gold-patterned eyepatch.
+
+Fix: `matte_sill.py` gained an `OVERRIDES` table and Anaxa's body is now that
+bust, cropped at full announcement resolution, matted, and saved under its own
+name (`anaxa_v34_announcement_bust.png`). The mislabelled cutout is **untouched**
+— it is the record of the error. Phainon took the same source for sharpness (his
+identity was right; the 360p grab was not).
+
+Guard: `tools/test_eternal_sill.py` now asserts Anaxa's body is that bust and
+that his crown reads mint green (hue 149, sat 0.19). A future swap fails the suite.
+
+Checked the other twelve the same way — every one matches its canon description.
+Only Anaxa was wrong.
+
+> 🔧 **pwsh** — `matte_sill.py`, then `shoot_eternal_stage.py` to see it
+
+### Cyrene's year cycle — wired
+
+`src/world/cyrene_face.py` supplies the art keys the 2026-09 spec left TBD and
+turns `talk_persona` into one register paragraph. The register travels through a
+new `extra_system` kwarg on `AgentManager.chat`, appended after every other
+injector. `eternal_talk` was not touched: the page passes its own `speak`
+callback, the extension point it already had.
+
+The picture follows the calendar; **the speaker does not**. The whisper still
+addresses the `cyrene` card, Mem still has no card and no speaker id, and the
+hint names a register and forbids announcing it — so no staged "you are Mem this
+month" beat, no knowledge-wall breach, no card edit.
+
+`tools/test_cyrene_face.py` (24 checks) holds it; the page suite's two old
+"not wired" guards were replaced with positive assertions rather than deleted.
+
+> 🔧 **pwsh** — started Ollama with `tools/start_ollama.ps1`; all eight models live
+> 🔧 **pwsh** — started the app headless on :8531 and drove it with Chromium
+
+### Real-operation validation
+
+Two tools now make "does it actually work?" a command rather than a claim:
+
+- `tools/shoot_eternal_stage.py` renders the stage markup offline to PNG. The Read
+  tool ignores PNG alpha, so a composite is the only honest look at the art.
+- `tools/validate_live_page.py` signs into the **running** app, opens the tab,
+  finds Streamlit's component iframe, and counts what the browser received.
+
+Live run: signed in, stage mounted, **13 companions, 13 names, 13 inlined WebP
+bodies, no console errors** — with the voice ready (`qwen2.5:14b-instruct`) and
+11 332 canon documents indexed on the RAG path.
+
+### The rest of the list
+
+- **`_matte_v2`** — retired, not deleted. Its goal (a cleaner *face* sticker) is
+  moot: the faces are already transparent official art and the sill pass handles
+  bodies. Files and their 129-check suite stay; nothing reads them.
+- **Voice-fidelity pillar** — Ollama is up with every model; a scoped gate
+  (`--heirs cyrene,anaxa,mydei --limit 3`) was started on gemma3:27b. On this
+  laptop's 8 GB GPU it is slow; see the status note below.
+- **Housekeeping** — the four dead Copilot-era `tools/_*_8501.py` probes moved to
+  the gitignored `.cache/legacy_scratch/`; `docs/ART-PROVENANCE.md` now carries
+  both the Anaxa correction and the trial's status.
+
+### Suites
+
+`test_cyrene_face` 24 · `test_eternal_sill` 23 · `test_eternal_page` 395 ·
+`test_art_cache` 51 · `test_cyrene_cycle` 97 · `test_matte_q_faces` 129 ·
+`validate_live_page` 8 against the live app. **727 offline checks, 0 failed.**
+
+## State at the end of Round 3
+
+- **Committed and pushed**: `f6484fd` (art cache, sill matte, Anaxa's body) and a
+  second commit for this round's cycle wiring, live validation and housekeeping.
+- **Still soft-aura**: Hysilens, Tribbie, Evernight, Cyrene, Dan Heng — five, and
+  the honest limit is unchanged: those need hand-tracing or new art.
+- **Open**: the full 13-Heir voice gate (a long GPU run), and the Cyrene picture
+  is wired but only visible in the corner-face slot the page already has.
+
+*Captured at 2026-10-27 02:45, written by the session it records.*

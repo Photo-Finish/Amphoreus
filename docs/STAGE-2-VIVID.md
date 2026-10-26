@@ -314,3 +314,36 @@ opaque border, page really draws the matte, clean fallback),
 `docs/ETERNAL-SILL.md`; what was inherited and how to verify it is untouched:
 `docs/ART-PROVENANCE.md`.
 
+
+## Eighteenth delivery — Cyrene's year and Anaxa's face (2026-10-27)
+
+Two fidelity repairs, both found by looking at the page rather than at a diff.
+
+**Anaxa was the Trailblazer.** The sill's `anaxa_v34_sit.png` is a grey-haired,
+gold-eyed figure from the 3.4 stage frame; canon Anaxa is mint green with a black
+gold-patterned eyepatch. The first pass had cropped the wrong person out of a
+group still. The mislabelled cutout stays untouched as the record; the page now
+draws the 3.4 announcement's own bust, matted by the sill pass and named
+honestly. Phainon got the same sharper source. The suite now asserts Anaxa's hair
+hue, so the swap cannot silently return.
+
+**Cyrene's year cycle is wired** (`src/world/cyrene_face.py`). Three Light
+months-blocks give her seat a picture and a register:
+
+| Block | Picture | Register |
+|---|---|---|
+| Village (1–6) | childhood Cyrene | the girl who writes |
+| Page (7–11) | the Demiurge | the Demiurge |
+| Fairy (12–13 + Uncounted) | Mem | still childhood |
+
+The picture changes; the **speaker does not**. The whisper still addresses the
+`cyrene` card, Mem has no card and no speaker id, and the hint — carried by the
+new `manager.chat(extra_system=...)` — names only which of her own voices to use.
+It never announces the register and never touches the knowledge wall.
+
+**Checked in a browser, not just in assertions.** `tools/shoot_eternal_stage.py`
+renders the stage markup to PNG; `tools/validate_live_page.py` signs into the
+running app, opens the tab, finds the component iframe, and counts what arrived —
+13 companions, 13 names, inlined WebP bodies, no console errors. Suites:
+`tools/test_cyrene_face.py` (24), `tools/test_eternal_sill.py` (23),
+`tools/test_eternal_page.py` (395).

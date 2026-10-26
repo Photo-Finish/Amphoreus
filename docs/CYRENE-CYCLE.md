@@ -108,3 +108,29 @@ talk_persona(0)     # Uncounted / Mem picture → "childhood"
 ```
 
 Suite: `python tools/test_cyrene_cycle.py`.
+
+---
+
+## Wired — 2026-10-27
+
+The lookup above is now bound to the page. `src/world/cyrene_face.py` maps the
+three forms to official stills and turns `talk_persona` into one short register
+paragraph passed as `manager.chat(extra_system=...)`:
+
+| Form | Still | Register |
+|---|---|---|
+| `childhood` | `assets/eternal_page/cute/cyrene/05.png` | the girl who writes — warm, quick, playful |
+| `demiurge` | `assets/eternal_page/cute/cyrene/02.png` | the Demiurge — serene, measured, unhurried |
+| `mem` | `assets/eternal_page/cyrene_forms/mem/ppg23_03_sleep.png` | still childhood (the writer behind the fairy) |
+
+Rules kept: the seat's picture changes, the **speaker does not** — the whisper
+still addresses the `cyrene` card, Mem still has no card and no `mem` speaker id,
+and the hint says only *which of her own voices* to use; it never announces the
+register, never mentions a model, and never touches the knowledge wall.
+
+`tools/test_cyrene_face.py` (24 checks) holds the binding: three faces on disk,
+the hint reaching `manager.chat` for Cyrene **only**, and Mem never speaking.
+`tools/test_eternal_page.py` gained the consumer-side assertions that used to be
+"not wired" guards.
+
+Nothing writes memory, world state, or `src/characters/cyrene.json`.
