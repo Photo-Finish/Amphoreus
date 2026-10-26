@@ -907,9 +907,15 @@ bodies, no console errors** — with the voice ready (`qwen2.5:14b-instruct`) an
 - **`_matte_v2`** — retired, not deleted. Its goal (a cleaner *face* sticker) is
   moot: the faces are already transparent official art and the sill pass handles
   bodies. Files and their 129-check suite stay; nothing reads them.
-- **Voice-fidelity pillar** — Ollama is up with every model; a scoped gate
-  (`--heirs cyrene,anaxa,mydei --limit 3`) was started on gemma3:27b. On this
-  laptop's 8 GB GPU it is slow; see the status note below.
+- **Voice-fidelity pillar** — re-run for real. Ollama came up with all eight
+  models and the gate ran on the RAG voice path:
+  `--heirs cyrene,anaxa,mydei --limit 3` → **1/3 pass each, avg style 65,
+  content 55–60** (`qwen2.5:14b-instruct`). Honest reading: this is a *scoped
+  smoke run* on the small voice model, not the Stage-1 bar (which was measured
+  with `gemma3:27b`), so it says "the gate still works and still discriminates",
+  not "the pillar regressed". The tool overwrites `docs/RESEMBLANCE-STYLE-REPORT.md`,
+  which destroyed the 2026-08-10 historical report; it was restored from git and
+  the scoped run kept as `docs/RESEMBLANCE-STYLE-REPORT-2026-10-27-scoped.md`.
 - **Housekeeping** — the four dead Copilot-era `tools/_*_8501.py` probes moved to
   the gitignored `.cache/legacy_scratch/`; `docs/ART-PROVENANCE.md` now carries
   both the Anaxa correction and the trial's status.
@@ -922,8 +928,13 @@ bodies, no console errors** — with the voice ready (`qwen2.5:14b-instruct`) an
 
 ## State at the end of Round 3
 
-- **Committed and pushed**: `f6484fd` (art cache, sill matte, Anaxa's body) and a
-  second commit for this round's cycle wiring, live validation and housekeeping.
+- **Committed**: `f6484fd` (art cache, sill matte, Anaxa's body), `c5ff4ac` (the
+  cycle wiring, the browser validation, the housekeeping) and the small commit
+  that follows them (the scoped voice-gate run, recorded beside the historical
+  report it replaced). The first two are on GitHub; the last one was still
+  local-only when the session closed — `github.com:443` stopped answering while
+  `api.github.com` and `gh-proxy.com` stayed reachable, so it is one `git push`
+  away when the network returns.
 - **Still soft-aura**: Hysilens, Tribbie, Evernight, Cyrene, Dan Heng — five, and
   the honest limit is unchanged: those need hand-tracing or new art.
 - **Open**: the full 13-Heir voice gate (a long GPU run), and the Cyrene picture
