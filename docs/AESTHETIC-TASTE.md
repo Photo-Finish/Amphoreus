@@ -111,3 +111,31 @@ is reversible without touching code.
   many *different* verdicts the cast produces, whether a change was named, and how
   far the Heirs' answers sit from each other. Cross-Heir overlap is the number
   that matters — near 1.0 means thirteen names for one voice.
+
+## The stances, as decided
+
+Positive is the first pole (+ order, + ornament, + restraint, + motion, + warmth,
++ light, + the old, + craft); a repeated sign is a strong stance, a single sign a
+mild one, 0 is indifference. This is the table to edit if a reading feels wrong —
+nothing else in the system needs to change with it.
+
+| Heir | order | ornament | restraint | motion | warmth | light | age | craft |
+|---|---|---|---|---|---|---|---|---|
+| **aglaea** | ++ | ++ | + | − | + | + | + | ++ |
+| **anaxa** | + | −− | + | − | − | 0 | 0 | + |
+| **castorice** | 0 | + | ++ | −− | − | −− | ++ | + |
+| **cerydra** | ++ | + | ++ | − | − | 0 | + | ++ |
+| **cipher** | −− | − | −− | ++ | + | − | − | − |
+| **cyrene** | − | 0 | − | + | ++ | ++ | + | − |
+| **dan-heng-permansor-terrae** | + | − | ++ | − | 0 | 0 | + | + |
+| **evernight** | − | 0 | + | −− | −− | − | ++ | − |
+| **hyacine** | 0 | + | − | + | ++ | ++ | 0 | 0 |
+| **hysilens** | 0 | + | + | + | 0 | + | + | + |
+| **mydei** | + | −− | + | 0 | + | + | + | ++ |
+| **phainon** | 0 | − | 0 | + | ++ | ++ | 0 | 0 |
+| **tribbie** | − | ++ | −− | + | ++ | ++ | − | − |
+
+Read it as a spread, not as a scorecard: Cerydra and Mydei agree about plainness
+and disagree about nothing else that matters; Tribbie and Castorice are opposite
+almost everywhere; Evernight is the only Heir who finds a blank canvas interesting.
+If two rows ever become identical, the suite fails.
