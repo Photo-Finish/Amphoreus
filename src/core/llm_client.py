@@ -102,6 +102,7 @@ class LLMClient:
         max_tokens: Optional[int] = None,
         think: bool = False,
         timeout: Optional[float] = None,
+        seed: Optional[int] = None,
     ) -> str:
         """Send messages; returns the assistant's text reply.
 
@@ -110,6 +111,11 @@ class LLMClient:
         instead of a `<think>` block. Without it, a long reasoning chain can
         consume the whole token budget and `content` comes back EMPTY — which
         silently turned every Heir reply into "..." in the style test.
+
+        `seed` makes sampling reproducible when set. Ollama's default behaves
+        deterministically, so a retry loop that repeats the same call gets the
+        same line forever — pass a different seed per attempt to actually draw
+        a new sample.
         """
         if not self.configured:
             return (
@@ -123,12 +129,22 @@ class LLMClient:
         if timeout is not None:
             _kw["timeout"] = timeout
         client = OpenAI(**_kw)
+        _body = dict(self._extra_body(think))
+        if seed is not None:
+            # Ollama reads `seed` from the request body; the OpenAI SDK also
+            # accepts it top-level, so set both rather than guess.
+            _body["seed"] = seed
+            inner = _body.get("extra_body")
+            if isinstance(inner, dict):
+                inner["seed"] = seed
+            else:
+                _body["extra_body"] = {"seed": seed}
         response = client.chat.completions.create(
             model=self.model,
             messages=messages,
             temperature=self.temperature if temperature is None else temperature,
             max_tokens=self.max_tokens if max_tokens is None else max_tokens,
-            **self._extra_body(think),
+            **_body,
         )
         content = response.choices[0].message.content
         # Safety net: a reasoning model may still have spent its whole budget
@@ -139,7 +155,7 @@ class LLMClient:
                 messages=messages,
                 temperature=self.temperature if temperature is None else temperature,
                 max_tokens=(max_tokens or self.max_tokens) * 4,
-                **self._extra_body(think),
+                **_body,
             )
             content = response.choices[0].message.content
         return content or ""

@@ -445,6 +445,8 @@ def main():
                          "repeat, phrase-crutch, formulaic opening). Default: ON — "
                          "a Heir can never pass by recycling one phrase in every "
                          "output or by quoting the canon.")
+    ap.add_argument("--debug-exhausted", action="store_true",
+                    help="print why each attempt was rejected when a case exhausts")
     ap.add_argument("--report", default="",
                     help="where to write the report. Default is a DATED file under "
                          "docs/, so a run never overwrites a tracked measurement.")
@@ -622,6 +624,7 @@ def _run(args):
                 # canon nor a self-invented catchphrase can be used to pass.
                 cheat_set = canon_all | set(anchors) | set(exemplars)
                 candidates = []
+                rejections = []
                 tries = 0
                 need = max(1, args.best_of)
                 budget = need * 6
@@ -637,6 +640,12 @@ def _run(args):
                         [{"role": "system", "content": system},
                          {"role": "user", "content": user}],
                         temperature=args.temp, max_tokens=120,
+                        # A retry that repeats the same request gets the same
+                        # line back: Ollama's default sampling is deterministic,
+                        # so thirteen attempts yielded thirteen identical copies
+                        # of one canon quote. A new seed per attempt is what
+                        # makes reject-and-retry an actual new draw.
+                        seed=tries,
                     ).strip()
                     # Reasoning models (e.g. deepseek-r1-distill) emit a
                     # <think> block before the line — strip it so only the
@@ -651,6 +660,12 @@ def _run(args):
                                 r, run_seen, run_grams, run_firsts, len(run_seen),
                                 lenient=args.full))):
                         candidates.append(r)
+                    elif args.debug_exhausted:
+                        why = ("blank" if not r
+                               else "degenerate" if is_degenerate(r)
+                               else "canon quote" if is_quote_cheat(r, cheat_set)
+                               else "run repeat")
+                        rejections.append((why, r[:90]))
                 if not candidates:
                     # Reject-and-retry ran out: nothing this Heir produced
                     # survived the anti-cheat and degeneracy filters. That is
@@ -658,6 +673,9 @@ def _run(args):
                     # at 45/25 measures the harness, not the voice. Skip the case
                     # and report it as skipped.
                     skipped += 1
+                    if args.debug_exhausted:
+                        for why, line in rejections[:12]:
+                            print(f"      reject[{why}]: {line!r}")
                     print(f"  {heir_id:>26}: skipped (no surviving line in {tries} tries)")
                     continue
                 actual = _pick_most_in_voice(llm, system, name, candidates)
