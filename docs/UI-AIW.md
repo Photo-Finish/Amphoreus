@@ -102,3 +102,24 @@ No rule animates `.buddy` or `.stage` itself. If a floating effect is still bein
 seen, the emotion-mark bob is the only vertical motion in the tree — it can be
 switched off by removing `amp-float` from the `.mk-*::after` rules, and that is a
 one-line change if it should go.
+
+## The custom HTML surfaces (2026-10-28)
+
+The shared theme covers every Streamlit surface — the walk scene and the admin
+console are Streamlit pages, so their buttons, tabs, tables, expanders and headings
+already take the book treatment. Two surfaces had bespoke inline CSS and had to be
+carried over by hand:
+
+**The galgame dialogue panel** (`ui_galgame.py`, `ui_galgame_group.py`) was a near-black
+slab `rgba(13,11,24,.93)` with a thin gold rule. It is now a **page**: cream gradient,
+warm-brown ink, a 2 px gold top edge with an egg-and-dart strip drawn in gradients, a
+soft shadow onto the indigo world, Palatino throughout. The visitor's line is
+terracotta italic; the ▼ advance caret is terracotta rather than pale gold. The panel
+became `.gal-box` so the frieze can exist as a pseudo-element — inline styles cannot
+carry one.
+
+**The Eternal Page menu** was done earlier: a paper slip with the same frieze header,
+brown ink and terracotta hover.
+
+Nothing in either surface moved: same positions, padding, type sizes and behaviour.
+`python tools/run_all_tests.py` — **1855 checks across 28 suites** — stays green.

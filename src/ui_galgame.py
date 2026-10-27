@@ -127,8 +127,8 @@ def _scene_html(bg_uri, sprite_uri, name, last_user, last_heir, bond, cid, wx=No
     )
     # dialogue box
     parts.append(
-        f"<div style=\"position:absolute;left:0;right:0;bottom:0;min-height:128px;"
-        f"padding:12px 44px 12px;background:rgba(13,11,24,.93);"
+        f"<div class=\"gal-box\" style=\"position:absolute;left:0;right:0;bottom:0;min-height:128px;"
+        f"padding:12px 44px 12px;"
         f"border-top:1px solid rgba(232,213,163,.28);\">"
     )
     if last_user_txt:
@@ -148,6 +148,24 @@ def _scene_html(bg_uri, sprite_uri, name, last_user, last_heir, bond, cid, wx=No
     parts.append("""
 <style>
 @keyframes galblink { to { visibility:hidden; } }
+/* As-I've-Written dialogue panel: the Heir speaks from a page, not a black slab. */
+.gal-box {
+  background: linear-gradient(180deg, #fbf6ea, #e9dfc8);
+  color: #3b2c1e;
+  border-top: 2px solid #c8a03c;
+  box-shadow: 0 -12px 34px rgba(8, 12, 28, .50), inset 0 0 0 1px rgba(200,160,60,.22);
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+}
+.gal-box::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 8px;
+  background-image:
+    radial-gradient(circle at 12px 4px, #e6cd8a 0 2px, transparent 3px),
+    radial-gradient(circle at 12px 8px, transparent 0 4px, #c8a03c 5px 6px, transparent 7px);
+  background-size: 24px 12px, 24px 12px; background-repeat: repeat-x;
+  pointer-events: none;
+}
+.gal-you { color: #8f3f1f; font-style: italic; }
+.gal-caret { color: #b9552b; }
 </style>
 <script>
 (function(){
