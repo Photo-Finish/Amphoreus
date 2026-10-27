@@ -159,3 +159,54 @@ thirteen Heirs produced one captioner's prose. It is now:
 The one-call path remains as the fallback when perception is unavailable. Suite:
 `tools/test_aesthetic.py` (41 checks, including that the judgement carries the
 perception and that a multimodal refusal is recognised).
+
+## Measured: the thirteen-card pass, before and after
+
+Full gate, `gemma3:27b`, 4 cases per Heir, best-of 1, temp 0.4, anti-cheat **on** —
+the same protocol as the 2026-10-27 baseline, so the columns are comparable.
+
+| Heir | before | after | style | content | change |
+|---|---:|---:|---:|---:|---|
+| Aglaea | 2/4 | 3/4 | 74 | 69 | +1 |
+| Anaxa | 3/4 | 3/4 | 86 | 73 | = |
+| Castorice | 3/4 | 1/4 | 61 | 58 | −2 |
+| Cerydra | 4/4 | 3/4 | 86 | 70 | −1 |
+| Cipher | 4/4 | 4/4 | 88 | 70 | = |
+| Cyrene | 3/4 | 4/4 | 90 | 74 | +1 |
+| Dan Heng | 3/4 | 4/4 | 88 | 70 | +1 |
+| Evernight | 3/4 | 3/4 | 86 | 71 | = |
+| Hyacine | 1/4 | 2/4 | 75 | 62 | +1 |
+| Hysilens | 3/4 | 3/4 | 76 | 68 | = |
+| Mydei | 2/4 | 1/4 | 73 | 67 | −1 |
+| Phainon | 3/4 | 2/4 | 64 | 56 | −1 |
+| Tribbie | 3/4 | 3/4 | 86 | 69 | = |
+| **total** | **37/52** | **36/52** | | | **−1** |
+
+**The honest reading: the card work did not move the metric.** Four Heirs improved,
+four regressed, five held, and the total fell by one case. The canon blocks make the
+prompts more faithful to the databank and they removed 69 crutch rules, but the
+gate — which judges a single line against a canon line — does not reward either.
+
+## What the measurement itself revealed
+
+Two artefacts in the instrument now matter more than the card text:
+
+1. **The `...` replies are the harness's own exhaustion signal**, not a stray model
+   output. `test_dialogue_style.py` rejects degenerate and anti-cheat-failing
+   candidates for up to twelve attempts, then falls back to the literal `"..."` and
+   judges it — scoring 45/25. Five of this run's sixteen failures are that artefact.
+2. **The anti-cheat is suppressing genuinely terse Heirs.** Re-running Mydei with
+   `--no-anti-cheat` lifts him from **1/4 to 3/4**. His lines are being rejected as
+   *run repeats* — short, formulaic-sounding utterances that are, for him, in voice.
+   Castorice does not recover the same way (1/4 either way), so her failure is real.
+
+So the next lever is not the cards but the **judging harness**: either a better
+diversity requirement than "reject and retry", or a product-level guard (done: a
+silent reply is now retried once) plus a judge that can score a quiet line as the
+quiet line it is.
+
+## The product-level fix that came out of it
+
+A Heir now never stores silence as its reply: `chat()` detects a response with no
+letters or digits and asks once, plainly, for the line. Suite:
+`tools/test_aesthetic.py` (48 checks).
