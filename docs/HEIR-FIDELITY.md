@@ -210,3 +210,30 @@ quiet line it is.
 A Heir now never stores silence as its reply: `chat()` detects a response with no
 letters or digits and asks once, plainly, for the line. Suite:
 `tools/test_aesthetic.py` (48 checks).
+
+## The mechanical claims audit (2026-10-27)
+
+`tools/audit_heir_claims.py` compares each card's identity field against
+`databank/chrysos-heirs/` — Coreflame, Titan, MBTI, race, hometown, titles and
+nickname vocabulary. It found **three real inaccuracies**, not just omissions:
+
+| Heir | Card said | Databank says |
+|---|---|---|
+| Hyacine | race `Human (golden blood / Chrysos Heir)` | **Skyfolk** |
+| Cipher | city-state `Okhema (nomadic)` | **Dolos** — the fallen bandit city she starved in |
+| Anaxa | city-state `Grove of Epiphany` | a **remote, unnamed city-state**; the Grove is where he studied |
+
+Each was a place or a people flattened into a convenient label — exactly the
+failure mode this audit exists to catch. All three are corrected, and the tool
+now exits non-zero if any structural claim drifts again.
+
+It also showed that **no card recorded what its Heir calls the others**, though
+that is how the Heirs address each other throughout the databank. Six cards gained
+the vocabulary: Aglaea (Deliverer, Kitty, Seamstress), Cerydra (her eight Dux
+titles), Cipher (Seamstress/the Mom, Ciphy, Kitten Fish), Castorice (Cassie, Cas,
+Princess Homebody, Dux Florum), Anaxa (Prof Nax, One-eyed Boy, Dux Sagax, Naxy),
+Hyacine (Skyfolk of the Twilight Courtyard, named as such).
+
+Still missing, honestly: Mydei, Phainon, Tribbie, Hysilens, Dan Heng and Evernight
+carry no outgoing-nickname vocabulary beyond what their complexity blocks already
+say, because the databank does not record more for them.
