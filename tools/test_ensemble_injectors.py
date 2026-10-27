@@ -134,13 +134,22 @@ def main():
           "What the land already showed" in ep and "chimera" in ep.lower(),
           ep[:120])
 
-    print("== teaching echo skip earth ==")
+    print("== teaching echo carries what the visitor taught ==")
     ws.set_location("anaxa", "Grove of Epiphany")
     ws.set_location("hyacine", "Grove of Epiphany")
-    skip = sl.maybe_echo_teaching(
+    # Policy as of b47cd14: the knowledge wall governs SOURCES, not echoes. A topic
+    # the visitor brought from Earth is already in play between them, so it reaches
+    # a co-located Heir secondhand instead of being erased. The old assertion here
+    # ("skips earth topic") predates that decision and was the suite's only failure.
+    echoed = sl.maybe_echo_teaching(
         ws, "anaxa", "python programming on Earth", "Grove of Epiphany",
     )
-    check("teaching echo skips earth topic", skip == [])
+    check("teaching echo carries an earth topic the visitor taught",
+          len(echoed) >= 1 and echoed[0].get("for") == "hyacine", str(echoed))
+    check("the echo is marked secondhand",
+          all(e.get("secondhand") is True for e in echoed), str(echoed)[:120])
+    check("an empty topic echoes nothing",
+          sl.maybe_echo_teaching(ws, "anaxa", "   ", "Grove of Epiphany") == [])
     ok_echo = sl.maybe_echo_teaching(
         ws, "anaxa", "the Coreflame of Reason", "Grove of Epiphany",
     )
