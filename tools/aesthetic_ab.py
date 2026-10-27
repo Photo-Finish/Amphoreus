@@ -85,7 +85,8 @@ def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description="A/B the appreciation prompt.")
     ap.add_argument("--image", default=str(DEFAULT_IMAGE))
     ap.add_argument("--heirs", default=DEFAULT_HEIRS)
-    ap.add_argument("--model", default=os.environ.get("VISION_MODEL", "qwen2.5vl:7b"))
+    ap.add_argument("--model", default=os.environ.get("AMP_AB_VISION_MODEL", "qwen2.5vl:7b"),
+                    help="a model that accepts images; VISION_MODEL from .env may not")
     ap.add_argument("--out", default=str(ROOT / "docs" / "AESTHETIC-AB.md"))
     args = ap.parse_args(argv)
 
@@ -124,8 +125,26 @@ def main(argv: list[str]) -> int:
                 )
             except Exception as exc:
                 text = f"[error: {exc.__class__.__name__}: {exc}]"
+                # A model that cannot see would produce an identical failure for
+                # every Heir, and a report full of identical errors reads like a
+                # real result. Stop here instead of measuring nothing.
+                low = str(exc).lower()
+                if "multimodal" in low or "does not support" in low:
+                    print(f"model `{args.model}` cannot take an image:")
+                    print(f"  {str(exc)[:200]}")
+                    print("\nuse one that can, e.g. --model qwen2.5vl:7b "
+                          "(gemma3n answers text only, whatever the senses entry says)")
+                    return 2
             out[arm] = str(text or "").strip()
         rows.append({"cid": cid, **out})
+
+    failed = [r[arm] for r in rows for arm in ("old", "new") if r[arm].startswith("[error")]
+    if failed and len(failed) == len(rows) * 2:
+        print("every call failed — refusing to write a report")
+        print(f"  {failed[0][:300]}")
+        return 1
+    if failed:
+        print(f"warning: {len(failed)} of {len(rows) * 2} calls failed")
 
     # ---- metrics
     def summarise(arm: str) -> dict:
