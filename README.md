@@ -386,7 +386,7 @@ Amphoreus/
   - ✅ Ollama **0.32.6**; server runs with `OLLAMA_MODELS=models\ollama`, `OLLAMA_CONTEXT_LENGTH=8192` (via `tools/start_ollama.ps1`)
   - ✅ **Voice / judge / refinement** — `gemma3:27b` (Q4_0, 15 GB)
   - ✅ **Ambient Director** — `deepseek-r1-distill:32b` (Q4_K_M, 19 GB)
-  - ✅ **Senses (unified)** — `gemma3n` (8B E2B) hears music AND sees pictures; **quality option**: `qwen3-vl:8b` vision + `gemma3n` audio (`qwen2.5-omni` music fallback, `qwen2.5vl:7b` earlier vision)
+  - ✅ **Senses** — `gemma3n` hears music; **eyesight uses `qwen2.5vl:7b`** (`qwen2.5-omni` music fallback). Measured 2026-10-27: `gemma3n` refuses images through Ollama and `qwen3-vl:8b` returns empty, so the old "unified sees pictures" and "quality = qwen3-vl" claims were false
   - ✅ **Hearing (speech-to-text)** — faster-whisper `base` at `models/faster-whisper-base`
   - ✅ Env: `.env` (authoritative) + `SENSES_MODE` switch (unified|quality) in `launch_sanctuary.cmd`; `STT_MODEL=models/faster-whisper-base`, `OPENAI_BASE_URL=http://localhost:11434/v1`, `OPENAI_API_KEY=ollama`
   - ✅ **Live end-to-end verified**: chat grounded in RAG + memory + preferences; shared paintings (vision); shared music (audio understanding); persistent per-Heir memory; teaching + debate from beyond the stars

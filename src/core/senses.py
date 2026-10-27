@@ -38,11 +38,19 @@ except Exception:
     pass
 
 _mode = os.getenv("SENSES_MODE", "").lower()
+# Eyesight must be a model this Ollama build can actually feed an image to.
+# Measured 2026-10-27: `gemma3n` (the old "unified" choice) refuses images
+# outright — "model does not support multimodal requests" — and `qwen3-vl:8b`
+# (the old "quality" choice) accepts the request and returns an EMPTY string.
+# `qwen2.5vl:7b` answers. Both modes therefore use it for vision and differ only
+# in name until another eye is verified; `AMP_VISION_FALLBACK` in llm_client is a
+# runtime safety net, not a substitute for a truthful choice here.
+_VISION_WORKING = "qwen2.5vl:7b"
 if _mode == "quality":
-    os.environ["VISION_MODEL"] = "qwen3-vl:8b"
+    os.environ["VISION_MODEL"] = _VISION_WORKING
     os.environ["AUDIO_MODEL"] = "gemma3n"
 elif _mode == "unified":
-    os.environ["VISION_MODEL"] = "gemma3n"
+    os.environ["VISION_MODEL"] = _VISION_WORKING
     os.environ["AUDIO_MODEL"] = "gemma3n"
 
 # Keep HuggingFace downloads inside the project (self-contained; nothing on C:)
