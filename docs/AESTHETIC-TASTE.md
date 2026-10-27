@@ -166,3 +166,39 @@ The music path already solves this properly, in two stages: a neutral ear
 describes the piece, then the Heir's own model judges it. The vision path still
 does it in one call, so the small model does both jobs. A two-stage picture path —
 VLM perceives, Heir judges — is the next change, and the obvious one.
+
+## Two-stage picture path — the register check (2026-10-27)
+
+One neutral perception call, then one judgement per Heir through **their own
+model**. Same picture (`bg-vortex-of-genesis.jpg`). Verbatim:
+
+> **Perception (neutral):** "a grand, fantasy-inspired interior space… tall, dark
+> stone columns and intricate arches, with a central pathway leading towards a
+> bright, glowing portal…"
+
+> **Mydei:** "Stone columns… a glowing path…star-like symbols on the walls. The work
+> seems honest, though a touch careless in its scale. It pleases me, but lacks
+> restraint; too much light, too little steel. I would have forged the stone
+> darker, weighted the arches, and dimmed the glow to a Coreflame's ember."
+
+> **Hyacine:** "Oh, the light is the first thing I noticed… and those star-like
+> symbols on the walls are quite striking, aren't they? … a clear path leading
+> toward that glowing portal, which feels… hopeful. We should all focus on
+> tomorrow, shouldn't we? I think I'd add some warmer colors… to make it feel less
+> imposing and more inviting for anyone who needs healing…"
+
+> **Tribbie:** "Oh, loud! We see tall stone and a bright blue glow… and lots of
+> stars everywhere, which is fun. It's a pretty space, definitely meant for
+> something big, doesn't it look like? It pleases us, though it feels a little too
+> serious, maybe? We would add more colours, and definitely some flowers!"
+
+Cross-Heir word overlap: **Mydei/Hyacine 0.11 · Mydei/Tribbie 0.12 ·
+Hyacine/Tribbie 0.07** — the opposite of the single-call A/B, where every Heir
+sounded like the same art critic. Each named concrete features from the perception
+and each named what they would change, in their own vocabulary (steel and restraint;
+hope and healing; flowers and plural "we").
+
+The verdict-phrase detector only matched one of the three literally, because
+Hyacine and Tribbie paraphrased their commitment instead of using the listed phrase.
+That is a detector limitation, not a voice failure — the positions are plainly
+different ("pleases me", but "too serious", versus "hopeful").
