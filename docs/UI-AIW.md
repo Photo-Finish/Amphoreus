@@ -123,3 +123,5 @@ brown ink and terracotta hover.
 
 Nothing in either surface moved: same positions, padding, type sizes and behaviour.
 `python tools/run_all_tests.py` — **1855 checks across 28 suites** — stays green.
+
+Verified by rendering, not by inspection of code: the theme preview, the Eternal Page stage and the galgame dialogue panel were each built to HTML, screenshotted with Chromium and looked at (world_runtime/art_review/). The galgame panel renders as a cream page with the egg-and-dart frieze along its top edge, brown serif ink, a terracotta visitor line and caret, over the indigo world.
