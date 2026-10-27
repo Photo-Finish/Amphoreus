@@ -58,6 +58,11 @@ _APPRECIATION_MUSIC = (
 )
 
 
+def _looks_like_silence(text: str) -> bool:
+    """True for an empty reply or one with no letters or digits (``...``, ``—``)."""
+    return not any(ch.isalnum() for ch in str(text or "").strip())
+
+
 class AgentManager:
     """Main orchestrator for AI Chrysos Heir interactions."""
 
@@ -387,7 +392,10 @@ class AgentManager:
                         "role": "user",
                         "content": f"{messages[-1].get('content', '')}\n\n{note}".strip(),
                     }
-                response = self._call_llm(messages, stream=stream)
+                # Non-streaming, like the multimodal call it replaces: this branch
+                # returns a finished line, and the session/memory writes below
+                # expect a string rather than a generator.
+                response = self._call_llm(messages, stream=False)
             else:
                 response = self.llm.chat_vision(
                     text=aesthetic.vision_brief(character_id) + (user_message or ""),
@@ -424,6 +432,11 @@ class AgentManager:
         if not stream or has_image or has_video:
             if isinstance(response, str):
                 response = _spoken_words(response)
+                # A terse Heir occasionally answers with silence — an empty line
+                # or a bare ellipsis. That is not a reply: ask once, plainly, for
+                # the line itself rather than storing a blank in their memory.
+                if _looks_like_silence(response):
+                    response = self._nudge_reply(messages) or response
             # Add assistant response to session + persistent memory
             self.sessions.add_message(character_id, "assistant", response)
             self.memory.add_history(character_id, "assistant", response)
@@ -444,6 +457,25 @@ class AgentManager:
             return response
         else:
             return self._stream_response(character_id, response)
+
+    def _nudge_reply(self, messages: list[dict]) -> str:
+        """One retry when a Heir answers with silence instead of a line.
+
+        The gate sees this failure constantly: terse personae return an empty
+        string or a bare ellipsis for some scenes, which reads as nothing at all
+        to a visitor. Ask once, plainly, for the line — and keep the original if
+        the retry is also silent.
+        """
+        try:
+            nudge = {
+                "role": "user",
+                "content": "(Say the line you would actually say — a real sentence, not silence.)",
+            }
+            text = self._call_llm(list(messages) + [nudge], stream=False)
+            cleaned = _spoken_words(str(text or "")).strip()
+            return "" if _looks_like_silence(cleaned) else cleaned
+        except Exception:
+            return ""
 
     def _perceive_picture(self, data_uri: str) -> str:
         """Stage 1 of the picture path: a neutral eye describes, and judges nothing.

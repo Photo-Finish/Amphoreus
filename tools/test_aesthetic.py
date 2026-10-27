@@ -149,6 +149,15 @@ def main() -> int:
     check("other errors are not mistaken for it",
           not client._multimodal_refused(Exception("connection refused")))
 
+    print("== Silence is not a reply ==")
+    from src.core.agent_manager import _looks_like_silence
+
+    for sample, expected in (("...", True), ("", True), ("   ", True), ("—", True),
+                             ("Ah.", False), ("Hm.", False)):
+        check(f"silence detector: {sample!r} -> {expected}",
+              _looks_like_silence(sample) is expected)
+    check("the engine retries a silent reply", "_nudge_reply(messages)" in engine)
+
     print()
     print(f"{len(PASSED)} passed, {len(FAILED)} failed")
     return 1 if FAILED else 0
