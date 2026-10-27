@@ -316,3 +316,40 @@ Heirs is one vision call.
 degenerate detection, the short-line repeat rule, canon-quote refusal,
 name-prefix trimming, and assertions that exhaustion is counted as a skip and every
 retry carries a seed.
+
+## Narrative claims that need a source (2026-10-28)
+
+The mechanical audit checks fields; these are the *stories* a card asserts. Three
+are not supported by anything I can find in `databank/`, and one contradicted
+itself:
+
+**Mydei — fixed.** The card said "son of King Gorgo … cast into the Sea of Souls
+by his father Eurypon … mother Gorgo dies challenging Eurypon." Gorgo was both his
+father and his mother, and the databank profile names only Eurypon as father. The
+mission dialogue is clearer than either: `chapter-02-light-slips.md` has Chartonus
+hiss *"Leave our city, cursed son of Gorgo!"* and the Divine Echo intone *"The son
+of Gorgo will be crowned in blood."* The card now says what the sources support —
+son of the king, whom the chapters call Gorgo and the chronicle Eurypon — and the
+invented mother is gone.
+
+**Open question for the databank itself:** the Heir profile says *Father: King
+Eurypon*, the chapters say *son of Gorgo*. Those are two different names for the
+same man, or two different men. I did not choose; the card now admits the
+ambiguity instead of inventing a resolution.
+
+**Castorice — unsupported.** Her card's origin reads: "Her twin brother became
+Thanatos, the Death Titan, perishing in the River of Souls trying to save her."
+Nothing in `databank/chrysos-heirs/castorice.md` says this. It lists Thanatos as
+her **Titan** (Hand of Shadow) and Pollux as her **companion dragon**, "named after
+Castor's twin in Greek myth" — the twin appears only in the etymology. Either the
+card is drawing on a source outside the databank, or the myth has been absorbed
+into her history. I left the text alone: deleting a Heir's origin is an operator's
+decision, not a tidy-up.
+
+**Hyacine — unsupported.** The card says she is "descended from an unnamed Chrysos
+Heir". Her profile says Skyfolk, of the Twilight Courtyard, with a legendary
+grandmother (Jacyntha) — no Chrysos Heir in the line. Left alone for the same
+reason.
+
+Both are recorded here rather than corrected, because the correction would be an
+invention of my own.
