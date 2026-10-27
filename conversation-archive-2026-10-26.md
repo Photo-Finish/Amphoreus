@@ -941,3 +941,79 @@ bodies, no console errors** — with the voice ready (`qwen2.5:14b-instruct`) an
   is wired but only visible in the corner-face slot the page already has.
 
 *Captured at 2026-10-27 02:45, written by the session it records.*
+
+---
+
+## Round 4 — 2026-10-27 21:19
+
+### 🧑 You
+
+Introduce what does aura/bust mean. *(then)* Here I would like you to search for more related images. Here we already know that they are from special announcement programs, and screenshots were taken. Now can you try to search for blogs/ introduction static webpages regarding the SAP's to search for better resolution pictures? Personally, if things do not work out for resolution, I would like bust. BTW you may use those emojis collected to be the criterion in identifying Heirs. Proceed in your workflow and complete the tasks you have already planned. Search the web when necessary.
+
+### 🤖 Assistant
+
+Three threads at once: the voice gate on the GPU (hours, unattended), the better
+art hunt, and the last four bodies.
+
+> 🔧 **pwsh** — started `test_dialogue_style.py --model gemma3:27b --limit 4 --best-of 1` for all thirteen
+> 🔧 **web_search** (×4) — 3.5 special programme art, Hysilens character pages, fan archives
+> 🔧 **web_fetch** — miyoushe 3.5 preview archive (JS-rendered, nothing to take)
+> 🔧 **pwsh** — bilibili API probes: `api.bilibili.com` unreachable, `app.bilibili.com` answers but refuses the query
+
+### The search for a better Hysilens — and why it ended as a portrait
+
+Her Q body exists only inside the 3.5 programme video at 360p. The 3.5
+announcement *substitutes The Herta*, so no still carries her. I looked for the
+programme's own higher-quality stream (bilibili's API is unreachable from this
+machine; the mobile host answers and refuses), fan archives of the preview
+stream ([miyoushe](https://www.miyoushe.com/sr/article/67072094) — JS-rendered,
+no hotlinkable stills), character-art pages (splash art, not chibi), and a 4K
+illustration video (not Q art). Nothing better exists that this machine can
+reach, so the operator's standing call applied: **bust**. Her body is now the
+official Pom-Pom Gallery sticker.
+
+### The last four bodies
+
+The auras split by cause, not by taste:
+
+- **Cyrene, Evernight, Dan Heng** — busy painted sets with crisp sources. A
+  border flood removes the flat, border-connected set; the holes it punches in
+  flat costume areas are *interior*, so filling interior holes restores the
+  figure. That combination is what the earlier attempt lacked, and it works: all
+  three are now clean cutouts.
+- **Tribbie** — her swing and flowers are her canonical seat, not a matte failure.
+  Left as she is, deliberately.
+- **Hysilens** — the portrait above.
+
+Portraits then needed their own scale: a bust at the sill's 140 px carries a head
+half again a sitting Heir's, so the three portraits (Anaxa, Phainon, Hysilens)
+now draw 80 % tall and Hysilens carries no corner-face sticker, since her body
+*is* that art.
+
+**Result: no faded photograph remains on the sill.** Nine clean cutouts, three
+portraits, one Heir with her swing.
+
+### The identity criterion
+
+The operator's point about the collected emoji — the Pom-Pom Gallery stickers —
+is already how the Anaxa mislabel was caught, and it is recorded in
+`docs/ART-PROVENANCE.md`: compare a candidate body against `cute/<id>/` before
+trusting its filename.
+
+### Suites
+
+`test_eternal_sill` 30 (including that the flood bodies removed their set rather
+than faded it, and that the three portraits are exactly the three
+`PORTRAIT_BODIES`) · `test_eternal_page` 395.
+
+## State at the end of Round 4
+
+- **Pushed**: `3b5efe9` — the flood mattes, Hysilens' portrait, the portrait
+  scale, and the docs.
+- **Running**: the full thirteen-Heir voice gate on `gemma3:27b`, unattended.
+  Its numbers land when the GPU finishes; the historical report is backed up and
+  will be restored afterwards, with this run kept under its own dated name.
+- **Open**: nothing visible on the sill. The voice pillar's numbers, and any
+  refinement the gate suggests, are what remains.
+
+*Captured at 2026-10-27 21:30, written by the session it records.*
