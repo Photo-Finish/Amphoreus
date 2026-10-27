@@ -158,6 +158,26 @@ def main() -> int:
               _looks_like_silence(sample) is expected)
     check("the engine retries a silent reply", "_nudge_reply(messages)" in engine)
 
+    # The retry itself, without a GPU: a fake caller answers with silence once.
+    from src.core.agent_manager import AgentManager
+
+    def _retry_with(reply: str):
+        mgr = AgentManager.__new__(AgentManager)
+        calls = []
+
+        def fake(messages, stream=False):
+            calls.append(messages[-1]["content"])
+            return reply
+
+        mgr._call_llm = fake
+        return mgr._nudge_reply([{"role": "user", "content": "hi"}]), calls
+
+    got, calls = _retry_with("As you wish.")
+    check("a retry returns the line it got", got == "As you wish.", repr(got))
+    check("the retry asks for a real line", "not silence" in calls[0], calls[0][:60])
+    got2, _ = _retry_with("...")
+    check("a silent retry is not stored", got2 == "", repr(got2))
+
     print()
     print(f"{len(PASSED)} passed, {len(FAILED)} failed")
     return 1 if FAILED else 0
