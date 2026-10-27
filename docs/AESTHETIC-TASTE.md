@@ -97,3 +97,17 @@ is reversible without touching code.
   perception yields a thin (but not falsely rapturous) judgement.
 - This measures *discrimination*, not literary quality. A response can be specific
   and still dull.
+
+## How it is checked
+
+- **Offline** — `tools/test_aesthetic.py` (31 checks): thirteen profiles, every
+  axis in range, no two Heirs sharing a stance set, every axis contested across
+  the cast, the prompt demanding concrete features and a verdict, the banned
+  phrases present in the instruction, the operator switch, and that the engine
+  actually calls it.
+- **Live** — `tools/aesthetic_ab.py` runs the same Heir, system prompt and picture
+  through both the old invitation and the new procedure, then measures what a
+  reader would notice: banned stock phrases, whether a verdict was reached, how
+  many *different* verdicts the cast produces, whether a change was named, and how
+  far the Heirs' answers sit from each other. Cross-Heir overlap is the number
+  that matters — near 1.0 means thirteen names for one voice.
