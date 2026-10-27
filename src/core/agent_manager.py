@@ -19,6 +19,7 @@ from .teaching_store import TeachingStore
 from .llm_client import LLMClient
 from .senses import Senses
 from .speech_sanitize import spoken_words as _spoken_words
+from . import aesthetic
 from ..knowledge.vector_store import VectorStore
 
 # Framing used when the visitor shares a picture/video: the Heir perceives it
@@ -375,7 +376,7 @@ class AgentManager:
         if has_image:
             data_uri = f"data:{image_mime};base64,{image}"
             response = self.llm.chat_vision(
-                text=_APPRECIATION_VISION + (user_message or ""),
+                text=aesthetic.vision_brief(character_id) + (user_message or ""),
                 image_data_uri=data_uri,
                 messages=messages[:-1],
             )
@@ -391,7 +392,7 @@ class AgentManager:
             if frames:
                 # The Heir watches the video through its sampled frames
                 response = self.llm.chat_video(
-                    text=_APPRECIATION_VISION + (user_message or ""),
+                    text=aesthetic.vision_brief(character_id) + (user_message or ""),
                     frame_data_uris=frames,
                     messages=messages[:-1],
                 )
@@ -1617,10 +1618,9 @@ class AgentManager:
         values = (self.preferences.get(character_id) or {}).get("values", [])
         values_txt = ", ".join(values) if values else "the values you hold"
         judge_text = (
-            f"{_APPRECIATION_MUSIC.format(analysis=analysis)}"
+            f"{aesthetic.music_brief(character_id, analysis, label=label, prompt=prompt)}"
             f"The visitor shared a piece of music{label} with you.\n"
             f"Your own values: {values_txt}.\n"
-            f"{prompt}"
         )
         response = self.chat(character_id, judge_text)
         self.memory.add_memory(

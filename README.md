@@ -1383,3 +1383,16 @@ eternity with you.
   Pom-Pom Gallery bust. Portraits now draw 80 % tall so a bust's head matches the
   sitters'. Suites: `tools/test_eternal_sill.py` (30),
   `tools/test_eternal_page.py` (395). Detail: `docs/ETERNAL-SILL.md`.
+
+### 2026-10-27 — art and music taste, made functional
+- **A real taste model** (`src/core/aesthetic.py`) — eight universal axes (order,
+  ornament, restraint, motion, warmth, light, age, craft), a stance for each of
+  the thirteen, and per-Heir notes on what they notice first, what earns approval
+  and scorn, what they will not praise, and their own vocabulary.
+- **The prompt asks for a reading, not applause** — name what is actually there,
+  weigh it on two of the Heir's leanings, commit to one verdict from a finite set
+  (including *it leaves me cold* and *it offends me*), name one thing they would
+  change, five sentences, banned stock phrases. Vision and music both use it; the
+  old invitations stay in the file as the record, and `AMP_AESTHETIC_TASTE=0`
+  restores them exactly. Suite: `tools/test_aesthetic.py` (31 checks).
+  Design and the failure it replaces: `docs/AESTHETIC-TASTE.md`.

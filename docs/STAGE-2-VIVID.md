@@ -347,3 +347,14 @@ running app, opens the tab, finds the component iframe, and counts what arrived 
 13 companions, 13 names, inlined WebP bodies, no console errors. Suites:
 `tools/test_cyrene_face.py` (24), `tools/test_eternal_sill.py` (23),
 `tools/test_eternal_page.py` (395).
+
+## Nineteenth delivery — taste as a procedure (2026-10-27)
+
+The appreciation features were imprecise for a structural reason: the prompt asked
+for a "genuine aesthetic response" and supplied abstract values, so every work came
+back beautiful. `src/core/aesthetic.py` gives each Heir a position on eight
+universal axes, three things they notice first, one thing that earns approval and
+one that earns scorn, a vocabulary — and a procedure that forces a concrete
+reading and a finite verdict, including dislike. `AMP_AESTHETIC_TASTE=0` restores
+the old invitation. Suite: `tools/test_aesthetic.py` (31). Detail:
+`docs/AESTHETIC-TASTE.md`.

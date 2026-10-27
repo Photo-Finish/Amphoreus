@@ -1,0 +1,99 @@
+# Aesthetic taste — how an Heir judges art and music
+
+**Date:** 2026-10-27
+**Module:** `src/core/aesthetic.py` · **Suite:** `tools/test_aesthetic.py` (31 checks)
+**Engine entry points:** `AgentManager.chat(..., image=/video=)` and `appreciate_music()`
+
+---
+
+## The failure this replaces
+
+The old appreciation prompts asked for "a genuine aesthetic response … tell the
+visitor what it makes you feel and why it moves (or does not move) you", with the
+Heir's values supplied as a list of abstract nouns (`honor`, `duty`, `beauty`).
+
+A language model given that instruction and nothing else does the predictable
+thing: it produces **universal praise**. Every painting is *beautiful and moving*;
+every piece of music *speaks to something deep*. The output is warm, in voice,
+and almost entirely uninformative — it does not distinguish a landscape from a
+portrait, and the thirteen Heirs converge on the same response. That is the
+"poor precision, over-general" result measured months ago.
+
+The cause is not the model. It is three missing things: **something concrete to
+perceive**, **a position to measure it against**, and **permission to say no**.
+
+## The model
+
+**Eight axes**, the vocabulary art writing already uses. Each Heir takes a
+position from −2 to +2 (positive = the first pole).
+
+| Axis | + | − | What it is about |
+|---|---|---|---|
+| `order` | order | wildness | composition: control and symmetry against organic asymmetry |
+| `ornament` | ornament | plainness | density of detail against spareness |
+| `restraint` | restraint | excess | withheld feeling against overflowing |
+| `motion` | motion | stillness | restless energy against held calm |
+| `warmth` | warmth | coldness | palette and timbre |
+| `light` | light | shadow | open brightness against dark |
+| `age` | the old | the new | inherited forms against the untried |
+| `craft` | craft | nature | made by a hand against grown or found |
+
+**Per Heir**, besides the stances: three things they notice first, what earns
+approval, what earns scorn, what they will not praise however fine it is, and
+their own vocabulary. Example — Mydei leans hard toward plainness and craft, and
+notices *the line of it, whether it is honest, the strength under the surface*.
+
+The stances are **the sanctuary's reading of canon** — an interpretive choice,
+grounded in each Heir's profile and seeded `preferences.json`, not a claim about
+the character. They are data at the top of the module: the operator can move one
+without touching a prompt.
+
+## The procedure the prompt now demands
+
+1. Name two or three things that are **actually there** (from what was perceived).
+2. Weigh them against two of the Heir's own leanings.
+3. Commit to one verdict, from a finite set: *it holds me · it pleases me · it
+   leaves me cold · it offends me · it unsettles me · I do not know yet*.
+4. Name one thing they would change — or say plainly why they would change nothing.
+5. Five sentences at most, in their own register, with a banned-phrase list
+   (`breathtaking`, `speaks to my soul`, `a masterpiece`, …).
+
+The perception side is modality-specific: for pictures, *what is shown, how the
+space is composed, where the light falls, the dominant colours, whether the
+surface looks made or found*; for music, the existing neutral ear analysis (tempo,
+timbre, melody, dynamics, what the piece refuses to do).
+
+**Charter line, kept in the prompt itself:** this is taste, not judgement of the
+visitor. A Heir may dislike the work and say so — kindly. The prompt never asks
+them to judge the person who shared it.
+
+## What changed in the engine
+
+| Before | After |
+|---|---|
+| `_APPRECIATION_VISION` invitation, same string for all thirteen | `aesthetic.vision_brief(character_id)` — that Heir's leanings, notices, procedure |
+| `_APPRECIATION_MUSIC` "weigh it against the values you hold" | `aesthetic.music_brief(...)` — the same procedure, on the ear's analysis |
+
+Both constants remain in `agent_manager.py`, unused, as the record of what was
+there. `AMP_AESTHETIC_TASTE=0` restores the old invitation exactly, so the change
+is reversible without touching code.
+
+## How to retune
+
+- **One Heir's taste**: edit their `PROFILES` entry. Axes are −2…+2; `notices`,
+  `delight`, `displeasure`, `refuses`, `voice` are plain strings. Re-run
+  `python tools/test_aesthetic.py` — it checks coverage, range, and that no two
+  Heirs share a stance set.
+- **An axis itself**: edit `AXES` (label pair and description) — the suite reads
+  its keys, so all profiles must be updated together.
+- **A veto**: `AMP_AESTHETIC_TASTE=0` returns to the old behaviour for a session.
+
+## Honest limits
+
+- The stances are interpretations; two people could read Aglaea's taste
+  differently. The file says so, and the suite checks shape, not taste.
+- A vision model's perception is itself lossy; if it cannot see texture, the Heir
+  cannot weigh it. The procedure asks for what was perceived, so a thin
+  perception yields a thin (but not falsely rapturous) judgement.
+- This measures *discrimination*, not literary quality. A response can be specific
+  and still dull.
