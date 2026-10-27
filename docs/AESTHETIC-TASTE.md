@@ -139,3 +139,30 @@ Read it as a spread, not as a scorecard: Cerydra and Mydei agree about plainness
 and disagree about nothing else that matters; Tribbie and Castorice are opposite
 almost everywhere; Evernight is the only Heir who finds a blank canvas interesting.
 If two rows ever become identical, the suite fails.
+
+## The first valid A/B (2026-10-27)
+
+`qwen2.5vl:7b`, one picture, four Heirs, old invitation against the procedure:
+
+| Measure | old | new |
+|---|---:|---:|
+| answers that reached a verdict | 0/4 | **4/4** |
+| answers naming a change | 0/4 | 2/4 |
+| banned stock phrases | 0 | 0 |
+| cross-Heir word overlap | 0.11 | 0.14 |
+| average length (words) | 92 | 92 |
+
+The procedure does what it claims: **every answer now commits to a verdict**, where
+the invitation never did, at the same length and without falling back on stock
+phrases. It also raises how often the Heir names what they would change.
+
+**What it did not fix.** Reading the four pairs, the *register* is still the same
+calm critic in every voice, and the Heirs' own stances barely surface ("Mydei"
+sounds like "Anaxa"). The reason is not the prompt: in this code path the answer
+is written by the **vision model** (`qwen2.5vl:7b`), not by the Heir's 27B voice
+model. A 7B captioner writes plausible art-criticism for everyone.
+
+The music path already solves this properly, in two stages: a neutral ear
+describes the piece, then the Heir's own model judges it. The vision path still
+does it in one call, so the small model does both jobs. A two-stage picture path —
+VLM perceives, Heir judges — is the next change, and the obvious one.
