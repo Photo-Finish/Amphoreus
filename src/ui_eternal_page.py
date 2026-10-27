@@ -1336,6 +1336,9 @@ def render_eternal_page(manager, *, key_prefix: str = "eternal") -> None:
     cyrene_slot = cyrene_face.current_slot()
     art_uris = stage_art_uris(emotions, cyrene_form=cyrene_slot.visual_face)
     parchment = ep.parchment_path()
+    # A 2x Real-ESRGAN parchment sits beside the original when one has been made.
+    from src.world import eternal_sill as _sill
+    parchment = _sill.hi_res_path(parchment) or parchment
     parchment_uri = (
         _data_uri(parchment, max_px=art_cache.PARCHMENT_MAX_PX) if parchment else ""
     )

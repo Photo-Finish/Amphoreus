@@ -35,7 +35,7 @@ BODY_MAX_PX = 280
 # stage widens with the window, so keep a generous 4-5× and encode cheaply.
 FACE_MAX_PX = 160
 # Full-bleed parchment background; only trimmed, never shrunk below 2× stage.
-PARCHMENT_MAX_PX = 1400
+PARCHMENT_MAX_PX = 2400
 QUALITY = 92
 # Pillow's WebP "method" is effort, not quality. Method 6 spends ~40× the CPU
 # for under 1% fewer bytes; 5 keeps a cold first build under a second.

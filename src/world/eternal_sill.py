@@ -93,3 +93,19 @@ def covered(character_id: str) -> Optional[float]:
         except (TypeError, ValueError):
             return None
     return None
+
+def hi_res_path(path):
+    """The `@2x`/`@3x`/`@4x` sibling of an image, when one exists.
+
+    `tools/upscale_art.py` writes upscales beside their originals rather than over
+    them, so callers ask this instead of hard-coding a filename. Returns None when
+    there is no sibling, which means "use the original".
+    """
+    if path is None:
+        return None
+    path = Path(path)
+    for scale in (4, 3, 2):
+        cand = path.with_name(f"{path.stem}@{scale}x{path.suffix}")
+        if cand.is_file() and cand.stat().st_size > MIN_BYTES:
+            return cand
+    return None

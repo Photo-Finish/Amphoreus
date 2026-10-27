@@ -8,3 +8,4 @@ build/
 # straight from the repository instead of needing a cable.
 !dist/
 !dist/Amphoreus.apk
+*.idsig

@@ -1396,3 +1396,19 @@ eternity with you.
   old invitations stay in the file as the record, and `AMP_AESTHETIC_TASTE=0`
   restores them exactly. Suite: `tools/test_aesthetic.py` (31 checks).
   Design and the failure it replaces: `docs/AESTHETIC-TASTE.md`.
+
+### 2026-10-27 — super-resolution for the low-res art
+- **`tools/upscale_art.py`** — Real-ESRGAN on the art, with the two things a naive
+  pass gets wrong fixed: transparency is preserved (premultiplied RGB and alpha
+  upscaled separately, then un-premultiplied), and this build's broken `-s 2` is
+  avoided by running the model at its native factor and resampling. Masters are
+  never overwritten; upscales land beside them as `@2x` and
+  `eternal_sill.hi_res_path()` makes the page prefer one automatically.
+- **What it is for, measured** — the Eternal Page parchment (1216×603 painted
+  across a 2200 px stage) is the only genuinely under-resolved asset; the sill
+  sprites, PPG faces and galgame backgrounds are already large enough for where
+  they are shown. `python tools/upscale_art.py --plan` prints that table.
+- **What it cannot do** — make a 360p Hysilens separable. She upscales cleanly to
+  500×880 and still keeps the blue stage baked into 96 % of her pixels; the matte
+  failure is lack of an edge, not lack of pixels. She stays a portrait.
+  Suite: `tools/test_upscale_art.py` (13). Detail: `docs/UPSCALING.md`.
