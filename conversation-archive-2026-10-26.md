@@ -1017,3 +1017,72 @@ than faded it, and that the three portraits are exactly the three
   refinement the gate suggests, are what remains.
 
 *Captured at 2026-10-27 21:30, written by the session it records.*
+## Rounds 5–11 — 2026-10-27 22:00 → 2026-10-28 02:20
+
+*These rounds were not transcribed turn by turn; each is recorded as the request,
+the finding, and what changed. The detailed reasoning lives in the documents the
+work produced — `docs/HEIR-FIDELITY.md`, `docs/UI-AIW.md`, `docs/AESTHETIC-TASTE.md`,
+`docs/UPSCALING.md` — and in the commit messages, which are written as rationale.*
+
+### 🧑 You
+> "For low-res pictures, can you do an upscale in resolution? something like AI-hyper resolution?"
+
+**What happened.** Real-ESRGAN (`x4plus-anime`) wired into `tools/upscale_art.py`.
+The binary is RGB-only, so a cut-out comes back with a background painted into it;
+the tool premultiplies, upscales colour and mask separately, then un-premultiplies.
+Two build bugs were found by measuring: `-s 2` crops the 4× render instead of
+resampling it (the image shifts into a corner), and tiling scrambles inputs that are
+not multiples of the model scale. `--plan` showed the parchment was the only
+genuinely under-resolved asset (1216 px painted across a 2200 px stage); it now ships
+at 2400 px (306 KB) and `eternal_sill.hi_res_path()` prefers an `@2x` sibling
+automatically. **The upscale did not rescue Hysilens** — she separates no better at 4×,
+so she stays a portrait.
+
+### 🧑 You
+> "Store the changelog in a different file other than the readme… the readme only needs to document phase changes and author contribution signatures."
+
+**What happened.** Fifteen Stage-2 entries moved to `CHANGELOG.md` (counts verified:
+15 in, 15 out). README keeps the phase record, the signatures, and the **frozen
+Copilot Stage-1 changelog** — lines 1–1008 verified byte-identical to the hand-over.
+An index row I had added to "read these first" was reverted because it fell inside
+that frozen region. The convention is now written into the workflow rule.
+
+### 🧑 You
+> "I would love it if you can address all the defects you noticed and optimize them for all Heirs. I know it would take long."
+
+**What happened.** All thirteen cards lost their `AUTO REFINEMENT` crutch rules (69
+templates) and gained canon complexity blocks; the claims audit corrected three wrong
+identities and Mydei's self-contradictory parentage; picture appreciation became two
+stages; and the eyesight defect surfaced (`VISION_MODEL=gemma3n` refuses images
+outright, so picture sharing was broken, not merely imprecise). The measured result
+of the card pass was **36/52 against 37/52** — four Heirs up, four down — and that was
+written down as it was rather than dressed up.
+
+### 🧑 You
+> "Tell me current fallacies and implementations to be done briefly." → "Do all in the order you prefer."
+
+**What happened.** Eight fallacies fixed foundations-first, and three of them were the
+instrument lying: deterministic retries (thirteen identical lines), exhaustion scored
+as a real case (a `"..."` at 45/25), and a tracked report overwritten every run. With
+those fixed the gate reported **45/50 (90 %), one skip** — and the document states
+plainly that most of that gain is the instrument, not the cards. `--debug-exhausted`
+exists because guessing at Castorice's failure had already failed twice; it showed
+her reciting one canon line thirteen times.
+
+### 🧑 You
+> "Check if any ghostly floating animation still occurs. Also, change the entire UI artstyle to either… δ-me13 … or … As I've Written … DO NOT implement this if you have not seen any in-game screenshots."
+
+**What happened.** The motion audit measured **zero** changed pixels across two stage
+screenshots three seconds apart. The style work began only after real references were
+downloaded and looked at: the in-game book page (cream spread, gold egg-and-dart
+frieze, corner bracket, Roman-numeral tabs, terracotta chevrons) and the archive page
+where `δ-me13.exe` sits as one of the `.exe` tiles — two pages of the same book. The
+book was implemented as `src/ui_theme.py` and carried through the app chrome, every
+Streamlit widget, and the Eternal Page menu.
+
+### State at the end of Round 11
+
+`HEAD` on `origin/main`; 1855 offline checks green across 28 suites; the gate at
+45/50 with one skip; the UI on the book theme with three custom surfaces (galgame,
+walk scene, admin console) still to carry it.
+

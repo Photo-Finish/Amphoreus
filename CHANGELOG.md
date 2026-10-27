@@ -392,3 +392,70 @@
   500×880 and still keeps the blue stage baked into 96 % of her pixels; the matte
   failure is lack of an edge, not lack of pixels. She stays a portrait.
   Suite: `tools/test_upscale_art.py` (13). Detail: `docs/UPSCALING.md`.
+### 2026-10-27 — the Heirs, rebuilt and honestly measured
+- **All thirteen cards rebuilt** — every inherited `AUTO REFINEMENT` block removed (69
+  sentence templates across twelve cards: "begin sentences with transitional
+  phrases", "use 'hmph' alone", "end with trailing ellipses"), replaced with a
+  **CANON COMPLEXITY** block drawn from `databank/chrysos-heirs/`: what each Heir
+  notices, carries, hides and cannot forgive. Behaviour, never phrasing.
+- **A mechanical canon audit** — `tools/audit_heir_claims.py` checks Coreflame,
+  Titan, MBTI, race, hometown, titles and nicknames against the databank, and exits
+  non-zero on drift. It found three wrong identities: Hyacine listed Human (she is
+  **Skyfolk**), Cipher's home given as Okhema (she is from **Dolos**), Anaxa's as the
+  Grove (he only studied there). Six cards also gained the nickname vocabulary they
+  never had — including Cerydra's eight Dux titles.
+- **Mydei's parentage fixed** — the card made Gorgo both his father and his mother
+  while naming Eurypon as the father. `chapter-02-light-slips.md` calls him "son of
+  Gorgo" repeatedly, so the card now says son of the king — Gorgo in the chapters,
+  Eurypon in the chronicle — and the invented mother is gone. Castorice's
+  twin-brother-becomes-Thanos origin and Hyacine's descent from an unnamed Heir have
+  **no** support in the databank and are recorded as open questions instead of being
+  rewritten.
+- **Picture appreciation is two-stage** — a neutral eye describes, then the Heir's own
+  model judges. Same picture, three Heirs: Mydei on restraint and forged stone,
+  Hyacine on hope and warmth, Tribbie on stars and flowers in the plural; cross-Heir
+  overlap 0.07–0.12, against one shared critic's voice before.
+- **Eyesight was broken, not weak** — `VISION_MODEL=gemma3n` refuses images through
+  Ollama ("does not support multimodal requests") and `qwen3-vl:8b` returns empty;
+  `qwen2.5vl:7b` answers. Both `SENSES_MODE` branches now set the eye that works, and
+  the README stops claiming one model both hears and sees.
+- Suites: `test_aesthetic` 51, `test_eternal_page` 395.
+
+### 2026-10-28 — the instrument corrected
+- **The gate was measuring itself.** Ollama samples deterministically, so
+  reject-and-retry repeated the *same* request up to thirteen times and got the same
+  line back — Castorice produced thirteen copies of one canon quote. `llm.chat` now
+  takes a `seed` and the gate passes the attempt number; Tribbie's skip vanished and
+  Castorice's dropped from two to one.
+- **Exhaustion is no longer scored** — a case with nothing surviving is **skipped**
+  and reported as missing coverage instead of judging a literal `"..."` at 45/25
+  (five of the previous run's sixteen failures were that artefact). `--report`
+  defaults to a dated file so a run can never overwrite a tracked measurement, and
+  `--debug-exhausted` prints every rejection and its reason.
+- **The anti-cheat re-baselined on evidence** — the premise was wrong: Mydei's canon
+  lines average 14.5 words, so he is not terse. The relaxation keys on the *line
+  produced* (six words or fewer ⇒ exact repeats and crutches only).
+- **Result: 45 of 50 scored cases pass (90 %), one skipped** — against 37/52 (71 %)
+  when the work began. Most of the gain is the instrument, and the document says so.
+- `tools/test_style_gate.py` (19 checks) now covers the filter logic itself, and
+  `tools/run_all_tests.py` runs **28 suites, 1855 checks** in one command — it
+  immediately caught a stale assertion still demanding Earth topics be suppressed
+  after `b47cd14` had deliberately changed that policy.
+
+### 2026-10-28 — the book
+- **The UI adopted the in-game "As I've Written" page**, chosen from screenshots
+  actually seen rather than remembered: a cream two-page spread with a gold
+  egg-and-dart frieze, a radiating corner bracket, Roman-numeral index tabs,
+  terracotta chevrons and warm-brown serif ink, on a deep indigo world with a low
+  horizon. The archive page where `δ-me13.exe` sits as a tile turned out to be another
+  page of the same book.
+- `src/ui_theme.py` holds the measured palette, an offline Palatino stack and the
+  ornaments as CSS only; it covers the app background, headings, tabs, buttons, chat
+  cards, inputs, expanders, metrics, alerts, sidebar, captions, code, tables, labels,
+  slider, uploader and tooltips. The Eternal Page menu became a paper slip with an
+  egg-and-dart header. Layout and behaviour untouched.
+- **Motion audit** — two stage screenshots three seconds apart differ in **0** of
+  2,464,000 pixels: nothing floats on the Eternal Page at idle. Emotion marks bob;
+  sprites roam horizontally; everything else is foliage and chrome.
+- Detail: `docs/UI-AIW.md`.
+
