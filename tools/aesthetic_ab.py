@@ -54,15 +54,40 @@ def jaccard(a: set[str], b: set[str]) -> float:
 
 
 def verdict_of(text: str) -> str:
+    """The commitment the Heir made, accepting paraphrase.
+
+    Literal matching under-counted badly: a run where three Heirs had plainly
+    different positions scored as "1 distinct verdict" because only one used a
+    listed phrase. The paraphrases below are grouped by the stance they express,
+    not by wording — a Heir who says "it pleases me" and one who says "the work
+    is honest" made the same kind of commitment.
+    """
     low = text.lower()
     for v in aesthetic.VERDICTS:
         if v.replace("i do not", "i don't") in low or v in low:
             return v
-    # tolerate a paraphrased commitment
     for near, label in (
         ("holds me", "it holds me"), ("pleases me", "it pleases me"),
         ("leaves me cold", "it leaves me cold"), ("offends me", "it offends me"),
         ("unsettles me", "it unsettles me"), ("don't know", "I do not know yet"),
+        # paraphrased approval
+        ("pleases", "it pleases me"), ("holds me", "it holds me"),
+        ("i like it", "it holds me"), ("i love", "it holds me"),
+        ("works for me", "it holds me"), ("it works", "it holds me"),
+        ("i would keep", "it holds me"), ("nothing to change", "it holds me"),
+        ("would change nothing", "it holds me"), ("the work is honest", "it holds me"),
+        ("it moves me", "it holds me"), ("i'm fond", "it holds me"),
+        ("it is good", "it holds me"), ("it feels right", "it holds me"),
+        # paraphrased refusal
+        ("not for me", "it leaves me cold"), ("don't like", "it leaves me cold"),
+        ("does not move", "it leaves me cold"), ("doesn't move", "it leaves me cold"),
+        ("(too little", "it leaves me cold"), ("lacks", "it leaves me cold"),
+        ("too much light", "it leaves me cold"), ("cold", "it leaves me cold"),
+        # paraphrased discomfort
+        ("too serious", "it unsettles me"), ("too loud", "it unsettles me"),
+        ("uneasy", "it unsettles me"), ("uncomfortable", "it unsettles me"),
+        ("trying too hard", "it offends me"), ("overwrought", "it offends me"),
+        ("showy", "it offends me"), ("careless", "it offends me"),
     ):
         if near in low:
             return label
