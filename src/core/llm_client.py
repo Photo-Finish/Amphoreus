@@ -51,6 +51,8 @@ class LLMClient:
         self.max_tokens = max_tokens
         # Vision-capable model for the Heirs' eyesight (e.g. qwen2.5vl:7b).
         self.vision_model = vision_model or os.getenv("VISION_MODEL")
+        # A model that turned out to work, kept for the life of the process.
+        self._vision_ok: Optional[str] = None
         # Audio-understanding model for the Heirs' appreciation of music
         # (e.g. qwen2.5-omni or qwen2-audio). NOT for speech-to-text — that is
         # faster-whisper. This is for hearing music itself.
@@ -163,6 +165,27 @@ class LLMClient:
     # ------------------------------------------------------------------ #
     # Eyesight — multimodal (image + text)
     # ------------------------------------------------------------------ #
+    def _vision_candidates(self) -> list[str]:
+        """Models to try for eyesight, best first.
+
+        The configured `VISION_MODEL` may refuse images outright — `gemma3n`, the
+        "unified" senses model, does exactly that on Ollama ("model does not
+        support multimodal requests"), which left picture sharing broken rather
+        than merely weak. A fallback that can see turns that failure into a
+        working feature; `AMP_VISION_FALLBACK=off` disables the retry.
+        """
+        first = self._vision_ok or self.vision_model
+        candidates = [c for c in (first,) if c]
+        fallback = str(os.getenv("AMP_VISION_FALLBACK", "qwen2.5vl:7b")).strip()
+        if fallback.lower() not in {"", "off", "0", "none", "disable", "disabled"}:
+            if fallback not in candidates:
+                candidates.append(fallback)
+        return candidates
+
+    def _multimodal_refused(self, exc: Exception) -> bool:
+        low = str(exc).lower()
+        return "multimodal" in low or "does not support" in low
+
     def chat_vision(
         self,
         text: str,
@@ -197,13 +220,24 @@ class LLMClient:
         ]
         history = [m for m in (messages or []) if m.get("role") != "user"] or []
         history.append({"role": "user", "content": payload})
-        response = client.chat.completions.create(
-            model=self.vision_model,
-            messages=history,
-            temperature=self.temperature if temperature is None else temperature,
-            max_tokens=self.max_tokens if max_tokens is None else max_tokens,
-        )
-        return response.choices[0].message.content
+        last: Optional[Exception] = None
+        for model in self._vision_candidates():
+            try:
+                response = client.chat.completions.create(
+                    model=model,
+                    messages=history,
+                    temperature=self.temperature if temperature is None else temperature,
+                    max_tokens=self.max_tokens if max_tokens is None else max_tokens,
+                )
+                self._vision_ok = model
+                return response.choices[0].message.content
+            except Exception as exc:
+                if not self._multimodal_refused(exc):
+                    raise
+                last = exc
+        if last is not None:
+            raise last
+        return ""
 
     def chat_video(
         self,
@@ -238,13 +272,24 @@ class LLMClient:
             content.append({"type": "image_url", "image_url": {"url": uri}})
         history = [m for m in (messages or []) if m.get("role") != "user"] or []
         history.append({"role": "user", "content": content})
-        response = client.chat.completions.create(
-            model=self.vision_model,
-            messages=history,
-            temperature=self.temperature if temperature is None else temperature,
-            max_tokens=self.max_tokens if max_tokens is None else max_tokens,
-        )
-        return response.choices[0].message.content
+        last: Optional[Exception] = None
+        for model in self._vision_candidates():
+            try:
+                response = client.chat.completions.create(
+                    model=model,
+                    messages=history,
+                    temperature=self.temperature if temperature is None else temperature,
+                    max_tokens=self.max_tokens if max_tokens is None else max_tokens,
+                )
+                self._vision_ok = model
+                return response.choices[0].message.content
+            except Exception as exc:
+                if not self._multimodal_refused(exc):
+                    raise
+                last = exc
+        if last is not None:
+            raise last
+        return ""
 
     def chat_audio(
         self,

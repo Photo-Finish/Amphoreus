@@ -375,11 +375,25 @@ class AgentManager:
         # Call LLM (multimodal path when the Heir is shown an image or video)
         if has_image:
             data_uri = f"data:{image_mime};base64,{image}"
-            response = self.llm.chat_vision(
-                text=aesthetic.vision_brief(character_id) + (user_message or ""),
-                image_data_uri=data_uri,
-                messages=messages[:-1],
-            )
+            # Two stages, so thirteen Heirs do not share one captioner's prose: a
+            # neutral eye describes what is there, then the Heir's OWN model judges
+            # it in their voice. Falls back to the single multimodal call when the
+            # perception pass is unavailable.
+            perception = self._perceive_picture(data_uri)
+            if perception:
+                note = aesthetic.judgement_brief(character_id, perception, user_message or "")
+                if messages:
+                    messages[-1] = {
+                        "role": "user",
+                        "content": f"{messages[-1].get('content', '')}\n\n{note}".strip(),
+                    }
+                response = self._call_llm(messages, stream=stream)
+            else:
+                response = self.llm.chat_vision(
+                    text=aesthetic.vision_brief(character_id) + (user_message or ""),
+                    image_data_uri=data_uri,
+                    messages=messages[:-1],
+                )
             # The Heir remembers what they saw (eyesight becomes memory)
             self.memory.add_memory(
                 character_id,
@@ -430,6 +444,24 @@ class AgentManager:
             return response
         else:
             return self._stream_response(character_id, response)
+
+    def _perceive_picture(self, data_uri: str) -> str:
+        """Stage 1 of the picture path: a neutral eye describes, and judges nothing.
+
+        Kept deliberately separate from the Heir's voice — the small vision model is
+        good at *seeing* and poor at *being thirteen different people*. When it is
+        unavailable the caller falls back to a single multimodal call.
+        """
+        try:
+            text = self.llm.chat_vision(
+                text=aesthetic.perception_brief("picture"),
+                image_data_uri=data_uri,
+                messages=[{"role": "system", "content": aesthetic.PERCEPTION_SYSTEM}],
+                temperature=0.2,
+            )
+        except Exception:
+            return ""
+        return str(text or "").strip()
 
     def teach(
         self,

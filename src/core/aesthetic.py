@@ -268,6 +268,39 @@ def perception_brief(kind: str) -> str:
     )
 
 
+# Stage 1 of the two-stage picture path: a neutral eye describes, and judges nothing.
+PERCEPTION_SYSTEM = (
+    "You are a precise visual describer. Describe only what is actually in the image — "
+    "subject, composition, light, colour, surface, and what is happening. No judgement, "
+    "no praise, no mood words unless the image itself states them. Five sentences."
+)
+
+
+def judgement_brief(character_id: str, perception: str, user_message: str = "") -> str:
+    """Stage 2: the Heir judges what the neutral eye saw, in their own voice.
+
+    This is what makes thirteen voices instead of one: the perception comes from a
+    small vision model, but the judgement is written by the Heir's own model, with
+    the Heir's own taste and persona.
+    """
+    prof = profile(character_id)
+    if not prof or not enabled():
+        return (
+            "The visitor shares this with you to appreciate together. What can be seen "
+            f"in it:\n{perception}\n\n"
+            "Share your genuine aesthetic response in your own voice, shaped by your "
+            "tastes. Tell the visitor what it makes you feel and why it moves (or does "
+            "not move) you.\n"
+        )
+    return (
+        "The visitor shares this image so you can look at it together. Your eyes took "
+        f"this in:\n{perception}\n\n"
+        f"{stance_text(character_id)}\n\n"
+        f"{procedure(character_id, kind='picture')}\n"
+        + (f"\n{user_message}" if user_message else "")
+    )
+
+
 def vision_brief(character_id: str) -> str:
     """Replacement for the old `_APPRECIATION_VISION` invitation."""
     prof = profile(character_id)
