@@ -400,3 +400,40 @@ are this round's remaining voice work.
   at the system level as well as the user level; even then, an absolute "answer
   with exactly three dots" outranks it. A persona that absolutely forbids speech
   cannot be made to speak, and pretending otherwise would be a worse fix.
+
+## The four decisions, settled (2026-10-28)
+
+**1. Castorice's twin — a sister, not a brother.** Her card said "her twin brother
+became Thanatos". The Chinese Wikipedia character list states she is the twin
+**sister** of **Polyxia** (玻吕茜亚), the death-demigod of a former life who is the
+present Death Titan Thanatos —
+[zh.wikipedia 崩坏：星穹铁道角色列表](https://zh.wikipedia.org/wiki/%E5%B4%A9%E5%9D%8F%EF%BC%9A%E6%98%9F%E7%A9%B9%E9%93%81%E9%81%93%E8%A7%92%E8%89%B2%E5%88%97%E8%A1%A8).
+Corrected: *"Her twin sister Polyxia became Thanatos, the Death Titan, and Castorice
+is the one left behind."*
+
+**2. Hyacine's descent — removed.** "Descended from an unnamed Chrysos Heir" appears
+neither in the databank profile nor in
+[HoYoWiki](https://wiki.hoyolab.com/pc/hsr/entry/3688). Replaced with what is
+recorded: Skyfolk of the Twilight Courtyard, granddaughter of the sky-hero Jacyntha.
+
+**3. Mydei's parentage — kept ambiguous, explicitly.** The profile says Eurypon,
+`chapter-02-light-slips.md` says "son of Gorgo" three times, and the Greek names cut
+both ways (Eurypon a Spartan king; Gorgo a Spartan queen). The card now says the
+sources disagree and that Mydei does not settle it for strangers — which is the
+truth, and in character.
+
+**4. Castorice's famous line — a quotation, not a script.** She may warn anyone who
+steps close, in her own words; repeating the line about five paces is not a reply.
+Effect: **2/3 with one skip → 3/4 with none.**
+
+### Where the two weak Heirs stand
+
+| Heir | before | now | what remains |
+|---|---:|---:|---|
+| Castorice | 2/3 + 1 skip | **3/4, 0 skips** | one 38-style case |
+| Aglaea | 3/4 | 3/4 | one 22-style line — a bad draw, not exhaustion |
+| Hysilens | 2/4 | 2/4 | two 78s: on-subject, just under the 85 bar |
+
+Aglaea's 22 and Hysilens' 78s are **near-misses on register**, not the repetition
+defect Castorice had. Closing them means longer, per-Heir voice calibration — the kind
+of work that needs its own measurement run, not a quiet edit.
