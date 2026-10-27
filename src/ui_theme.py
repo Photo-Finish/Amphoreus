@@ -256,6 +256,35 @@ a {{ color: var(--aiw-gold-light) !important; }}
 .stProgress > div > div > div > div {{
   background: linear-gradient(90deg, var(--aiw-gold-deep), var(--aiw-gold-light)) !important;
 }}
+
+/* ---- the remaining widgets, so no surface is left in the old grey ---- */
+[data-testid="stCaptionContainer"], .stCaption, small {{
+  color: var(--aiw-ice) !important; opacity: .82;
+  font-family: var(--aiw-body) !important;
+  letter-spacing: .02em;
+}}
+code, pre, .stCodeBlock, [data-testid="stCode"] {{
+  background: rgba(244,236,220,.06) !important;
+  color: var(--aiw-gold-light) !important;
+  border: 1px solid rgba(200,160,60,.22) !important;
+  border-radius: 5px;
+  font-family: 'Cascadia Mono', Consolas, monospace !important;
+}}
+[data-testid="stTable"] table, table {{ border-color: rgba(200,160,60,.28) !important; }}
+[data-testid="stTable"] th {{ color: var(--aiw-gold-light) !important;
+  font-family: var(--aiw-display) !important; letter-spacing: .04em; }}
+[data-testid="stTable"] td {{ color: var(--aiw-ice) !important; }}
+.stRadio label, .stCheckbox label, .stSlider label, [data-testid="stWidgetLabel"] p {{
+  color: var(--aiw-ice) !important; font-family: var(--aiw-body) !important;
+}}
+[data-testid="stSlider"] div[role="slider"] {{ background: var(--aiw-gold) !important; }}
+[data-testid="stFileUploader"] section {{
+  background: rgba(244,236,220,.05) !important;
+  border: 1px dashed rgba(200,160,60,.40) !important;
+  border-radius: 8px;
+}}
+[data-testid="stTooltip"] {{ background: var(--aiw-parchment) !important;
+  color: var(--aiw-ink) !important; border: 1px solid var(--aiw-gold) !important; }}
 </style>
 """
 

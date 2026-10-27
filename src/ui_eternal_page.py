@@ -98,6 +98,36 @@ iframe[data-amp-eternal="1"],
 #amp-eternal-menu button:hover {
   background: rgba(240, 215, 140, .18);
 }
+
+/* ---- As-I've-Written page furniture (docs/UI-AIW.md) ----
+   The parchment IS the page, so the controls have to be paper too: a cream menu
+   with brown ink and a gold hairline, terracotta hover, and a gold frame around
+   the spread. Colours are the measured palette from src/ui_theme.py. */
+#amp-eternal-menu {
+  background: linear-gradient(180deg, #fbf6ea, #e9dfc8);
+  color: #3b2c1e;
+  border: 1px solid #c8a03c;
+  border-radius: 6px;
+  box-shadow: 0 10px 26px rgba(8, 12, 28, .55);
+}
+#amp-eternal-menu::before {
+  content: ""; display: block; height: 8px; margin: -6px -6px 4px;
+  background-image:
+    radial-gradient(circle at 12px 4px, #e6cd8a 0 2px, transparent 3px),
+    radial-gradient(circle at 12px 8px, transparent 0 4px, #c8a03c 5px 6px, transparent 7px);
+  background-size: 24px 12px, 24px 12px;
+  background-repeat: repeat-x;
+  border-top: 1px solid #8f6f22;
+  border-radius: 6px 6px 0 0;
+}
+#amp-eternal-menu button {
+  color: #3b2c1e;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+}
+#amp-eternal-menu button:hover {
+  background: linear-gradient(180deg, #c86636, #b9552b);
+  color: #fdf6e6;
+}
 </style>
 """
 
