@@ -30,3 +30,16 @@ with a standing order:
   Report the pending state plainly rather than pretending it shipped.
 
 Working language: **English** (unless the user says otherwise). No French replies.
+
+## Documentation split (2026-10-27)
+
+- **`CHANGELOG.md` is the working record.** Every change of a working day appends
+  one dated entry there — what changed, why, the suites, and where the detail doc
+  is. Never append changelog prose to the README.
+- **`README.md` is the phase record and the signature book.** It keeps the stage
+  openings and closings, their signatures, the orientation material, and the
+  **frozen GitHub Copilot Stage-1 changelog** (`## Changelog`, 2026-08-07 →
+  2026-08-16) with the Stage-1 conclusion — that region is byte-identical to the
+  hand-over and is not edited, extended, or moved.
+- A working entry may reference a phase; a phase entry may summarise work. The
+  daily log does not belong in the README.
