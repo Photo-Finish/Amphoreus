@@ -97,3 +97,36 @@ page exactly; nothing else depends on it.
 **Charter:** the model runs locally on CPU, nothing leaves the machine, no art is
 invented, and the first pass stays byte-identical — verified by hash in
 `cutouts_matte/sources.json` and re-checked by the suite.
+
+---
+
+## 2026-10-27 — the last four, and one portrait
+
+The five bodies that still carried a photo aura were split by cause, not by taste:
+
+| Cause | Heirs | Outcome |
+|---|---|---|
+| Busy painted set, crisp source | Cyrene, Evernight, Dan Heng | **`flood`** — the set is border-connected and flat, the costume holes the flood punches are interior, so filling interior holes restores the figure and leaves the set gone |
+| Her canonical seat | Tribbie | unchanged: the swing and flowers are her pose, not a matte failure |
+| No crisp Q art anywhere | Hysilens | **`copy`** — the official Pom-Pom Gallery bust |
+
+**Why Hysilens is a portrait.** Her Q body exists only inside the 3.5 special
+programme video at 360p; the 3.5 announcement substitutes The Herta, and no
+official still carries her Q form. Better sources were searched for — the
+programme's own higher-quality stream (bilibili's API is unreachable from this
+machine; `app.bilibili.com` answers but refuses the query), fan archives of the
+preview stream (JS-rendered, no hotlinkable stills), and character-art pages
+(splash art, not a chibi). Per the operator's standing call — *bust when the
+resolution does not work out* — her body is the official sticker: crisp,
+transparent, and canon.
+
+Portraits are drawn 80 % tall (`.buddy[data-amp-bust]`) so a bust's head is not
+half again a sitting Heir's, and Hysilens carries no corner-face sticker because
+her body *is* that art.
+
+**Result:** no faded photograph remains on the sill. Nine clean cutouts, three
+portraits, one Heir with her swing.
+
+Suites: `tools/test_eternal_sill.py` (30 checks — including that the flood bodies
+removed their set rather than fading it, and that the three portraits are the
+three `PORTRAIT_BODIES`), `tools/test_eternal_page.py` (395).

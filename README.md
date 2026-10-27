@@ -1369,3 +1369,17 @@ eternity with you.
   Verified by driving the **LAN address** (not localhost) with Chromium —
   10 checks, including that the Admin Console and Control Panel open in the same
   session. Not yet run on a physical handset.
+
+### 2026-10-27 — the last five bodies, and Hysilens
+- **Three sets removed properly** — Cyrene, Evernight and Dan Heng no longer wear
+  a faded photograph: a border flood removes the flat, border-connected set and
+  interior hole-filling restores the costume it punched through. No faded photo
+  remains on the sill: nine clean cutouts, three portraits, and Tribbie keeping
+  her swing (that is her pose, not a matte failure).
+- **Hysilens is a portrait** — her Q body exists only in the 3.5 programme video
+  at 360p; the 3.5 announcement substitutes The Herta and no official still
+  carries it. Higher-quality streams and fan archives were searched for and none
+  are reachable from this machine, so per the standing call she uses the official
+  Pom-Pom Gallery bust. Portraits now draw 80 % tall so a bust's head matches the
+  sitters'. Suites: `tools/test_eternal_sill.py` (30),
+  `tools/test_eternal_page.py` (395). Detail: `docs/ETERNAL-SILL.md`.

@@ -56,35 +56,35 @@
     "source": "assets/eternal_page/q_program/cutouts/cipher_v33_sit.png"
   },
   "cyrene": {
-    "covered": 0.69,
+    "covered": 0.478,
     "edge_alpha_max": 0,
     "out": "cyrene_v38_sit.png",
-    "policy": "cut",
+    "policy": "flood",
     "size": [
-      202,
-      387
+      180,
+      317
     ],
     "source": "assets/eternal_page/q_program/cutouts/cyrene_v38_sit.png"
   },
   "dan-heng-permansor-terrae": {
-    "covered": 0.698,
+    "covered": 0.614,
     "edge_alpha_max": 0,
     "out": "dan_heng_pt_v36_sit.png",
-    "policy": "cut",
+    "policy": "flood",
     "size": [
-      184,
-      370
+      162,
+      358
     ],
     "source": "assets/eternal_page/q_program/cutouts/dan_heng_pt_v36_sit.png"
   },
   "evernight": {
-    "covered": 0.739,
+    "covered": 0.311,
     "edge_alpha_max": 0,
     "out": "evernight_v38_sit.png",
-    "policy": "cut",
+    "policy": "flood",
     "size": [
-      302,
-      542
+      280,
+      493
     ],
     "source": "assets/eternal_page/q_program/cutouts/evernight_v38_sit.png"
   },
@@ -100,15 +100,16 @@
     "source": "assets/eternal_page/q_program/cutouts/hyacine_v33_sit.png"
   },
   "hysilens": {
-    "covered": 0.695,
+    "covered": 0.968,
     "edge_alpha_max": 0,
-    "out": "hysilens_v35_sit.png",
-    "policy": "cut",
+    "note": "PPG bust: the only crisp official art of her; the 360p Q body is not rescuable",
+    "out": "hysilens_ppg_bust.png",
+    "policy": "copy",
     "size": [
-      141,
-      246
+      479,
+      515
     ],
-    "source": "assets/eternal_page/q_program/cutouts/hysilens_v35_sit.png"
+    "source": "assets/eternal_page/cute/hysilens/02.png"
   },
   "model": "u2net",
   "mydei": {

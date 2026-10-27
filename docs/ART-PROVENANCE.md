@@ -118,3 +118,14 @@ If you ever need to re-audit identities, compare each body against its
   `docs/STAGE-2-VIVID.md` (append-only changelog notes).
 - **Untouched**: every `src/characters/*.json` card, `databank/`, all art
   catalogs, and every script listed in the table above.
+
+## Hysilens, specifically (2026-10-27)
+
+Her Q body has no official still. The 3.5 announcement substitutes The Herta, and
+the programme video is 360p. Searched, in order: the programme's own stream via
+`api.bilibili.com` (unreachable; `app.bilibili.com` answers and refuses the
+query), fan archives of the preview stream, character-art pages (splash, not
+chibi), and a 4K illustration video (not Q art). Nothing usable. Her body is
+therefore the official Pom-Pom Gallery sticker (`hysilens_ppg_bust.png`), which
+is crisp, transparent and canon — recorded here so the next attempt knows the
+search was run, not skipped.

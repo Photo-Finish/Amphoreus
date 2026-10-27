@@ -33,7 +33,16 @@ MIN_BYTES = 4000
 ALIAS = {
     "anaxa": "anaxa_v34_announcement_bust.png",
     "phainon": "phainon_v34_announcement_bust.png",
+    "hysilens": "hysilens_ppg_bust.png",
 }
+
+# Bodies that are already a portrait of the Heir: the corner face sticker would be
+# a second copy of the same art, so it is left off for these.
+BUST_BODIES = frozenset({"hysilens"})
+
+# Bodies that are portraits rather than full figures — drawn a little smaller so
+# the set stays in scale (a bust at 140 px has a much bigger head than a sitter).
+PORTRAIT_BODIES = frozenset({"anaxa", "phainon", "hysilens"})
 
 
 def matte_path(character_id: str) -> Optional[Path]:

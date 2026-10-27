@@ -52,7 +52,10 @@ MANIFEST = OUT_DIR / "manifest.json"
 MODEL_DIR = ROOT / "models" / "u2net"
 INPUT = 320
 
-# saliency: u2net separates cleanly. cut: it does not — dissolve the crop edge.
+# saliency: u2net separates cleanly. cut: dissolve the crop edge. flood: remove
+# the border-connected set through flat colour, then fill the interior holes the
+# flood punches in costumes (Cyrene, Evernight, Dan Heng sit in busy sets where
+# u2net reads the photograph). copy: the art is already a transparent bust.
 POLICY: dict[str, str] = {
     # u2net reads these cleanly (crisp 2D announcement stills).
     "aglaea": "saliency",
@@ -61,22 +64,31 @@ POLICY: dict[str, str] = {
     "cipher": "saliency",
     "mydei": "saliency",
     "cerydra": "saliency",
-    "dan-heng-permansor-terrae": "cut",
-    # 360p 3D stage crops (no 2D announcement body exists for these two), the
-    # 3.5 2D overlay, and the three who sit deep in a busy set: u2net reads the
-    # photograph rather than the figure, so keep the first pass and dissolve it.
-    "anaxa": "cut",
-    "phainon": "cut",
-    "hysilens": "cut",
-    "evernight": "cut",
-    "cyrene": "cut",
+    # Busy painted sets: the set is border-connected and flat, the costume holes
+    # the flood punches are interior, so hole-filling restores the figure.
+    "cyrene": "flood",
+    "evernight": "flood",
+    "dan-heng-permansor-terrae": "flood",
+    # Her swing and flowers are her canonical seat, not a matte failure.
     "tribbie": "cut",
+    # Overridden below (a bust, not a sit).
+    "anaxa": "copy",
+    "phainon": "copy",
+    "hysilens": "copy",
+}
+
+# Flood tuning per sprite: (Lab tolerance, minimum flatness to walk through).
+FLOOD_TUNING: dict[str, tuple[float, float]] = {
+    "cyrene": (14.0, 0.50),
+    "dan-heng-permansor-terrae": (14.0, 0.50),
+    "evernight": (22.0, 0.35),
 }
 
 # Elliptical falloff: flat inside `inset` of the way to the crop edge, gone by it.
 # "cut" fades hard enough to dissolve the furniture the first pass kept; the
 # saliency mask is already tight, so it only needs a clean border.
-FEATHER = {"cut": (0.62, 0.40), "saliency": (0.88, 0.10)}
+FEATHER = {"cut": (0.62, 0.40), "saliency": (0.88, 0.10),
+           "flood": (0.88, 0.10), "copy": (0.92, 0.08)}
 SALIENCY_FLOOR = 0.32
 
 # Colour a fading edge is pulled toward, so a half-transparent photograph stops
@@ -107,6 +119,18 @@ OVERRIDES: dict[str, dict] = {
         "out": "phainon_v34_announcement_bust.png",
         "policy": "saliency",
         "note": "3.4 announcement bottom-left bust; sharper than the 360p stage grab",
+    },
+    # hysilens: her Q body exists only in the 3.5 programme video at 360p; no
+    # official still carries it (the 3.5 announcement substitutes The Herta), and
+    # the video's API is unreachable from this machine. The operator's standing
+    # call is "bust when resolution does not work out", so her body is the
+    # official Pom-Pom Gallery sticker — crisp, transparent, canon.
+    "hysilens": {
+        "base": "assets/eternal_page/cute/hysilens",
+        "source": "02.png",
+        "out": "hysilens_ppg_bust.png",
+        "policy": "copy",
+        "note": "PPG bust: the only crisp official art of her; the 360p Q body is not rescuable",
     },
 }
 
@@ -163,6 +187,69 @@ def trim(im: Image.Image) -> Image.Image:
     return im.crop(bb) if bb else im
 
 
+def _flatness(rgb: np.ndarray, blur: int = 3) -> np.ndarray:
+    im = Image.fromarray(rgb).convert("L").filter(ImageFilter.GaussianBlur(1.0))
+    edge = im.filter(ImageFilter.FIND_EDGES).filter(ImageFilter.GaussianBlur(blur))
+    e = np.asarray(edge, dtype=np.float32) / 255.0
+    return np.clip(1.0 - e * 5.0, 0.0, 1.0)
+
+
+def _lab(rgb: np.ndarray) -> np.ndarray:
+    return np.asarray(Image.fromarray(rgb).convert("LAB"), dtype=np.float32)
+
+
+def _flood_remove(alpha: np.ndarray, rgb: np.ndarray, tol: float,
+                  flat_min: float, ring: int = 10) -> np.ndarray:
+    """Where the border-connected set lives: flat, colour-similar, reachable.
+
+    Seeded from a ring just inside the crop (the first pass leaves a transparent
+    rim), walking only through low-detail pixels of similar colour, so it spreads
+    across a bench or a sofa but stops at the figure's ink.
+    """
+    h, w = alpha.shape
+    opaque = alpha > 0.05
+    interior = np.zeros_like(opaque)
+    interior[ring:h - ring, ring:w - ring] = True
+    flat = _flatness(rgb)
+    L = _lab(rgb)
+    seeds = [(y, x) for y in range(h) for x in range(w)
+             if opaque[y, x] and not interior[y, x]]
+    kill = np.zeros((h, w), bool)
+    queue: list[tuple[int, int]] = []
+    for y, x in seeds:
+        kill[y, x] = True
+        queue.append((y, x))
+    head = 0
+    while head < len(queue):
+        y, x = queue[head]
+        head += 1
+        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            ny, nx = y + dy, x + dx
+            if ny < 0 or nx < 0 or ny >= h or nx >= w or kill[ny, nx] or not opaque[ny, nx]:
+                continue
+            if flat[ny, nx] < flat_min:
+                continue
+            if float(np.sqrt(((L[ny, nx] - L[y, x]) ** 2).sum())) > tol:
+                continue
+            kill[ny, nx] = True
+            queue.append((ny, nx))
+    return kill
+
+
+def _fill_holes(kept: np.ndarray) -> np.ndarray:
+    """Interior holes the flood punched in a costume are not the set — restore them."""
+    try:
+        import cv2
+    except Exception:
+        return kept
+    m = kept.astype(np.uint8)
+    ff = m.copy()
+    mask = np.zeros((m.shape[0] + 2, m.shape[1] + 2), np.uint8)
+    cv2.floodFill(ff, mask, (0, 0), 1)
+    outside = ff.astype(bool)
+    return kept | (~outside)
+
+
 def pad(im: Image.Image, frac: float = 0.06) -> Image.Image:
     """A little transparent margin so the fade happens outside the silhouette."""
     w, h = im.size
@@ -214,7 +301,14 @@ def matte(sess, cid: str, src: Image.Image, policy: str | None = None) -> tuple[
         grown = Image.fromarray(solid * 255).filter(ImageFilter.MaxFilter(3))
         grown = grown.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(1.0))
         a = np.minimum(a, np.asarray(grown, dtype=np.float32) / 255.0 + 0.2)
+    elif policy == "flood":
+        rgb = np.asarray(src.convert("RGB"), dtype=np.uint8)
+        tol, flat_min = FLOOD_TUNING.get(cid, (14.0, 0.50))
+        kill = _flood_remove(v1, rgb, tol, flat_min)
+        kept = _fill_holes((v1 > 0.05) & ~kill)
+        a = np.where(kept, v1, 0.0)
     else:
+        # "cut" keeps the first pass; "copy" is already transparent art (a bust).
         a = v1
     out = src.copy()
     out.putalpha(Image.fromarray((np.clip(a, 0, 1) * 255).astype(np.uint8)))
@@ -252,7 +346,8 @@ def main(argv: list[str]) -> int:
     for cid in ([only] if only else list(Q_SIT.keys())):
         override = OVERRIDES.get(cid)
         if override:
-            src_path = QPROGRAM / override["source"]
+            src_path = (ROOT / override["base"] / override["source"]
+                        if override.get("base") else QPROGRAM / override["source"])
             out_name = override["out"]
             policy = override.get("policy")
         else:
@@ -301,9 +396,14 @@ def main(argv: list[str]) -> int:
                     "bytes": path.stat().st_size,
                 }
         for cid, override in OVERRIDES.items():
-            path = QPROGRAM / override["source"]
+            path = (ROOT / override["base"] / override["source"]
+                    if override.get("base") else QPROGRAM / override["source"])
             if path.is_file():
-                sources[override["source"]] = {
+                try:
+                    key = str(path.relative_to(QPROGRAM)).replace("\\", "/")
+                except ValueError:
+                    key = str(path.relative_to(ROOT)).replace("\\", "/")
+                sources[key] = {
                     "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
                     "bytes": path.stat().st_size,
                     "note": override.get("note", ""),

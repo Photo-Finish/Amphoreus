@@ -759,6 +759,9 @@ def build_stage_html(
         body_src, face_src, kind = _art_parts(src)
         if not body_src:
             continue
+        # A portrait bust carries a bigger head than a full-body sitter at the
+        # same 140 px, so it is drawn a little smaller to keep the set in scale.
+        bust = bool(isinstance(src, dict) and src.get("bust"))
         left, bottom = ep.place_of(cid, layout)
         on = " on" if cid in selected_ids else ""
         label = html.escape(names.get(cid) or ep.short_name(cid))
@@ -795,10 +798,11 @@ def build_stage_html(
                 f'<img class="face" alt="" src="{face_src}" draggable="false" />'
             )
         z = 7 if cid in selected_ids else (4 if bottom < 24 else 2)
+        bust_attr = ' data-amp-bust="1"' if bust else ""
         buddies.append(
             f'<button type="button" class="buddy{on}{face_cls}" data-heir="{html.escape(cid)}" '
             f'data-amp-emotion="{feeling}" data-amp-vfx="{vfx_attr}" '
-            f'data-amp-body="{html.escape(kind)}"{gest_attr} '
+            f'data-amp-body="{html.escape(kind)}"{gest_attr}{bust_attr} '
             f'title="{label} — click, drag, right-click, or hover keys" '
             f'style="left:{left}%;bottom:{bottom}%;z-index:{z}">'
             f"{bubble}"
@@ -878,6 +882,12 @@ html, body {{
   user-select: none;
   -webkit-user-drag: none;
   filter: drop-shadow(0 8px 10px rgba(20,12,6,.45));
+}}
+/* A bust is a portrait, not a standee: drawn 80 % tall and pushed to the same
+   baseline, so its head is not half again the size of a sitting Heir's. */
+.buddy[data-amp-bust="1"] img.body {{
+  max-height: 112px;
+  margin-top: 28px;
 }}
 .buddy img.face {{
   display: none;
@@ -1190,10 +1200,14 @@ def stage_art_uris(emotions: Optional[dict] = None, *, cyrene_form: Optional[str
                 face_path = cyrene_face.face_path(cyrene_form) or face_path
             cleaner = eternal_sill.body_png(cid)
             body_png = cleaner if cleaner is not None else spr["body_png"]
+            if cid in eternal_sill.BUST_BODIES:
+                face_path = None   # the body is already that portrait
             art_uris[cid] = {
                 "body": _bytes_uri(body_png),
                 "face": _data_uri(face_path) if face_path else "",
                 "kind": "q",
+                # A portrait crop from the catalog is drawn smaller (see the CSS).
+                "bust": cid in eternal_sill.PORTRAIT_BODIES,
             }
         elif spr.get("body_path"):
             art_uris[cid] = {

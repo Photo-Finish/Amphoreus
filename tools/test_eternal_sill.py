@@ -26,7 +26,7 @@ from src.world.eternal_page import CIRCLE, all_ids  # noqa: E402
 from src.world.eternal_q import CUTOUTS, Q_SIT  # noqa: E402
 
 PASSED, FAILED = [], []
-POLICIES = {"saliency", "cut"}
+POLICIES = {"saliency", "cut", "flood", "copy"}
 
 
 def hair_hue(im) -> tuple[float, float]:
@@ -72,9 +72,14 @@ def main() -> int:
     check("every circle cutout is recorded", set(provenance) >= {Q_SIT[c][0] for c in CIRCLE})
     mismatched = []
     for name, row in provenance.items():
-        # Override sources are recorded relative to q_program/; first-pass
-        # cutouts live in cutouts/.
-        path = (CUTOUTS.parent / name) if "/" in name else (CUTOUTS / name)
+        # Sources are recorded either as a bare cutout filename, as a path
+        # relative to q_program/, or as one relative to the repository root.
+        if name.startswith("assets/"):
+            path = ROOT / name
+        elif "/" in name:
+            path = CUTOUTS.parent / name
+        else:
+            path = CUTOUTS / name
         if not path.is_file():
             mismatched.append(f"{name}: missing")
             continue
@@ -192,6 +197,23 @@ def main() -> int:
         eternal_sill.MATTE_DIR = saved
         eternal_sill.body_png.cache_clear()
 
+
+    print("== Portraits and clean bodies (2026-10-27) ==")
+    check("hysilens is a portrait bust",
+          (eternal_sill.matte_path("hysilens") or Path("")).name
+          == eternal_sill.ALIAS["hysilens"])
+    check("hysilens carries no duplicate face",
+          "hysilens" in eternal_sill.BUST_BODIES and "hysilens" in eternal_sill.PORTRAIT_BODIES)
+    check("the three portraits are drawn smaller than the sitters",
+          eternal_sill.PORTRAIT_BODIES == {"anaxa", "phainon", "hysilens"})
+    flood_cids = [c for c in ("cyrene", "evernight", "dan-heng-permansor-terrae")
+                  if (manifest.get(c) or {}).get("policy") == "flood"]
+    check("the busy-set bodies use the flood matte", len(flood_cids) == 3, str(flood_cids))
+    for cid in flood_cids:
+        row = manifest.get(cid) or {}
+        check(f"{cid}: the set was removed, not faded", row.get("covered", 1) < 0.8,
+              str(row.get("covered")))
+
     print()
     print(f"{len(PASSED)} passed, {len(FAILED)} failed")
     return 1 if FAILED else 0
@@ -199,3 +221,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
