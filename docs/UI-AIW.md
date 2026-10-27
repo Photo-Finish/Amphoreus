@@ -80,3 +80,25 @@ stays green.
 The custom HTML surfaces — the Eternal Page parchment, the galgame chrome, the walk
 scene and the admin console — carry their own hard-coded colours and are restyled
 next, using the same palette through `ui_theme.palette()`.
+
+## Motion audit — is anything still floating?
+
+Asked whether a "ghostly floating" animation remains. Measured rather than assumed:
+two screenshots of the Eternal Page stage **3 seconds apart** differ in **0 pixels**
+(out of 2,464,000) — at idle nothing on that page moves at all, so there is no
+floating sprite there.
+
+The loops that do exist, and what they animate:
+
+| Animation | What it moves | Verdict |
+|---|---|---|
+| `amp-float` | the ♥ / `zzz` / ♪ marks above a Heir's head | intentional, small, only while a mark is set |
+| `amp-twinkle`, `amp-fall`, `amp-steam`, `amp-spin` | the same emotion marks | intentional |
+| `amp-sprite-roam` | a walking sprite, horizontal only | locomotion, not levitation — no vertical motion |
+| `amp-grass-sway`, `amp-wheat-nod`, `amp-leaf-drift` | foliage and falling leaves | scenery |
+| `ampPulse`, `galblink`, weather glow | a 7 px travel dot, a ▼ caret, a sun disc | UI chrome |
+
+No rule animates `.buddy` or `.stage` itself. If a floating effect is still being
+seen, the emotion-mark bob is the only vertical motion in the tree — it can be
+switched off by removing `amp-float` from the `.mk-*::after` rules, and that is a
+one-line change if it should go.
