@@ -7,6 +7,7 @@ Usage:
     response = manager.chat("phainon", "Tell me about your home.")
 """
 
+import hashlib
 import os
 from typing import Optional, Generator
 
@@ -483,7 +484,17 @@ class AgentManager:
         Kept deliberately separate from the Heir's voice — the small vision model is
         good at *seeing* and poor at *being thirteen different people*. When it is
         unavailable the caller falls back to a single multimodal call.
+
+        Descriptions are cached by image content for the life of the process: the
+        perception does not depend on which Heir is looking, so the same picture
+        shown to three Heirs costs one vision call, not three.
         """
+        cache = getattr(self, "_perception_cache", None)
+        if cache is None:
+            cache = self._perception_cache = {}
+        key = hashlib.sha1(data_uri.encode("utf-8", "ignore")).hexdigest()
+        if key in cache:
+            return cache[key]
         try:
             text = self.llm.chat_vision(
                 text=aesthetic.perception_brief("picture"),
@@ -493,7 +504,12 @@ class AgentManager:
             )
         except Exception:
             return ""
-        return str(text or "").strip()
+        text = str(text or "").strip()
+        if text:
+            if len(cache) >= 8:
+                cache.pop(next(iter(cache)))
+            cache[key] = text
+        return text
 
     def teach(
         self,

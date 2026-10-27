@@ -55,7 +55,7 @@ from tools.test_dialogue_resemblance import (  # noqa: E402
     strip_reasoning,
 )
 
-REPORT = ROOT / "docs" / "RESEMBLANCE-STYLE-REPORT.md"
+# (no module-level report path: each run writes a dated file — see --report)
 
 JUDGE_SYSTEM = (
     "You are a dialogue-VOICE judge for an AI character sanctuary. Your job is to "
@@ -634,7 +634,7 @@ def _run(args):
                     # have at least one real candidate. If the model is STUCK
                     # on '...' (rejected as degenerate), keep giving it room up
                     # to 2x the budget so it can still produce a real line.
-                    if tries > budget and (tries > budget * 2 or candidates):
+                    if tries > budget and (tries > min(budget * 2, 8) or candidates):
                         break
                     r = llm.chat(
                         [{"role": "system", "content": system},
