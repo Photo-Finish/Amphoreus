@@ -123,6 +123,32 @@ def main() -> int:
     check("the old constants are no longer called",
           "_APPRECIATION_VISION +" not in engine and "_APPRECIATION_MUSIC.format(" not in engine)
 
+    print("== Two-stage picture path ==")
+    mb = aesthetic.judgement_brief("mydei", "A blue hall, light on the steps, a still pool.")
+    check("the judgement carries what the eye saw",
+          "A blue hall, light on the steps" in mb)
+    check("the judgement carries the Heir's taste", "toward plainness" in mb)
+    check("the judgement still demands a verdict", "it leaves me cold" in mb)
+    check("the visitor's words are kept",
+          "look at this" in aesthetic.judgement_brief("mydei", "a hall", "look at this"))
+    check("the perception prompt asks for no judgement",
+          "No judgement" in aesthetic.PERCEPTION_SYSTEM)
+    check("perception brief names what to look at",
+          "where the light falls" in aesthetic.perception_brief("picture"))
+
+    print("== The eyesight fallback ==")
+    from src.core.llm_client import LLMClient
+
+    client = LLMClient(model="x", vision_model="gemma3n")
+    candidates = client._vision_candidates()
+    check("the configured model is tried first", candidates[0] == "gemma3n", str(candidates))
+    check("a model that can see is the fallback", len(candidates) > 1, str(candidates))
+    check("a multimodal refusal is recognised",
+          client._multimodal_refused(Exception(
+              "model does not support multimodal requests")))
+    check("other errors are not mistaken for it",
+          not client._multimodal_refused(Exception("connection refused")))
+
     print()
     print(f"{len(PASSED)} passed, {len(FAILED)} failed")
     return 1 if FAILED else 0

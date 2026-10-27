@@ -110,3 +110,52 @@ The check, per Heir:
 are edited. Hyacine's change was explicitly approved. **The other eleven are
 stripped only if the operator agrees** — and stripping is itself restoration:
 `strip_auto_refinement` returns the prompt to the project's own text.
+
+## All thirteen cards (2026-10-27, second pass)
+
+Every card lost its inherited `AUTO REFINEMENT` block and gained a
+**CANON COMPLEXITY** block drawn from `databank/chrysos-heirs/`. The rules are
+behaviour and memory — what the Heir notices, carries, hides, and cannot do — not
+sentence templates, because templates are what the gate penalises.
+
+| Heir | Crutch rules removed | Complexity now carried |
+|---|---:|---|
+| Aglaea | 6 | blindness read through voice and thread; the childhood fear of the dark; plain clothes because beauty is the future, not cloth; scraps of the fallen; the threads that watch; "Agy" before Lady Goldweaver |
+| Anaxa | 5 | the eye that sees souls; the temples that threw him out; Diotima's books and the black tide; the students who silence him; the dromases |
+| Castorice | 6 | the touch that kills; the soft things made so they can be kept untouched; ice sculptures and a thousand years of names; the nightmare of every Heir dying; the nether realm she chose |
+| Cerydra | 4 | the beggar girl dressed as a princess and used as a pawn; the board she took; chess as thought, not decoration; the cost of her sacrifices; the titles she gives her Heirs |
+| Cipher | 6 | the starving Dolos childhood; aquaphobia under the fish jokes; the three hundred Rogues as family; theft she denies; the Gem that was a plan; the chocolate that makes her ill |
+| Cyrene | 6 | love as her prime mover; deaths she calls the price; the loop she went back to close; memory as craft; the child and the Demiurge as one person; the weight of Phainon |
+| Dan Heng | 6 | the archiver who stopped pretending the journey was cold entries; the farewells; the nightmares he does not volunteer; protection as his answer to grief |
+| Evernight | 4 | March's other aspect doing the cruel work; the flat in her signature; the cleansing she refused and keeps re-deciding; memory as evidence |
+| Hyacine | 6 | the bedridden childhood; the legend for a grandmother; "I'm just a physician" as a shield; the despair she cannot cure; the courtyard as refuge; the short temper |
+| Hysilens | 6 | the siren who chose silence; the violin that became blades; self-negation stated plainly; the hand that ended Cerydra's flame; the nicknames she can afford |
+| Mydei | 6 | ten thousand deaths taken without drama; mortal companions carried as names; a king who never flew his banner; single-word annotations; pride kindness cannot talk him out of |
+| Phainon | 6 | ease that costs him; carving himself into the shape people need; grief that arrives as work; a banked hatred that is not polite; the Flame Reaver he does not disown |
+| Tribbie | 0 | a thousand years in a child's body; the thousand messengers of whom three remain; the shift between Tribbie, Trianne and Trinnon; a diary whose hand weakens; "see you tomorrow" meant every time |
+
+## A second defect, found while wiring the picture path
+
+**The Heirs could not see at all.** `.env` sets `VISION_MODEL=gemma3n` — the
+"unified" senses model — and Ollama refuses images for it: *"model does not
+support multimodal requests."* Every shared picture raised that error, so the
+appreciation feature was not weak, it was **broken**. `chat_vision` and
+`chat_video` now try the configured model and fall back to one that can see
+(`AMP_VISION_FALLBACK`, default `qwen2.5vl:7b`), remembering what worked for the
+life of the process. Verified live: the configured model is still `gemma3n`, the
+working one reported `qwen2.5vl:7b`, and the perception came back as a real
+description of the image.
+
+## Picture appreciation is now two stages
+
+The single call made the *vision* model write the Heir's judgement, which is why
+thirteen Heirs produced one captioner's prose. It is now:
+
+1. **Perceive** — a neutral eye (`PERCEPTION_SYSTEM`) describes what is there and
+   judges nothing;
+2. **Judge** — the Heir's own model receives that description plus their taste
+   procedure and answers in their voice.
+
+The one-call path remains as the fallback when perception is unavailable. Suite:
+`tools/test_aesthetic.py` (41 checks, including that the judgement carries the
+perception and that a multimodal refusal is recognised).
