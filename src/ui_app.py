@@ -191,6 +191,13 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# The As-I've-Written theme (docs/UI-AIW.md). Injected AFTER the block above so
+# its parchment/gold/terracotta vocabulary wins where the two disagree, and the
+# surface-specific rules above still apply where they are more precise.
+from src import ui_theme as _ui_theme  # noqa: E402
+
+_ui_theme.apply(st)
+
 # The click-popups for the interactive map. The SVG from render_map_svg marks
 # every place and Heir with data-kind/data-key; this script shows a themed info
 # card near the click. __AMP_INFO__ is replaced with the JSON info payload.
