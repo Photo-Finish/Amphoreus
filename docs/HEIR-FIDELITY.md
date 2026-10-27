@@ -237,3 +237,56 @@ Hyacine (Skyfolk of the Twilight Courtyard, named as such).
 Still missing, honestly: Mydei, Phainon, Tribbie, Hysilens, Dan Heng and Evernight
 carry no outgoing-nickname vocabulary beyond what their complexity blocks already
 say, because the databank does not record more for them.
+
+## The harness was measuring itself — three defects, fixed in order
+
+Each of these made the gate report something that was not the Heir's voice.
+
+**1. A deterministic retry loop.** Ollama samples with a fixed seed by default.
+The gate's "reject and retry" repeated the *same request* up to thirteen times
+and got the *same line* back. When Castorice is shown a scene, she produced
+`"Kindly keep five paces distance..."` thirteen times — a real canon line
+(`chapter-01-heroic-saga.md`), rejected once as a canon quote and thereafter as a
+run repeat. The loop could never have worked. `llm.chat` now takes a `seed`, and
+the gate passes the attempt number, so each retry is a genuinely new draw.
+Effect: Tribbie went from 2/3 with a skip to 3/4 with none; Castorice from 1/2
+with two skips to 2/3 with one.
+
+**2. Exhaustion scored as a real case.** With nothing surviving, the harness
+judged a literal `"..."` at 45/25. Five of the previous run's sixteen failures
+were that artefact. Now the case is **skipped**, counted as missing coverage, and
+reported per Heir (`2/3 pass | 66% | 1 skipped`).
+
+**3. A tracked report overwritten every run.** `--report` now defaults to a
+**dated** file, so a measurement can never destroy another one.
+
+**A diagnostic, kept:** `--debug-exhausted` prints every rejected attempt and
+why. It is how the canon-quote repetition was found rather than guessed.
+
+## Where the gate stands
+
+Full run on the honest instrument, `gemma3:27b`, 4 cases per Heir, anti-cheat on:
+**38 of 48 scored cases pass (79 %), 4 skipped** — against 37/52 (71 %) before the
+harness fixes, when four of those "failures" were the harness's own exhaustion.
+
+| Heir | pass | style | content | skipped |
+|---|---:|---:|---:|---:|
+| Cipher, Cyrene, Dan Heng, Evernight, Hysilens | 4/4 | 88–90 | 70–74 | 0 |
+| Anaxa, Cerydra, Hyacine | 3/4 | 86 | 70–74 | 0 |
+| Aglaea, Mydei | 2/4 | 80–83 | 70–73 | 0 |
+| Castorice | 1/2 | 84 | 68 | 2 |
+| Phainon | 2/3 | 70 | 67 | 1 |
+| Tribbie | 2/3 | 85 | 70 | 1 |
+
+The skips are not failures and not passes: they are cases where nothing the Heir
+said survived the anti-cheat, which is itself a signal about repetition.
+
+## Castorice, diagnosed at last
+
+Her failure is specific and real: shown a scene, she recites her most famous canon
+line — the warning to keep five paces away — instead of answering. The card's
+complexity block now says the warning is not her only line and should come once,
+when someone actually steps close; the model still reaches for the quote. That is
+a *repetition* defect, and the anti-cheat is right to refuse it. Whether to accept
+a Heir who says her famous line when it genuinely fits, or to keep refusing it, is
+an operator's call, not a bug to fix silently.
