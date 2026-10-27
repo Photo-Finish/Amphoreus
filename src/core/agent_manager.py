@@ -466,13 +466,25 @@ class AgentManager:
         string or a bare ellipsis for some scenes, which reads as nothing at all
         to a visitor. Ask once, plainly, for the line — and keep the original if
         the retry is also silent.
+
+        The nudge is placed BOTH in the system prompt and as a user turn. Measured
+        live 2026-10-28: a user-level nudge alone is not enough when the system
+        prompt itself pushes toward silence — the model answered "..." again and
+        then nothing. A persona that says "you are silent" has to hear the
+        correction at the same level as the instruction that caused it.
         """
         try:
-            nudge = {
-                "role": "user",
-                "content": "(Say the line you would actually say — a real sentence, not silence.)",
-            }
-            text = self._call_llm(list(messages) + [nudge], stream=False)
+            ask = "(Say the line you would actually say — a real sentence, not silence.)"
+            msgs = list(messages)
+            if msgs and msgs[0].get("role") == "system":
+                msgs[0] = {
+                    "role": "system",
+                    "content": msgs[0].get("content", "")
+                    + "\n\n[A reply must contain words. Never answer with silence, an "
+                    "empty line, or a bare ellipsis — say the shortest real line you can.]",
+                }
+            msgs.append({"role": "user", "content": ask})
+            text = self._call_llm(msgs, stream=False)
             cleaned = _spoken_words(str(text or "")).strip()
             return "" if _looks_like_silence(cleaned) else cleaned
         except Exception:

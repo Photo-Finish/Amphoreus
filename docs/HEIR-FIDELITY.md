@@ -353,3 +353,50 @@ reason.
 
 Both are recorded here rather than corrected, because the correction would be an
 invention of my own.
+
+## Final measurement (2026-10-28, real retries, anti-cheat on)
+
+`gemma3:27b`, 4 cases per Heir, best-of 1, temp 0.4 — the same protocol as every
+earlier run.
+
+| Heir | pass | style | content | skipped |
+|---|---:|---:|---:|---:|
+| Anaxa, Cerydra, Cipher, Dan Heng, Hyacine, Mydei, Phainon, Tribbie | 4/4 | 88–89 | 70–74 | 0 |
+| Aglaea | 3/4 | 72 | 69 | 0 |
+| Cyrene | 3/4 | 86 | 70 | 0 |
+| Evernight | 3/4 | 82 | 73 | 0 |
+| Castorice | 2/3 | 70 | 67 | 1 |
+| Hysilens | 2/4 | 83 | 69 | 0 |
+| **total** | **45/50** | | | **1** |
+
+**45 of 50 scored cases pass (90 %)**, one skipped, against 37/52 (71 %) at the
+start of this work and 38/48 (79 %) after the harness fixes but before real
+retries. Report: `docs/RESEMBLANCE-STYLE-REPORT-2026-10-28.md`.
+
+**Attribution, honestly.** Most of the gain is the *instrument*, not the cards:
+before the seed fix, a Heir that produced a repeated or degenerate line was
+retried with an identical request, so it could exhaust no matter how good its
+voice was. Eight Heirs now reach 4/4. The card work (canon complexity, the
+nickname vocabulary, Mydei's parentage, the ellipsis rule) is visible in the
+substance of the lines rather than in these counts — I cannot separate its
+contribution from the harness fix with this instrument, and I will not claim more
+than that.
+
+Two Heirs still below 3/4 — Aglaea (one 22-style case) and Hysilens (two 78s) —
+are this round's remaining voice work.
+
+## The silence retry, proven live and bounded (2026-10-28)
+
+* **Detection fires live.** A persona commanded to answer only with dots returned
+  `'...'`, and `_looks_like_silence` caught it.
+* **Recovery is proven with a fake model** (`tools/test_aesthetic.py`): the retry
+  returns the line it gets, and a silent retry is not stored.
+* **A real Heir does not produce silence on demand.** Castorice, shown a quiet
+  underworld scene, answered *"'...Would you like to share what brings you here?'"*
+  — words, so there was nothing to retry. That is the good outcome, and it also
+  means a *successful* live recovery cannot be staged reliably.
+* **The limit, measured.** When the system prompt *commands* silence, a
+  user-level nudge is not enough — the model returned `''`. The retry now corrects
+  at the system level as well as the user level; even then, an absolute "answer
+  with exactly three dots" outranks it. A persona that absolutely forbids speech
+  cannot be made to speak, and pretending otherwise would be a worse fix.
