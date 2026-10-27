@@ -290,3 +290,29 @@ when someone actually steps close; the model still reaches for the quote. That i
 a *repetition* defect, and the anti-cheat is right to refuse it. Whether to accept
 a Heir who says her famous line when it genuinely fits, or to keep refusing it, is
 an operator's call, not a bug to fix silently.
+
+## The gate's own controls (2026-10-28)
+
+Documented here because the instrument now has switches worth knowing:
+
+```
+python tools/test_dialogue_style.py --model gemma3:27b --limit 4 --best-of 1 --temp 0.4
+    --heirs castorice,mydei     # one or two Heirs instead of all thirteen
+    --report docs/whatever.md   # default: docs/RESEMBLANCE-STYLE-REPORT-<date>.md
+    --debug-exhausted           # print every rejected attempt and why it was refused
+    --no-anti-cheat             # for diagnosis only — never for a measured run
+```
+
+A case that produces nothing survives is reported as **skipped**, not scored. A
+run's pass rate is therefore "of the cases it could score", and the skip count is
+shown beside it — `2/3 pass | 66% | 1 skipped`.
+
+**Cost.** One scored case is two model calls (generation + judging); an exhausted
+case is up to eight generations now (was thirteen, all identical before the seed
+fix). Perception is cached by image for the process, so one picture shown to three
+Heirs is one vision call.
+
+**Suite.** `tools/test_style_gate.py` (19 checks) covers the filter logic itself:
+degenerate detection, the short-line repeat rule, canon-quote refusal,
+name-prefix trimming, and assertions that exhaustion is counted as a skip and every
+retry carries a seed.
