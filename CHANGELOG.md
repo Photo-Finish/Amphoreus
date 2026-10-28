@@ -459,3 +459,18 @@
   sprites roam horizontally; everything else is foliage and chrome.
 - Detail: `docs/UI-AIW.md`.
 
+
+### 2026-10-28 — the world kept running
+- **The little Amphoreus is running again** — `--interval 900 --catch-up`, so the
+  clock advances a day every fifteen minutes of real time and the seven days the
+  world spent at rest are being generated rather than skipped. Chronicle grew
+  2621 → 2639 lines in the first two minutes as the gap filled.
+- **The calendar is verified against GMT+8**, not assumed: the stored clock and
+  `WorldClock.from_gmt8()` render identically (Year 4933, Month of Mourning, Week 3,
+  Day 7 — Action Hour at 2026-10-28 12:59 +08:00).
+- **`tools/start_world.ps1`** — start, `-Stop` (which marks the rest so the next
+  start can catch up) and `-Status`, with the log at `world_runtime/engine_run.log`.
+- The rest marker had stood since **2026-09-16 20:08**, i.e. 42 civil days missed;
+  `rest_catchup` caps a catch-up at 7 days by design, so the most recent week is the
+  one being written. The earlier five weeks remain unwritten and are recorded here
+  rather than silently replayed.
