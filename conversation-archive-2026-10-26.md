@@ -1086,3 +1086,85 @@ Streamlit widget, and the Eternal Page menu.
 45/50 with one skip; the UI on the book theme with three custom surfaces (galgame,
 walk scene, admin console) still to carry it.
 
+
+## Rounds 12–24 — 2026-10-28 02:20 → 20:20
+
+*Recorded as request → finding → change; the reasoning lives in the documents each
+step produced. A full pickup note is in `docs/SESSION-HANDOFF-2026-10-28.md`.*
+
+### 🧑 You
+> "Check if you have updated the changelog, conversation archive accordingly."
+
+Both had stopped at 2026-10-27. `CHANGELOG.md` gained three entries (the Heir rebuild
+and its honest 36/52, the instrument correction to 45/50, the book theme) and this
+archive gained Rounds 5–11. The file name still spans past its date — flagged, not
+renamed unilaterally.
+
+### 🧑 You
+> "Settle the four 'for you to decide's… refer to online wiki / in-game facts."
+
+Done against sources: **Castorice's twin is Polyxia, a sister** (zh.wikipedia character
+list) — the card had said brother; **Hyacine's "descent from an unnamed Heir" removed**
+(absent from databank and HoYoWiki); **Mydei's Gorgo/Eurypon** kept ambiguous and now
+*says* so; **Castorice's five-paces line** became a quotation rather than a script,
+taking her 2/3-with-a-skip → 3/4 with none. Aglaea (22-style line) and Hysilens (two
+78s) remain as register near-misses.
+
+### 🧑 You
+> "Keep the world running, and sync the in-world calendar with GMT+8. Generate the lores during the period when the world is inactive."
+
+Engine up at `--interval 900 --catch-up`. Calendar proved, not assumed: stored clock
+== `WorldClock.from_gmt8()`. Ten stale engines at `--interval 86400` were found writing
+the same chronicle and stopped; the pid guard exists because of it, and its first
+version used `os.kill(pid, 0)` — which on Windows is `TerminateProcess`, so the probe
+could kill its subject. Replaced and proved.
+
+### 🧑 You
+> "I wonder what makes you choose a backfill… I would generate from the breakpoint forwards…"
+
+Right in substance: the loop *is* ascending, but the **state** is today's, so early
+September days carry October's bonds and projects. Worse, no breakpoint snapshot
+exists — `world_state.json` is one live file; git never tracked it. So a true replay is
+impossible, and that was recorded instead of papered over.
+
+### 🧑 You
+> "…you can go ahead on the forward generation… remark discontinuity in the Heirs' memory… add logging… slower cadence can be more random… lore should correspond to the in-sanctuary calendar… do not start voice-cloning."
+
+All thirteen Heirs now carry the anomaly as a `world` memory (importance 4: the days
+came back at once, the streets were right but the feelings arrived out of order).
+`tools/log_collective_memory.py` snapshots the collective memory (40 per Heir).
+Cadence jittered via `AMP_WORLD_JITTER` (1.8×) — and the finding that 1× already waits
+for the GMT+8 overlay period, so the calendar is respected by construction. Voice
+cloning rejected on consent/licensing and recorded as such.
+
+### 🧑 You
+> "Search the web for other related chatbox projects… absorb relevant experience."
+
+`docs/EXTERNAL-RESEARCH.md`: firefly-skill's portable character skills,
+Firefly-Companion-AI's local ONNX memory and second proactive engine, Cyrene-Agent, and
+the SillyTavern lorebook pattern. Adopted the last one as **keyed lorebook activation**
+(`src/knowledge/lorebook.py`, 17 checks, not yet wired) because vector-only retrieval
+cannot be stopped from surfacing Okhema for a question about Kremnos.
+
+### 🧑 You
+> "Use past github commitments as a retracing checkpoint…"
+
+Checked: `world_runtime/` is untracked by design, `world_state.json` has no history in
+any ref. But a manual `backup-journey-20260811/` exists with per-Heir stores — a real
+memory checkpoint, five weeks before the breakpoint, and no world state at all.
+
+### 🧑 You
+> "I do not think a consistency check is necessary. do the shipping half."
+
+`tools/checkpoint_world.py`: dated folder + manifest naming every file, origin and
+size; `--list`, `--keep`, and `restore()` left callable from admin code with its
+unproven status written into the docstring. First run 49 files, 875 KB. A relative-path
+bug in the manifest was caught before it could misdirect a restore.
+
+### State at the end of Round 24
+
+`HEAD 52a860b`; tag `retrace-before-admin-ui`; checkpoints `20-16` and `20-20`;
+backfill still writing (chronicle ~3796); engine stopped by the single-writer rule;
+suites 1842/30 with every failure in `test_sanctuary_live`'s frozen Year-4932
+assertions; Aglaea and Hysilens open; admin panel, phone verify, period-aware days and
+lorebook wiring queued.
