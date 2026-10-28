@@ -474,3 +474,11 @@
   `rest_catchup` caps a catch-up at 7 days by design, so the most recent week is the
   one being written. The earlier five weeks remain unwritten and are recorded here
   rather than silently replayed.
+- **Ten stale engines were running.** Inspecting the processes showed ten copies at
+  `--interval 86400` — the default, started without the flag and never reaped — all
+  writing to the same chronicle while a new one ran at 900 s. They were stopped;
+  exactly one engine remains (pid 41504 and its child), and the chronicle kept
+  climbing 2746 → 2786 lines over three minutes with no duplicates. **Known defect,
+  not yet fixed:** `world_engine` start does not refuse when `world_runtime/engine.pid`
+  points at a live process, which is how ten copies accumulated. The guard is the
+  next change; the pid file was in fact holding a stale pid when the new run began.
