@@ -60,18 +60,24 @@ def exp_live_store_read_only():
     print("== A. Production store (read-only) ==")
     raw = json.loads(LIVE.read_text(encoding="utf-8"))
     clock = raw.get("clock") or {}
-    check("live JSON is 4932", clock.get("year") == 4932, str(clock))
-    check("live JSON is Strife (month 10)", clock.get("month") == 10, str(clock))
+    # The world moves. Do not assert the date it happened to have on the day this
+    # test was written (it used to say 4932/Strife and failed every time the world
+    # legitimately advanced); assert what must be true of any live store.
+    sim_year, sim_month = int(clock.get("year") or 0), int(clock.get("month") or 0)
+    check("live JSON carries a light year", 4000 <= sim_year <= 6000, str(clock))
+    check("live JSON carries a month 1..13", 1 <= sim_month <= 13, str(clock))
     scale = raw.get("time_scale", 1.0)
     check("live store is at 1x (overlay mode)",
           float(scale or 1.0) <= 1.0, str(scale))
     ws = WorldState(str(LIVE))
     check("1x overlay year is civil+2907",
           ws.clock.year == datetime.now(GMT8).year + 2907)
-    check("1x overlay is not Strife-on-disk",
-          not (ws.clock.year == 4932 and ws.clock.month == 10))
-    check("sim clock still 4932 Strife under the overlay",
-          ws._sim_clock.year == 4932 and ws._sim_clock.month == 10)
+    check("1x overlay is the GMT+8 clock, not the sim on disk",
+          ws.clock.format_short() == WorldClock.from_gmt8().format_short(),
+          ws.clock.format_short())
+    check("sim clock is untouched under the overlay",
+          ws._sim_clock.year == sim_year and ws._sim_clock.month == sim_month,
+          f"{ws._sim_clock.year}/{ws._sim_clock.month} vs {sim_year}/{sim_month}")
     before = json.dumps(raw["clock"], sort_keys=True)
     after = json.dumps(json.loads(LIVE.read_text(encoding="utf-8"))["clock"],
                        sort_keys=True)
@@ -82,8 +88,8 @@ def exp_scale_switch(path: Path, round_id: int):
     print(f"== B. Scale switch 1x↔2x–60x (round {round_id}) ==")
     ws = WorldState(str(path))
     origin = _sim_tuple(ws)
-    check(f"r{round_id} copy starts at live sim 4932 Strife",
-          origin[0] == 4932 and origin[1] == 10, str(origin))
+    check(f"r{round_id} copy starts at the live sim",
+          origin[0] >= 4000 and 1 <= origin[1] <= 13, str(origin))
     seen = []
     for scale in (1, 2, 5, 10, 30, 60, 1, 60, 1):
         ws.time_scale = float(scale)
@@ -93,8 +99,9 @@ def exp_scale_switch(path: Path, round_id: int):
                   ws.clock.year == datetime.now(GMT8).year + 2907)
         else:
             seen.append((f"{scale}x", ws.clock.year, ws.clock.month_name))
-            check(f"r{round_id} {scale}x is sim 4932",
-                  ws.clock.year == 4932 and ws.clock.month == origin[1])
+            check(f"r{round_id} {scale}x is the sim, not the overlay",
+                  ws.clock.year == origin[0] and ws.clock.month == origin[1],
+                  f"{ws.clock.year}/{ws.clock.month} vs {origin[0]}/{origin[1]}")
         ws.save()
         check(f"r{round_id} save@{scale}x left sim tuple",
               _sim_tuple(ws) == origin, str(_sim_tuple(ws)))
@@ -140,8 +147,8 @@ def exp_engine_rest_ticks(path: Path, round_id: int, scale: float):
         else:
             check(f"r{round_id} {scale:g}x engine advanced sim clock",
                   after != before, f"{before} -> {after}")
-            check(f"r{round_id} {scale:g}x still year 4932 after one rest tick",
-                  after[0] == 4932)
+            check(f"r{round_id} {scale:g}x still in the sim's year after one rest tick",
+                  after[0] == before[0], f"{before} -> {after}")
         check(f"r{round_id} {scale:g}x run_day returned lines",
               isinstance(lines, list))
     snap = le.snapshot(eng.world, place="Okhema")
