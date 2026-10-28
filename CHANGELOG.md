@@ -532,3 +532,17 @@
   a checkpoint back and is callable from the admin side. Deliberately **unproven**:
   no lock, no integrity check, no test that a restored world equals the saved one —
   the manifest exists so a future restore has something to check against.
+- **Administrators can take and restore checkpoints from the Control Panel.** The
+  checkpoint logic moved to `src/world/checkpoints.py` so the CLI and the UI share one
+  implementation; the panel lists the last five, offers "Take a checkpoint now", and
+  gates **Restore** behind a confirmation box with the warning above it — *never been
+  verified, no lock, no integrity check*. Proven by booting the real app
+  (`streamlit run src/ui_app.py --server.port 8502`) and driving it with Chromium:
+  signed in, opened the Control Panel tab, expanded the section, three checkpoints
+  listed, the save button present, Restore disabled until ticked, **zero console
+  errors** (`world_runtime/art_review/admin_checkpoints.png`).
+- **`test_sanctuary_live` repaired** — it froze Year 4932 / Month of Strife and failed
+  the moment the world legitimately advanced. It now asserts what must be true of any
+  live store (plausible year, month in range, overlay equal to `WorldClock.from_gmt8()`,
+  sim untouched underneath) and compares scale-switch results against the copy's own
+  origin. 163 passed, 0 failed; whole tree **1872 passed, 0 failed across 29 suites**.

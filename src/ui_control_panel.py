@@ -191,6 +191,54 @@ def _render_1x_catchup(ws, manager, running: bool) -> None:
 
 
 # --------------------------------------------------------------------------- #
+# Checkpoints — the administrator's door
+# --------------------------------------------------------------------------- #
+def render_checkpoints() -> None:
+    """Save the world, or restore a checkpoint.
+
+    Restoring is deliberately fenced: it overwrites the live world and memory, it has
+    never been round-trip tested, and the interface says so before the button rather
+    than after the mistake.
+    """
+    try:
+        from src.world import checkpoints as ck
+    except Exception as exc:  # pragma: no cover - import guard
+        st.caption(f"(checkpoints unavailable: {exc})")
+        return
+
+    with st.expander("Checkpoints — save the world, or restore one", expanded=False):
+        st.caption(
+            "Restoring overwrites the live world and the Heirs' memories. It has "
+            "**never been verified** — no lock, no integrity check — so take a "
+            "checkpoint immediately before you restore, and expect to go back.")
+        snaps = ck.list_checkpoints()
+        left, right = st.columns([3, 2])
+        with left:
+            st.markdown(f"**{len(snaps)} checkpoint(s)**")
+            for d in list(reversed(snaps))[:5]:
+                st.markdown(f"- `{d.name}`")
+        with right:
+            if st.button("Take a checkpoint now", key="ckpt_take",
+                         use_container_width=True):
+                try:
+                    path = ck.take(keep=10)
+                    st.success(f"Saved {path.name}")
+                except Exception as exc:
+                    st.error(f"Could not save: {exc}")
+        if snaps:
+            names = [d.name for d in reversed(snaps)]
+            pick = st.selectbox("Restore a checkpoint", names, key="ckpt_pick")
+            sure = st.checkbox("I understand this overwrites the live world",
+                               key="ckpt_sure")
+            if st.button("Restore", key="ckpt_go", disabled=not sure):
+                try:
+                    info = ck.restore(pick)
+                    st.success(f"Restored {info['restored']} files from {pick}.")
+                except Exception as exc:
+                    st.error(f"Restore failed: {exc}")
+
+
+# --------------------------------------------------------------------------- #
 # The panel
 # --------------------------------------------------------------------------- #
 def render_control_panel(manager, characters):
@@ -228,6 +276,7 @@ def render_control_panel(manager, characters):
         return
     st.title("Control Panel")
     st.caption("Choose how you play Amphoreus. Changes take effect immediately and persist.")
+    render_checkpoints()
 
     from src.world.world_state import WorldState
     from src.world import living_world as lw
