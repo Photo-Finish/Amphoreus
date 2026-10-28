@@ -774,7 +774,8 @@ def _run(args):
     report_path = (
         Path(args.report) if args.report
         else ROOT / "docs"
-        / f"RESEMBLANCE-STYLE-REPORT-{__import__('datetime').date.today().isoformat()}.md"
+        / ("RESEMBLANCE-STYLE-REPORT-"
+           f"{__import__('datetime').datetime.now().strftime('%Y-%m-%dT%H%M')}.md")
     )
     if backend_dead:
         report.append("")

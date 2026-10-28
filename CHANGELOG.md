@@ -560,3 +560,11 @@
   Aglaea's card; it added two 78s and did not stop the quote (3/4 → 1/4). Reverted to
   the previous card and fixed the real cause instead. Recorded because a card edit that
   looks like progress can just be noise.
+- **Full gate on the corrected harness: 48 of 49 scored cases pass (98 %), one skipped**
+  — up from 45/50 (90 %) *despite* the gate now being stricter for every Heir, because
+  refusing canon quotes forces lines that are actually theirs. Per Heir: Aglaea, Anaxa,
+  Cerydra, Cipher, Hyacine, Mydei, Phainon, Tribbie 4/4; Castorice 3/3 with one skip;
+  Cyrene, Evernight, Hysilens 3/4. The three remaining near-misses are Cyrene (78),
+  Evernight (58) and Hysilens (78).
+- **Reports are unique per run** — the dated name collided when two runs happened on the
+  same day and one measurement replaced another; the default now carries the time.
