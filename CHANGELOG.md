@@ -482,3 +482,10 @@
   not yet fixed:** `world_engine` start does not refuse when `world_runtime/engine.pid`
   points at a live process, which is how ten copies accumulated. The guard is the
   next change; the pid file was in fact holding a stale pid when the new run began.
+- **Backfilled the weeks the 7-day catch-up could not reach.** `tools/backfill_lore.py`
+  (`--from`, `--to`, `--dry-run`) writes specific historical days through the same
+  engine that writes every other day, because the world was designed to run
+  unattended and an operator may decide the earlier weeks should exist. Running now
+  for **2026-09-17 → 2026-10-21, 35 days**; the live engine was stopped first so the
+  chronicle has one writer. Chained after it: the voice gate for Aglaea and Hysilens,
+  then the engine restarts with `--catch-up`.
