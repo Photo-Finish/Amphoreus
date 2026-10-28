@@ -733,8 +733,13 @@ def _run(args):
                                 stats=stats, prior_used=prior_used)
                 st = int(j.get("style", 0))
                 ct = int(j.get("content", 0))
-            except Exception:
-                st, ct = 0, 0
+            except Exception as exc:
+                # A judge that could not answer is missing coverage, not a bad line.
+                # Scoring it 0/0 dragged whole averages down: Evernight read as 58
+                # once and 0 once, from the same non-answer.
+                skipped += 1
+                print(f"  {heir_id:>26}: skipped (judge failed: {type(exc).__name__})")
+                continue
             # Remember this accepted reply — it cannot be recycled later in the run.
             if args.anti_cheat:
                 record_accepted(actual, run_seen, run_grams, run_firsts)

@@ -81,6 +81,10 @@ def main() -> int:
     check("exhaustion increments the skip counter", "skipped += 1" in source)
     check("the skip is reported per Heir", "skipped" in source and "skip_note" in source)
 
+    print("== A failed judge is missing coverage ==")
+    check("judge failure increments the skip counter",
+          "judge failed" in source and "skipped += 1" in source)
+
     print("== Retries draw a new sample ==")
     check("each attempt passes a seed", "seed=tries" in source)
     check("the diagnostic exists", "--debug-exhausted" in source)

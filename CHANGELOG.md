@@ -596,3 +596,15 @@
   relationships" pins Key Relationships, an unrelated question pins nothing, pinned
   entries outrank vector hits, and the switch disables it. Suite: `tools/test_lorebook.py`
   (23 checks).
+- **A failed judge is missing coverage, not a zero.** Evernight's case scored **0/0**
+  because `judge_style` threw and the harness recorded `st, ct = 0, 0` — the same class
+  of defect as the old `"..."` artefact, and it dragged her average to 67. A judge
+  exception now counts as a **skip** and says so (`skipped (judge failed: …)`).
+- **Evernight 58 → 78.** Asked what she sacrificed, she had answered *"A blank canvas,
+  perhaps…? ♭"* — a riddle where a sentence belonged. Her card now says a question about
+  her own sacrifice is not the place for an image, a riddle or a question mark.
+- **The 78 plateau is probably the judge, not the Heirs.** Across unrelated Heirs the
+  style score lands on the same values — 88, 90, 78, 22, 58, 0 — which looks quantised
+  rather than continuous. Cyrene, Evernight and Hysilens each fail exactly one case at
+  **78**, and the bar is 85, so any quibble fails. Worth examining the judge prompt
+  before writing more card rules to chase a bucket.
