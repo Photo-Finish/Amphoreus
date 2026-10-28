@@ -546,3 +546,17 @@
   live store (plausible year, month in range, overlay equal to `WorldClock.from_gmt8()`,
   sim untouched underneath) and compares scale-switch results against the copy's own
   origin. 163 passed, 0 failed; whole tree **1872 passed, 0 failed across 29 suites**.
+- **The anti-cheat only knew the current scene.** `all_canon` is the lines of the part
+  under test, so a Heir could quote its own canon from another chapter and pass —
+  measured exactly: Aglaea answered *"I've woven many unforeseen events into the
+  tapestry of fate…"*, verbatim from `chapter-03-through-petals.md`, and scored **22**
+  instead of being refused. The quote check now receives a **global corpus** per Heir
+  (every line they speak anywhere in the databank; 732 for Aglaea), cached. Effect:
+  **Aglaea 3/4 → 4/4** (avg style 88), her best score, with no change to her voice.
+- **Hysilens 2/4 → 3/4** (avg style 86): her card now says the banquet is her past, not
+  a line she reaches for, and forbids opening with a sigh. The remaining 78 is a
+  register near-miss.
+- **A failed hypothesis, retraced.** I first tried forbidding the tapestry phrase in
+  Aglaea's card; it added two 78s and did not stop the quote (3/4 → 1/4). Reverted to
+  the previous card and fixed the real cause instead. Recorded because a card edit that
+  looks like progress can just be noise.

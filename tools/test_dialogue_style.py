@@ -31,6 +31,7 @@ USAGE
 """
 
 import argparse
+from functools import lru_cache
 import json
 import os
 import re
@@ -179,6 +180,32 @@ def normalize_line(text: str) -> str:
     t = re.sub(r"^[\(\[]?([^()\[\]]*)[\)\]]?\s*$", r"\1", t)  # parentheses
     t = re.sub(r"[^0-9A-Za-z' ]+", " ", t)                 # drop punctuation
     return re.sub(r"\s+", " ", t).strip().lower()
+
+
+@lru_cache(maxsize=None)
+def global_canon(heir_id: str) -> frozenset:
+    """Every line this Heir speaks anywhere in the databank.
+
+    The scene-local canon set only knows the lines of the part under test, so a Heir
+    could quote its own canon from another chapter and pass the anti-cheat. Measured
+    2026-10-28: Aglaea answered "I've woven many unforeseen events into the tapestry
+    of fate...", verbatim from chapter-03-through-petals, and scored 22 instead of
+    being refused. This is the corpus the quote check should have been given.
+    """
+    lines = set()
+    for path in sorted((ROOT / "databank").rglob("*.md")):
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+        for line in text.splitlines():
+            m = SPEAKER_RE.match(line)
+            if not m:
+                continue
+            speaker, rest = m.group(1).strip(), (m.group(2) or "").strip()
+            if rest and is_heir_speaker_label(heir_id, speaker):
+                lines.add(rest)
+    return frozenset(lines)
 
 
 def is_quote_cheat(reply: str, canon_set) -> bool:
@@ -622,7 +649,7 @@ def _run(args):
                 #      (exact/near repeat, phrase-crutch, formulaic opening).
                 # Any such candidate is rejected and regenerated, so neither the
                 # canon nor a self-invented catchphrase can be used to pass.
-                cheat_set = canon_all | set(anchors) | set(exemplars)
+                cheat_set = canon_all | global_canon(heir_id) | set(anchors) | set(exemplars)
                 candidates = []
                 rejections = []
                 tries = 0
