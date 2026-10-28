@@ -496,3 +496,14 @@
   asking about. Replaced with `OpenProcess` + `GetExitCodeProcess`, and proved:
   a live pid is detected, a dead pid is ignored, and the checked process is still
   alive afterwards.
+- **The anomaly is in the Heirs' memories.** The world rested from 2026-09-16 and the
+  missing span was generated in one sitting; the Heirs now carry that as a `world`
+  memory (importance 4, all thirteen): the days came back all at once, the streets
+  were right but their own feelings arrived out of order, things not yet lived were
+  already worn into them. It happened, so they remember it.
+- **Nothing was rewound.** There is no snapshot of the world state at the breakpoint —
+  `world_state.json` is a single live file, and the only dated states on disk are
+  August test fixtures — so a true replay from the breakpoint is impossible without
+  inventing the start state. The generator has always run *forward* from the
+  breakpoint; the only residual artefact is that the earliest generated days carry
+  the present state's bonds and projects.
