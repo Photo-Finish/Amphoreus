@@ -98,3 +98,11 @@ credibility rests on the suite being green.
 - **Restore is unproven by instruction** — any UI must say so in the interface.
 - **Session room** was exhausted; work was stopped at the retrace point rather than
   half-done.
+
+## Authority for the next session
+
+See the "Operator authority (granted 2026-10-28, standing)" section in
+`.cursor/rules/amphoreus-workflow.mdc`: it lists what may be done without asking
+(cards, gate, lore, world start/stop, checkpoints, theme, commit-and-push), what still
+needs a fresh word (voice cloning, deleting assets, renaming records, changing the pass
+bars, settling conflicting canon), and the false claims that have already cost time.

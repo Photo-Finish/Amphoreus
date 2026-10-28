@@ -43,3 +43,38 @@ Working language: **English** (unless the user says otherwise). No French replie
   hand-over and is not edited, extended, or moved.
 - A working entry may reference a phase; a phase entry may summarise work. The
   daily log does not belong in the README.
+
+## Operator authority (granted 2026-10-28, standing)
+
+A new session must read this before asking the operator for anything already decided.
+Authority granted so far, and its limits:
+
+**Granted — act without asking:**
+- Edit any Heir card in `src/characters/`, including the frozen Copilot Stage-1 cards,
+  for fidelity work. Stripping an `AUTO REFINEMENT` block is restoration
+  (`strip_auto_refinement`), not rewriting hand-over ink.
+- Run the voice gate (`tools/test_dialogue_style.py`) in any configuration, and change
+  its harness: seeds per retry, skipped-coverage accounting, dated reports.
+- Generate lore for the world: `--catch-up`, `tools/backfill_lore.py`, forward from a
+  breakpoint. Days may be uneventful; density is not to be inflated.
+- Start, stop and restart the world engine, on the one-writer rule.
+- Take checkpoints (`tools/checkpoint_world.py`). **Restore only with a fresh,
+  specific confirmation** — it is unproven by the operator's own instruction.
+- Restyle the UI to the As-I've-Written theme and carry it to the phone app.
+- Commit and push after each coherent change (the standing rule).
+- Take a backup before any risky edit, retrace with `git reset --hard <tag>` on
+  failure, and re-cut the tag; boot the real UI after tasks, not just the suites.
+
+**Not granted — ask first:**
+- Voice cloning or any performer-voice synthesis: consent/licensing unanswered.
+- Deleting or rewriting `assets/`, the frozen README region above the Stage-1
+  conclusion, or the historical reports.
+- Renaming or restructuring record files (`conversation-archive-*.md`).
+- Changing the pass bars (style ≥ 85, content ≥ 60) — that would re-baseline meaning.
+- Choosing between conflicting canon when the sources disagree (e.g. Mydei's
+  Gorgo/Eurypon): record the ambiguity, do not settle it.
+
+**Known-false claims to distrust:** "eyesight works with gemma3n" (it refuses images);
+"the gate is green" while `test_sanctuary_live` hard-codes Year 4932; "a checkpoint
+exists" while never having been restored; "backfill is a replay" (it is forward
+generation with the present state).
