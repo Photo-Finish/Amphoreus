@@ -133,30 +133,36 @@ def from_dicts(rows: Iterable[dict]) -> Lorebook:
 
 
 def from_markdown(path, *, title_from_heading: bool = True) -> Lorebook:
-    """Turn a databank profile into entries — one per `##` section.
+    r"""Turn a databank profile into entries - one per ## section.
 
-    The Heir profiles are already written in sections (Identity, Coreflame, Key
-    Relationships…), and their section headings are exactly the words a visitor
-    asks about ("what is your Coreflame?"). This costs nothing to keep current: edit
-    the profile and the lorebook follows.
+    Keys are the section's **own** words ("Coreflame & Path" -> coreflame, path), not
+    the Heir's name: the Heir is always the speaker, so a name key fires every section
+    at once and the passage that answers the question gets lost among them. Measured
+    2026-10-28: keyed on the name, "What is your Coreflame?" pinned Appearance and
+    Biography before Coreflame & Path.
     """
-    import json
-    from pathlib import Path
+    from pathlib import Path as _Path
 
-    path = Path(path)
-    name = path.stem
+    path = _Path(path)
+    skip = {"the", "and", "for", "with", "your", "their", "its", "a", "of"}
+
+    def _keys(section: str) -> list:
+        words = [w for w in _WORD.findall(section.lower()) if len(w) >= 4 and w not in skip]
+        # singular/plural both fire: "relationship" should answer "relationships"
+        return sorted({w for w in words} | {w[:-1] for w in words if w.endswith("s") and len(w) > 5})
+
     rows = []
     section, buf = "", []
     for line in path.read_text(encoding="utf-8").splitlines():
         if line.startswith("## "):
             if section and buf:
-                rows.append({"keys": [name, section.lower()], "title": f"{name} — {section}",
+                rows.append({"keys": _keys(section), "title": f"{path.stem} - {section}",
                              "text": "\n".join(buf).strip(), "priority": 1})
             section, buf = line[3:].strip(), []
         elif section:
             buf.append(line)
     if section and buf:
-        rows.append({"keys": [name, section.lower()], "title": f"{name} — {section}",
+        rows.append({"keys": _keys(section), "title": f"{path.stem} - {section}",
                      "text": "\n".join(buf).strip(), "priority": 1})
-    _ = json  # kept for callers that serialise entries; no format assumptions here
+    _ = title_from_heading
     return from_dicts(rows)

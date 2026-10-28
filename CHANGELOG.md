@@ -587,3 +587,12 @@
   (`scrollWidth` 360), the Control Panel reachable, the checkpoint section expandable
   with its warning legible, and **zero console errors**
   (`world_runtime/art_review/phone_checkpoints_360.png`).
+- **The lorebook is wired into retrieval.** `ContextBuilder.retrieve()` now puts keyed
+  entries **first** and lets the vector results fill the rest of the budget, with
+  `AMP_LOREBOOK=0` to switch it off. Deriving keys from the Heir's own name was wrong —
+  every section fired and "What is your Coreflame?" pinned Appearance and Biography
+  ahead of Coreflame & Path; keys are now the section's own words ("coreflame", "path",
+  "relationship", singular and plural). Verified: Coreflame pins Coreflame & Path, "key
+  relationships" pins Key Relationships, an unrelated question pins nothing, pinned
+  entries outrank vector hits, and the switch disables it. Suite: `tools/test_lorebook.py`
+  (23 checks).

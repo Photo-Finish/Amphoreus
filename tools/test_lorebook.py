@@ -58,6 +58,8 @@ def main() -> int:
     check("a profile section answers its question",
           any("Coreflame" in e.title for e in got), sed(got))
 
+    test_wiring()
+
     print(f"{len(PASSED)} passed, {len(FAILED)} failed")
     for f in FAILED:
         print("  FAIL", f)
@@ -66,6 +68,33 @@ def main() -> int:
 
 def sed(entries):
     return str([e.title for e in entries])
+
+
+def test_wiring():
+    print("== wiring: pinned entries lead retrieval ==")
+    from src.core.context_builder import ContextBuilder
+
+    class FakeStore:
+        def query(self, cid, q, k=5, threshold=0.7):
+            return [{"text": "Okhema is the holy city.", "kind": "profile",
+                     "source": "vector", "score": 0.9}]
+
+    cb = ContextBuilder(vector_store=FakeStore())
+    hits = cb.retrieve("mydei", "What is your Coreflame?")
+    check("a pinned entry is returned", any(h["kind"] == "lorebook" for h in hits),
+          str([h["kind"] for h in hits]))
+    check("it comes before the vector hit", hits[0]["kind"] == "lorebook",
+          str([h["kind"] for h in hits]))
+    check("the vector hit is still there", any(h["kind"] == "profile" for h in hits))
+    check("an unrelated question pins nothing",
+          all(h["kind"] != "lorebook" for h in cb.retrieve("mydei", "the weather is mild")))
+    check("the budget is respected", len(cb.retrieve("mydei", "Coreflame and biography")) <= cb.k)
+    import os
+    os.environ["AMP_LOREBOOK"] = "0"
+    cb2 = ContextBuilder(vector_store=FakeStore())
+    check("the switch turns it off",
+          all(h["kind"] != "lorebook" for h in cb2.retrieve("mydei", "What is your Coreflame?")))
+    os.environ.pop("AMP_LOREBOOK", None)
 
 
 if __name__ == "__main__":

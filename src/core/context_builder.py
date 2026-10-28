@@ -34,18 +34,85 @@ class ContextBuilder:
             return False
 
     def retrieve(self, character_id: str, question: str, k: Optional[int] = None) -> List[dict]:
-        """Retrieve top-k canon excerpts for a character + question."""
-        if self.vector_store is None:
-            return []
+        """Retrieve top-k canon excerpts for a character + question.
+
+        Keyed lorebook entries come **first**: vector search cannot be stopped from
+        surfacing Okhema for a question about Kremnos, but a key that actually appears
+        in the question is a stronger signal than a cosine distance. Pinned entries
+        are capped at two and the vector results fill the rest of the budget.
+        """
+        limit = k or self.k
+        pinned = self.pinned(character_id, question)
+        hits: List[dict] = []
+        if self.vector_store is not None:
+            try:
+                hits = self.vector_store.query(
+                    character_id,
+                    question,
+                    k=limit,
+                    threshold=self.threshold,
+                ) or []
+            except Exception:
+                hits = []
+        merged = pinned + hits
+        # dedupe by text: a pinned entry often duplicates a retrieved excerpt
+        seen, out = set(), []
+        for hit in merged:
+            key = str(hit.get("text", ""))[:160]
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append(hit)
+        return out[:limit]
+
+    def _book_for(self, character_id: str):
+        """The keyed lorebook for one Heir, built from their databank profile."""
+        import os
+
+        if os.environ.get("AMP_LOREBOOK", "1") in {"0", "off", "false", "False"}:
+            return None
+        books = getattr(self, "_books", None)
+        if books is None:
+            books = self._books = {}
+        if character_id in books:
+            return books[character_id]
+        book = None
         try:
-            return self.vector_store.query(
-                character_id,
-                question,
-                k=k or self.k,
-                threshold=self.threshold,
-            )
+            from pathlib import Path
+
+            from src.knowledge.lorebook import from_markdown
+
+            path = (Path(__file__).resolve().parents[2] / "databank" / "chrysos-heirs"
+                    / f"{character_id}.md")
+            if path.is_file():
+                book = from_markdown(path)
+        except Exception:
+            book = None
+        books[character_id] = book
+        return book
+
+    def pinned(self, character_id: str, question: str) -> List[dict]:
+        """Entries whose keys appear in the question, as retrieval hits."""
+        book = self._book_for(character_id)
+        if book is None or not question:
+            return []
+        turns = getattr(self, "_turns", None)
+        if turns is None:
+            turns = self._turns = {}
+        turn = turns.get(character_id, 0)
+        turns[character_id] = turn + 1
+        out = []
+        try:
+            for entry in book.activate(question, turn=turn, limit=2):
+                out.append({
+                    "text": entry.text,
+                    "kind": "lorebook",
+                    "source": f"lorebook:{entry.title or ', '.join(entry.keys[:2])}",
+                    "score": 1.0,
+                })
         except Exception:
             return []
+        return out
 
     @staticmethod
     def prefer_voice_hits(hits: List[dict]) -> List[dict]:
@@ -56,7 +123,9 @@ class ContextBuilder:
         """
         if not hits:
             return hits
-        rank = {"mission": 0, "profile": 1, "global": 2}
+        # A keyed lorebook match is pinned ahead of everything: it fired because
+        # the question named the thing, not because it was nearby in vector space.
+        rank = {"lorebook": -1, "mission": 0, "profile": 1, "global": 2}
 
         def _key(h: dict):
             kind = str(h.get("kind") or "").lower()
