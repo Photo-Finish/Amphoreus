@@ -315,15 +315,20 @@ class WorldEngine:
                 pass
 
         if clock.is_rest_time():
+            # Night is already gated: no Heir speech, no errands, no work. What the
+            # hour DID write (lived mechanisms, a note left for the visitor) is kept
+            # and returned -- returning only the night line used to hide the hour's
+            # own facts from every caller even though the chronicle had them.
             night = (
-                f"{time_str} — The city rests. Only the Thief Star wanders the sky. "
-                "The Heirs sleep, and their days wait for the dawn."
+                f"{time_str} — The city settles for the night. Only the Thief Star "
+                "wanders the sky; the Heirs keep to their rooms, and their days wait "
+                "for the dawn."
             )
             self.chronicle.append({"time": time_str, "text": night})
             self.world.add_event(night)
             self.world.save()
             self._note_lived()
-            return [night]
+            return lines + [night]
 
         # Active hour — every Heir decides freely (unless they are on the road).
         # Conversation models are optional: the world machine (Keeper fallback,

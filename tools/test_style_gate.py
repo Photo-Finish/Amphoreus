@@ -84,7 +84,8 @@ def main() -> int:
     print("== Retries draw a new sample ==")
     check("each attempt passes a seed", "seed=tries" in source)
     check("the diagnostic exists", "--debug-exhausted" in source)
-    check("the report path is dated by default", "RESEMBLANCE-STYLE-REPORT-{__import__" in source)
+    check("the report path is dated and timed by default",
+          "RESEMBLANCE-STYLE-REPORT-" in source and "strftime" in source)
 
     print()
     print(f"{len(PASSED)} passed, {len(FAILED)} failed")

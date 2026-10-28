@@ -568,3 +568,13 @@
   Evernight (58) and Hysilens (78).
 - **Reports are unique per run** — the dated name collided when two runs happened on the
   same day and one measurement replaced another; the default now carries the time.
+- **Night was already gated — the assumption was mine, not the code's.** `is_rest_time()`
+  is True at Curtain-Fall **and** Entry Hour, and `run_day()` returns before any Heir
+  speech, errand or project, writing one night line instead. The queue item
+  "period-aware day generation" was based on a wrong reading: at 1× the clock does not
+  advance inside `run_day` at all, the overlay supplies the period, and the engine is
+  called once per period. What *was* wrong: the night branch did
+  `return [night]`, dropping every fact the hour had already written from its result
+  (the chronicle kept them, callers did not). Now `return lines + [night]`, and the line
+  says the city *settles* rather than rests — a note left for the visitor at night is
+  not a contradiction.
