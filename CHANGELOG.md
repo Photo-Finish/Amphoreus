@@ -608,3 +608,22 @@
   rather than continuous. Cyrene, Evernight and Hysilens each fail exactly one case at
   **78**, and the bar is 85, so any quibble fails. Worth examining the judge prompt
   before writing more card rules to chase a bucket.
+- **Rest is now a tendency, not a restriction — but only after a dry test said the
+  Heirs could decide.** `tools/test_activity_spontaneity.py` asks each Heir what they do
+  with an hour nobody asked them for, then has a **third-party judge** (given the
+  databank profile, never the card) score it: **in-character 8.8, spontaneous 6.1,
+  hour-aware 7.9**, no two Heirs repeating a line. Mydei annotates a dead companion's
+  treatise with one word; Tribbie goes to check on Ciphy because she gets lonely.
+  With that evidence, `run_day()` no longer returns early at Curtain-Fall/Entry: it
+  writes the city settling, then asks **every** Heir the same question it asks by day
+  and records what they choose. First live night hour: 13 actions, all distinct —
+  Aglaea answering Mydei's letter, Anaxa to the library, Castorice tending the graves,
+  Cerydra to the Council chambers, Cipher through the alleys. `AMP_NIGHT_ACTIVITY=0`
+  restores the old silence.
+- **A bare `except` hid a `NameError` for ten minutes.** The new night path returned
+  zero actions for all thirteen Heirs because `re` was never imported in
+  `world_engine.py`; my own `except Exception: continue` swallowed it. The trace is now
+  behind `AMP_NIGHT_DEBUG=1` so the next silent failure says its name.
+- **`run_all_tests.py` crashed instead of reporting**: a child suite printed UTF-8 and
+  the runner decoded with the console codepage, yielding `stdout=None`. It now decodes
+  with `errors="replace"`. 1879 passed, 0 failed across 29 suites.

@@ -15,6 +15,7 @@ Usage:
 
 import argparse
 import os
+import re
 import random
 import sys
 import time
@@ -315,20 +316,22 @@ class WorldEngine:
                 pass
 
         if clock.is_rest_time():
-            # Night is already gated: no Heir speech, no errands, no work. What the
-            # hour DID write (lived mechanisms, a note left for the visitor) is kept
-            # and returned -- returning only the night line used to hide the hour's
-            # own facts from every caller even though the chronicle had them.
             night = (
                 f"{time_str} — The city settles for the night. Only the Thief Star "
-                "wanders the sky; the Heirs keep to their rooms, and their days wait "
-                "for the dawn."
+                "wanders the sky. Most keep to their rooms; a few do not."
             )
             self.chronicle.append({"time": time_str, "text": night})
             self.world.add_event(night)
+            lines.append(night)
+            # Rest is a TENDENCY, not a restriction. The Heirs are asked what they do
+            # with the hour and may work, wander, or sleep; the engine does not decide
+            # for them and does not forbid them. The dry test (tools/
+            # test_activity_spontaneity.py) measured them deciding for themselves -
+            # 8.8 in character, 7.9 hour-aware - before this gate was loosened.
+            lines.extend(self._night_choices(time_str))
             self.world.save()
             self._note_lived()
-            return lines + [night]
+            return lines
 
         # Active hour — every Heir decides freely (unless they are on the road).
         # Conversation models are optional: the world machine (Keeper fallback,
@@ -420,6 +423,51 @@ class WorldEngine:
         self.world.save()
         self._note_lived()
         return lines
+
+    def _night_choices(self, time_str: str) -> List[str]:
+        """Let each Heir decide what to do with a night hour.
+
+        Rest is a tendency, not a rule: the Heir is asked the same question they are
+        asked by day - decide freely, you may also rest - and the engine records the
+        answer. Nothing forbids work after dark; most simply choose not to, because
+        the hour and their own character say so. AMP_NIGHT_ACTIVITY=0 restores the
+        old silence for a night.
+        """
+        if os.environ.get("AMP_NIGHT_ACTIVITY", "1") in {"0", "off", "false", "False"}:
+            return []
+        if not self._heir_voice_ready():
+            return []
+        out: List[str] = []
+        _dbg = os.environ.get("AMP_NIGHT_DEBUG") == "1"
+        if _dbg:
+            print(f"[night] entering with {len(self.agents)} agents")
+        for cid in list(self.agents.keys()):
+            if self._stop_requested():
+                break
+            if self.world.is_traveling(cid):
+                continue
+            if cid in GUEST_HEIRS and not guest_is_present(cid, self.world.clock):
+                continue
+            agent = self.agents[cid]
+            try:
+                decision = agent.decide()
+                action = re.sub(r"\s+", " ", str(decision.get("action") or "")).strip()
+                if not action:
+                    continue
+                if re.match(r"^(i|we)\s+(sleep|rest|am resting|will sleep|retire)",
+                            action.lower()):
+                    continue  # they chose rest, which is not an event
+                self._witness(cid, action)
+                agent.act(decision)
+                line = f"{time_str} — {agent.name}: {action}"
+                out.append(line)
+                self.chronicle.append({"time": time_str, "text": line, "kind": "night"})
+                self.world.add_event(line)
+            except Exception as _exc:
+                if _dbg:
+                    print(f"[night] {cid} raised {type(_exc).__name__}: {_exc}")
+                continue
+        return out
 
     def _world_texture(self, time_str: str, flags: Optional[dict] = None) -> List[str]:
         """Surges, city residents, and letters — the daily texture of the world."""

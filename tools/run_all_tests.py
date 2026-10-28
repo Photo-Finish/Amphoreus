@@ -39,7 +39,8 @@ def main() -> int:
 
     for path in suites:
         proc = subprocess.run([sys.executable, str(path)], cwd=ROOT,
-                              capture_output=True, text=True, timeout=900)
+                              capture_output=True, text=True, encoding="utf-8",
+                              errors="replace", timeout=900)
         out = proc.stdout + proc.stderr
         m = SUM_RE.search(out)
         if args.verbose or not m:
