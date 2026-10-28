@@ -106,3 +106,40 @@ See the "Operator authority (granted 2026-10-28, standing)" section in
 (cards, gate, lore, world start/stop, checkpoints, theme, commit-and-push), what still
 needs a fresh word (voice cloning, deleting assets, renaming records, changing the pass
 bars, settling conflicting canon), and the false claims that have already cost time.
+
+---
+
+## Update — 2026-10-29 00:20 (same session, continued)
+
+Everything below the "Next" list in the original note has moved. Current truth:
+
+- **Suites: 1878 passed, 0 failed across 29 suites** (`python tools/run_all_tests.py`).
+- **`test_sanctuary_live` repaired** — 163/163. It froze Year 4932 / Month of Strife and
+  failed whenever the world legitimately advanced; it now asserts relations (plausible
+  year, month in range, overlay == `WorldClock.from_gmt8()`, sim untouched).
+- **Admin checkpoint panel built and proven in a booted app** — Control Panel lists the
+  last five, takes one on demand, and gates Restore behind a confirmation box with the
+  warning above it. Verified by `streamlit run src/ui_app.py --server.port 8502` plus
+  Chromium sign-in; zero console errors.
+- **The handset view was broken and is fixed** — the sidebar was forced `expanded`, so at
+  360 px it lay over the content and intercepted every tap (Playwright could not click
+  one tab). Now `"auto"`; verified at 360×740 with a mobile UA: nine tabs, no
+  horizontal overflow, checkpoint section reachable, zero console errors.
+- **Night was already gated** — `is_rest_time()` covers Curtain-Fall and Entry Hour and
+  `run_day()` returns before Heir speech, errands or projects. My "period-aware day"
+  queue item rested on a misreading. The real defect was the night branch doing
+  `return [night]` and dropping the hour's facts; it now returns `lines + [night]`.
+- **The canon-quote check only knew the current scene** — Aglaea answered with a verbatim
+  `chapter-03` line and scored 22 instead of being refused. A cached global corpus per
+  Heir now feeds the check. **Full gate: 48 of 49 scored (98 %), one skipped**; Aglaea
+  and Hysilens both at their best.
+- **The lorebook is wired** into `ContextBuilder.retrieve()` — pinned entries first,
+  vector results filling the budget, `AMP_LOREBOOK=0` to disable. 23 checks.
+- **Reports are unique per run** (`…-YYYY-MM-DDTHHMM.md`), so a second run on the same
+  day no longer replaces the first.
+- **Backfill completed** — 35 days written (done 21:05), chronicle 4399+ lines,
+  **73 distinct in-world days**, engine running at `--interval 900 --catch-up`, clock
+  verified in sync with GMT+8.
+
+**Still open:** Cyrene (78), Evernight (58) and Hysilens (78) — register near-misses, not
+defects. Nothing else from the earlier list is outstanding.
