@@ -95,7 +95,10 @@ st.set_page_config(
     page_title="Project Amphoreus — Chrysos Heirs",
     page_icon="🔥",
     layout="wide",
-    initial_sidebar_state="expanded",
+    # "auto" so a handset collapses the sidebar instead of laying it over the
+    # content: at 360 px an expanded sidebar intercepts every tap (measured
+    # 2026-10-29 in a 360x740 Chromium context, where the tabs were unreachable).
+    initial_sidebar_state="auto",
 )
 
 # --------------------------------------------------------------------------- #

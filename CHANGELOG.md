@@ -578,3 +578,12 @@
   (the chronicle kept them, callers did not). Now `return lines + [night]`, and the line
   says the city *settles* rather than rests — a note left for the visitor at night is
   not a contradiction.
+- **The handset view was broken, and the phone test found it.** At 360 px the sidebar
+  was `initial_sidebar_state="expanded"`, so it laid itself over the content and
+  intercepted every tap — the tabs were literally unreachable, with Playwright
+  reporting "subtree intercepts pointer events" forty times before failing. Now
+  `"auto"`, so a handset collapses it. Verified in a 360×740 Chromium context with a
+  mobile UA and touch: 9 tabs visible, the AIW theme applied, **no horizontal overflow**
+  (`scrollWidth` 360), the Control Panel reachable, the checkpoint section expandable
+  with its warning legible, and **zero console errors**
+  (`world_runtime/art_review/phone_checkpoints_360.png`).
