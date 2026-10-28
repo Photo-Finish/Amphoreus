@@ -51,6 +51,52 @@ def clear_engine_pid() -> None:
     except Exception:
         pass
 
+
+def _pid_alive(pid: int) -> bool:
+    """Is this pid a live process? Never signal it.
+
+    os.kill(pid, 0) is NOT a probe on Windows — it calls TerminateProcess, so a
+    liveness check written that way can kill the very engine it is asking about.
+    OpenProcess + GetExitCodeProcess is read-only.
+    """
+    if pid <= 0:
+        return False
+    if os.name == "nt":
+        import ctypes
+        handle = ctypes.windll.kernel32.OpenProcess(0x1000 | 0x00100000, False, pid)
+        if not handle:
+            return False
+        try:
+            code = ctypes.c_ulong(0)
+            ok = ctypes.windll.kernel32.GetExitCodeProcess(handle, ctypes.byref(code))
+            return bool(ok) and code.value == 259  # STILL_ACTIVE
+        finally:
+            ctypes.windll.kernel32.CloseHandle(handle)
+    try:
+        os.kill(pid, 0)
+        return True
+    except OSError:
+        return False
+
+
+def _live_engine_pid() -> Optional[int]:
+    """The pid in engine.pid **if that process is alive**, else None.
+
+    A stale file must not block a start, and a live one must not be ignored: ten
+    engines once ran at the same time, all writing one chronicle, because nothing
+    checked.
+    """
+    try:
+        if not ENGINE_PID_PATH.is_file():
+            return None
+        pid = int(ENGINE_PID_PATH.read_text(encoding="ascii").strip() or 0)
+    except Exception:
+        return None
+    if not pid or pid == os.getpid():
+        return None
+    return pid if _pid_alive(pid) else None
+
+
 from src.core.character_loader import CharacterLoader
 from src.core.llm_client import LLMClient
 from src.core.memory_store import MemoryStore
@@ -780,6 +826,16 @@ def main():
         for k, v in engine.status().items():
             print(f"  {k}: {v}")
         return
+    # One writer per chronicle. Ten copies at --interval 86400 accumulated once
+    # because nothing refused to start while another engine was alive — and the
+    # pid file was holding a stale pid at the time. Refuse now; --force if the
+    # operator really means to run two.
+    if not getattr(args, "force", False) and not args.once:
+        living = _live_engine_pid()
+        if living:
+            print(f"Another engine is already running (pid {living}) — refusing to start.")
+            print("  --status to look at it, --stop to end it, --force to run anyway.")
+            return 1
     if args.catch_up:
         try:
             from src.world import rest_catchup as _rc

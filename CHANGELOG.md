@@ -489,3 +489,10 @@
   for **2026-09-17 → 2026-10-21, 35 days**; the live engine was stopped first so the
   chronicle has one writer. Chained after it: the voice gate for Aglaea and Hysilens,
   then the engine restarts with `--catch-up`.
+- **One writer per chronicle, enforced.** `world_engine` now refuses to start when
+  `world_runtime/engine.pid` names a live process (`--force` overrides). The first
+  version of that check used `os.kill(pid, 0)` — which on Windows is not a probe at
+  all but `TerminateProcess`, so the liveness check could kill the engine it was
+  asking about. Replaced with `OpenProcess` + `GetExitCodeProcess`, and proved:
+  a live pid is detected, a dead pid is ignored, and the checked process is still
+  alive afterwards.
