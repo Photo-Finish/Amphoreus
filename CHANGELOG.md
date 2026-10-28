@@ -518,3 +518,10 @@
   First snapshot: 40 memories per Heir, all thirteen.
 - **Voice cloning deliberately not started** — a performer's voice carries consent and
   licensing questions the charter has to answer before any code exists.
+- **Keyed lorebook activation** (`src/knowledge/lorebook.py`) — the one external idea
+  worth adopting, implemented as mechanism rather than rewrite: entries listen for
+  keys, carry a priority, may be sticky for a few turns and cool down after firing.
+  `from_markdown()` turns each Heir profile into entries keyed by its `##` headings, so
+  "what is your Coreflame?" pins the Coreflame section before vector results are
+  added. Suite: `tools/test_lorebook.py` (17). **Not yet wired** into the vector store
+  — the caller decides how much room pinned entries get.
