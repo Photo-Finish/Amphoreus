@@ -507,3 +507,14 @@
   inventing the start state. The generator has always run *forward* from the
   breakpoint; the only residual artefact is that the earliest generated days carry
   the present state's bonds and projects.
+- **Slower, jittered cadence.** At 1× the engine already waits for the next GMT+8
+  overlay period, so the world is calendar-locked by construction; the wait is now
+  multiplied by a random factor (`AMP_WORLD_JITTER`, default 1.8×, i.e. up to ~1.8
+  periods between days). Uneventful days are accepted — the world lives them rather
+  than filling them.
+- **Collective memory is logged.** `tools/log_collective_memory.py` writes a
+  timestamped JSON of every Heir's stored memories plus a one-line digest, under
+  `world_runtime/collective_memory/`; `--every N` keeps logging on an interval.
+  First snapshot: 40 memories per Heir, all thirteen.
+- **Voice cloning deliberately not started** — a performer's voice carries consent and
+  licensing questions the charter has to answer before any code exists.

@@ -680,7 +680,13 @@ class WorldEngine:
         """1x waits for the next GMT+8 overlay period; 2x–60x divide a real day."""
         scale = self._time_scale()
         if scale <= 1.0:
-            return int(seconds_until_next_period())
+            # A day arrives when its overlay period does, but not on the same
+            # minute each time: jitter keeps the calendar honest and stops the
+            # world marching to a metronome. Uneventful days are allowed -- the
+            # point is to live them, not to fill them.
+            base = seconds_until_next_period()
+            spread = float(os.getenv("AMP_WORLD_JITTER", "1.8"))
+            return max(30, int(base * random.uniform(1.0, max(1.0, spread))))
         return max(10, int(REAL_DAY_SECONDS / max(1.0, scale)))
 
     def _current_interval(self, base_interval: int) -> int:
