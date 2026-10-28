@@ -525,3 +525,10 @@
   "what is your Coreflame?" pins the Coreflame section before vector results are
   added. Suite: `tools/test_lorebook.py` (17). **Not yet wired** into the vector store
   — the caller decides how much room pinned entries get.
+- **Checkpoints are taken, and a restore door exists.** `tools/checkpoint_world.py`
+  writes a dated folder holding `world_state.json` and all thirteen Heirs' stores
+  (49 files, 875 KB on the first run) with a `manifest.json` naming every file, its
+  origin and its size. `--list` shows them; `--keep N` prunes; `restore(name)` copies
+  a checkpoint back and is callable from the admin side. Deliberately **unproven**:
+  no lock, no integrity check, no test that a restored world equals the saved one —
+  the manifest exists so a future restore has something to check against.
