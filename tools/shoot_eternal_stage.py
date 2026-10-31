@@ -52,6 +52,9 @@ def main(argv: list[str]) -> int:
     out_dir = ROOT / "world_runtime" / "art_review"
     if "--out" in argv:
         target = Path(argv[argv.index("--out") + 1])
+        # Resolve against the project root: a relative --out used to blow up in
+        # relative_to() when reporting the written paths.
+        target = target if target.is_absolute() else (ROOT / target)
         out_dir = target.parent
         shots = [("idle", [], target)]
     else:

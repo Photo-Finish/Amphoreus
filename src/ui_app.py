@@ -1504,7 +1504,9 @@ with main_tab:
                 st.markdown(msg["content"])
 
     # Senses: eyesight (picture / video) and hearing (speak) — operator only.
-    # Collapsed into one compact strip: they are additions, not the page.
+    # One collapsed strip, so the attachments stop dominating the page; the chat
+    # input keeps Streamlit's docking, which is the only arrangement in which it
+    # stayed clickable (an inline container rendered it zero-width here).
     if not is_visitor():
         uploaded = uploaded_video = spoken = music_file = None
         with st.expander("Attach — picture, speech, video, music", expanded=False):
