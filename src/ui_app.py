@@ -1503,41 +1503,42 @@ with main_tab:
             with st.chat_message(msg["role"], avatar=_assistant_avatar if msg["role"] == "assistant" else _user_avatar):
                 st.markdown(msg["content"])
 
-    # Senses: eyesight (picture / video) and hearing (speak) — operator only
+    # Senses: eyesight (picture / video) and hearing (speak) — operator only.
+    # Collapsed into one compact strip: they are additions, not the page.
     if not is_visitor():
-        c1, c2, c3 = st.columns([1, 1, 1])
-        with c1:
-            uploaded = st.file_uploader(
-                "Show a picture",
-                type=["png", "jpg", "jpeg", "webp", "gif"],
-                key=f"img_{selected}",
+        uploaded = uploaded_video = spoken = music_file = None
+        with st.expander("Attach — picture, speech, video, music", expanded=False):
+            c1, c2, c3 = st.columns([1, 1, 1])
+            with c1:
+                uploaded = st.file_uploader(
+                    "Show a picture",
+                    type=["png", "jpg", "jpeg", "webp", "gif"],
+                    key=f"img_{selected}",
+                )
+            with c2:
+                uploaded_video = st.file_uploader(
+                    "Show a video",
+                    type=["mp4", "mov", "avi", "mkv", "webm"],
+                    key=f"vid_{selected}",
+                )
+            with c3:
+                spoken = st.audio_input("Speak to them", key=f"aud_{selected}")
+            music_file = st.file_uploader(
+                "Share music to listen together",
+                type=["mp3", "wav", "ogg", "flac", "m4a"],
+                key=f"music_{selected}",
             )
-            if uploaded is not None:
-                st.session_state["pending_image"] = {
-                    "bytes": uploaded.getvalue(),
-                    "mime": uploaded.type or "image/png",
-                    "name": uploaded.name,
-                }
-        with c2:
-            uploaded_video = st.file_uploader(
-                "Show a video",
-                type=["mp4", "mov", "avi", "mkv", "webm"],
-                key=f"vid_{selected}",
-            )
-            if uploaded_video is not None:
-                st.session_state["pending_video"] = {
-                    "bytes": uploaded_video.getvalue(),
-                    "name": uploaded_video.name,
-                }
-        with c3:
-            spoken = st.audio_input("Speak to them", key=f"aud_{selected}")
-
-        # A second row: music for shared appreciation
-        music_file = st.file_uploader(
-            "Share music to listen together",
-            type=["mp3", "wav", "ogg", "flac", "m4a"],
-            key=f"music_{selected}",
-        )
+        if uploaded is not None:
+            st.session_state["pending_image"] = {
+                "bytes": uploaded.getvalue(),
+                "mime": uploaded.type or "image/png",
+                "name": uploaded.name,
+            }
+        if uploaded_video is not None:
+            st.session_state["pending_video"] = {
+                "bytes": uploaded_video.getvalue(),
+                "name": uploaded_video.name,
+            }
         if music_file is not None:
             with st.spinner(f"{info['name']} is listening to the music..."):
                 result = manager.appreciate_music(selected, music_file.getvalue(), note=music_file.name)

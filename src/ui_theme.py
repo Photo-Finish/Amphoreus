@@ -285,6 +285,52 @@ code, pre, .stCodeBlock, [data-testid="stCode"] {{
 }}
 [data-testid="stTooltip"] {{ background: var(--aiw-parchment) !important;
   color: var(--aiw-ink) !important; border: 1px solid var(--aiw-gold) !important; }}
+
+/* ---- the chatbox: paper you can still see the world through ------------------
+   The operator asked for lower transparency so it reads as parchment rather than
+   as a hole, but not so opaque that it stops belonging to the page. */
+[data-testid="stChatInput"],
+[data-testid="stChatInputContainer"] {{
+  background: linear-gradient(180deg, rgba(251,246,234,.80), rgba(233,223,200,.74)) !important;
+  border: 1px solid rgba(200,160,60,.55) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 6px 22px rgba(8,12,28,.38) !important;
+  backdrop-filter: blur(2px);
+}}
+[data-testid="stChatInput"] textarea,
+[data-testid="stChatInputContainer"] textarea {{
+  background: transparent !important;
+  color: var(--aiw-ink) !important;
+  font-family: var(--aiw-body) !important;
+}}
+[data-testid="stChatInput"] textarea::placeholder {{
+  color: rgba(59,44,30,.55) !important;
+}}
+[data-testid="stChatInput"] button {{
+  color: var(--aiw-terracotta-deep) !important;
+}}
+/* Fixed chrome must never swallow a click meant for the page: anything pinned to
+   the viewport with no interactive content is decoration. */
+[data-testid="stDecoration"] {{ pointer-events: none !important; }}
+.stApp > header {{ pointer-events: none !important; }}
+.stApp > header * {{ pointer-events: auto; }}
+
+/* ---- layering: the conversation must be reachable with the mouse -------------
+   Measured 2026-11-01: the sidebar carries z-index 90 and its content element was
+   the topmost hit at the chatbox's own centre, so a click landed on the sidebar and
+   the box never focused. The input is raised above it, and the main column gets its
+   own stacking context so page content is not painted under the sidebar either. */
+section.main, [data-testid="stMain"] {{
+  position: relative; z-index: 1;
+}}
+[data-testid="stSidebar"], [data-testid="stSidebarContent"] {{
+  max-width: 300px;
+}}
+[data-testid="stChatInput"],
+[data-testid="stChatInputContainer"] {{
+  position: relative;
+  z-index: 120;   /* above the sidebar's 90 */
+}}
 </style>
 """
 

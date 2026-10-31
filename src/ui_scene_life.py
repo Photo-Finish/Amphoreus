@@ -311,6 +311,11 @@ _SPRITE_FACING: Dict[str, str] = {
 }
 # Mobile roam uses side walk film; still PNG is front-facing for these kinds.
 _PROFILE_WALK_KINDS = frozenset({"chimera", "dromas", "dromas_calf"})
+# Kinds whose 4-frame strip must animate even when the sprite is a STILL. A chimera
+# that has stopped walking was drawn as a single PNG, which reads as a photograph;
+# the operator asked for the animation back (2026-11-01). The film animates in place,
+# so a still chimera grazes with its own cycle again.
+_ALWAYS_ANIMATED_KINDS = frozenset({"chimera", "chimera_blue", "chimera_orange"})
 # Viewport traverse spawn/despawn — only these kinds leave and re-enter view.
 _ROAMER_KINDS = frozenset({"chimera", "dromas", "dromas_calf", "resident", "cicada"})
 # Painted civic fixtures — reserve still slots before dense market stalls.
@@ -773,7 +778,10 @@ def _sprite_asset_key(being_or_kind, kind: str = "") -> str:
 def _sprite_markup(kind: str, *, mobile: bool = True, asset: str = "") -> str:
     """Painted PNG/film when on disk; SVG only as a last-resort glyph."""
     key = asset or kind
-    use_film = mobile if kind in _PROFILE_WALK_KINDS else True
+    use_film = (
+        True if (kind in _ALWAYS_ANIMATED_KINDS or key in _ALWAYS_ANIMATED_KINDS)
+        else (mobile if kind in _PROFILE_WALK_KINDS else True)
+    )
     if use_film:
         film = sprite_film_uri(key)
         if film:
@@ -1275,6 +1283,17 @@ def _sprite_button_html(
     )
 
 
+# --------------------------------------------------------------------------- #
+# Nothing floats in Walk the Land (operator, 2026-11-01)
+# --------------------------------------------------------------------------- #
+# Kites, couriers, dawn birds, the Thief Star, wind, hanging laundry, banners,
+# cicadas and drifting grove leaves were all placed in the air. They are not
+# drawn any more: the scene keeps its ground, its sitters and its walkers. The
+# sets themselves stay defined so the world data (and any future decision to
+# bring one back) is not lost - only the rendering refuses them.
+_AIRBORNE_KINDS = frozenset(_ELEVATED_KINDS)
+
+
 def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
     """Place-eligible roamers for client-side viewport spawn/despawn."""
     pool = []
@@ -1282,6 +1301,8 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
         kind = str(b.get("kind") or "")
         if kind not in _ROAMER_KINDS or not b.get("clickable") or not b.get("id"):
             continue
+        if kind in _AIRBORNE_KINDS:
+            continue   # nothing in the air
         if str(b.get("status") or "").lower() in ("resting", "asleep", "banked"):
             continue
         hs = b.get("hotspot") or {}
@@ -1966,6 +1987,11 @@ def pictorial_stage_documents(
         if entities
         and b.get("clickable") and b.get("id")
         and str(b.get("kind") or "") not in _AMBIENT_STAGE
+        # Nothing floats in Walk the Land (2026-11-01): kites, couriers, dawn
+        # birds, the Thief Star, wind, laundry, banners, cicadas and drifting
+        # leaves are filtered here, which covers both the still slots and the
+        # roamer pool. The world data keeps them; the scene refuses to draw them.
+        and str(b.get("kind") or "") not in _AIRBORNE_KINDS
     ]
     ranked = sorted(
         clickable,

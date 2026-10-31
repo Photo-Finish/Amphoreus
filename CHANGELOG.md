@@ -644,3 +644,31 @@
   intersection). A frozen-membership assertion in `test_eternal_sill.py` was replaced
   with the invariants that matter: catalog portraits stay in the set, and every bust
   body is also treated as a portrait.
+- **Walk the Land has nothing in the air any more.** `_AIRBORNE_KINDS = _ELEVATED_KINDS`
+  (kites, couriers, dawn birds, the Thief Star, wind, hanging laundry, banners,
+  cicadas, drifting grove leaves) is filtered out where the scene collects its
+  sprites, so both the still slots and the roamer pool refuse them. The world data
+  keeps them; only the drawing refuses. Suite: `tools/test_walk_airborne.py` (13
+  checks) — every airborne kind absent, chimera and dromas still present.
+- **Chimeras animate again.** They were drawn as a single PNG whenever the sprite was
+  a *still*, because `use_film = mobile` for `_PROFILE_WALK_KINDS`. The 4-frame strip
+  now always drives chimera variants (`_ALWAYS_ANIMATED_KINDS`), so a grazing chimera
+  cycles instead of sitting there like a photograph.
+- **The Visit page: attachments demoted, chatbox made paper.** The three-column wall of
+  uploaders plus a second music row is now one collapsed strip — "Attach — picture,
+  speech, video, music" — and the chat input is parchment: translucent cream, gold
+  hairline, brown ink (`.80/.74` alpha over the world, legible but not opaque).
+- **The layering defect behind "clicks and scroll are hard to hit".** Measured against a
+  live server: the chat input reported **width 0, left 0** while the sidebar carried
+  **z-index 90** and was the topmost element at the box's own centre, and the document
+  never scrolled because `.stApp` is `overflow:hidden` with `section.main` scrolling
+  internally. Fixed by giving the main column its own stacking context (z-index 1),
+  capping the sidebar at 300 px, and raising the chat input above it (z-index 120).
+  Verified live: the input is 940 px wide at left 380, **typing succeeds**, and
+  `section.main` scrolls 0 → 1200 of 2100.
+- **The one part of the request I could not honour, and why.** "Chatbox first, then
+  uploads" needs `st.chat_input` inside a container to un-pin it from the window
+  bottom. I tried it: the input rendered **zero-width** and could not be clicked in this
+  app's fragment layout, so it was reverted rather than shipped broken. The page now
+  reads transcript → one collapsed attach strip → docked chatbox. Moving the strip into
+  the sidebar (so the conversation is uninterrupted) is a ten-minute change if wanted.
