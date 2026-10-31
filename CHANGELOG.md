@@ -672,3 +672,11 @@
   app's fragment layout, so it was reverted rather than shipped broken. The page now
   reads transcript → one collapsed attach strip → docked chatbox. Moving the strip into
   the sidebar (so the conversation is uninterrupted) is a ten-minute change if wanted.
+- **The chatbox now comes before the attachments — the last UI item.** The cause was not
+  Streamlit's docking but my own wrapper: an `st.chat_input` placed directly in this tab
+  already renders inline inside the tab panel (measured at 940 px), and wrapping it in
+  `st.container()` is what collapsed it to zero width. Moving the call above the strip
+  with **no container** gives the requested order: measured live, chatbox at top 1700,
+  attach strip at 1772 — `chatbox-above-strip` — 940 px wide, and typing works. The move
+  also needed the input's placeholder built locally, since `_gc_ph` is defined further
+  down the page (the first attempt raised `NameError: _gc_ph`).

@@ -1503,6 +1503,22 @@ with main_tab:
             with st.chat_message(msg["role"], avatar=_assistant_avatar if msg["role"] == "assistant" else _user_avatar):
                 st.markdown(msg["content"])
 
+    # The chatbox comes first, directly under the conversation; attachments follow
+    # (operator, 2026-11-01). No st.container(): an st.chat_input in this tab already
+    # renders inline inside the tab panel (measured at 940 px), and wrapping it in a
+    # container is what collapsed it to zero width.
+    visit_prompt = None
+    if not is_visitor() and not _gc_live:
+        # the placeholder is normally built further down; it is needed here because
+        # the input now sits above the attachment strip
+        _visit_ph = f"Speak to {info['name']}..."
+        try:
+            from src.ui_group_chat import group_input_placeholder as _ph_fn
+            _visit_ph = _ph_fn(info["name"])
+        except Exception:
+            pass
+        visit_prompt = st.chat_input(_visit_ph, key="visit_chat_input")
+
     # Senses: eyesight (picture / video) and hearing (speak) — operator only.
     # One collapsed strip, so the attachments stop dominating the page; the chat
     # input keeps Streamlit's docking, which is the only arrangement in which it
@@ -1595,7 +1611,7 @@ with main_tab:
     elif is_visitor():
         st.caption("Read-only view — sign in as the operator to speak with "
                    f"{info['name']}.")
-    elif prompt := st.chat_input(_gc_ph, key="visit_chat_input"):
+    elif prompt := visit_prompt:
         # Let the world know the visitor is here
         try:
             from src.world.world_state import WorldState
