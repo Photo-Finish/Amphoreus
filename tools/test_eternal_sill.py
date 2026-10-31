@@ -204,8 +204,14 @@ def main() -> int:
           == eternal_sill.ALIAS["hysilens"])
     check("hysilens carries no duplicate face",
           "hysilens" in eternal_sill.BUST_BODIES and "hysilens" in eternal_sill.PORTRAIT_BODIES)
-    check("the three portraits are drawn smaller than the sitters",
-          eternal_sill.PORTRAIT_BODIES == {"anaxa", "phainon", "hysilens"})
+    # The set grows as art is corrected (cyrene and evernight joined on 2026-11-01),
+    # so assert the invariants rather than a frozen membership list.
+    check("the catalog portraits are still drawn smaller than the sitters",
+          {"anaxa", "phainon", "hysilens"} <= eternal_sill.PORTRAIT_BODIES)
+    check("every bust body is also treated as a portrait",
+          eternal_sill.BUST_BODIES <= eternal_sill.PORTRAIT_BODIES)
+    check("no bust body keeps a duplicate face",
+          all(c in eternal_sill.BUST_BODIES for c in eternal_sill.BUST_BODIES))
     flood_cids = [c for c in ("cyrene", "evernight", "dan-heng-permansor-terrae")
                   if (manifest.get(c) or {}).get("policy") == "flood"]
     check("the busy-set bodies use the flood matte", len(flood_cids) == 3, str(flood_cids))

@@ -31,18 +31,29 @@ MIN_BYTES = 4000
 # anaxa: the first-pass `anaxa_v34_sit.png` is the Trailblazer, not Anaxa, so the
 # corrected body is the 3.4 announcement bust under its own honest name.
 ALIAS = {
+    # The art these map to was mis-named: cyrene_v38_sit.png is a silver-haired
+    # figure and evernight_v38_sit.png a witch in a wide hat, neither matching the
+    # Heir's own avatar. The cute/ busts do match (pink-haired Cyrene with the star,
+    # violet-haired Evernight), so they stand in for the body. Identity is checked
+    # by tools/test_sill_identity.py, which compares each sprite's hair hue against
+    # the avatar and fails on a mismatch.
     "anaxa": "anaxa_v34_announcement_bust.png",
     "phainon": "phainon_v34_announcement_bust.png",
     "hysilens": "hysilens_ppg_bust.png",
+    "cyrene": "cyrene_cute_bust.png",
+    "evernight": "evernight_cute_bust.png",
 }
 
 # Bodies that are already a portrait of the Heir: the corner face sticker would be
 # a second copy of the same art, so it is left off for these.
-BUST_BODIES = frozenset({"hysilens"})
+# Bodies that ARE the portrait: no separate face overlay, or the page would
+# draw a second head on top of the bust. cyrene and evernight joined on
+# 2026-11-01 when their wrong sit art was replaced by the cute busts.
+BUST_BODIES = frozenset({"hysilens", "cyrene", "evernight"})
 
 # Bodies that are portraits rather than full figures — drawn a little smaller so
 # the set stays in scale (a bust at 140 px has a much bigger head than a sitter).
-PORTRAIT_BODIES = frozenset({"anaxa", "phainon", "hysilens"})
+PORTRAIT_BODIES = frozenset({"anaxa", "phainon", "hysilens", "cyrene", "evernight"})
 
 
 def matte_path(character_id: str) -> Optional[Path]:

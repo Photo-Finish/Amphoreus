@@ -627,3 +627,20 @@
 - **`run_all_tests.py` crashed instead of reporting**: a child suite printed UTF-8 and
   the runner decoded with the console codepage, yielding `stdout=None`. It now decodes
   with `errors="replace"`. 1879 passed, 0 failed across 29 suites.
+- **Two Heirs were wearing other characters' art on the sill, and now cannot.** Audited
+  every sprite against that Heir's own avatar, because filenames here lie (that is how a
+  Trailblazer became "Anaxa"). Two mismatches: **Cyrene** was a silver-haired figure
+  where her avatar is pink-haired with the star, and **Evernight** was a washed-out
+  figure in a wide hat where her avatar is violet-haired and dark-clad. Both now draw
+  the `cute/` busts, added to `PORTRAIT_BODIES` **and** `BUST_BODIES` (without the second
+  the page would paint a second head on top of the bust). Hyacine's pink hair was
+  checked and is correct, as were the other eleven.
+- **`tools/test_sill_identity.py` makes recurrence impossible.** It compares each
+  sprite's hair colour with the avatar on two independent measures: mean hue (circular
+  tolerance 45°) and the shape of the colour distribution (histogram intersection
+  ≥ 0.20). Both are needed — the old Evernight sat only 42° away in hue and would have
+  passed on colour alone. Proven both ways: all thirteen pass, and the two wrong files
+  are each refused for a different reason (Cyrene 79° hue gap, Evernight 0.16
+  intersection). A frozen-membership assertion in `test_eternal_sill.py` was replaced
+  with the invariants that matter: catalog portraits stay in the set, and every bust
+  body is also treated as a portrait.
