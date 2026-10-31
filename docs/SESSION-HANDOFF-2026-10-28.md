@@ -211,3 +211,24 @@ the strip to the sidebar broke the page. The working arrangement is restored (do
 input, one collapsed attach strip) and measured: **940 px wide, typing works**, page
 scrolls. The real fix is a refactor of this tab's fragment/duplication structure, which
 should be done deliberately rather than by another guess.
+
+---
+
+## Closed — 2026-11-01 03:10
+
+**All five UI defects are fixed and verified in a running app**, and the checklist is
+complete.
+
+**Item 4, finally: the wrapper was the bug, not Streamlit.** An `st.chat_input` placed
+directly in the Visit tab already renders *inline inside the tab panel* (measured at
+940 px); it was my `st.container()` that collapsed it to zero width. Calling it above the
+attachment strip with no container gives the requested order — live measurement: chatbox
+top **1700**, attach strip top **1772**, `chatbox-above-strip`, 940 px wide, typing works.
+The move also required building the placeholder locally, because `_gc_ph` is defined
+further down the page (the first attempt raised `NameError: _gc_ph`).
+
+**Phone, 360 px, after the reorder:** 9 tabs, chatbox present, attach strip present, no
+horizontal overflow (`scrollWidth` 360), main scrolls (22 998 px of content in 740), one
+benign `Container not found` console warning from the mobile emulation.
+
+**Suites:** `1894 passed, 0 failed across 30 suites`.
