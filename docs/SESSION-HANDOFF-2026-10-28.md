@@ -143,3 +143,42 @@ Everything below the "Next" list in the original note has moved. Current truth:
 
 **Still open:** Cyrene (78), Evernight (58) and Hysilens (78) — register near-misses, not
 defects. Nothing else from the earlier list is outstanding.
+
+---
+
+## Update — 2026-11-01 02:15 (UI defects round)
+
+Five operator-reported defects were worked, four fixed and one honestly reverted:
+
+1. **Sprite identity, audited exhaustively.** Every sill sprite was compared with that
+   Heir's own avatar. Two impostors: **Cyrene** (silver-haired figure where her avatar is
+   pink with the star) and **Evernight** (washed-out witch in a hat where her avatar is
+   violet and dark-clad). Both now draw the `cute/` busts and joined `PORTRAIT_BODIES`
+   **and** `BUST_BODIES` (the second matters or the page paints a second head).
+   `tools/test_sill_identity.py` compares mean hue (45°) *and* colour-distribution
+   intersection (0.20) — hue alone passed the old Evernight at 42° — passes all thirteen,
+   and refuses both old files for different reasons. Hyacine's pink hair was checked and
+   is correct.
+2. **Walk the Land is empty of sky.** `_AIRBORNE_KINDS` is filtered where sprites are
+   collected; kites, couriers, dawn birds, the Thief Star, wind, laundry, banners,
+   cicadas and drifting leaves are no longer drawn. `tools/test_walk_airborne.py` (13
+   checks) proves they are absent *and* that chimera and dromas survive.
+3. **Chimeras animate again** — 4-frame strips for `_ALWAYS_ANIMATED_KINDS`, so a still
+   chimera grazes rather than showing one PNG.
+4. **Visit page** — the uploader wall is one collapsed strip; the chat input is
+   translucent parchment. **Not done: chatbox-before-uploads**, because `st.chat_input`
+   outside a container is pinned to the window bottom and inside one it rendered
+   zero-width in this fragment layout. Reverted rather than shipped broken; moving the
+   strip into the sidebar is the ten-minute alternative.
+5. **Layering** — the input reported width 0 under a sidebar at z-index 90 and the
+   document never scrolled (`.stApp` is `overflow:hidden`, `section.main` scrolls).
+   Fixed with a stacking context on main and z-index 120 on the input; verified live by
+   typing into it (940 px wide at left 380, `section.main` scrolls 0 → 1200 of 2100).
+
+**State:** `1894 passed, 0 failed across 30 suites`; checkpoint `2026-11-01T02-09`;
+engine running; clock in sync with GMT+8; phone verified at 360 px (9 tabs, no
+horizontal overflow, attachments reachable, one benign console warning).
+
+**Still open from the earlier list:** the judge's 78 plateau (scores cluster on fixed
+values — likely a bucketed judge, not three Heirs failing identically) and a night
+lore-density review now that nights generate up to 13 actions.
