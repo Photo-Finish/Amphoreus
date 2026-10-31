@@ -182,3 +182,32 @@ horizontal overflow, attachments reachable, one benign console warning).
 **Still open from the earlier list:** the judge's 78 plateau (scores cluster on fixed
 values — likely a bucketed judge, not three Heirs failing identically) and a night
 lore-density review now that nights generate up to 13 actions.
+
+---
+
+## Checklist results — 2026-11-01 02:45
+
+**The 78 plateau is not a measurement bug.** Read the judge's own prompt: it asks for
+0–100 with explicit anchors — *"Score 85+ when a reader, hearing the delivery, would
+immediately think 'that sounds like {name}'. If you could imagine ANY other Heir saying
+the line, it is not 85+."* So **78 is the judge's "close, but another Heir could say
+it"**, and 88 is "unmistakably them". Three Heirs sitting at 78 is therefore a real (if
+mild) voice finding, not bucketing — chasing it further means writing card rules to make
+lines more *specifically theirs*, which is worth doing deliberately or not at all.
+
+**Night density is healthy without a rule.** Lines that name a period, across the whole
+chronicle: Action Hour **55 %**, Parting 18 %, Lucid 16 %, Entry 7 %, **Curtain-Fall
+3.6 %** — nights are the quietest part of the day, and 52 `night`-kind actions exist in
+total. The Heirs choose rest most of the time, which is the outcome the "tendency, not
+obligation" change was supposed to produce.
+
+**Item 4 (chatbox before attachments) — narrowed to a platform detail.** The bare
+Streamlit probe renders an inline `st.chat_input` at 1040×58 and accepts typing; so does
+a probe *inside `st.tabs`*. In this app the same code yields an input whose DOM chain is
+`stChatInput < stElementContainer < stVerticalBlock < stTabPanel` where the tab panel is
+`display: none` — the page is rendered into an inactive duplicate tab panel, so the
+moved input exists but is never visible. Fresh widget keys did not change it, and moving
+the strip to the sidebar broke the page. The working arrangement is restored (docked
+input, one collapsed attach strip) and measured: **940 px wide, typing works**, page
+scrolls. The real fix is a refactor of this tab's fragment/duplication structure, which
+should be done deliberately rather than by another guess.
