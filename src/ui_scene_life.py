@@ -445,6 +445,23 @@ esident_shrine … walked backwards in both directions
     return "right"
 
 
+def _resident_walk_stem(key: str) -> str:
+    """Consistent side-view walk strip for a resident variant ('' otherwise).
+
+    The shipped 
+esident_*_film.png strips are four DIFFERENT orientations (left
+    profile, three-quarter, front, front-standing), so playing them spins the figure.
+    
+esident_*_walk_film.png is built from frame 1 by tools/build_resident_walk_films.py
+    and keeps one orientation throughout.
+    """
+    if not key.startswith("resident"):
+        return ""
+    if key.endswith("_pet"):
+        key = key[:-4]
+    return key + "_walk"
+
+
 def _chimera_side_stem(key: str) -> str:
     """Side-view film stem for a chimera variant ('' for other kinds).
 
@@ -828,7 +845,9 @@ def _sprite_markup(kind: str, *, mobile: bool = True, asset: str = "") -> str:
     )
     if use_film:
         side = _chimera_side_stem(key) if (kind.startswith("chimera") or key.startswith("chimera")) else ""
-        film = (sprite_film_uri(side) if side else "") or sprite_film_uri(key)
+        walk = _resident_walk_stem(key) or _resident_walk_stem(kind)
+        film = (sprite_film_uri(side) if side else "") or \
+               (sprite_film_uri(walk) if walk else "") or sprite_film_uri(key)
         if film:
             dur = _FILM_DUR.get(kind, _FILM_DUR.get(key, "0.8s"))
             stem = _html.escape(f"{key}_film", quote=True)

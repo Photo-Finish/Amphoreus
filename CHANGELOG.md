@@ -757,3 +757,16 @@
   their legs cycling every 0.88 s — about one body length per second, which reads as a run
   with sliding feet. They now take 26–44 s (measured 29–30 s live) with a 1.7 s cycle, so
   the stride matches the ground they cover.
+- **The people were spinning, not walking.** `resident_*_film.png` is not a walk cycle:
+  its four frames are four **different orientations** — left profile, three-quarter,
+  front, front-standing — so the figure rotated to face the viewer and back while sliding
+  along the ground. That is why "walking right" could look like facing left: the
+  orientation changed inside the loop, whatever the mirror did. `tools/
+  build_resident_walk_films.py` now builds `resident[_variant]_walk_film.png` from the one
+  clean left-facing profile (frame 1 of each variant is consistently a left profile):
+  legs swing with the motion at the feet, arms counter-swing, the body bobs, and the
+  orientation never changes. The renderer prefers those strips; the originals stay on
+  disk. Suite: `tools/test_resident_walk.py` (57 checks) measures the **upper 30 %** of
+  the silhouette across frames — orientation lives in the torso and head, while a walking
+  cycle legitimately swings its legs — and it uses the **old strips as the negative
+  control**, which fail that same metric, so the test provably catches the spin.
