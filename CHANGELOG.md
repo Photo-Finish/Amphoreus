@@ -680,3 +680,11 @@
   attach strip at 1772 — `chatbox-above-strip` — 940 px wide, and typing works. The move
   also needed the input's placeholder built locally, since `_gc_ph` is defined further
   down the page (the first attempt raised `NameError: _gc_ph`).
+- **Correction: the Heir is `Evernight`, not "Eternight".** I wrote the misspelling in a
+  session report. The repository was never wrong — **0 occurrences** of "Eternight" and
+  **3 844** of "Evernight" — but a project whose argument is fidelity should be able to
+  prove that rather than be believed about it. `tools/test_heir_names.py` (45 checks) now
+  requires every roster name to equal the databank's Playable Name, to appear in that
+  Heir's own profile, to be unique, and to have **no sibling within one edit** — which is
+  exactly the shape of the Eternight/Evernight slip. The rule is self-tested against that
+  pair.
