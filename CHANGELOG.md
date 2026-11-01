@@ -739,3 +739,21 @@
   Suite: `tools/test_walk_orientation.py` (28 checks), including the four
   native/travel combinations and the guarantee that a roamer's flip is a static
   transform rather than the old timed keyframe that turned figures round mid-crossing.
+- **Chimeras walk on a side-view strip, and roar when clicked.** There is no image
+  generator here and only one side-view chimera pose on disk
+  (`_hsr_src/chimera_side_right.png`), so `tools/build_chimera_side_films.py` **derives**
+  both strips from that pose by warping it — a travelling wave through the legs with the
+  swing concentrated at the paws, a body bob and a tail sway for the walk; head tipped
+  back, jaw opened and body crouched for the roar. Nothing new is drawn and the source art
+  is untouched. Each variant is recoloured by mapping the side art's torso colour onto
+  that variant's own, so a pink chimera walks pink instead of turning purple. The renderer
+  prefers `chimera_side[_variant]_film.png` for every chimera kind, and a chimera click
+  plays `chimera_side[_variant]_roar_film.png` instead of the old pet reaction. Verified
+  from the built stage HTML: the side strip is embedded, the old front strip is not, and
+  every chimera's click film is its own roar. Suite: `tools/test_chimera_films.py`
+  (48 checks) — including that the frames **actually differ**, since four identical frames
+  is exactly what "still not animated" looked like.
+- **People were sprinting, not walking.** Residents crossed the viewport in 10–17 s with
+  their legs cycling every 0.88 s — about one body length per second, which reads as a run
+  with sliding feet. They now take 26–44 s (measured 29–30 s live) with a 1.7 s cycle, so
+  the stride matches the ground they cover.

@@ -343,7 +343,7 @@ _ROAMER_DUR = {
     "dromas": (16, 24),
     "dromas_calf": (12, 18),
     "chimera": (12, 20),
-    "resident": (10, 17),
+    "resident": (26, 44),
     "cicada": (7, 12),
 }
 # Paint order is depth, not sprite size. Gates/columns are the tallest
@@ -443,6 +443,20 @@ esident_shrine … walked backwards in both directions
         if k.startswith("chimera") or k.startswith("dromas"):
             return "right"
     return "right"
+
+
+def _chimera_side_stem(key: str) -> str:
+    """Side-view film stem for a chimera variant ('' for other kinds).
+
+    chimera -> chimera_side, chimera_pink -> chimera_side_pink. Those strips
+    are built by tools/build_chimera_side_films.py from the one side-view pose.
+    """
+    if not key.startswith("chimera"):
+        return ""
+    suffix = key[len("chimera"):]
+    if suffix.endswith("_pet"):
+        suffix = suffix[:-4]
+    return "chimera_side" + suffix
 
 
 def _sprite_facing_class(kind: str) -> str:
@@ -718,7 +732,7 @@ _FILM_DUR = {
     "dromas": "1.35s",
     "dromas_calf": "1.05s",
     "hearth_cat": "2.1s",
-    "resident": "0.88s",
+    "resident": "1.7s",
     "cicada": "0.28s",
     "courier": "0.42s",
     "kite": "1.7s",
@@ -813,7 +827,8 @@ def _sprite_markup(kind: str, *, mobile: bool = True, asset: str = "") -> str:
         else (mobile if kind in _PROFILE_WALK_KINDS else True)
     )
     if use_film:
-        film = sprite_film_uri(key)
+        side = _chimera_side_stem(key) if (kind.startswith("chimera") or key.startswith("chimera")) else ""
+        film = (sprite_film_uri(side) if side else "") or sprite_film_uri(key)
         if film:
             dur = _FILM_DUR.get(kind, _FILM_DUR.get(key, "0.8s"))
             stem = _html.escape(f"{key}_film", quote=True)
@@ -2311,6 +2326,14 @@ def pictorial_stage_documents(
             uri = sprite_pet_film_uri(stem)
             if uri:
                 pet_book[stem] = uri
+    # Chimeras roar instead of the old pet reaction (operator, 2026-11-01). Applied
+    # AFTER the variant stems are registered, or only the base kind would get it.
+    for _k in list(pet_book):
+        _side = _chimera_side_stem(_k)
+        if _side:
+            roar = sprite_film_uri(_side + "_roar")
+            if roar:
+                pet_book[_k] = roar
     pet_json = (
         '<script type="application/json" id="amp-pet-films">'
         + json.dumps(pet_book, ensure_ascii=False)
