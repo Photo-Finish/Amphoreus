@@ -654,9 +654,11 @@ check(
     "data:image/png" in _dawn_mk and "<svg" not in _dawn_mk,
 )
 _wx_src = (ROOT / "src" / "ui_weather.py").read_text(encoding="utf-8")
+# Operator, 2026-11-01: nothing hangs in the sky. The light layer is a gradient
+# now, so this asserts the absence rather than the picture it used to draw.
 check(
-    "clear sky uses Dawn Device picture",
-    '_sky_body_uri("dawn")' in _wx_src,
+    "the sky draws light, not objects (no Dawn Device, no moon)",
+    '_sky_body_uri("dawn")' not in _wx_src and '_sky_body_uri("moon")' not in _wx_src,
 )
 check(
     "Aidonia silent sky defaults to snow",
