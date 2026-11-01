@@ -60,6 +60,19 @@ def main() -> int:
     for kind in ('chimera', 'dromas'):
         check(f"ground {kind} is still drawn", f"{kind}-1" in html)
     check("no sky-classed sprite remains", 'amp-sprite sky' not in html)
+
+    print("== fragment art is not drawn ==")
+    # Every pillar file is a right-hand slice of a column cut flat down its left edge,
+    # so the stage used to show half a column. The scene now omits the family.
+    scenes = scene_with(["pillar", "pillar_okhema", "pillar_grove", "pillar_aidonia"])
+    frag = pictorial_stage_documents(
+        None, "Okhema", "none", "", scenes + scene_with(["chimera"]),
+        page_layer=False, entities=True, dense=True,
+    )
+    frag_html = "\n".join(frag)
+    for kind in ("pillar", "pillar_okhema", "pillar_grove", "pillar_aidonia"):
+        check(f"{kind} is not drawn", f"{kind}-1" not in frag_html)
+    check("the chimera is still drawn beside them", "chimera-1" in frag_html)
     check("no airborne marker in the payload", '"elevated": true' not in html.lower())
 
     print(f"{len(PASSED)} passed, {len(FAILED)} failed")

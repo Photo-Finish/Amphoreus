@@ -704,3 +704,13 @@
   place when still. The same treatment covers the **dromas family**, which was also
   standing frozen beside the chimeras. Verified live: **5 film sprites, all 5 animating**
   (was 1), measured from `getComputedStyle(animationName)` in the running page.
+- **There was only half a column because the art is half a column.** Every pillar file
+  (`pillar.png`, `pillar_okhema/grove/aidonia.png`) is the **same right-hand slice of a
+  column**, cut flat down its left edge — the left 2–3 px are a hard black line, and the
+  capital and base extend only to the right. Mirroring the slice produces *two* columns
+  rather than one, and completing it would mean inventing the missing half, so the scene
+  now omits the family instead of shipping a fragment: `_FRAGMENT_ART_KINDS`, filtered
+  with the airborne kinds at the top of the renderer (where the earlier "scene filter"
+  never actually landed — only the clickable list was covered). Suite:
+  `tools/test_walk_airborne.py` (18 checks) proves all four pillar kinds are undrawn and
+  that the chimera beside them survives.

@@ -1303,6 +1303,15 @@ def _sprite_button_html(
 # bring one back) is not lost - only the rendering refuses them.
 _AIRBORNE_KINDS = frozenset(_ELEVATED_KINDS)
 
+# Not drawn, and not because they float: the art itself is a fragment. Every pillar
+# file (pillar.png, pillar_okhema/grove/aidonia) is the same right-hand slice of a
+# column with a hard black cut down its left edge, so the stage shows half a column.
+# Mirroring it produces two columns rather than one, and completing it would mean
+# inventing the missing art, so the scene omits it until a whole column exists.
+_FRAGMENT_ART_KINDS = frozenset({
+    "pillar", "pillar_okhema", "pillar_grove", "pillar_aidonia",
+})
+
 
 def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
     """Place-eligible roamers for client-side viewport spawn/despawn."""
@@ -1961,6 +1970,12 @@ def pictorial_stage_documents(
     inset_height: int = 0,
 ) -> List[str]:
     """HTML document(s) for ``components.html`` — photo then life when page-layered."""
+    # Nothing hangs in the sky and no fragment art is drawn (2026-11-01): filter the
+    # scene once, here, so kinds that never pass through the clickable list are
+    # covered too.
+    scene = [b for b in (scene or [])
+             if str((b or {}).get("kind") or "") not in _AIRBORNE_KINDS
+             and str((b or {}).get("kind") or "") not in _FRAGMENT_ART_KINDS]
     from src.ui_weather import image_data_uri, overlay_for, page_photo_object_position
 
     art_path = image_path
