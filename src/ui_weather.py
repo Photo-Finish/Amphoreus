@@ -307,27 +307,14 @@ def _sky_body_uri(stem: str) -> str:
 
 def _light_layer(effect) -> str:
     """The light-source layer (sun / moon / lightning / pulse) or ''."""
+    # Nothing floats in the sky (operator, 2026-11-01). The Dawn Device orrery and
+    # the moon were drawn as images here; the light is now a gradient only, which is
+    # atmosphere rather than an object hanging in the air.
     if effect == "clear":
-        uri = _sky_body_uri("dawn")
-        if uri:
-            return (
-                '<img alt="" src="' + uri + '" style="position:absolute;top:3%;right:7%;'
-                'width:min(22vw,200px);height:auto;pointer-events:none;'
-                'filter:drop-shadow(0 0 22px rgba(255,214,130,.7));'
-                'animation:ampwxsun 8s ease-in-out infinite;" />'
-            )
         return ('<div style="position:absolute;inset:0;pointer-events:none;'
                 'background:radial-gradient(circle at 78% 18%,rgba(255,225,150,.5),transparent 34%);'
                 'animation:ampwxsun 8s ease-in-out infinite;"></div>')
     if effect == "twilight":
-        uri = _sky_body_uri("moon") or _sky_body_uri("thief_star")
-        if uri:
-            return (
-                '<img alt="" src="' + uri + '" style="position:absolute;top:4%;right:8%;'
-                'width:min(16vw,140px);height:auto;pointer-events:none;'
-                'filter:drop-shadow(0 0 16px rgba(246,231,200,.55));'
-                'animation:ampwxsun 7s ease-in-out infinite;" />'
-            )
         return ('<div style="position:absolute;inset:0;pointer-events:none;'
                 'background:radial-gradient(circle at 79% 17%,rgba(246,231,200,.4),transparent 30%);'
                 'animation:ampwxsun 7s ease-in-out infinite;"></div>')

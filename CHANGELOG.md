@@ -688,3 +688,11 @@
   Heir's own profile, to be unique, and to have **no sibling within one edit** — which is
   exactly the shape of the Eternight/Evernight slip. The rule is self-tested against that
   pair.
+- **The last two things in the sky are gone: the Dawn Device orrery and the wind-glyph.**
+  Filtering the scene's clickable list was not enough. `ui_weather._light_layer` drew
+  `life_sprites/dawn.png` as a sky body for a clear sky (and `moon`/`thief_star` for
+  twilight), independent of anything the scene passed; the light is now a gradient only —
+  atmosphere, not an object hanging in the air. The scene list itself is also filtered
+  before anything is built from it, so kinds that never pass through the clickable list
+  (`dawn`, `wind`) cannot reach the renderer either. Verified in the running app: Walk the
+  Land shows the city and its clouds with no orrery and no swirl.
