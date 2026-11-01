@@ -727,3 +727,15 @@
   page layer is the whole Streamlit app nested inside an iframe and that nested copy draws
   its own notice. Fixing it means giving the notice a single owner, which is a different
   change from removing the shade. The card also sits over the tab strip at `top: 14%`.
+- **People now walk the way they face.** The stage mirrors a walker with `scaleX(-1)`
+  when travel opposes the direction its art faces — but the lookup was exact-match, so
+  only the bare kind `resident` was right and **every named resident**
+  (`resident_weaver`, `resident_guard`, `resident_shrine`, …) fell through to the
+  default "right" and walked backwards in *both* directions. `_native_facing()` matches
+  on the family prefix instead (people and cicadas face left; chimeras and dromas face
+  right), and both the still renderer and the roamer pool use it. Verified live:
+  `resident_guard` crossing rightward renders `matrix(-1,0,0,1,0,0)` (mirrored), while a
+  right-facing dromas and chimera crossing rightward stay unmirrored — 3 of 3 correct.
+  Suite: `tools/test_walk_orientation.py` (28 checks), including the four
+  native/travel combinations and the guarantee that a roamer's flip is a static
+  transform rather than the old timed keyframe that turned figures round mid-crossing.

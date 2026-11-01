@@ -420,14 +420,34 @@ def _sprite_cell_px(kind: str, *, page_layer: bool) -> int:
     return max(18, round(base * _INSET_CELL_SCALE))
 
 
+def _native_facing(kind: str, asset: str = "") -> str:
+    """Which way a sprite's ART faces: 'left' or 'right'.
+
+    The old lookup was exact-match, so only the bare kinds in _SPRITE_FACING were
+    right and every variant fell through to the default: 
+esident_weaver,
+    
+esident_guard, 
+esident_shrine … walked backwards in both directions
+    because their left-facing art was treated as right-facing (operator, 2026-11-01).
+    Match on the family prefix instead.
+    """
+    for key in (kind, asset):
+        k = str(key or "")
+        if not k:
+            continue
+        if k in _SPRITE_FACING:
+            return _SPRITE_FACING[k]
+        if k.startswith("resident") or k.startswith("cicada"):
+            return "left"
+        if k.startswith("chimera") or k.startswith("dromas"):
+            return "right"
+    return "right"
+
+
 def _sprite_facing_class(kind: str) -> str:
     """CSS class for bidirectional roam mirroring on profile art."""
-    facing = _SPRITE_FACING.get(kind)
-    if facing == "left":
-        return " face-l"
-    if facing == "right":
-        return " face-r"
-    return ""
+    return " face-l" if _native_facing(kind) == "left" else " face-r"
 
 
 def _sprite_motion_class(kind: str, status: str = "") -> str:
@@ -1342,7 +1362,7 @@ def _roamer_pool(scene: List[dict], *, page_layer: bool) -> List[dict]:
             "dur": _roamer_cross_secs(kind, oid),
             "cell": _sprite_cell_px(kind, page_layer=page_layer),
             "body": _sprite_markup(kind, asset=asset),
-            "face": _SPRITE_FACING.get(kind, "right"),
+            "face": _native_facing(kind, asset),
             "notice": _notice_entry(b),
             "caravanId": str(b.get("caravan_id") or ""),
             "caravanRole": str(b.get("caravan_role") or ""),
