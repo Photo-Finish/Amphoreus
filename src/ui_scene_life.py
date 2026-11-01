@@ -1184,17 +1184,19 @@ def _css() -> str:
 .amp-notice-card {
   position: relative;
   pointer-events: auto;
-  background: rgba(8, 6, 16, 0.38);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  /* No shade (operator, 2026-11-01): the card is text over the art, anchored by a
+     hairline, not a dark panel. The text shadow carries legibility instead. */
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border: none;
   border-left: 2px solid rgba(232, 213, 163, 0.42);
-  border-radius: 0 10px 10px 0;
+  border-radius: 0;
   padding: 0.55rem 1.65rem 0.6rem 0.7rem;
-  color: #f0e6c8;
-  text-shadow: 0 0 1px rgba(0,0,0,.95), 0 1px 3px rgba(0,0,0,.85), 0 2px 8px rgba(0,0,0,.7);
+  color: #f6ecd0;
+  text-shadow: 0 0 2px rgba(0,0,0,.95), 0 1px 3px rgba(0,0,0,.9), 0 2px 10px rgba(0,0,0,.75);
   font: 14px/1.45 Georgia, "Palatino Linotype", serif;
-  box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  box-shadow: none;
 }
 .amp-notice-x {
   position: absolute; top: 4px; right: 6px;
@@ -2294,8 +2296,12 @@ def pictorial_stage_documents(
         + json.dumps(pet_book, ensure_ascii=False)
         + "</script>"
     )
+    # In page-layer mode the card is mirrored into the parent document, so the copy
+    # inside the iframe must stay invisible — otherwise the operator sees the notice
+    # twice, offset by a few pixels (their 2026-11-01 screenshot).
+    _notice_hide = ' style="visibility:hidden"' if page_layer else ""
     notice_ui = (
-        '<div id="amp-notice" class="amp-notice" hidden>'
+        '<div id="amp-notice" class="amp-notice" hidden' + _notice_hide + '>'
         '<div class="amp-notice-card">'
         '<button type="button" class="amp-notice-x" aria-label="close">×</button>'
         '<div class="amp-notice-name"></div>'
@@ -2355,6 +2361,24 @@ def pictorial_stage_documents(
         "        + 'width:max-content;';\n"
         "      host.style.display = 'block';\n"
         "      host.innerHTML = card.innerHTML;\n"
+        # The copy lands in the PARENT document, where this iframe's stylesheet does
+        # not apply — which is why the operator saw an unstyled white cross and raw
+        # text stacked over the real card. Style the copy inline, and hide the
+        # in-frame original so exactly one notice is visible.
+        "      var cc = host.querySelector('.amp-notice-card');\n"
+        "      if (cc) {\n"
+        "        cc.style.background = 'none';\n"
+        "        cc.style.backdropFilter = 'none';\n"
+        "        cc.style.webkitBackdropFilter = 'none';\n"
+        "        cc.style.border = '0';\n"
+        "        cc.style.borderLeft = '2px solid rgba(232,213,163,.42)';\n"
+        "        cc.style.borderRadius = '0';\n"
+        "        cc.style.padding = '.55rem 1.65rem .6rem .7rem';\n"
+        "        cc.style.color = '#f6ecd0';\n"
+        "        cc.style.textShadow = '0 0 2px rgba(0,0,0,.95), 0 1px 3px rgba(0,0,0,.9), 0 2px 10px rgba(0,0,0,.75)';\n"
+        "        cc.style.font = '14px/1.45 Georgia, \"Palatino Linotype\", serif';\n"
+        "      }\n"
+        "      card.style.visibility = 'hidden';\n"
         "      var x = host.querySelector('.amp-notice-x');\n"
         "      if (x) x.addEventListener('click', function(ev){\n"
         "        ev.preventDefault(); ev.stopPropagation(); hideNotice();\n"

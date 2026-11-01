@@ -714,3 +714,16 @@
   never actually landed — only the clickable list was covered). Suite:
   `tools/test_walk_airborne.py` (18 checks) proves all four pillar kinds are undrawn and
   that the chimera beside them survives.
+- **The land notice has no shade, and its hoisted copy is styled.** The card carried
+  `rgba(8,6,16,.38)` plus an 8 px `backdrop-filter`; both are gone, leaving parchment text
+  anchored by a hairline and carried by a text shadow. `ui_theme` also styles
+  `#amp-land-notice-host` in the **parent** document, because the copy the operator
+  actually sees is hoisted out of the scene iframe where the iframe's stylesheet cannot
+  reach it — that is why the old pop-up showed a raw white × over unformatted text.
+  Measured live: background `rgba(0,0,0,0)`, blur `none`, colour `rgb(246,236,208)`,
+  font Georgia, no box shadow. In page-layer mode the in-iframe original is now hidden so
+  the copy is not drawn twice.
+- **Still open, and it predates this change:** one duplicate still appears, because the
+  page layer is the whole Streamlit app nested inside an iframe and that nested copy draws
+  its own notice. Fixing it means giving the notice a single owner, which is a different
+  change from removing the shade. The card also sits over the tab strip at `top: 14%`.

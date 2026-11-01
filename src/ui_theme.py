@@ -331,6 +331,34 @@ section.main, [data-testid="stMain"] {{
   position: relative;
   z-index: 120;   /* above the sidebar's 90 */
 }}
+
+/* ---- the land notice hoisted into this document --------------------------------
+   The click-popup is copied out of the scene iframe into #amp-land-notice-host, so
+   the iframe's own rules never reach it and it rendered as a raw white cross over
+   plain text. No shade (operator, 2026-11-01): text anchored by a hairline. */
+#amp-land-notice-host .amp-notice-card {{
+  background: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 0 !important;
+  border-left: 2px solid rgba(232, 213, 163, .42) !important;
+  border-radius: 0 !important;
+  padding: .55rem 1.65rem .6rem .7rem !important;
+  color: #f6ecd0 !important;
+  text-shadow: 0 0 2px rgba(0,0,0,.95), 0 1px 3px rgba(0,0,0,.9), 0 2px 10px rgba(0,0,0,.75) !important;
+  font: 14px/1.45 Georgia, "Palatino Linotype", serif !important;
+  box-shadow: none !important;
+}}
+#amp-land-notice-host .amp-notice-name {{ font-weight: 600; }}
+#amp-land-notice-host .amp-notice-line {{ font-style: italic; }}
+#amp-land-notice-host .amp-notice-x {{
+  border: 0 !important; background: transparent !important;
+  color: #e8d5a3 !important; font-size: 16px !important; cursor: pointer;
+}}
+#amp-land-notice-host .amp-notice-act {{
+  background: transparent !important; color: #e8d5a3 !important;
+  border: 1px solid rgba(232,213,163,.35) !important; border-radius: 6px;
+}}
 </style>
 """
 
