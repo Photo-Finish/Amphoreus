@@ -778,8 +778,18 @@ def _sprite_asset_key(being_or_kind, kind: str = "") -> str:
 def _sprite_markup(kind: str, *, mobile: bool = True, asset: str = "") -> str:
     """Painted PNG/film when on disk; SVG only as a last-resort glyph."""
     key = asset or kind
+    # Prefix, not a list: every chimera variant has its own 4-frame strip
+    # (chimera_pink_film.png, chimera_purple_film.png, …). Naming three of them in a
+    # set left the others static, which is exactly what the operator saw.
+    # Walking creatures animate in place when still: chimeras by prefix (every
+    # variant has its own strip) and the dromas family, which the operator also
+    # saw frozen on the stage.
+    _wants_film = (
+        kind.startswith("chimera") or key.startswith("chimera")
+        or kind in _PROFILE_WALK_KINDS or key in _PROFILE_WALK_KINDS
+    )
     use_film = (
-        True if (kind in _ALWAYS_ANIMATED_KINDS or key in _ALWAYS_ANIMATED_KINDS)
+        True if _wants_film
         else (mobile if kind in _PROFILE_WALK_KINDS else True)
     )
     if use_film:

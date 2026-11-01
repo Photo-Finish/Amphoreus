@@ -696,3 +696,11 @@
   before anything is built from it, so kinds that never pass through the clickable list
   (`dawn`, `wind`) cannot reach the renderer either. Verified in the running app: Walk the
   Land shows the city and its clouds with no orrery and no swirl.
+- **The chimeras animate because the rule was a list, not a prefix.** `_always_animated`
+  named three stems (`chimera`, `chimera_blue`, `chimera_orange`); the scene was drawing
+  **chimera_pink**, which fell through to a single static PNG — exactly the frozen
+  creature the operator photographed. The rule is now prefix-based, so every variant
+  (`chimera_pink_film.png`, `chimera_purple_film.png`, …) and any future one animates in
+  place when still. The same treatment covers the **dromas family**, which was also
+  standing frozen beside the chimeras. Verified live: **5 film sprites, all 5 animating**
+  (was 1), measured from `getComputedStyle(animationName)` in the running page.
