@@ -1190,15 +1190,6 @@ with main_tab:
     except Exception:
         pass
 
-    # Catch-up: what this Heir has lived through since you were last here
-    try:
-        world_mem = manager.memory.get_world_memories(selected, limit=3)
-        if world_mem:
-            with st.expander(f"What {info['name']} has lived through lately"):
-                for wm in world_mem:
-                    st.markdown(f"- {wm['content']}")
-    except Exception:
-        pass
 
     # Stage 2 — place-hour frame + ongoing moment + shared scene + NPC talk
     try:
@@ -1282,158 +1273,10 @@ with main_tab:
             _letter_on_surface = False
             # Surface wiring failures (silent pass hid letter mini-scene bugs).
             st.caption(f"Letter mini-scene unavailable: {_letter_exc}")
-        with st.expander("This hour — place, sky, who is here", expanded=False):
-            st.markdown(_v2.place_hour_markdown(_frame, info["name"]))
-            if _moment is None:
-                try:
-                    _moment = manager.ongoing_moment(selected)
-                except Exception:
-                    _moment = None
-            if (
-                _moment
-                and _moment.get("kind") != "quiet"
-                and not _letter_on_surface
-            ):
-                st.info(_moment.get("ui_summary") or _moment.get("summary", ""))
-        _comps = manager.companions_here(selected)
-        if _comps and not is_visitor():
-            with st.expander("Sit with them (shared scene)"):
-                _cname_map = {c: manager.get_character_info(c)["name"] for c in _comps}
-                _pick = st.selectbox(
-                    "Who else is here?",
-                    _comps,
-                    format_func=lambda c: _cname_map.get(c, c),
-                    key=f"scene_pick_{selected}",
-                )
-                if st.button("Invite them to sit with you",
-                             key=f"scene_btn_{selected}"):
-                    _inv = manager.invite_shared_scene(selected, _pick)
-                    if _inv.get("ok"):
-                        st.success(
-                            f"{_cname_map.get(_pick, _pick)} sits with you in "
-                            f"{_inv.get('place')}."
-                        )
-                    else:
-                        st.warning(_inv.get("reason", "They decline."))
-                if st.button("End the shared scene",
-                             key=f"scene_end_{selected}"):
-                    manager.clear_shared_scene()
-                    st.info("The shared scene ends.")
-        _npc_city = _frame.get("place") or ""
-        _npcs = list(_frame.get("residents_here") or [])
-        if _npcs and not is_visitor() and not _frame.get("traveling"):
-            with st.expander(f"Someone here in {_npc_city}"):
-                for _n in _npcs:
-                    _el = (_n.get("errand_line") or "").strip()
-                    if _el:
-                        st.caption(_el)
-                _npc_names = [n.get("name") for n in _npcs if n.get("name")]
-                _npc_pick = st.selectbox(
-                    "A person actually here this hour", _npc_names,
-                    key=f"npc_pick_{selected}")
-                if st.button("Talk with them", key=f"npc_btn_{selected}"):
-                    _nr = manager.talk_to_npc(_npc_city, _npc_pick)
-                    if _nr.get("ok"):
-                        st.markdown(_nr.get("line", ""))
-                        # Also mark as noticed ambient for chat context.
-                        _noticed = st.session_state.setdefault("eco_noticed", {})
-                        _noticed[f"resident:{_npc_city}:{_npc_pick}"] = {
-                            "id": f"resident:{_npc_city}:{_npc_pick}",
-                            "name": _npc_pick,
-                            "kind": "resident",
-                            "status": "here",
-                            "line": _nr.get("line"),
-                            "heir": selected,
-                        }
-                    else:
-                        st.warning(_nr.get("reason", "They are not here."))
-        # Ecosystem — care / extra acts after a pictorial notice
-        _eco_scene = list(_frame.get("eco_scene") or [])
-        if _eco_scene and not _frame.get("traveling"):
-            with st.expander("Life on this stage (care & quiet facts)", expanded=False):
-                st.caption(
-                    "Figures live on the picture above. Open **Walk the Land** "
-                    "for a taller ambient stage (no Heir dialogue)."
-                )
-                from src.ui_scene_life import render_life_interactions
-                render_life_interactions(
-                    _eco_scene,
-                    heir_id=selected,
-                    heir_name=info["name"],
-                    manager=manager,
-                    key_prefix=f"eco_{selected}_exp",
-                    read_only=is_visitor(),
-                    place=_frame.get("place"),
-                )
     except Exception:
         pass
 
-    # Travel together — the star-stranger accompanies this Heir on the road
-    try:
-        from src.world import map_data as _map_data
-        _here = _loc_now(selected) if "_loc_now" in dir() else ""
-        # The star-stranger is Oronyx-blessed, so they can walk an Heir across
-        # the Veil into the Dawn era, or down into the Nether with Castorice.
-        _dests = [
-            l for l in _map_data.ALL_POS
-            if l != _here and _map_data.travel_time_for(_here, l, "trailblazer") < 999
-        ]
-        if _dests and not is_visitor():
-            with st.expander("Travel together"):
-                _dest = st.selectbox("Where shall you walk together?", _dests,
-                                     key=f"travel_dest_{selected}")
-                if _map_data.is_cross_era(_dest):
-                    st.caption(
-                        "A Dawn-era form / the Nether — you are Oronyx-blessed "
-                        "(and walked with Castorice): you can carry this Heir "
-                        "across the borderline of time with you."
-                    )
-                if st.button(f"Set out for {_dest} with {info['name']}",
-                             key=f"travel_btn_{selected}"):
-                    _ti = manager.travel_with(selected, _dest)
-                    if _ti:
-                        st.success(f"You walk with {info['name']} on the road to "
-                                   f"{_ti['to']} — {_ti['remaining_days']} day(s).")
-                        st.rerun()
-                    else:
-                        st.error("The road could not be taken just now.")
-    except Exception:
-        pass
 
-    # A3 — the market & gift economy: a gift from the Heir's own city becomes
-    # a durable memory and warms their mood.
-    try:
-        _mkt_loc, _wares = manager.market_at(selected)
-        if _wares and not is_visitor():
-            with st.expander("Give a gift"):
-                st.caption(f"The market at **{_mkt_loc}** offers:")
-                _labels = [f"{w['name']} — {w['note']}" for w in _wares]
-                _choice = st.selectbox("Choose something for them", _labels,
-                                       key=f"gift_sel_{selected}")
-                if st.button(f"Give this to {info['name']}", key=f"gift_btn_{selected}"):
-                    _gift_name = _choice.split(" — ")[0].strip()
-                    _res = manager.give_gift(selected, _gift_name)
-                    if _res.get("given"):
-                        st.success(f"{info['name']} accepts {_gift_name}. "
-                                   f"(They feel {_res.get('mood', 'warm')}.)")
-                        st.session_state.messages[selected].append({
-                            "role": "user",
-                            "content": f"*(you give them {_gift_name})*",
-                        })
-                    else:
-                        st.info(_res.get("reason", "No gift given."))
-                # the Heir keeps every gift they were given
-                try:
-                    from src.world import living_world as _lw_g
-                    _kept = _lw_g.gifts_given(manager.memory, selected, limit=6)
-                    if _kept:
-                        _clean = [g.replace("The visitor gave you ", "").strip(" .")
-                                  for g in _kept]
-                        st.caption("They keep: " + " · ".join(_clean))
-                except Exception:
-                    pass
-    except Exception:
-        pass
 
     # Initialize chat history
     if "messages" not in st.session_state:
@@ -1694,3 +1537,167 @@ with main_tab:
                         st.caption(h["text"][:400] + ("…" if len(h["text"]) > 400 else ""))
         except Exception:
             pass
+
+    # Catch-up: what this Heir has lived through since you were last here
+    try:
+        world_mem = manager.memory.get_world_memories(selected, limit=3)
+        if world_mem:
+            with st.expander(f"What {info['name']} has lived through lately"):
+                for wm in world_mem:
+                    st.markdown(f"- {wm['content']}")
+    except Exception:
+        pass
+    # Stage facts and interactions sit at the BOTTOM of the page (operator,
+    # 2026-11-01): they were above the conversation, which pushed the chatbox
+    # and the attach strip far down the page. The chatbox belongs under the
+    # words; these are reference and side-activities, so they follow it.
+    with st.expander("This hour — place, sky, who is here", expanded=False):
+        st.markdown(_v2.place_hour_markdown(_frame, info["name"]))
+        if _moment is None:
+            try:
+                _moment = manager.ongoing_moment(selected)
+            except Exception:
+                _moment = None
+        if (
+            _moment
+            and _moment.get("kind") != "quiet"
+            and not _letter_on_surface
+        ):
+            st.info(_moment.get("ui_summary") or _moment.get("summary", ""))
+    _comps = manager.companions_here(selected)
+    if _comps and not is_visitor():
+        with st.expander("Sit with them (shared scene)"):
+            _cname_map = {c: manager.get_character_info(c)["name"] for c in _comps}
+            _pick = st.selectbox(
+                "Who else is here?",
+                _comps,
+                format_func=lambda c: _cname_map.get(c, c),
+                key=f"scene_pick_{selected}",
+            )
+            if st.button("Invite them to sit with you",
+                         key=f"scene_btn_{selected}"):
+                _inv = manager.invite_shared_scene(selected, _pick)
+                if _inv.get("ok"):
+                    st.success(
+                        f"{_cname_map.get(_pick, _pick)} sits with you in "
+                        f"{_inv.get('place')}."
+                    )
+                else:
+                    st.warning(_inv.get("reason", "They decline."))
+            if st.button("End the shared scene",
+                         key=f"scene_end_{selected}"):
+                manager.clear_shared_scene()
+                st.info("The shared scene ends.")
+    _npc_city = _frame.get("place") or ""
+    _npcs = list(_frame.get("residents_here") or [])
+    if _npcs and not is_visitor() and not _frame.get("traveling"):
+        with st.expander(f"Someone here in {_npc_city}"):
+            for _n in _npcs:
+                _el = (_n.get("errand_line") or "").strip()
+                if _el:
+                    st.caption(_el)
+            _npc_names = [n.get("name") for n in _npcs if n.get("name")]
+            _npc_pick = st.selectbox(
+                "A person actually here this hour", _npc_names,
+                key=f"npc_pick_{selected}")
+            if st.button("Talk with them", key=f"npc_btn_{selected}"):
+                _nr = manager.talk_to_npc(_npc_city, _npc_pick)
+                if _nr.get("ok"):
+                    st.markdown(_nr.get("line", ""))
+                    # Also mark as noticed ambient for chat context.
+                    _noticed = st.session_state.setdefault("eco_noticed", {})
+                    _noticed[f"resident:{_npc_city}:{_npc_pick}"] = {
+                        "id": f"resident:{_npc_city}:{_npc_pick}",
+                        "name": _npc_pick,
+                        "kind": "resident",
+                        "status": "here",
+                        "line": _nr.get("line"),
+                        "heir": selected,
+                    }
+                else:
+                    st.warning(_nr.get("reason", "They are not here."))
+    # Ecosystem — care / extra acts after a pictorial notice
+    _eco_scene = list(_frame.get("eco_scene") or [])
+    if _eco_scene and not _frame.get("traveling"):
+        with st.expander("Life on this stage (care & quiet facts)", expanded=False):
+            st.caption(
+                "Figures live on the picture above. Open **Walk the Land** "
+                "for a taller ambient stage (no Heir dialogue)."
+            )
+            from src.ui_scene_life import render_life_interactions
+            render_life_interactions(
+                _eco_scene,
+                heir_id=selected,
+                heir_name=info["name"],
+                manager=manager,
+                key_prefix=f"eco_{selected}_exp",
+                read_only=is_visitor(),
+                place=_frame.get("place"),
+            )
+
+    # Travel together — the star-stranger accompanies this Heir on the road
+    try:
+        from src.world import map_data as _map_data
+        _here = _loc_now(selected) if "_loc_now" in dir() else ""
+        # The star-stranger is Oronyx-blessed, so they can walk an Heir across
+        # the Veil into the Dawn era, or down into the Nether with Castorice.
+        _dests = [
+            l for l in _map_data.ALL_POS
+            if l != _here and _map_data.travel_time_for(_here, l, "trailblazer") < 999
+        ]
+        if _dests and not is_visitor():
+            with st.expander("Travel together"):
+                _dest = st.selectbox("Where shall you walk together?", _dests,
+                                     key=f"travel_dest_{selected}")
+                if _map_data.is_cross_era(_dest):
+                    st.caption(
+                        "A Dawn-era form / the Nether — you are Oronyx-blessed "
+                        "(and walked with Castorice): you can carry this Heir "
+                        "across the borderline of time with you."
+                    )
+                if st.button(f"Set out for {_dest} with {info['name']}",
+                             key=f"travel_btn_{selected}"):
+                    _ti = manager.travel_with(selected, _dest)
+                    if _ti:
+                        st.success(f"You walk with {info['name']} on the road to "
+                                   f"{_ti['to']} — {_ti['remaining_days']} day(s).")
+                        st.rerun()
+                    else:
+                        st.error("The road could not be taken just now.")
+    except Exception:
+        pass
+
+    # A3 — the market & gift economy: a gift from the Heir's own city becomes
+    # a durable memory and warms their mood.
+    try:
+        _mkt_loc, _wares = manager.market_at(selected)
+        if _wares and not is_visitor():
+            with st.expander("Give a gift"):
+                st.caption(f"The market at **{_mkt_loc}** offers:")
+                _labels = [f"{w['name']} — {w['note']}" for w in _wares]
+                _choice = st.selectbox("Choose something for them", _labels,
+                                       key=f"gift_sel_{selected}")
+                if st.button(f"Give this to {info['name']}", key=f"gift_btn_{selected}"):
+                    _gift_name = _choice.split(" — ")[0].strip()
+                    _res = manager.give_gift(selected, _gift_name)
+                    if _res.get("given"):
+                        st.success(f"{info['name']} accepts {_gift_name}. "
+                                   f"(They feel {_res.get('mood', 'warm')}.)")
+                        st.session_state.messages[selected].append({
+                            "role": "user",
+                            "content": f"*(you give them {_gift_name})*",
+                        })
+                    else:
+                        st.info(_res.get("reason", "No gift given."))
+                # the Heir keeps every gift they were given
+                try:
+                    from src.world import living_world as _lw_g
+                    _kept = _lw_g.gifts_given(manager.memory, selected, limit=6)
+                    if _kept:
+                        _clean = [g.replace("The visitor gave you ", "").strip(" .")
+                                  for g in _kept]
+                        st.caption("They keep: " + " · ".join(_clean))
+                except Exception:
+                    pass
+    except Exception:
+        pass

@@ -770,3 +770,13 @@
   the silhouette across frames — orientation lives in the torso and head, while a walking
   cycle legitimately swings its legs — and it uses the **old strips as the negative
   control**, which fail that same metric, so the test provably catches the spin.
+- **The chatbox and attachments moved up; the stage facts moved down.** They were stacked
+  above the conversation, pushing "Speak to …" and the attach strip down the page. The
+  seven reference blocks — *What X has lived through lately*, *This hour*, *Sit with
+  them*, *Someone here in …*, *Life on this stage*, *Travel together*, *Give a gift* — now
+  render **after** the chatbox and the attach strip. The first block sat inside an
+  enclosing `try:`, so it was dedented out of it as well as moved; a first attempt cut
+  through the `try` and produced a syntax error, caught by `py_compile` and reverted.
+  Measured on the running page (1600×1000, page 2021 px tall): chatbox at **1365**,
+  attach strip at **1437**, and every moved block below it — 1492, 1547, 1602, 1657,
+  1712, 1767, 1822.
